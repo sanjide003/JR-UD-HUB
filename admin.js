@@ -50,6 +50,12 @@ const productLoader = document.getElementById("product-loader");
 const productsListBody = document.getElementById("products-list-body");
 const productImagePreview = document.getElementById("product-image-preview");
 
+// --- പുതിയതായി ചേർത്തത്: Hero Slide Elements ---
+const addHeroSlideForm = document.getElementById("add-hero-slide-form");
+const heroSlideLoader = document.getElementById("hero-slide-loader");
+const heroSlidesListBody = document.getElementById("hero-slides-list-body");
+// --- ---
+
 // Settings elements
 const siteSettingsForm = document.getElementById("site-settings-form");
 const settingsLoader = document.getElementById("settings-loader");
@@ -106,6 +112,7 @@ onAuthStateChanged(auth, (user) => {
         // ലോഗിൻ ആയാൽ ഉടൻ ഡാറ്റ ലോഡ് ചെയ്യുന്നു
         loadCategories();
         loadProducts();
+        loadHeroSlides(); // <-- പുതിയതായി ചേർത്തു
         loadSiteSettings();
     } else {
         // ലോഗ്ഡ് ഔട്ട്
@@ -164,7 +171,7 @@ async function loadSiteSettings() {
             const settings = docSnap.data();
             document.getElementById("setting-logo-image-url").value = settings.logoImageUrl || '';
             document.getElementById("setting-logo-text").value = settings.logoText || '';
-            document.getElementById("setting-hero-video-url").value = settings.heroVideoUrl || '';
+            // heroVideoUrl നീക്കം ചെയ്തു
             document.getElementById("setting-video-url").value = settings.videoUrl || '';
             document.getElementById("setting-phone").value = settings.phone || '';
             document.getElementById("setting-email").value = settings.email || '';
@@ -186,7 +193,7 @@ siteSettingsForm.addEventListener("submit", async (e) => {
         const settings = {
             logoImageUrl: document.getElementById("setting-logo-image-url").value,
             logoText: document.getElementById("setting-logo-text").value,
-            heroVideoUrl: document.getElementById("setting-hero-video-url").value,
+            // heroVideoUrl നീക്കം ചെയ്തു
             videoUrl: document.getElementById("setting-video-url").value,
             phone: document.getElementById("setting-phone").value,
             email: document.getElementById("setting-email").value,
@@ -348,8 +355,73 @@ addProductForm.addEventListener("submit", async (e) => {
     }
 });
 
+// --- പുതിയതായി ചേർത്തത്: 7. Hero Slide Logic ---
 
-// --- 7. Edit & Delete Logic (എഡിറ്റ്, ഡിലീറ്റ്) ---
+// തത്സമയം ഹീറോ സ്ലൈഡുകൾ ലോഡ് ചെയ്യുന്നു
+function loadHeroSlides() {
+    const q = query(collection(db, "heroSlides"), orderBy("order"));
+    onSnapshot(q, (querySnapshot) => {
+        heroSlidesListBody.innerHTML = '';
+        
+        if (querySnapshot.empty) {
+            heroSlidesListBody.innerHTML = '<tr><td colspan="5">No hero slides found.</td></tr>';
+            return;
+        }
+        
+        querySnapshot.forEach((doc) => {
+            const slide = doc.data();
+            const id = doc.id;
+            
+            let preview = '';
+            if (slide.type === 'image') {
+                preview = `<img src="${slide.url}" alt="Preview">`;
+            } else {
+                preview = `<video src="${slide.url}" muted width="50" height="50"></video>`;
+            }
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>${preview}</td>
+                <td>${slide.type}</td>
+                <td>${slide.order}</td>
+                <td style="word-break: break-all;">${slide.url}</td>
+                <td>
+                    <button class="btn btn-delete" data-id="${id}" data-type="heroSlide">Delete</button>
+                </td>
+            `;
+            heroSlidesListBody.appendChild(row);
+        });
+    }, (error) => {
+        console.error("Error loading hero slides: ", error);
+        showStatus(adminStatus, "Error loading hero slides.");
+    });
+}
+
+// പുതിയ ഹീറോ സ്ലൈഡ് ചേർക്കുന്നു
+addHeroSlideForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showLoader(heroSlideLoader);
+    try {
+        const slide = {
+            url: document.getElementById("hero-slide-url").value,
+            type: document.getElementById("hero-slide-type").value,
+            order: Number(document.getElementById("hero-slide-order").value) || 0,
+            createdAt: serverTimestamp()
+        };
+        
+        await addDoc(collection(db, "heroSlides"), slide);
+        
+        showStatus(adminStatus, "Hero slide added successfully!", false);
+        addHeroSlideForm.reset();
+    } catch (error) {
+        console.error("Error adding hero slide: ", error);
+        showStatus(adminStatus, `Error: ${error.message}`);
+    } finally {
+        hideLoader(heroSlideLoader);
+    }
+});
+
+// --- 8. Edit & Delete Logic (എഡിറ്റ്, ഡിലീറ്റ്) ---
         
 // "Edit" അല്ലെങ്കിൽ "Delete" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
 document.body.addEventListener('click', async (e) => {
@@ -362,8 +434,16 @@ document.body.addEventListener('click', async (e) => {
         
         if (confirm(`Are you sure you want to delete this ${type}? This action cannot be undone.`)) {
             try {
-                await deleteDoc(doc(db, type === 'product' ? 'products' : 'categories', id));
-                showStatus(adminStatus, `${type} deleted successfully.`, false);
+                // ഡിലീറ്റ് ലോജിക് അപ്ഡേറ്റ് ചെയ്തു
+                let collectionName = '';
+                if (type === 'product') collectionName = 'products';
+                else if (type === 'category') collectionName = 'categories';
+                else if (type === 'heroSlide') collectionName = 'heroSlides';
+                
+                if (collectionName) {
+                    await deleteDoc(doc(db, collectionName, id));
+                    showStatus(adminStatus, `${type} deleted successfully.`, false);
+                }
             } catch (error) {
                 console.error("Error deleting item: ", error);
                 showStatus(adminStatus, `Error: ${error.message}`);
@@ -386,7 +466,9 @@ async function openEditModal(id, type) {
     editModal.style.display = 'flex';
     
     try {
-        const docRef = doc(db, type === 'product' ? 'products' : 'categories', id);
+        // 'heroSlide' എഡിറ്റ് ചെയ്യുന്നില്ല, അതിനാൽ പഴയ കോഡ് മതി
+        const collectionName = type === 'product' ? 'products' : 'categories';
+        const docRef = doc(db, collectionName, id);
         const docSnap = await getDoc(docRef);
         
         if (!docSnap.exists()) {
@@ -490,6 +572,8 @@ modalForm.addEventListener('submit', async (e) => {
     
     try {
         let dataToSave = {};
+        const collectionName = type === 'product' ? 'products' : 'categories';
+
         if (type === 'category') {
             dataToSave = {
                 name: document.getElementById('modal-category-name').value,
@@ -511,7 +595,7 @@ modalForm.addEventListener('submit', async (e) => {
             };
         }
         
-        const docRef = doc(db, type === 'product' ? 'products' : 'categories', id);
+        const docRef = doc(db, collectionName, id);
         await setDoc(docRef, dataToSave, { merge: true });
         
         showStatus(adminStatus, `${type} updated successfully!`, false);
