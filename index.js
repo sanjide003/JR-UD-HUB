@@ -1,6 +1,6 @@
 // ഇതാണ് 'index.js' ഫയൽ.
 // ഹോം പേജിന് (index.html) മാത്രം വേണ്ടിയുള്ള കാര്യങ്ങൾ ഈ ഫയൽ ചെയ്യുന്നു.
-// (ഹീറോ വീഡിയോ, ടോപ്പ് സെല്ലേഴ്സ്, കാറ്റഗറികൾ, താഴെയുള്ള വീഡിയോ)
+// വീഡിയോ അനുസരിച്ച് അപ്ഡേറ്റ് ചെയ്തു.
 
 import { db } from './firebase-config.js';
 import { 
@@ -11,7 +11,7 @@ import {
     query,
     where,
     limit,
-    orderBy, // പുതിയ ഉൽപ്പന്നങ്ങൾ കിട്ടാൻ
+    orderBy,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadSiteSettings } from './common.js'; // ഹെഡർ, ഫൂട്ടർ ലോഡ് ചെയ്യാൻ
@@ -21,14 +21,14 @@ setLogLevel('Debug');
 
 // പേജ് ലോഡ് ആവുമ്പോൾ
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. പൊതുവായ കാര്യങ്ങൾ (ഹെഡർ, ഫൂട്ടർ, മെനു, കാർട്ട്) ലോഡ് ചെയ്യുന്നു
+    // 1. പൊതുവായ കാര്യങ്ങൾ (ഹെഡർ, ഫൂട്ടർ, മെനു, കാർട്ട്, ഫ്ലോട്ടിംഗ് ബട്ടണുകൾ)
     loadSiteSettings();
     
-    // 2. ഈ പേജിന് മാത്രമുള്ള കാര്യങ്ങൾ ലോഡ് ചെയ്യുന്നു
-    loadHeroSlider(); // <-- ഫംഗ്ഷൻ മാറ്റി
+    // 2. ഈ പേജിന് മാത്രമുള്ള കാര്യങ്ങൾ
+    loadHeroSlider();
     loadTopSellers();
     loadHomeCategories();
-    loadExperienceVideo();
+    setupBoutiqueVideo(); // <-- ഫംഗ്ഷൻ മാറ്റി
 });
 
 /**
@@ -36,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
-    const heroSection = document.getElementById('hero-section');
+    const heroSection = document.getElementById('hero-section-new');
     if (!sliderWrapper || !heroSection) return;
 
     try {
@@ -45,42 +45,37 @@ async function loadHeroSlider() {
 
         if (querySnapshot.empty) {
             console.log("No hero slides found.");
-            // സ്ലൈഡ് ഇല്ലെങ്കിൽ, ഹീറോ സെക്ഷൻ ഒരുപക്ഷെ മറയ്ക്കാം
-            // heroSection.style.display = 'none'; 
-            return;
+            sliderWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/600x800/000000/D4AF37?text=Al+Ambar" alt="Placeholder"></div>`;
+        } else {
+            sliderWrapper.innerHTML = ''; // Loading... നീക്കം ചെയ്യുന്നു
+            querySnapshot.forEach((doc) => {
+                const slide = doc.data();
+                const slideEl = document.createElement('div');
+                slideEl.className = 'swiper-slide';
+
+                if (slide.type === 'video') {
+                    slideEl.innerHTML = `
+                        <video src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>
+                    `;
+                } else if (slide.type === 'image') {
+                    slideEl.innerHTML = `
+                        <img src="${slide.url}" alt="Hero Background Image">
+                    `;
+                }
+                sliderWrapper.appendChild(slideEl);
+            });
         }
 
-        sliderWrapper.innerHTML = ''; // Loading... നീക്കം ചെയ്യുന്നു
-
-        querySnapshot.forEach((doc) => {
-            const slide = doc.data();
-            const slideEl = document.createElement('div');
-            slideEl.className = 'swiper-slide';
-
-            if (slide.type === 'video') {
-                slideEl.innerHTML = `
-                    <video src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>
-                `;
-            } else if (slide.type === 'image') {
-                slideEl.innerHTML = `
-                    <img src="${slide.url}" alt="Hero Background Image">
-                `;
-            }
-            sliderWrapper.appendChild(slideEl);
-        });
-
         // സ്ലൈഡർ ആരംഭിക്കുന്നു
-        new Swiper('.hero-slider', {
+        new Swiper('.hero-slider-new', {
             loop: true,
-            effect: 'fade', // ഫേഡ് ആയി മാറുമ്പോൾ ഭംഗി കൂടും
-            fadeEffect: {
-                crossFade: true
-            },
+            effect: 'fade',
+            fadeEffect: { crossFade: true },
             autoplay: {
-                delay: 5000, // 5 സെക്കൻഡ്
+                delay: 4000, // 4 സെക്കൻഡ്
                 disableOnInteraction: false
             },
-            allowTouchMove: false, // മൗസ് കൊണ്ട് നീക്കാൻ പറ്റില്ല
+            allowTouchMove: true, // മൊബൈലിൽ സ്വൈപ്പ് ചെയ്യാൻ
             speed: 1000,
         });
 
@@ -91,18 +86,17 @@ async function loadHeroSlider() {
 
 
 /**
- * 2. "Top Sellers" കറൗസൽ ലോഡ് ചെയ്യുന്നു
+ * 2. "Top Sellers" കറൗസൽ ലോഡ് ചെയ്യുന്നു (പുതിയ ഡിസൈൻ)
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
 
     try {
-        // 'featured' എന്ന ഫീൽഡ് true ആയവ മാത്രം എടുക്കുന്നു
         const q = query(
             collection(db, "products"), 
             where("featured", "==", true), 
-            limit(10) // പരമാവധി 10 എണ്ണം
+            limit(10)
         );
         
         const querySnapshot = await getDocs(q);
@@ -118,44 +112,34 @@ async function loadTopSellers() {
             const product = doc.data();
             const productId = doc.id;
             const card = document.createElement('div');
-            card.className = 'swiper-slide'; // കറൗസലിന് വേണ്ടിയുള്ള ക്ലാസ്
+            card.className = 'swiper-slide';
 
-            // വിലയും ഡിസ്കൗണ്ടും
-            const price = product.price || 0;
-            const mrp = product.mrp || 0;
-            let priceHTML = `<span class="price-main">₹${price}</span>`;
-            if (mrp > price) {
-                const discount = Math.round(((mrp - price) / mrp) * 100);
-                priceHTML += `<span class="price-mrp"><del>₹${mrp}</del></span>`;
-                priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
-            }
+            // വില (MRP ഇല്ലെങ്കിൽ കാണിക്കില്ല)
+            let priceHTML = `₹${product.price || 0} /-`;
             
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
+            // പുതിയ HTML ഘടന
             card.innerHTML = `
-                <div class="product-card">
-                    <a href="product.html?id=${productId}" class="product-card-image-link">
-                        <img src="${imageUrl}" 
-                             alt="${product.name}" 
-                             class="product-card-image"
-                             onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
-                    </a>
-                    <div class="product-card-content">
-                        <h3 class="product-card-title">${product.name}</h3>
-                        <div class="price-container">
-                            ${priceHTML}
-                        </div>
-                        <div class="product-card-buttons">
-                            <button class="btn btn-secondary btn-add-to-cart"
-                                data-id="${productId}"
-                                data-name="${product.name}"
-                                data-price="${price}"
-                                data-mrp="${mrp}"
-                                data-image="${imageUrl}">
-                                Add to Cart
-                            </button>
-                            <a href="product.html?id=${productId}" class="btn btn-primary">View</a>
-                        </div>
+                <a href="product.html?id=${productId}">
+                    <img src="${imageUrl}" 
+                         alt="${product.name}" 
+                         class="top-sellers-product-image"
+                         onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
+                </a>
+                <div class="top-sellers-product-info">
+                    <div class="top-sellers-product-name">${product.name} ${product.size ? `(${product.size})` : ''}</div>
+                    <div class="top-sellers-product-price">${priceHTML}</div>
+                    <div class="top-sellers-buttons">
+                        <button class="btn btn-secondary-new btn-add-to-cart"
+                            data-id="${productId}"
+                            data-name="${product.name}"
+                            data-price="${product.price}"
+                            data-mrp="${product.mrp}"
+                            data-image="${imageUrl}">
+                            ADD TO CART
+                        </button>
+                        <a href="product.html?id=${productId}" class="btn btn-primary-new">VIEW PRODUCT</a>
                     </div>
                 </div>
             `;
@@ -163,12 +147,12 @@ async function loadTopSellers() {
         });
 
         // കറൗസൽ ആരംഭിക്കുന്നു
-        new Swiper('.top-sellers-swiper', {
+        new Swiper('.top-sellers-swiper-new', {
             slidesPerView: 1,
             spaceBetween: 20,
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
+            pagination: { // ഡോട്ടുകൾ ചേർക്കുന്നു
+                el: '.swiper-pagination',
+                clickable: true,
             },
             breakpoints: {
                 640: { slidesPerView: 2 },
@@ -184,60 +168,48 @@ async function loadTopSellers() {
 }
 
 /**
- * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു
- * (അവസാനം ചേർത്ത 3 ഉൽപ്പന്നങ്ങളുടെ കാറ്റഗറികൾ)
+ * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു (പുതിയ ഡിസൈൻ)
  */
 async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
 
     try {
-        // 1. ആദ്യം, അവസാനം ചേർത്ത 3 ഉൽപ്പന്നങ്ങൾ എടുക്കുന്നു
-        const productQuery = query(
-            collection(db, "products"),
-            orderBy("createdAt", "desc"), // പുതിയവ ആദ്യം
+        // കാറ്റഗറികൾ നേരിട്ട് എടുക്കുന്നു
+        const catQuery = query(
+            collection(db, "categories"),
+            orderBy("name"),
             limit(3)
         );
-        const productSnapshot = await getDocs(productQuery);
+        const catSnapshot = await getDocs(catQuery);
 
-        if (productSnapshot.empty) {
-            grid.innerHTML = '<p>No recent categories to show.</p>';
+        if (catSnapshot.empty) {
+            grid.innerHTML = '<p>No categories to show.</p>';
             return;
         }
 
-        // 2. ആ ഉൽപ്പന്നങ്ങളുടെ കാറ്റഗറി ID-കൾ ഒരു സെറ്റിൽ (Set) സൂക്ഷിക്കുന്നു (ഡ്യൂപ്ലിക്കേറ്റ് ഒഴിവാക്കാൻ)
-        const categoryIds = new Set();
-        productSnapshot.forEach(doc => {
-            if (doc.data().categoryId) {
-                categoryIds.add(doc.data().categoryId);
-            }
+        grid.innerHTML = ''; // "Loading..." നീക്കം ചെയ്യുന്നു
+        
+        catSnapshot.forEach((doc) => {
+            const category = doc.data();
+            const catId = doc.id;
+            const card = document.createElement('a');
+            card.className = 'category-card-new';
+            card.href = `categories.html?filter=${catId}`;
+            
+            const imageUrl = category.imageUrl || 'https://placehold.co/400x400/1e1e1e/D4AF37?text=Category';
+            
+            card.innerHTML = `
+                <img src="${imageUrl}" 
+                     alt="${category.name}"
+                     onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
+                <div class="category-card-new-content">
+                    <h3>${category.name}</h3>
+                </div>
+            `;
+            grid.appendChild(card);
         });
 
-        if (categoryIds.size === 0) {
-            grid.innerHTML = '<p>No categories found for recent products.</p>';
-            return;
-        }
-
-        // 3. ആ കാറ്റഗറി ID-കൾ ഉപയോഗിച്ച് കാറ്റഗറി വിവരങ്ങൾ എടുക്കുന്നു
-        grid.innerHTML = ''; // "Loading..." നീക്കം ചെയ്യുന്നു
-        for (const catId of categoryIds) {
-            const catDoc = await getDoc(doc(db, "categories", catId));
-            if (catDoc.exists()) {
-                const category = catDoc.data();
-                const card = document.createElement('a');
-                card.className = 'category-card-home';
-                card.href = `categories.html?filter=${catId}`;
-                card.innerHTML = `
-                    <img src="${category.imageUrl || 'https://placehold.co/400x400/1e1e1e/D4AF37?text=Category'}" 
-                         alt="${category.name}"
-                         onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
-                    <div class="category-card-home-content">
-                        <h3>${category.name}</h3>
-                    </div>
-                `;
-                grid.appendChild(card);
-            }
-        }
     } catch (error) {
         console.error("Error loading home categories: ", error);
         grid.innerHTML = '<p>Error loading categories.</p>';
@@ -245,56 +217,62 @@ async function loadHomeCategories() {
 }
 
 /**
- * 4. താഴെയുള്ള 'Experience Video' ലോഡ് ചെയ്യുന്നു
+ * 4. ബൊട്ടീക് വീഡിയോ മോഡൽ പ്രവർത്തിപ്പിക്കുന്നു
  */
-async function loadExperienceVideo() {
-    const videoWrapper = document.getElementById('video-wrapper-container');
-    if (!videoWrapper) return;
+let videoUrlFromSettings = null;
 
+async function setupBoutiqueVideo() {
+    const playButton = document.getElementById('boutique-play-button');
+    const videoModal = document.getElementById('video-modal');
+    const modalClose = document.getElementById('video-modal-close');
+    const modalContent = document.getElementById('video-modal-content');
+    
+    if (!playButton || !videoModal || !modalClose || !modalContent) return;
+
+    // 1. അഡ്മിനിൽ നിന്ന് വീഡിയോ URL എടുക്കുന്നു
     try {
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
-        
-        let videoUrl = null;
         if (docSnap.exists() && docSnap.data().videoUrl) {
-            videoUrl = docSnap.data().videoUrl;
+            videoUrlFromSettings = docSnap.data().videoUrl;
         }
+    } catch (error) {
+        console.error("Error fetching videoUrl for modal: ", error);
+    }
 
-        if (!videoUrl) {
-            videoWrapper.innerHTML = '<p class="loading-placeholder">Video not available.</p>';
+    // 2. പ്ലേ ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
+    playButton.addEventListener('click', () => {
+        if (!videoUrlFromSettings) {
+            alert("Video is not available at the moment.");
             return;
         }
-
-        // വീഡിയോ URL പരിശോധിച്ച് പ്ലെയർ ഉണ്ടാക്കുന്നു
-        if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
-            // YouTube വീഡിയോ
-            const videoId = getYouTubeID(videoUrl);
-            if(videoId) {
-                videoWrapper.innerHTML = `
-                    <iframe 
-                        src="https://www.youtube.com/embed/${videoId}?autoplay=0&mute=1&loop=1&playlist=${videoId}&controls=1&modestbranding=1&rel=0" 
-                        frameborder="0" 
-                        allow="autoplay; encrypted-media" 
-                        allowfullscreen>
-                    </iframe>`;
-            } else {
-                 videoWrapper.innerHTML = '<p class="loading-placeholder">Invalid YouTube URL.</p>';
-            }
-        } else if (videoUrl.endsWith(".mp4") || videoUrl.includes("firebasestorage")) {
-            // നേരിട്ടുള്ള വീഡിയോ (.mp4)
-            videoWrapper.innerHTML = `
-                <video controls muted autoplay loop playsinline>
-                    <source src="${videoUrl}" type="video/mp4">
+        
+        // URL പരിശോധിച്ച് പ്ലെയർ ഉണ്ടാക്കുന്നു
+        if (videoUrlFromSettings.includes("youtube.com") || videoUrlFromSettings.includes("youtu.be")) {
+            const videoId = getYouTubeID(videoUrlFromSettings);
+            modalContent.innerHTML = `
+                <iframe 
+                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
+                    frameborder="0" 
+                    allow="autoplay; encrypted-media" 
+                    allowfullscreen>
+                </iframe>`;
+        } else {
+            modalContent.innerHTML = `
+                <video controls autoplay loop playsinline>
+                    <source src="${videoUrlFromSettings}" type="video/mp4">
                     Your browser does not support the video tag.
                 </video>`;
-        } else {
-            videoWrapper.innerHTML = '<p class="loading-placeholder">Invalid video format provided.</p>';
         }
+        
+        videoModal.classList.add('open');
+    });
 
-    } catch (error) {
-        console.error("Error loading experience video: ", error);
-        videoWrapper.innerHTML = '<p class="loading-placeholder">Error loading video.</p>';
-    }
+    // 3. മോഡൽ ക്ലോസ് ബട്ടൺ
+    modalClose.addEventListener('click', () => {
+        videoModal.classList.remove('open');
+        modalContent.innerHTML = ''; // വീഡിയോ നിർത്തുവാൻ
+    });
 }
 
 /**
@@ -335,10 +313,10 @@ if (topSellersGrid) {
         addToCart(id, product);
 
         // ഉപഭോക്താവിനെ അറിയിക്കുന്നു
-        button.innerHTML = 'Added!';
+        button.innerHTML = 'ADDED!';
         button.disabled = true;
         setTimeout(() => {
-            button.innerHTML = 'Add to Cart';
+            button.innerHTML = 'ADD TO CART';
             button.disabled = false;
         }, 2000);
     });
