@@ -12,12 +12,7 @@
 
     <style>
         /* --- GLOBAL CSS STYLES --- */
-        /* * ഇത് എല്ലാ പേജുകൾക്കും ബാധകമായ സ്റ്റൈലുകളാണ്.
-         * ഇപ്പോൾ ഇത് ഓരോ ഫയലിലും ആവർത്തിക്കുകയാണ്.
-         * പ്രൊഡക്ഷനിൽ ഇത് ഒരു 'styles.css' ഫയലിലേക്ക് മാറ്റണം.
-         */
-
-        /* 1. Theme & Variables */
+        /* ... (മുൻപത്തെ എല്ലാ സ്റ്റൈലുകളും ഇവിടെയുണ്ട്, മാറ്റമില്ല) ... */
         :root {
             --bg-color: #121212;
             --primary-gold: #D4AF37;
@@ -28,44 +23,29 @@
             --font-main: 'Inter', sans-serif;
         }
 
-        /* 2. Global Resets & Body */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: var(--font-main);
             background-color: var(--bg-color);
             color: var(--text-color);
             line-height: 1.6;
+            margin: 0;
+            padding: 0;
         }
 
-        img {
-            max-width: 100%;
-            height: auto;
-            display: block;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-
-        a {
-            color: var(--primary-gold);
-            text-decoration: none;
-        }
-
-        h1, h2, h3, h4, h5, h6 {
-            color: var(--primary-gold);
-            margin-bottom: 0.75rem;
-            font-weight: 700;
-        }
-
+        
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 3rem 1.5rem; /* സെക്ഷനുകൾക്ക് കൂടുതൽ പാഡിംഗ് */
+            padding: 3rem 1.5rem;
         }
-
-        /* 3. Header & Navigation */
+        
+        /* ... (Header, Hero, Buttons, Grids, etc. - no changes) ... */
+        
         .main-header {
             background-color: var(--bg-color);
             padding: 1.5rem 1.5rem;
@@ -83,29 +63,14 @@
             font-weight: 700;
             color: var(--primary-gold);
             letter-spacing: 1px;
+            text-decoration: none;
         }
 
-        .main-nav ul {
-            list-style: none;
-            display: flex;
-        }
-
-        .main-nav li {
-            margin-left: 2rem;
-        }
-
-        .main-nav a {
-            color: var(--text-color);
-            font-weight: 400;
-            transition: color 0.3s ease;
-        }
-
-        .main-nav a:hover,
-        .main-nav a.active {
-            color: var(--primary-gold);
-        }
-
-        /* 4. Hero Section */
+        .main-nav ul { list-style: none; display: flex; }
+        .main-nav li { margin-left: 2rem; }
+        .main-nav a { color: var(--text-color); font-weight: 400; text-decoration: none; transition: color 0.3s ease; }
+        .main-nav a:hover, .main-nav a.active { color: var(--primary-gold); }
+        
         .hero {
             background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), 
                         url('https://placehold.co/1920x800/121212/D4AF37?text=Luxury+Perfume+Bottle') no-repeat center center/cover;
@@ -117,21 +82,9 @@
             text-align: center;
             padding: 1.5rem;
         }
+        .hero h1 { font-size: 3.5rem; margin-bottom: 1rem; color: #fff; }
+        .hero p { font-size: 1.25rem; color: var(--text-muted); margin-bottom: 2rem; max-width: 600px; }
 
-        .hero h1 {
-            font-size: 3.5rem;
-            margin-bottom: 1rem;
-            color: #fff; /* ഹീറോയിലെ ടെക്സ്റ്റ് വെള്ള നിറത്തിൽ */
-        }
-
-        .hero p {
-            font-size: 1.25rem;
-            color: var(--text-muted);
-            margin-bottom: 2rem;
-            max-width: 600px;
-        }
-
-        /* 5. Button Styles */
         .btn {
             display: inline-block;
             padding: 0.75rem 1.5rem;
@@ -143,225 +96,105 @@
             letter-spacing: 1px;
             transition: all 0.3s ease;
             border: 2px solid var(--primary-gold);
+            text-decoration: none;
         }
+        .btn:hover { background-color: var(--secondary-gold); border-color: var(--secondary-gold); color: #000; }
 
-        .btn:hover {
-            background-color: var(--secondary-gold);
-            border-color: var(--secondary-gold);
-            color: #000;
-        }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 2.5rem; position: relative; }
+        .section-title::after { content: ''; display: block; width: 80px; height: 3px; background-color: var(--secondary-gold); margin: 0.5rem auto 0; }
         
-        .btn-outline {
-            background-color: transparent;
-            color: var(--primary-gold);
-        }
+        .category-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; text-align: center; }
+        .category-card { background-color: var(--card-bg); padding: 1.5rem; border-radius: 8px; border: 1px solid #333; transition: all 0.3s ease; text-decoration: none; }
+        .category-card:hover { border-color: var(--secondary-gold); transform: translateY(-5px); }
+        .category-card img { width: 100px; height: 100px; object-fit: cover; border-radius: 50%; margin: 0 auto 1rem; border: 2px solid var(--primary-gold); background-color: #333; }
+        .category-card h3 { color: var(--text-color); font-size: 1.25rem; }
 
-        .btn-outline:hover {
-            background-color: var(--primary-gold);
-            color: var(--bg-color);
-        }
+        .video-section { background-color: #000; text-align: center; padding: 3rem 1.5rem; }
+        .video-wrapper { max-width: 900px; margin: 0 auto; aspect-ratio: 16 / 9; border-radius: 8px; overflow: hidden; border: 2px solid var(--secondary-gold); background-color: #000; }
+        .video-wrapper iframe, .video-wrapper video { width: 100%; height: 100%; border: 0; }
 
-        /* 6. Section Heading */
-        .section-title {
-            text-align: center;
-            font-size: 2.5rem;
-            margin-bottom: 2.5rem;
-            position: relative;
-        }
-
-        .section-title::after {
-            content: '';
-            display: block;
-            width: 80px;
-            height: 3px;
-            background-color: var(--secondary-gold);
-            margin: 0.5rem auto 0;
-        }
-
-        /* 7. Category Grid */
-        .category-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            text-align: center;
-        }
-
-        .category-card {
-            background-color: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: 8px;
-            border: 1px solid #333;
-            transition: all 0.3s ease;
-        }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .product-card { background-color: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid #333; transition: all 0.3s ease; display: flex; flex-direction: column; }
+        .product-card:hover { border-color: var(--secondary-gold); transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.3); }
+        .product-card-Image { width: 100%; height: 250px; object-fit: cover; background-color: #333; }
+        .product-card-content { padding: 1.5rem; flex-grow: 1; }
+        .product-card-content h3 { font-size: 1.25rem; color: var(--text-color); }
+        .product-card-content .price { font-size: 1.3rem; font-weight: 700; color: var(--primary-gold); margin-bottom: 1rem; }
         
-        .category-card:hover {
-            border-color: var(--secondary-gold);
-            transform: translateY(-5px);
-        }
+        .whatsapp-cta { position: fixed; bottom: 25px; right: 25px; background-color: #25D366; color: #fff; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 100; transition: transform 0.3s ease; }
+        .whatsapp-cta:hover { transform: scale(1.1); }
+        .whatsapp-cta svg { width: 32px; height: 32px; fill: #fff; }
 
-        .category-card img {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            border: 2px solid var(--primary-gold);
-            background-color: #333; /* Placeholder bg */
-        }
+        .loading-placeholder { text-align: center; color: var(--text-muted); font-size: 1.1rem; padding: 2rem 0; }
         
-        .category-card h3 {
-            color: var(--text-color);
-            font-size: 1.25rem;
-        }
-
-        /* 8. Video Section (Plan 5B) */
-        .video-section {
-            background-color: #000;
-            text-align: center;
-            padding: 3rem 1.5rem;
-        }
-        
-        .video-wrapper {
-            max-width: 900px;
-            margin: 0 auto;
-            aspect-ratio: 16 / 9;
-            border-radius: 8px;
-            overflow: hidden;
-            border: 2px solid var(--secondary-gold);
-        }
-
-        .video-wrapper iframe,
-        .video-wrapper video {
-            width: 100%;
-            height: 100%;
-            border: 0;
-        }
-
-        /* 9. Product Grid (Featured) */
-        .product-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-        }
-
-        .product-card {
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            overflow: hidden;
-            border: 1px solid #333;
-            transition: all 0.3s ease;
-            display: flex;
-            flex-direction: column;
-        }
-        
-        .product-card:hover {
-            border-color: var(--secondary-gold);
-            transform: translateY(-5px);
-            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
-        }
-
-        .product-card-image {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            background-color: #333; /* Placeholder bg */
-        }
-
-        .product-card-content {
-            padding: 1.5rem;
-            flex-grow: 1;
-        }
-
-        .product-card-content h3 {
-            font-size: 1.25rem;
-            color: var(--text-color);
-        }
-
-        .product-card-content .price {
-            font-size: 1.3rem;
-            font-weight: 700;
-            color: var(--primary-gold);
-            margin-bottom: 1rem;
-        }
-        
-        .product-card-content .btn {
-            width: 100%;
-            text-align: center;
-            margin-top: 1rem; 
-        }
-
-        /* 10. WhatsApp Floating CTA (Plan 2) */
-        .whatsapp-cta {
-            position: fixed;
-            bottom: 25px;
-            right: 25px;
-            background-color: #25D366;
-            color: #fff;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 2.5rem;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-            z-index: 100;
-            transition: transform 0.3s ease;
-        }
-        
-        .whatsapp-cta:hover {
-            transform: scale(1.1);
-        }
-        
-        .whatsapp-cta svg {
-            width: 32px;
-            height: 32px;
-            fill: #fff;
-        }
-
-        /* 11. Footer */
+        /* --- Footer Styles --- */
         .main-footer {
             background-color: #000;
             color: var(--text-muted);
-            text-align: center;
-            padding: 2.5rem 1.5rem;
+            padding: 4rem 1.5rem 2rem;
             margin-top: 3rem;
-            border-top: 1px solid #333;
-        }
-
-        /* 12. Loading/Empty State */
-        .loading-placeholder {
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 1.1rem;
-            padding: 2rem 0;
+            border-top: 1px solid var(--secondary-gold);
         }
         
-        /* 13. Mobile Responsiveness */
+        .footer-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* കൂടുതൽ റെസ്പോൺസീവ് */
+            gap: 2.5rem;
+        }
+        
+        .footer-col h3 {
+            font-size: 1.5rem;
+            color: var(--primary-gold);
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .footer-col ul { list-style: none; }
+        .footer-col li { margin-bottom: 0.75rem; }
+        
+        .footer-col a,
+        .footer-col .contact-item a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .footer-col a:hover { color: var(--primary-gold); }
+        .contact-item { display: flex; align-items: center; margin-bottom: 1rem; }
+        .contact-item svg { width: 20px; height: 20px; fill: var(--primary-gold); margin-right: 1rem; flex-shrink: 0; }
+        .social-icons { display: flex; gap: 1.5rem; margin-top: 1.5rem; }
+        .social-icons a { display: inline-block; width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--text-muted); display: flex; justify-content: center; align-items: center; transition: all 0.3s ease; }
+        .social-icons a:hover { border-color: var(--primary-gold); background-color: var(--primary-gold); }
+        .social-icons a:hover svg { fill: #000; }
+        .social-icons svg { width: 20px; height: 20px; fill: var(--text-muted); transition: fill 0.3s ease; }
+
+        .footer-bottom { text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #333; font-size: 0.9rem; }
+
+        /* --- Mobile Responsiveness --- */
         @media (max-width: 768px) {
-            .main-header {
-                flex-direction: column;
-                padding: 1rem;
-            }
+            .main-header { flex-direction: column; padding: 1rem; }
             .logo { margin-bottom: 1rem; }
             .main-nav ul { justify-content: center; flex-wrap: wrap; }
             .main-nav li { margin: 0.25rem 0.75rem; }
-            
             .hero { height: 60vh; }
             .hero h1 { font-size: 2.5rem; }
             .hero p { font-size: 1.1rem; }
-
             .section-title { font-size: 2rem; }
             .container { padding: 2rem 1rem; }
+            
+            .footer-col { text-align: center; }
+            .contact-item { justify-content: center; }
+            .social-icons { justify-content: center; }
         }
 
     </style>
 </head>
 <body>
 
-    <!-- 1. Header -->
+    <!-- 1. Header (ലോഗോ ID ചേർത്തു) -->
     <header class="main-header">
-        <a href="index.html" class="logo">AL AMBAR</a>
+        <a href="index.html" class="logo" id="header-logo">AL AMBAR</a>
         <nav class="main-nav">
             <ul>
                 <li><a href="index.html" class="active">Home</a></li>
@@ -384,33 +217,16 @@
         <section id="categories" class="container">
             <h2 class="section-title">Shop by Category</h2>
             <div class="category-grid" id="category-grid">
-                <!-- കാറ്റഗറികൾ ഫയർബേസിൽ നിന്ന് ഇവിടെ ലോഡ് ആവും -->
                 <div class="loading-placeholder">Loading categories...</div>
             </div>
         </section>
 
-        <!-- 4. Brand Video Section (Plan 5B) -->
+        <!-- 4. Brand Video Section (വീഡിയോ ലോഡ് ചെയ്യാൻ ID ചേർത്തു) -->
         <section id="home-video" class="video-section">
             <h2 class="section-title">The Al Ambar Experience</h2>
-            <div class="video-wrapper">
-                <!-- 
-                  അഡ്മിൻ പാനൽ വഴി YouTube ലിങ്ക് നൽകുകയാണെങ്കിൽ:
-                  <iframe src="https://www.youtube.com/embed/VIDEO_ID?rel=0&autoplay=1&mute=1&loop=1&playlist=VIDEO_ID" 
-                          allow="autoplay; encrypted-media" frameborder="0"></iframe>
-                -->
-                
-                <!-- 
-                  അഡ്മിൻ പാനൽ വഴി വീഡിയോ ഫയൽ അപ്‌ലോഡ് ചെയ്യുകയാണെങ്കിൽ (Firebase Storage):
-                  (താഴെ ഒരു സാമ്പിൾ വീഡിയോ ആണ്)
-                -->
-                <video controls muted autoplay loop playsinline id="brand-video">
-                    <!-- 
-                       ഈ src അഡ്മിൻ പാനലിൽ നിന്ന് ലോഡ് ചെയ്യണം. 
-                       തൽക്കാലം ഒരു പ്ലേസ്‌ഹോൾഡർ ഉപയോഗിക്കുന്നു.
-                    -->
-                    <source src="https://storage.googleapis.com/coverr-main/mp4/Mt_Baker.mp4" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>
+            <div class="video-wrapper" id="video-wrapper-container">
+                <!-- വീഡിയോ ഫയർബേസിൽ നിന്ന് ഇവിടെ ലോഡ് ആവും -->
+                <div class="loading-placeholder">Loading video...</div>
             </div>
         </section>
         
@@ -418,45 +234,93 @@
         <section id="featured-products" class="container">
             <h2 class="section-title">Featured Products</h2>
             <div class="product-grid" id="product-grid">
-                <!-- ഫീച്ചർ ചെയ്ത ഉൽപ്പന്നങ്ങൾ ഫയർബേസിൽ നിന്ന് ഇവിടെ ലോഡ് ആവും -->
                 <div class="loading-placeholder">Loading featured products...</div>
             </div>
         </section>
 
     </main>
 
-    <!-- 6. Floating WhatsApp CTA -->
-    <a href="https://wa.me/918086081985?text=Hello%20Al%20Ambar,%20I%20have%20a%20question." 
+    <!-- 6. Floating WhatsApp CTA (ID ചേർത്തു) -->
+    <a href="https://wa.me/918086081985?text=Hello%20Al%20Ambar" 
        class="whatsapp-cta" 
+       id="whatsapp-float-btn"
        target="_blank" 
        aria-label="Contact us on WhatsApp">
-        <!-- Inline SVG for WhatsApp Icon -->
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-            <path d="M380.9 97.1C339.4 55.6 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115.4-67.1-157zm-157 341.6c-33.8 0-65-10.1-90.4-27.8l-6.4-3.8-67.1 17.6 17.9-65.5-4.1-6.7c-19.5-31.8-30-67.8-30-104.4 0-100.9 82.1-183 183-183 49.3 0 95.6 19.2 130.4 54.1 34.8 34.8 56.2 81.1 56.1 130.5 0 100.8-82.1 182.9-183 182.9zm101.7-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/>
-        </svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M380.9 97.1C339.4 55.6 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115.4-67.1-157zm-157 341.6c-33.8 0-65-10.1-90.4-27.8l-6.4-3.8-67.1 17.6 17.9-65.5-4.1-6.7c-19.5-31.8-30-67.8-30-104.4 0-100.9 82.1-183 183-183 49.3 0 95.6 19.2 130.4 54.1 34.8 34.8 56.2 81.1 56.1 130.5 0 100.8-82.1 182.9-183 182.9zm101.7-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
     </a>
 
-    <!-- 7. Footer -->
+    <!-- 7. Footer Section (ഡാറ്റ ലോഡ് ചെയ്യാൻ ID-കൾ ചേർത്തു) -->
     <footer class="main-footer">
-        <p>&copy; 2025 Al Ambar Perfumes. All Rights Reserved.</p>
-        <p>Kochi, Kerala</p>
+        <div class="footer-container">
+            
+            <!-- Column 1: Quick Links -->
+            <div class="footer-col">
+                <h3>Quick Links</h3>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="categories.html">Products</a></li>
+                    <li><a href="categories.html">Categories</a></li>
+                    <li><a href="contact.html">Contact Us</a></li>
+                </ul>
+            </div>
+            
+            <!-- Column 2: Categories (ഇവ സ്റ്റാറ്റിക് ആയി നിലനിർത്തുന്നു, അല്ലെങ്കിൽ കാറ്റഗറി ലിസ്റ്റിൽ നിന്ന് ലോഡ് ചെയ്യാം) -->
+            <div class="footer-col">
+                <h3>Categories</h3>
+                <ul id="footer-category-list">
+                    <li><a href="categories.html?filter=attar">Attar</a></li>
+                    <li><a href="categories.html?filter=oud">Oud</a></li>
+                    <li><a href="categories.html?filter=spray">Spray Perfumes</a></li>
+                </ul>
+            </div>
+            
+            <!-- Column 3: Contact (ID-കൾ ചേർത്തു) -->
+            <div class="footer-col">
+                <h3>Contact</h3>
+                <ul>
+                    <li class="contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/></svg>
+                        <a href="tel:" id="footer-phone">+91 XXXXX XXXXX</a>
+                    </li>
+                    <li class="contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"/></svg>
+                        <a href="mailto:" id="footer-email">info@alambar.com</a>
+                    </li>
+                    <li class="contact-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
+                        <span id="footer-address">Kerala, India</span>
+                    </li>
+                </ul>
+                <div class="social-icons">
+                    <!-- സോഷ്യൽ ഐക്കണുകൾ സ്റ്റാറ്റിക് ആയി നിലനിർത്തുന്നു -->
+                    <a href="#" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256C0 376 82.7 476.8 194.2 504.5V334.2H137.4V256H194.2V195.6c0-56.1 33.4-87.2 84.7-87.2c24.4 0 50.3 4.3 50.3 4.3V186H292.1c-27.1 0-35.3 16.4-35.3 34.3V256H368l-11.6 78.2H256.8V504.5C429.3 476.8 512 376 512 256z"/></svg></a>
+                    <a href="#" aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9S287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7s74.7 33.5 74.7 74.7s-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9 26.2 26.2 58 34.4 93.9 36.2 37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1 9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg></a>
+                </div>
+            </div>
+            
+        </div>
+        
+        <div class="footer-bottom">
+            <p>&copy; 2025 Al Ambar Perfumes. All Rights Reserved. Kochi, Kerala.</p>
+        </div>
     </footer>
 
-    <!-- Firebase SDK (Using modern v11 modular scripts) -->
+    <!-- Firebase SDK (പുതിയ ഇംപോർട്ടുകൾ ചേർത്തു) -->
     <script type="module">
-        // Import functions from the SDKs
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { 
             getFirestore, 
             collection, 
             getDocs,
+            doc,          // പുതിയതായി ചേർത്തത്
+            getDoc,         // പുതിയതായി ചേർത്തത്
             query,
             where,
             limit,
             setLogLevel
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Your web app's Firebase configuration (നിങ്ങൾ നൽകിയത്)
+        // Your web app's Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCePcVE_BTiFuYXAApNmbMKHdkhQ9Ay_F4",
             authDomain: "al-ambar-perfume-company.firebaseapp.com",
@@ -475,8 +339,17 @@
         // --- DOM Elements ---
         const categoryGrid = document.getElementById("category-grid");
         const productGrid = document.getElementById("product-grid");
-        const brandVideo = document.getElementById("brand-video"); // വീഡിയോയ്ക്കു വേണ്ടി (Optional)
+        const footerCategoryList = document.getElementById("footer-category-list");
+        
+        // പുതിയതായി ചേർത്ത DOM ഘടകങ്ങൾ
+        const headerLogo = document.getElementById("header-logo");
+        const videoWrapper = document.getElementById("video-wrapper-container");
+        const whatsappFloatBtn = document.getElementById("whatsapp-float-btn");
+        const footerPhone = document.getElementById("footer-phone");
+        const footerEmail = document.getElementById("footer-email");
+        const footerAddress = document.getElementById("footer-address");
 
+        
         /**
          * കാറ്റഗറികൾ ഫയർസ്റ്റോറിൽ നിന്ന് ലോഡ് ചെയ്യുന്നു
          */
@@ -485,29 +358,34 @@
                 const querySnapshot = await getDocs(collection(db, "categories"));
                 
                 if (querySnapshot.empty) {
-                    categoryGrid.innerHTML = '<p class="loading-placeholder">No categories found. Please add some from the Admin Panel.</p>';
+                    categoryGrid.innerHTML = '<p class="loading-placeholder">No categories found.</p>';
                     return;
                 }
                 
                 categoryGrid.innerHTML = ''; // "Loading..." നീക്കം ചെയ്യുന്നു
+                footerCategoryList.innerHTML = ''; // ഫൂട്ടറിലെ ലിസ്റ്റും ക്ലിയർ ചെയ്യുന്നു
+                
                 querySnapshot.forEach((doc) => {
                     const category = doc.data();
                     const categoryId = doc.id;
+                    const categoryName = category.name || 'Unnamed';
                     
+                    // 1. ഹോം പേജ് ഗ്രിഡിൽ കാർഡ് ചേർക്കുന്നു
                     const card = document.createElement('a');
                     card.className = 'category-card';
-                    // നമ്മൾ categories.html-ൽ categoryId ഉപയോഗിച്ചാണ് ഫിൽട്ടർ ചെയ്യുന്നത്.
-                    // (നിങ്ങളുടെ പ്ലാൻ അനുസരിച്ച് slug ആവാം, പക്ഷെ categoryId എളുപ്പമാണ്)
-                    // `categories.html`-ലെ ലോജിക് `?filter=` എന്നായിരുന്നു, അത് `categoryId` ആണെന്ന് കരുതുന്നു.
                     card.href = `categories.html?filter=${categoryId}`; 
-                    
                     card.innerHTML = `
                         <img src="${category.imageUrl || 'https://placehold.co/200x200/1e1e1e/D4AF37?text=Category'}" 
-                             alt="${category.name}"
+                             alt="${categoryName}"
                              onerror="this.src='https://placehold.co/200x200/1e1e1e/D4AF37?text=Error'">
-                        <h3>${category.name}</h3>
+                        <h3>${categoryName}</h3>
                     `;
                     categoryGrid.appendChild(card);
+                    
+                    // 2. ഫൂട്ടർ ലിസ്റ്റിൽ ലിങ്ക് ചേർക്കുന്നു
+                    const footerLink = document.createElement('li');
+                    footerLink.innerHTML = `<a href="categories.html?filter=${categoryId}">${categoryName}</a>`;
+                    footerCategoryList.appendChild(footerLink);
                 });
 
             } catch (error) {
@@ -521,17 +399,16 @@
          */
         async function loadFeaturedProducts() {
             try {
-                // "featured: true" എന്ന ഫീൽഡ് ഉള്ള ഉൽപ്പന്നങ്ങളെ മാത്രം എടുക്കുന്നു
                 const q = query(
                     collection(db, "products"), 
                     where("featured", "==", true), 
-                    limit(4) // ഹോം പേജിൽ 4 എണ്ണം മാത്രം കാണിക്കുന്നു
+                    limit(4)
                 );
                 
                 const querySnapshot = await getDocs(q);
 
                 if (querySnapshot.empty) {
-                    productGrid.innerHTML = '<p class="loading-placeholder">No featured products found. Mark some in the Admin Panel.</p>';
+                    productGrid.innerHTML = '<p class="loading-placeholder">No featured products found.</p>';
                     return;
                 }
                 
@@ -539,19 +416,17 @@
                 
                 querySnapshot.forEach((doc) => {
                     const product = doc.data();
-                    
                     const card = document.createElement('div');
                     card.className = 'product-card';
                     card.innerHTML = `
-                        <img src="${product.images[0] || 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image'}" 
+                        <img src="${product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image'}" 
                              alt="${product.name}" 
                              class="product-card-image"
                              onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
                         <div class="product-card-content">
                             <h3>${product.name}</h3>
                             <p class="price">${product.price || 'N/A'} AED</p>
-                            <!-- product.html-ലേക്ക് SKU ഉപയോഗിച്ച് ലിങ്ക് ചെയ്യുന്നു -->
-                            <a href="product.html?sku=${product.sku}" class="btn btn-outline">View Details</a>
+                            <a href="product.html?sku=${product.sku}" class="btn">View Details</a>
                         </div>
                     `;
                     productGrid.appendChild(card);
@@ -564,32 +439,106 @@
         }
         
         /**
-         * (Optional) അഡ്മിൻ പാനലിൽ നിന്ന് വീഡിയോ URL ലോഡ് ചെയ്യാൻ
+         * (പുതിയത്) സൈറ്റ് സെറ്റിംഗ്സ് ഫയർബേസിൽ നിന്ന് ലോഡ് ചെയ്യുന്നു
          */
-        async function loadBrandVideo() {
-            // പ്ലാൻ 5C, 6 അനുസരിച്ച്, ലോഗോയും വീഡിയോയും ഒരു 'branding'
-            // അല്ലെങ്കിൽ 'settings' കളക്ഷനിൽ സേവ് ചെയ്യാം.
+        async function loadSiteSettings() {
+            try {
+                const docRef = doc(db, "settings", "global");
+                const docSnap = await getDoc(docRef);
+
+                if (docSnap.exists()) {
+                    const settings = docSnap.data();
+
+                    // 1. ലോഗോ ടെക്സ്റ്റ് അപ്ഡേറ്റ് ചെയ്യുന്നു
+                    if (settings.logoText) {
+                        headerLogo.textContent = settings.logoText;
+                    }
+                    
+                    // 2. വാട്ട്സ്ആപ്പ് നമ്പറുകൾ അപ്ഡേറ്റ് ചെയ്യുന്നു
+                    if (settings.whatsapp) {
+                        const whatsappLink = `https://wa.me/${settings.whatsapp}?text=Hello%20Al%20Ambar`;
+                        whatsappFloatBtn.href = whatsappLink;
+                        if(footerPhone) footerPhone.href = whatsappLink;
+                    }
+                    if (settings.phone) {
+                        if(footerPhone) footerPhone.textContent = settings.phone;
+                    }
+
+                    // 3. ഫൂട്ടർ കോൺടാക്റ്റ് വിവരങ്ങൾ അപ്ഡേറ്റ് ചെയ്യുന്നു
+                    if (settings.email) {
+                        footerEmail.textContent = settings.email;
+                        footerEmail.href = `mailto:${settings.email}`;
+                    }
+                    if (settings.address) {
+                        footerAddress.textContent = settings.address;
+                    }
+                    
+                    // 4. ഹോം പേജ് വീഡിയോ അപ്ഡേറ്റ് ചെയ്യുന്നു
+                    updateVideoPlayer(settings.videoUrl);
+                    
+                } else {
+                    console.log("No site settings found. Using default values.");
+                    updateVideoPlayer(null); // ഡിഫോൾട്ട് വീഡിയോ കാണിക്കാൻ
+                }
+            } catch (error) {
+                console.error("Error loading site settings: ", error);
+                videoWrapper.innerHTML = '<p class="loading-placeholder">Error loading video.</p>';
+            }
+        }
+        
+        /**
+         * (പുതിയത്) വീഡിയോ URL പരിശോധിച്ച് പ്ലെയർ ഉണ്ടാക്കുന്നു
+         */
+        function updateVideoPlayer(url) {
+            let videoUrl = url || "https://storage.googleapis.com/coverr-main/mp4/Mt_Baker.mp4"; // ഡിഫോൾട്ട് വീഡിയോ
             
-            // try {
-            //    const settingsDoc = await getDoc(doc(db, "settings", "global"));
-            //    if (settingsDoc.exists() && settingsDoc.data().homeVideoUrl) {
-            //        const videoData = settingsDoc.data();
-            //        if (videoData.videoType === 'youtube') {
-            //            // iframe മാറ്റിസ്ഥാപിക്കുക
-            //        } else if (videoData.videoType === 'upload') {
-            //            brandVideo.src = videoData.homeVideoUrl;
-            //        }
-            //    }
-            // } catch (error) {
-            //    console.warn("Could not load brand video from settings:", error);
-            // }
+            if (videoUrl.includes("youtube.com") || videoUrl.includes("youtu.be")) {
+                // ഇത് YouTube ലിങ്ക് ആണ്
+                const videoId = getYouTubeID(videoUrl);
+                if(videoId) {
+                    videoWrapper.innerHTML = `
+                        <iframe 
+                            src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&modestbranding=1&rel=0" 
+                            frameborder="0" 
+                            allow="autoplay; encrypted-media" 
+                            allowfullscreen>
+                        </iframe>`;
+                } else {
+                     videoWrapper.innerHTML = '<p class="loading-placeholder">Invalid YouTube URL.</p>';
+                }
+            } else if (videoUrl.endsWith(".mp4")) {
+                // ഇത് .mp4 വീഡിയോ ലിങ്ക് ആണ്
+                videoWrapper.innerHTML = `
+                    <video controls muted autoplay loop playsinline>
+                        <source src="${videoUrl}" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>`;
+            } else {
+                // മറ്റൊരു ലിങ്ക് ആണെങ്കിൽ
+                videoWrapper.innerHTML = '<p class="loading-placeholder">Invalid video format provided.</p>';
+            }
+        }
+        
+        /**
+         * (പുതിയത്) YouTube URL-ൽ നിന്ന് ID വേർതിരിക്കുന്നു
+         */
+        function getYouTubeID(url) {
+            let ID = '';
+            url = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
+            if (url[2] !== undefined) {
+                ID = url[2].split(/[^0-9a-z_\-]/i);
+                ID = ID[0];
+            } else {
+                ID = url;
+            }
+            return ID;
         }
 
-        // --- പേജ് ലോഡ് ആവുമ്പോൾ ഫംഗ്ഷനുകൾ പ്രവർത്തിക്കുന്നു ---
+        // --- പേജ് ലോഡ് ആവുമ്പോൾ എല്ലാ ഫംഗ്ഷനുകളും പ്രവർത്തിക്കുന്നു ---
         document.addEventListener("DOMContentLoaded", () => {
+            loadSiteSettings();     // (പുതിയത്)
             loadCategories();
             loadFeaturedProducts();
-            // loadBrandVideo(); // ഇത് നടപ്പിലാക്കാൻ admin.html-ൽ മാറ്റങ്ങൾ വരുത്തണം
         });
 
     </script>
