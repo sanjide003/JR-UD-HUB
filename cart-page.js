@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const cartItemsList = document.getElementById('cart-items-list');
 const cartSummary = document.getElementById('cart-summary');
+const cartErrorMessage = document.getElementById('cart-error-message'); // പുതിയതായി ചേർത്തത്
 let whatsappNumber = ''; // ഓർഡർ അയക്കാനുള്ള WhatsApp നമ്പർ
 
 /**
@@ -135,8 +136,14 @@ cartItemsList.addEventListener('change', (e) => {
 const checkoutButton = document.getElementById('whatsapp-checkout-button');
 if (checkoutButton) {
     checkoutButton.addEventListener('click', () => {
+        // --- alert()-ന് പകരം പുതിയ കോഡ് ---
+        // പഴയ സന്ദേശം ക്ലിയർ ചെയ്യുന്നു
+        cartErrorMessage.style.display = 'none';
+        cartErrorMessage.textContent = '';
+        
         if (!whatsappNumber) {
-            alert('Could not send order. WhatsApp number is not configured.');
+            cartErrorMessage.textContent = 'Could not send order. WhatsApp number is not configured.';
+            cartErrorMessage.style.display = 'block';
             return;
         }
 
@@ -144,9 +151,11 @@ if (checkoutButton) {
         const cartKeys = Object.keys(cart);
 
         if (cartKeys.length === 0) {
-            alert('Your cart is empty.');
+            cartErrorMessage.textContent = 'Your cart is empty.';
+            cartErrorMessage.style.display = 'block';
             return;
         }
+        // --- ---
 
         // WhatsApp മെസ്സേജ് ഉണ്ടാക്കുന്നു
         let message = "🎉 *New Order from Al Ambar Website* 🎉\n\n";
