@@ -1,8 +1,6 @@
 <!-- 
   ഇതാണ് ഹോം പേജ്. 
-  ഈ ഫയലിൽ HTML ഘടന മാത്രമേ ഉള്ളൂ.
-  ഡിസൈൻ വരുന്നത് 'public.css'-ൽ നിന്നും,
-  പ്രവർത്തനങ്ങൾ വരുന്നത് 'index.js', 'common.js', 'cart.js' എന്നിവയിൽ നിന്നുമാണ്.
+  നിങ്ങൾ അയച്ച വീഡിയോ അനുസരിച്ച് ഘടന പൂർണ്ണമായും മാറ്റി.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -28,71 +26,89 @@
     <nav class="side-nav" id="side-nav"></nav>
     <div class="nav-overlay" id="nav-overlay"></div>
 
-    <!-- 3. പ്രധാന ഉള്ളടക്കം -->
+    <!-- 3. പ്രധാന ഉള്ളടക്കം (വീഡിയോ അനുസരിച്ച് പുനർനിർമ്മിച്ചു) -->
     <main>
-        <!-- 3.1. ഹീറോ വീഡിയോ സെക്ഷൻ (പൂർണ്ണമായും മാറ്റിയെഴുതി) -->
-        <section class="hero-section" id="hero-section">
-            
-            <!-- 1. പശ്ചാത്തല സ്ലൈഡർ -->
-            <div class="swiper hero-slider" id="hero-slider-container">
+        
+        <!-- 3.1. ഹീറോ സ്ലൈഡർ (പോർട്രെയ്റ്റ്) -->
+        <section class="hero-section-new">
+            <div class="swiper hero-slider-new" id="hero-slider-container">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
                     <!-- 'index.js' ഉപയോഗിച്ച് സ്ലൈഡുകൾ (വീഡിയോ/ഫോട്ടോ) ഇവിടെ വരും -->
                 </div>
-            </div>
-
-            <!-- 2. ഇരുണ്ട ഓവർലേ -->
-            <div class="hero-overlay"></div>
-
-            <!-- 3. മുകളിലെ ഉള്ളടക്കം -->
-            <div class="hero-content" id="hero-content-overlay">
-                <h1 id="hero-title">Essence of the Orient</h1>
-                <p id="hero-subtitle">Discover our exclusive collection</p>
-                <a href="categories.html" class="btn btn-primary">Shop Now</a>
+                <!-- ഈ സ്ലൈഡറിന് നാവിഗേഷൻ ആവശ്യമില്ല -->
             </div>
         </section>
 
-        <!-- 3.2. ടോപ്പ് സെല്ലേഴ്സ് (Top Sellers) -->
+        <!-- 3.2. ഹീറോ ടെക്സ്റ്റ് -->
+        <section class="hero-text-section container">
+            <p>We believe that a perfumer is a poet or a storyteller who use intangible ingredients to create emotions. The main idea behind Oud Arabia is to Abstract memories that evoke our cores. We paint pictures without using paint. We are storytellers who do need words.</p>
+        </section>
+
+        <!-- 3.3. ടോപ്പ് സെല്ലേഴ്സ് (Top Sellers) - പുതിയ ഡിസൈൻ -->
         <section class="home-section container">
-            <h2 class="section-title">Top Sellers</h2>
-            <!-- Swiper കറൗസൽ -->
-            <div class="swiper top-sellers-swiper">
+            <h2 class="section-title-new">TOP SELLERS</h2>
+            <div class="swiper top-sellers-swiper-new">
                 <div class="swiper-wrapper" id="top-sellers-grid">
                     <!-- 'index.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
                 </div>
-                <!-- കറൗസൽ ബട്ടണുകൾ -->
-                <div class="swiper-button-next"></div>
-                <div class="swiper-button-prev"></div>
+                <div class="swiper-pagination"></div> <!-- ഡോട്ടുകൾക്ക് വേണ്ടി -->
             </div>
         </section>
 
-        <!-- 3.3. ഷോപ്പ് ബൈ കാറ്റഗറി (Shop by Category) -->
+        <!-- 3.4. ഷോപ്പ് ബൈ കാറ്റഗറി (Shop by Category) - പുതിയ ഡിസൈൻ -->
         <section class="home-section container">
-            <h2 class="section-title">Shop by Category</h2>
-            <div class="category-grid-home" id="category-grid-home">
+            <h2 class="section-title-new">SHOP BY CATEGORY</h2>
+            <div class="category-grid-new" id="category-grid-home">
                 <!-- 'index.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ ഇവിടെ വരും -->
             </div>
         </section>
+        
+        <!-- 3.5. ഫീച്ചേർഡ് സെക്ഷൻ (പുതിയത്) -->
+        <section class="home-section container featured-section">
+            <div class="featured-image">
+                <img src="https://placehold.co/600x400/111111/D4AF37?text=Gallery+Image" alt="Featured Gallery">
+            </div>
+            <div class="featured-content">
+                <h2 class="section-title-new">FEATURED</h2>
+                <p>Immerse yourself in our meticulously curated image gallery, designed to assist you in finding the perfect product.</p>
+                <a href="categories.html" class="btn btn-primary-new">VISIT GALLERY</a>
+            </div>
+        </section>
 
-        <!-- 3.4. താഴെയുള്ള വീഡിയോ സെക്ഷൻ (The Al Ambar Experience) -->
-        <section class="home-section full-width-section">
-            <h2 class="section-title">The Al Ambar Experience</h2>
-            <div class="video-wrapper" id="video-wrapper-container">
-                <div class="loading-placeholder">Loading video...</div>
-                <!-- 'index.js' ഉപയോഗിച്ച് വീഡിയോ ഇവിടെ വരും -->
+        <!-- 3.6. ബൊട്ടീക് സ്റ്റോർസ് (വീഡിയോ) - പുതിയ ഡിസൈൻ -->
+        <section class="home-section boutique-section" id="boutique-section">
+            <img src="https://placehold.co/1200x600/111111/D4AF37?text=Boutique+Poster" alt="Boutique Stores" class="boutique-poster-img">
+            <div class="boutique-content">
+                <button class="boutique-play-btn" id="boutique-play-button" aria-label="Play Video">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="48" height="48"><path d="M8 5.14v14l11-7-11-7z"></path></svg>
+                </button>
+                <h2>OUR BOUTIQUE RETAIL STORES</h2>
+                <a href="contact.html" class="btn btn-primary-new">FIND LOCATIONS</a>
             </div>
         </section>
         
-        <!-- 3.5. ഫ്രാഗ്രൻസ് സ്റ്റോറി (A Fragrance Story) -->
-        <section class="home-section container fragrance-story">
+        <!-- 3.7. ഫ്രാഗ്രൻസ് സ്റ്റോറി -->
+        <section class="home-section container fragrance-story-new">
             <h2>A FRAGRANCE STORY</h2>
             <p>Luxury perfumes with blended Nature and most iconic fragrances, inspired by the scent of natural flowers and natural resources. The Jewel of Dubai.</p>
         </section>
     </main>
 
-    <!-- 4. ഫൂട്ടർ (common.js ഉപയോഗിച്ച് ഓട്ടോമാറ്റിക്കായി ഇവിടെ വരും) -->
-    <footer class="main-footer" id="main-footer">
+    <!-- 4. ഫൂട്ടർ (common.js ഉപയോഗിച്ച് പുതിയ അക്കോർഡിയൻ ഫൂട്ടർ ഇവിടെ വരും) -->
+    <footer class="main-footer-new" id="main-footer">
         <!-- ഫൂട്ടർ ലോഡ് ആവുന്നു... -->
     </footer>
+
+    <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ (common.js വഴി ഇവിടെ വരും) -->
+    <div id="floating-action-buttons"></div>
+
+    <!-- 6. വീഡിയോ മോഡൽ (Boutique Video) -->
+    <div class="video-modal" id="video-modal">
+        <button class="video-modal-close" id="video-modal-close">&times;</button>
+        <div class="video-modal-content" id="video-modal-content">
+            <!-- JS വഴി വീഡിയോ പ്ലെയർ ഇവിടെ വരും -->
+        </div>
+    </div>
 
     <!-- JS ഫയലുകൾ -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
