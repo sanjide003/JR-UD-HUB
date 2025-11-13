@@ -1,12 +1,15 @@
-// ഫയർബേസിൽ നിന്നും 'db'-യോടൊപ്പം 'auth'-ഉം ഇമ്പോർട്ട് ചെയ്യുന്നു
-// **** ഇതാണ് പ്രധാന തിരുത്തൽ ****
-import { db, auth } from './firebase-config.js';
+// ഇതാണ് 'admin.js' ഫയൽ.
+// അഡ്മിൻ പാനലിന്റെ (admin.html) എല്ലാ പ്രവർത്തനങ്ങളും (ലോഗിൻ, ഡാറ്റ ചേർക്കൽ, എഡിറ്റ്, ഡിലീറ്റ്) ഈ ഫയൽ നിയന്ത്രിക്കുന്നു.
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
+    getAuth, 
     signInWithEmailAndPassword, 
     onAuthStateChanged, 
     signOut 
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { 
+    getFirestore, 
     collection, 
     addDoc, 
     getDoc,
@@ -14,16 +17,15 @@ import {
     setDoc,
     doc,
     deleteDoc,
-    onSnapshot,
+    onSnapshot, // തത്സമയം മാറ്റങ്ങൾ അറിയാൻ
     query,
     serverTimestamp,
+    orderBy,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { db, auth } from './firebase-config.js'; // നമ്മുടെ കോൺഫിഗ് ഫയൽ
 
-// ലോഗുകൾ കാണാൻ
-setLogLevel('Debug');
-
-// --- DOM Elements ---
+// --- DOM Elements (പേജിലെ ഘടകങ്ങളെ എടുക്കുന്നു) ---
 const loginSection = document.getElementById("login-section");
 const adminPanel = document.getElementById("admin-panel");
 const loginForm = document.getElementById("login-form");
@@ -59,69 +61,62 @@ const modalTitle = document.getElementById("modal-title");
 const modalForm = document.getElementById("modal-form");
 const modalLoader = document.getElementById("modal-loader");
 
-// --- Helper Functions ---
+// --- Helper Functions (സഹായ ഫംഗ്ഷനുകൾ) ---
 function showStatus(element, message, isError = true) {
-    if (!element) return;
     element.textContent = message;
     element.className = isError ? 'status-message error' : 'status-message success';
-    setTimeout(() => clearStatus(element), 4000); // 4 സെക്കൻഡിന് ശേഷം മായ്ക്കുന്നു
+    setTimeout(() => clearStatus(element), 4000);
 }
 function clearStatus(element) {
-    if (!element) return;
     element.textContent = '';
     element.className = 'status-message';
 }
-function showLoader(loader) { if (loader) loader.style.display = 'block'; }
-function hideLoader(loader) { if (loader) loader.style.display = 'none'; }
+function showLoader(loader) { loader.style.display = 'block'; }
+function hideLoader(loader) { loader.style.display = 'none'; }
 
-// --- 1. Authentication Logic ---
-if (loginForm) {
-    loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        clearStatus(loginStatus);
-        if(loginButton) {
-            loginButton.disabled = true;
-            loginButton.textContent = "Logging in...";
-        }
-        const email = document.getElementById("login-email").value;
-        const password = document.getElementById("login-password").value;
-        try {
-            await signInWithEmailAndPassword(auth, email, password);
-        } catch (error) {
-            console.error("Login Error:", error);
-            showStatus(loginStatus, `Login Failed: ${error.message}`);
-            if(loginButton) {
-                loginButton.disabled = false;
-                loginButton.textContent = "Login";
-            }
-        }
-    });
-}
+// --- 1. Authentication Logic (ലോഗിൻ) ---
+loginForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    clearStatus(loginStatus);
+    loginButton.disabled = true;
+    loginButton.textContent = "Logging in...";
+    const email = document.getElementById("login-email").value;
+    const password = document.getElementById("login-password").value;
+    try {
+        await signInWithEmailAndPassword(auth, email, password);
+        // ലോഗിൻ വിജയിച്ചാൽ, 'onAuthStateChanged' ബാക്കി നോക്കിക്കോളും
+    } catch (error) {
+        console.error("Login Error:", error);
+        showStatus(loginStatus, `Login Failed: ${error.message}`);
+        loginButton.disabled = false;
+        loginButton.textContent = "Login";
+    }
+});
 
-if (logoutButton) {
-    logoutButton.addEventListener("click", () => { signOut(auth); });
-}
+logoutButton.addEventListener("click", () => {
+    signOut(auth);
+});
 
-// Auth State Change Listener
+// ലോഗിൻ സ്റ്റാറ്റസ് എപ്പോഴും പരിശോധിക്കുന്നു
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        if (loginSection) loginSection.style.display = "none";
-        if (adminPanel) adminPanel.style.display = "block";
+        // ലോഗിൻഡ് ഇൻ
+        loginSection.style.display = "none";
+        adminPanel.style.display = "block";
         // ലോഗിൻ ആയാൽ ഉടൻ ഡാറ്റ ലോഡ് ചെയ്യുന്നു
         loadCategories();
         loadProducts();
         loadSiteSettings();
     } else {
-        if (loginSection) loginSection.style.display = "block";
-        if (adminPanel) adminPanel.style.display = "none";
-        if (loginButton) {
-            loginButton.disabled = false;
-            loginButton.textContent = "Login";
-        }
+        // ലോഗ്ഡ് ഔട്ട്
+        loginSection.style.display = "block";
+        adminPanel.style.display = "none";
+        loginButton.disabled = false;
+        loginButton.textContent = "Login";
     }
 });
 
-// --- 2. Tab Switching Logic ---
+// --- 2. Tab Switching Logic (ടാബ് മാറ്റുമ്പോൾ) ---
 tabLinks.forEach(link => {
     link.addEventListener("click", () => {
         const tabId = link.getAttribute("data-tab");
@@ -130,22 +125,17 @@ tabLinks.forEach(link => {
         tabContents.forEach(item => item.classList.remove("active"));
         
         link.classList.add("active");
-        const activeTab = document.getElementById(tabId);
-        if (activeTab) {
-            activeTab.classList.add("active");
-        }
+        document.getElementById(tabId).classList.add("active");
     });
 });
 
-// --- 3. Image Preview Logic ---
+// --- 3. Image Preview Logic (ഇമേജ് പ്രിവ്യൂ) ---
 function setupImagePreview(inputId, previewId) {
     const input = document.getElementById(inputId);
     const previewContainer = document.getElementById(previewId);
     
-    if (!input || !previewContainer) return;
-
     function updatePreview() {
-        previewContainer.innerHTML = ''; // പഴയ പ്രിവ്യൂ മാറ്റുന്നു
+        previewContainer.innerHTML = '';
         const urls = input.value.split('\n')
                              .map(url => url.trim())
                              .filter(url => url.length > 0);
@@ -153,7 +143,7 @@ function setupImagePreview(inputId, previewId) {
         urls.forEach(url => {
             const img = document.createElement('img');
             img.src = url;
-            img.onerror = () => { img.style.display = 'none'; }; // ലിങ്ക് തെറ്റാണെങ്കിൽ
+            img.onerror = () => { img.style.display = 'none'; };
             previewContainer.appendChild(img);
         });
     }
@@ -165,79 +155,70 @@ setupImagePreview('category-image-url', 'category-image-preview');
 setupImagePreview('product-image-urls', 'product-image-preview');
 
 
-// --- 4. Site Settings Logic ---
+// --- 4. Site Settings Logic (സൈറ്റ് സെറ്റിംഗ്സ്) ---
 async function loadSiteSettings() {
     try {
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
             const settings = docSnap.data();
-            // null അല്ലെങ്കിൽ undefined അല്ലെങ്കിൽ ഒബ്ജക്റ്റിൽ ആ കീ ഇല്ലെങ്കിൽ '' (empty string) ഉപയോഗിക്കുന്നു
-            const logoUrlEl = document.getElementById("setting-logo-image-url");
-            const heroVideoEl = document.getElementById("setting-hero-video-url");
-            const videoUrlEl = document.getElementById("setting-video-url");
-            const phoneEl = document.getElementById("setting-phone");
-            const emailEl = document.getElementById("setting-email");
-            const addressEl = document.getElementById("setting-address");
-            const whatsappEl = document.getElementById("setting-whatsapp");
-            const facebookEl = document.getElementById("setting-facebook-url");
-            const instagramEl = document.getElementById("setting-instagram-url");
-
-            if(logoUrlEl) logoUrlEl.value = settings.logoImageUrl || '';
-            if(heroVideoEl) heroVideoEl.value = settings.heroVideoUrl || '';
-            if(videoUrlEl) videoUrlEl.value = settings.videoUrl || '';
-            if(phoneEl) phoneEl.value = settings.phone || '';
-            if(emailEl) emailEl.value = settings.email || '';
-            if(addressEl) addressEl.value = settings.address || '';
-            if(whatsappEl) whatsappEl.value = settings.whatsapp || '';
-            if(facebookEl) facebookEl.value = settings.facebookUrl || '';
-            if(instagramEl) instagramEl.value = settings.instagramUrl || '';
+            document.getElementById("setting-logo-image-url").value = settings.logoImageUrl || '';
+            document.getElementById("setting-logo-text").value = settings.logoText || '';
+            document.getElementById("setting-hero-video-url").value = settings.heroVideoUrl || '';
+            document.getElementById("setting-video-url").value = settings.videoUrl || '';
+            document.getElementById("setting-phone").value = settings.phone || '';
+            document.getElementById("setting-email").value = settings.email || '';
+            document.getElementById("setting-address").value = settings.address || '';
+            document.getElementById("setting-whatsapp").value = settings.whatsapp || '';
+            document.getElementById("setting-facebook-url").value = settings.facebookUrl || '';
+            document.getElementById("setting-instagram-url").value = settings.instagramUrl || '';
         }
     } catch (error) {
         console.error("Error loading settings: ", error);
         showStatus(adminStatus, "Error loading site settings.");
     }
 }
+        
+siteSettingsForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showLoader(settingsLoader);
+    try {
+        const settings = {
+            logoImageUrl: document.getElementById("setting-logo-image-url").value,
+            logoText: document.getElementById("setting-logo-text").value,
+            heroVideoUrl: document.getElementById("setting-hero-video-url").value,
+            videoUrl: document.getElementById("setting-video-url").value,
+            phone: document.getElementById("setting-phone").value,
+            email: document.getElementById("setting-email").value,
+            address: document.getElementById("setting-address").value,
+            whatsapp: document.getElementById("setting-whatsapp").value,
+            facebookUrl: document.getElementById("setting-facebook-url").value,
+            instagramUrl: document.getElementById("setting-instagram-url").value,
+        };
+        
+        const docRef = doc(db, "settings", "global");
+        await setDoc(docRef, settings, { merge: true });
+        
+        showStatus(adminStatus, "Settings saved successfully!", false);
+    } catch (error) {
+        console.error("Error saving settings: ", error);
+        showStatus(adminStatus, `Error: ${error.message}`);
+    } finally {
+        hideLoader(settingsLoader);
+    }
+});
 
-if (siteSettingsForm) {
-    siteSettingsForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        showLoader(settingsLoader);
-        try {
-            const settings = {
-                logoImageUrl: document.getElementById("setting-logo-image-url").value,
-                heroVideoUrl: document.getElementById("setting-hero-video-url").value,
-                videoUrl: document.getElementById("setting-video-url").value,
-                phone: document.getElementById("setting-phone").value,
-                email: document.getElementById("setting-email").value,
-                address: document.getElementById("setting-address").value,
-                whatsapp: document.getElementById("setting-whatsapp").value,
-                facebookUrl: document.getElementById("setting-facebook-url").value,
-                instagramUrl: document.getElementById("setting-instagram-url").value,
-            };
-            
-            const docRef = doc(db, "settings", "global");
-            await setDoc(docRef, settings, { merge: true }); // 'merge: true' ഉപയോഗിച്ച് അപ്‌ഡേറ്റ് ചെയ്യുന്നു
-            
-            showStatus(adminStatus, "Settings saved successfully!", false);
-        } catch (error) {
-            console.error("Error saving settings: ", error);
-            showStatus(adminStatus, `Error: ${error.message}`);
-        } finally {
-            hideLoader(settingsLoader);
-        }
-    });
-}
-
-// --- 5. Category Logic (Full CRUD) ---
+// --- 5. Category Logic (കാറ്റഗറി) ---
+        
+// തത്സമയം കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു
 function loadCategories() {
-    const q = query(collection(db, "categories"));
+    const q = query(collection(db, "categories"), orderBy("name"));
     onSnapshot(q, (querySnapshot) => {
-        if (categoriesListBody) categoriesListBody.innerHTML = '';
-        if (productCategorySelect) productCategorySelect.innerHTML = '<option value="">Select a category...</option>';
+        categoriesListBody.innerHTML = '';
+        productCategorySelect.innerHTML = '<option value="">Select a category...</option>';
         
         if (querySnapshot.empty) {
-            if (categoriesListBody) categoriesListBody.innerHTML = '<tr><td colspan="3">No categories found.</td></tr>';
+            categoriesListBody.innerHTML = '<tr><td colspan="3">No categories found.</td></tr>';
             return;
         }
         
@@ -245,66 +226,64 @@ function loadCategories() {
             const category = doc.data();
             const id = doc.id;
             
-            if (categoriesListBody) {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><img src="${category.imageUrl || ''}" alt="${category.name}"></td>
-                    <td>${category.name}</td>
-                    <td>
-                        <button class="btn btn-edit" data-id="${id}" data-type="category">Edit</button>
-                        <button class="btn btn-delete" data-id="${id}" data-type="category">Delete</button>
-                    </td>
-                `;
-                categoriesListBody.appendChild(row);
-            }
+            // കാറ്റഗറി ലിസ്റ്റിൽ ചേർക്കുന്നു
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><img src="${category.imageUrl || ''}" alt="${category.name}"></td>
+                <td>${category.name}</td>
+                <td>
+                    <button class="btn btn-edit" data-id="${id}" data-type="category">Edit</button>
+                    <button class="btn btn-delete" data-id="${id}" data-type="category">Delete</button>
+                </td>
+            `;
+            categoriesListBody.appendChild(row);
             
-            if (productCategorySelect) {
-                const option = document.createElement('option');
-                option.value = id;
-                option.textContent = category.name;
-                productCategorySelect.appendChild(option);
-            }
+            // പ്രോഡക്റ്റ് ഫോമിലെ ഡ്രോപ്പ്ഡൗണിൽ ചേർക്കുന്നു
+            const option = document.createElement('option');
+            option.value = id;
+            option.textContent = category.name;
+            productCategorySelect.appendChild(option);
         });
     }, (error) => {
         console.error("Error loading categories: ", error);
         showStatus(adminStatus, "Error loading categories.");
     });
 }
-
-if (addCategoryForm) {
-    addCategoryForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        showLoader(categoryLoader);
-        try {
-            const name = document.getElementById("category-name").value;
-            const imageUrl = document.getElementById("category-image-url").value;
-            
-            await addDoc(collection(db, "categories"), {
-                name: name,
-                imageUrl: imageUrl,
-                createdAt: serverTimestamp()
-            });
-            
-            showStatus(adminStatus, "Category added successfully!", false);
-            addCategoryForm.reset();
-            if (categoryImagePreview) categoryImagePreview.innerHTML = '';
-        } catch (error) {
-            console.error("Error adding category: ", error);
-            showStatus(adminStatus, `Error: ${error.message}`);
-        } finally {
-            hideLoader(categoryLoader);
-        }
-    });
-}
-
-// --- 6. Product Logic (Full CRUD) ---
-function loadProducts() {
-     const q = query(collection(db, "products"));
-     onSnapshot(q, (querySnapshot) => {
-        if (productsListBody) productsListBody.innerHTML = '';
         
+// പുതിയ കാറ്റഗറി ചേർക്കുന്നു
+addCategoryForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showLoader(categoryLoader);
+    try {
+        const name = document.getElementById("category-name").value;
+        const imageUrl = document.getElementById("category-image-url").value;
+        
+        await addDoc(collection(db, "categories"), {
+            name: name,
+            imageUrl: imageUrl,
+            createdAt: serverTimestamp()
+        });
+        
+        showStatus(adminStatus, "Category added successfully!", false);
+        addCategoryForm.reset();
+        document.getElementById('category-image-preview').innerHTML = '';
+    } catch (error) {
+        console.error("Error adding category: ", error);
+        showStatus(adminStatus, `Error: ${error.message}`);
+    } finally {
+        hideLoader(categoryLoader);
+    }
+});
+
+// --- 6. Product Logic (ഉൽപ്പന്നം) ---
+        
+// തത്സമയം ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
+function loadProducts() {
+     const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+     onSnapshot(q, (querySnapshot) => {
+        productsListBody.innerHTML = '';
         if (querySnapshot.empty) {
-            if (productsListBody) productsListBody.innerHTML = '<tr><td colspan="5">No products found.</td></tr>';
+            productsListBody.innerHTML = '<tr><td colspan="4">No products found.</td></tr>';
             return;
         }
         
@@ -313,30 +292,23 @@ function loadProducts() {
             const id = doc.id;
             const imageUrl = product.images && product.images[0] ? product.images[0] : '';
             
-            let priceDisplay = '';
-            const price = product.price || 0;
-            const mrp = product.mrp || 0;
-            if(price > 0) {
-                priceDisplay = `<strong>₹${price}</strong>`;
-                if(mrp > price) {
-                    priceDisplay += ` <del>₹${mrp}</del>`;
-                }
-            } else {
-                priceDisplay = 'N/A';
+            // വിലയും MRP-യും
+            let priceDisplay = `₹${product.price || 0}`;
+            if (product.mrp && product.mrp > product.price) {
+                priceDisplay += ` <span class="price-mrp-admin">₹${product.mrp}</span>`;
             }
 
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><img src="${imageUrl}" alt="${product.name}"></td>
-                <td>${product.name}</td>
+                <td>${product.name} ${product.featured ? '⭐' : ''}</td>
                 <td>${priceDisplay}</td>
-                <td>${product.featured ? 'Yes' : 'No'}</td>
                 <td>
                     <button class="btn btn-edit" data-id="${id}" data-type="product">Edit</button>
                     <button class="btn btn-delete" data-id="${id}" data-type="product">Delete</button>
                 </td>
             `;
-            if (productsListBody) productsListBody.appendChild(row);
+            productsListBody.appendChild(row);
         });
      }, (error) => {
         console.error("Error loading products: ", error);
@@ -344,43 +316,46 @@ function loadProducts() {
     });
 }
 
-if (addProductForm) {
-    addProductForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        showLoader(productLoader);
-        try {
-            const imageUrlsText = document.getElementById("product-image-urls").value;
-            const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
+// പുതിയ ഉൽപ്പന്നം ചേർക്കുന്നു
+addProductForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showLoader(productLoader);
+    try {
+        const imageUrlsText = document.getElementById("product-image-urls").value;
+        const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
 
-            const product = {
-                categoryId: productCategorySelect.value,
-                name: document.getElementById("product-name").value,
-                size: document.getElementById("product-size").value,
-                price: Number(document.getElementById("product-price").value) || 0,
-                mrp: Number(document.getElementById("product-mrp").value) || 0,
-                description: document.getElementById("product-description").value,
-                featured: document.getElementById("product-featured").checked,
-                images: imageUrls,
-                createdAt: serverTimestamp()
-            };
+        const product = {
+            categoryId: productCategorySelect.value,
+            name: document.getElementById("product-name").value,
+            size: document.getElementById("product-size").value,
+            mrp: Number(document.getElementById("product-mrp").value) || 0,
+            price: Number(document.getElementById("product-price").value) || 0,
+            description: document.getElementById("product-description").value,
+            featured: document.getElementById("product-featured").checked,
+            images: imageUrls,
+            createdAt: serverTimestamp()
+        };
 
-            await addDoc(collection(db, "products"), product);
-            showStatus(adminStatus, "Product added successfully!", false);
-            addProductForm.reset();
-            if (productImagePreview) productImagePreview.innerHTML = '';
-        } catch (error) {
-            console.error("Error adding product: ", error);
-            showStatus(adminStatus, `Error: ${error.message}`);
-        } finally {
-            hideLoader(productLoader);
-        }
-    });
-}
+        await addDoc(collection(db, "products"), product);
+        showStatus(adminStatus, "Product added successfully!", false);
+        addProductForm.reset();
+        document.getElementById('product-image-preview').innerHTML = '';
+    } catch (error) {
+        console.error("Error adding product: ", error);
+        showStatus(adminStatus, `Error: ${error.message}`);
+    } finally {
+        hideLoader(productLoader);
+    }
+});
 
-// --- 7. Edit & Delete Logic (Modal) ---
+
+// --- 7. Edit & Delete Logic (എഡിറ്റ്, ഡിലീറ്റ്) ---
+        
+// "Edit" അല്ലെങ്കിൽ "Delete" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
 document.body.addEventListener('click', async (e) => {
     const target = e.target;
     
+    // Delete ബട്ടൺ
     if (target.classList.contains('btn-delete')) {
         const id = target.dataset.id;
         const type = target.dataset.type;
@@ -396,16 +371,16 @@ document.body.addEventListener('click', async (e) => {
         }
     }
     
+    // Edit ബട്ടൺ
     if (target.classList.contains('btn-edit')) {
         const id = target.dataset.id;
         const type = target.dataset.type;
         openEditModal(id, type);
     }
 });
-
+        
+// എഡിറ്റ് മോഡൽ തുറക്കുന്നു
 async function openEditModal(id, type) {
-    if (!modalForm || !editModal || !modalLoader || !modalTitle) return;
-    
     modalForm.innerHTML = '';
     showLoader(modalLoader);
     editModal.style.display = 'flex';
@@ -421,25 +396,28 @@ async function openEditModal(id, type) {
         const data = docSnap.data();
         modalTitle.textContent = `Edit ${type}`;
         
+        // കാറ്റഗറി എഡിറ്റ് ഫോം
         if (type === 'category') {
             modalForm.innerHTML = `
                 <input type="hidden" id="modal-item-id" value="${id}">
                 <input type="hidden" id="modal-item-type" value="category">
                 <div class="form-group">
                     <label for="modal-category-name">Category Name</label>
-                    <input type="text" id="modal-category-name" value="${data.name || ''}" required>
+                    <input type="text" id="modal-category-name" value="${data.name}" required>
                 </div>
                 <div class="form-group">
                     <label for="modal-category-image-url">Category Image URL</label>
-                    <input type="text" class="image-url-input" id="modal-category-image-url" value="${data.imageUrl || ''}" required>
+                    <input type="text" class="image-url-input" id="modal-category-image-url" value="${data.imageUrl}" required>
                     <div class="image-preview" id="modal-category-image-preview"></div>
                 </div>
                 <button type="submit" class="btn">Save Changes</button>
             `;
             setupImagePreview('modal-category-image-url', 'modal-category-image-preview');
-            document.getElementById('modal-category-image-url')?.dispatchEvent(new Event('input')); 
+            document.getElementById('modal-category-image-url').dispatchEvent(new Event('input'));
             
-        } else if (type === 'product') {
+        } 
+        // ഉൽപ്പന്നം എഡിറ്റ് ഫോം
+        else if (type === 'product') {
             const imagesText = data.images ? data.images.join('\n') : '';
             modalForm.innerHTML = `
                 <input type="hidden" id="modal-item-id" value="${id}">
@@ -448,7 +426,7 @@ async function openEditModal(id, type) {
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="modal-product-name">Product Name</label>
-                        <input type="text" id="modal-product-name" value="${data.name || ''}" required>
+                        <input type="text" id="modal-product-name" value="${data.name}" required>
                     </div>
                     <div class="form-group">
                         <label for="modal-product-category">Category</label>
@@ -456,11 +434,11 @@ async function openEditModal(id, type) {
                     </div>
                      <div class="form-group">
                         <label for="modal-product-mrp">MRP (₹)</label>
-                        <input type="number" id="modal-product-mrp" value="${data.mrp || ''}" placeholder="e.g., 1000">
+                        <input type="number" id="modal-product-mrp" value="${data.mrp || ''}">
                     </div>
                     <div class="form-group">
                         <label for="modal-product-price">Retail Price (₹)</label>
-                        <input type="number" id="modal-product-price" value="${data.price || ''}" placeholder="e.g., 800">
+                        <input type="number" id="modal-product-price" value="${data.price || ''}" required>
                     </div>
                     <div class="form-group">
                         <label for="modal-product-size">Size</label>
@@ -468,7 +446,7 @@ async function openEditModal(id, type) {
                     </div>
                     <div class="form-group">
                         <input type="checkbox" id="modal-product-featured" style="width: auto; margin-right: 10px;" ${data.featured ? 'checked' : ''}>
-                        <label for="modal-product-featured" style="display: inline;">Featured?</label>
+                        <label for="modal-product-featured" style="display: inline;">Featured? (Top Seller)</label>
                     </div>
                     <div class="form-group full-width">
                         <label for="modal-product-description">Description</label>
@@ -482,11 +460,9 @@ async function openEditModal(id, type) {
                 </div>
                 <button type="submit" class="btn">Save Changes</button>
             `;
-            const modalCatSelect = document.getElementById('modal-product-category');
-            if (modalCatSelect) modalCatSelect.value = data.categoryId; 
-            
+            document.getElementById('modal-product-category').value = data.categoryId;
             setupImagePreview('modal-product-image-urls', 'modal-product-image-preview');
-            document.getElementById('modal-product-image-urls')?.dispatchEvent(new Event('input'));
+            document.getElementById('modal-product-image-urls').dispatchEvent(new Event('input'));
         }
         
     } catch (error) {
@@ -497,54 +473,54 @@ async function openEditModal(id, type) {
         hideLoader(modalLoader);
     }
 }
-
+        
+// മോഡൽ അടയ്ക്കുന്നു
 function closeEditModal() {
-    if (editModal) editModal.style.display = 'none';
+    editModal.style.display = 'none';
 }
-if (modalCloseButton) modalCloseButton.addEventListener('click', closeEditModal);
-
-if (modalForm) {
-    modalForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        showLoader(modalLoader);
+modalCloseButton.addEventListener('click', closeEditModal);
         
-        const id = document.getElementById('modal-item-id').value;
-        const type = document.getElementById('modal-item-type').value;
-        
-        try {
-            let dataToSave = {};
-            if (type === 'category') {
-                dataToSave = {
-                    name: document.getElementById('modal-category-name').value,
-                    imageUrl: document.getElementById('modal-category-image-url').value,
-                };
-            } else if (type === 'product') {
-                const imageUrlsText = document.getElementById("modal-product-image-urls").value;
-                const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
-                
-                dataToSave = {
-                    categoryId: document.getElementById('modal-product-category').value,
-                    name: document.getElementById('modal-product-name').value,
-                    size: document.getElementById('modal-product-size').value,
-                    price: Number(document.getElementById('modal-product-price').value) || 0,
-                    mrp: Number(document.getElementById('modal-product-mrp').value) || 0,
-                    description: document.getElementById('modal-product-description').value,
-                    featured: document.getElementById('modal-product-featured').checked,
-                    images: imageUrls,
-                };
-            }
+// എഡിറ്റ് ചെയ്ത ഡാറ്റ സേവ് ചെയ്യുന്നു
+modalForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    showLoader(modalLoader);
+    
+    const id = document.getElementById('modal-item-id').value;
+    const type = document.getElementById('modal-item-type').value;
+    
+    try {
+        let dataToSave = {};
+        if (type === 'category') {
+            dataToSave = {
+                name: document.getElementById('modal-category-name').value,
+                imageUrl: document.getElementById('modal-category-image-url').value,
+            };
+        } else if (type === 'product') {
+            const imageUrlsText = document.getElementById("modal-product-image-urls").value;
+            const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
             
-            const docRef = doc(db, type === 'product' ? 'products' : 'categories', id);
-            await setDoc(docRef, dataToSave, { merge: true });
-            
-            showStatus(adminStatus, `${type} updated successfully!`, false);
-            closeEditModal();
-            
-        } catch (error) {
-            console.error("Error saving changes: ", error);
-            showStatus(adminStatus, `Error: ${error.message}`);
-        } finally {
-            hideLoader(modalLoader);
+            dataToSave = {
+                categoryId: document.getElementById('modal-product-category').value,
+                name: document.getElementById('modal-product-name').value,
+                size: document.getElementById('modal-product-size').value,
+                mrp: Number(document.getElementById('modal-product-mrp').value) || 0,
+                price: Number(document.getElementById('modal-product-price').value) || 0,
+                description: document.getElementById('modal-product-description').value,
+                featured: document.getElementById('modal-product-featured').checked,
+                images: imageUrls,
+            };
         }
-    });
-}
+        
+        const docRef = doc(db, type === 'product' ? 'products' : 'categories', id);
+        await setDoc(docRef, dataToSave, { merge: true });
+        
+        showStatus(adminStatus, `${type} updated successfully!`, false);
+        closeEditModal();
+        
+    } catch (error) {
+        console.error("Error saving changes: ", error);
+        showStatus(adminStatus, `Error: ${error.message}`);
+    } finally {
+        hideLoader(modalLoader);
+    }
+});
