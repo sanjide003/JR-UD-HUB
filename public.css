@@ -1,0 +1,712 @@
+/* * =========================================
+ * AL AMBAR - PUBLIC STYLESHEET (public.css)
+ * =========================================
+ * * ഈ ഫയൽ index.html, categories.html, 
+ * product.html, contact.html 
+ * എന്നീ പേജുകൾക്കുള്ളതാണ്.
+ */
+
+/* --- 1. Root Variables (പൊതുവായ നിറങ്ങൾ) --- */
+:root {
+    --bg-color: #121212;
+    --primary-gold: #D4AF37;
+    --secondary-gold: #B8860B;
+    --text-color: #F5F5F5;
+    --text-muted: #aaa;
+    --card-bg: #1e1e1e;
+    --border-color: #333;
+    --discount-red: #e74c3c;
+    --font-main: 'Inter', sans-serif;
+}
+
+/* --- 2. General Styles (പൊതുവായ സ്റ്റൈലുകൾ) --- */
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+}
+
+.btn {
+    display: inline-block;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--primary-gold);
+    color: var(--bg-color);
+    font-weight: 700;
+    border-radius: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+    border: 2px solid var(--primary-gold);
+    text-decoration: none;
+}
+
+.btn:hover {
+    background-color: var(--secondary-gold);
+    border-color: var(--secondary-gold);
+    color: #000;
+}
+
+.loading-placeholder {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    padding: 4rem 0;
+    grid-column: 1 / -1;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    margin-bottom: 2.5rem;
+    position: relative;
+}
+
+.section-title::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 3px;
+    background-color: var(--secondary-gold);
+    margin: 0.5rem auto 0;
+}
+
+/* --- 3. Header & Navigation (ലോഗോ ഉൾപ്പെടെ) --- */
+.main-header {
+    background-color: var(--bg-color);
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--secondary-gold);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    text-decoration: none;
+}
+
+.logo img {
+    max-height: 50px; /* ലോഗോയുടെ ഉയരം */
+    width: auto;
+    object-fit: contain;
+}
+
+.logo-text {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--primary-gold);
+    letter-spacing: 1px;
+}
+
+.main-nav ul {
+    list-style: none;
+    display: flex;
+}
+
+.main-nav li {
+    margin-left: 2rem;
+}
+
+.main-nav a {
+    color: var(--text-color);
+    font-weight: 400;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.main-nav a:hover,
+.main-nav a.active {
+    color: var(--primary-gold);
+}
+
+/* --- 4. Footer & Social Icons --- */
+.main-footer {
+    background-color: #000;
+    color: var(--text-muted);
+    padding: 4rem 1.5rem 2rem;
+    margin-top: 3rem;
+    border-top: 1px solid var(--secondary-gold);
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 2.5rem;
+}
+
+.footer-col h3 {
+    font-size: 1.5rem;
+    color: var(--primary-gold);
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+.footer-col ul {
+    list-style: none;
+}
+
+.footer-col li {
+    margin-bottom: 0.75rem;
+}
+
+.footer-col a,
+.footer-col .contact-item-footer a {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-col a:hover {
+    color: var(--primary-gold);
+}
+
+.contact-item-footer {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.contact-item-footer svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--primary-gold);
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.social-icons {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.social-icons a {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--text-muted);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.social-icons a:hover {
+    border-color: var(--primary-gold);
+    background-color: var(--primary-gold);
+}
+
+.social-icons a:hover svg {
+    fill: #000;
+}
+
+.social-icons svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--text-muted);
+    transition: fill 0.3s ease;
+}
+
+.footer-bottom {
+    text-align: center;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid #333;
+    font-size: 0.9rem;
+}
+
+/* --- 5. Home Page (Hero & Video) --- */
+.hero-section {
+    position: relative;
+    height: 70vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 1.5rem;
+    overflow: hidden;
+}
+
+.hero-video-bg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    min-width: 100%;
+    min-height: 100%;
+    width: auto;
+    height: auto;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.hero-video-bg video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7));
+    z-index: 2;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 3;
+}
+
+.hero-content h1 {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+    color: #fff;
+}
+
+.hero-content p {
+    font-size: 1.25rem;
+    color: var(--text-muted);
+    margin-bottom: 2rem;
+    max-width: 600px;
+}
+
+.video-section {
+    background-color: #000;
+    text-align: center;
+    padding: 3rem 1.5rem;
+}
+
+.video-wrapper {
+    max-width: 900px;
+    margin: 0 auto;
+    aspect-ratio: 16 / 9;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--secondary-gold);
+    background-color: #000;
+}
+
+.video-wrapper iframe,
+.video-wrapper video {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* --- 6. Product Card (index, categories, product) --- */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.product-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.product-card:hover {
+    border-color: var(--secondary-gold);
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+.product-card-image {
+    width: 100%;
+    height: 250px;
+    object-fit: cover;
+    background-color: #333;
+}
+
+.product-card-content {
+    padding: 1.5rem;
+    flex-grow: 1;
+}
+
+.product-card-content h3 {
+    font-size: 1.25rem;
+    color: var(--text-color);
+}
+
+/* Price Styles (Card) */
+.price-container {
+    margin-bottom: 1rem;
+}
+
+.price-retail {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-gold);
+    margin-right: 0.5rem;
+}
+
+.price-mrp {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+    margin-right: 0.5rem;
+}
+
+.price-discount {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--discount-red);
+    background-color: rgba(231, 76, 60, 0.1);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+}
+
+/* --- 7. Page Header (categories, contact) --- */
+.page-header {
+    background-color: var(--card-bg);
+    padding: 3rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid var(--secondary-gold);
+}
+
+.page-header h1 {
+    font-size: 2.5rem;
+    color: var(--primary-gold);
+}
+
+/* --- 8. Product Detail Page (product.html) --- */
+.product-detail-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+.product-gallery {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.gallery-main-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    background-color: var(--card-bg);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.gallery-thumbnails {
+    display: flex;
+    gap: 10px;
+    padding: 10px;
+    background-color: var(--card-bg);
+    overflow-x: auto;
+}
+
+.gallery-thumb {
+    width: 70px;
+    height: 70px;
+    object-fit: cover;
+    border-radius: 5px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+}
+
+.gallery-thumb:hover,
+.gallery-thumb.active {
+    border-color: var(--primary-gold);
+}
+
+.product-info h1 {
+    font-size: 2.5rem;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+.product-info .product-size {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+
+/* Price Styles (Product Page) */
+.price-container-large {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.price-retail-large {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--primary-gold);
+    margin-right: 0.75rem;
+}
+
+.price-mrp-large {
+    font-size: 1.2rem;
+    color: var(--text-muted);
+    text-decoration: line-through;
+    margin-right: 0.75rem;
+}
+
+.price-discount-large {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--discount-red);
+    background-color: rgba(231, 76, 60, 0.1);
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+}
+
+.product-description {
+    line-height: 1.7;
+}
+
+.product-description h3 {
+    color: var(--primary-gold);
+    margin-top: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.whatsapp-order-btn {
+    margin-top: 2rem;
+    background-color: #25D366;
+    color: #fff;
+    font-weight: 700;
+    padding: 1rem 1.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    text-decoration: none;
+    transition: background-color 0.3s ease;
+}
+
+.whatsapp-order-btn:hover {
+    background-color: #128C7E;
+}
+
+.whatsapp-order-btn svg {
+    width: 24px;
+    height: 24px;
+    fill: #fff;
+}
+
+.related-products-section {
+    padding-top: 3rem;
+    margin-top: 3rem;
+    border-top: 1px solid var(--border-color);
+}
+
+/* --- 9. Contact Page (contact.html) --- */
+.contact-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: flex-start;
+}
+
+.contact-info {
+    background-color: var(--card-bg);
+    padding: 2.5rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+.contact-info h2 {
+    font-size: 2rem;
+    color: var(--primary-gold);
+    margin-bottom: 2rem;
+}
+
+.contact-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    font-size: 1.1rem;
+}
+
+.contact-item svg {
+    width: 24px;
+    height: 24px;
+    fill: var(--primary-gold);
+    margin-right: 1.5rem;
+    flex-shrink: 0;
+}
+
+.contact-item span {
+    color: var(--text-color);
+}
+
+.contact-item a {
+    color: var(--text-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.contact-item a:hover {
+    color: var(--primary-gold);
+}
+
+.map-wrapper {
+    border-radius: 8px;
+    overflow: hidden;
+    border: 2px solid var(--secondary-gold);
+    aspect-ratio: 16 / 9;
+    background-color: var(--card-bg);
+}
+
+.map-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* --- 10. WhatsApp CTA (എല്ലാ പേജിലും) --- */
+.whatsapp-cta {
+    position: fixed;
+    bottom: 25px;
+    right: 25px;
+    background-color: #25D366;
+    color: #fff;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+    transition: transform 0.3s ease;
+}
+
+.whatsapp-cta:hover {
+    transform: scale(1.1);
+}
+
+.whatsapp-cta svg {
+    width: 32px;
+    height: 32px;
+    fill: #fff;
+}
+
+/* --- 11. Responsive (Mobile) --- */
+@media (max-width: 900px) {
+    .contact-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .main-header {
+        flex-direction: column;
+        padding: 1rem;
+    }
+
+    .logo {
+        margin-bottom: 1rem;
+    }
+
+    .main-nav ul {
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .main-nav li {
+        margin: 0.25rem 0.75rem;
+    }
+
+    .hero-section {
+        height: 60vh;
+    }
+
+    .hero-content h1 {
+        font-size: 2.5rem;
+    }
+
+    .hero-content p {
+        font-size: 1.1rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .container {
+        padding: 2rem 1rem;
+    }
+
+    .footer-col {
+        text-align: center;
+    }
+
+    .contact-item-footer {
+        justify-content: center;
+    }
+
+    .social-icons {
+        justify-content: center;
+    }
+
+    .page-header h1 {
+        font-size: 2rem;
+    }
+
+    /* Product Page Responsive */
+    .product-detail-container {
+        grid-template-columns: 1fr;
+    }
+    .product-info h1 {
+        font-size: 2rem;
+    }
+    .price-retail-large {
+        font-size: 1.8rem;
+    }
+    .price-mrp-large,
+    .price-discount-large {
+        font-size: 1rem;
+    }
+
+    /* Contact Page Responsive */
+    .contact-info {
+        padding: 1.5rem;
+    }
+    .contact-info h2 {
+        font-size: 1.5rem;
+    }
+    .contact-item {
+        font-size: 1rem;
+    }
+}
