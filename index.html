@@ -1,1 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al Ambar Perfumes - Luxury Scents</title>
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS STYLES --- */
+        
+        /* 1. Theme & Variables */
+        :root {
+            --bg-color: #121212; /* Very dark grey, not pure black */
+            --primary-gold: #D4AF37; /* A classic, elegant gold */
+            --secondary-gold: #B8860B; /* A darker, richer gold for borders/accents */
+            --text-color: #F5F5F5; /* Soft white */
+            --text-muted: #aaa;
+            --card-bg: #1e1e1e; /* Dark background for cards */
+            --font-main: 'Inter', sans-serif;
+        }
 
+        /* 2. Global Resets & Body */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        a {
+            color: var(--primary-gold);
+            text-decoration: none;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--primary-gold);
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        /* Utility class for main content padding */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* 3. Header & Navigation */
+        .main-header {
+            background-color: var(--bg-color);
+            padding: 1.5rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--secondary-gold);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            letter-spacing: 1px;
+        }
+
+        .main-nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        .main-nav li {
+            margin-left: 2rem;
+        }
+
+        .main-nav a {
+            color: var(--text-color);
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav a:hover,
+        .main-nav a.active {
+            color: var(--primary-gold);
+        }
+
+        /* 4. Home Video Section */
+        #home-video {
+            position: relative;
+            width: 100%;
+            height: 70vh; /* 70% of the viewport height */
+            overflow: hidden;
+            background-color: #000; /* Fallback */
+        }
+
+        #brandVideo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Covers the area, may crop */
+            opacity: 0.7;
+        }
+
+        .video-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.7));
+            padding: 1rem;
+        }
+
+        .video-overlay h1 {
+            font-size: 3rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+        }
+
+        .video-overlay p {
+            font-size: 1.25rem;
+            max-width: 600px;
+            margin-bottom: 1.5rem;
+        }
+
+        /* 5. Button Styles */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-gold);
+            color: var(--bg-color);
+            font-weight: 700;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary-gold);
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-gold);
+            border-color: var(--secondary-gold);
+            color: #000;
+        }
+
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-gold);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-gold);
+            color: var(--bg-color);
+        }
+        
+        /* 6. Section Heading */
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        /* Decorative line under title */
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background-color: var(--secondary-gold);
+            margin: 0.5rem auto 0;
+        }
+
+        /* 7. Category Tiles */
+        .category-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .category-tile {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid var(--secondary-gold);
+            height: 300px;
+            background-color: var(--card-bg);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .category-tile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.1);
+        }
+
+        .category-tile img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.6;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        
+        .category-tile:hover img {
+            opacity: 0.8;
+            transform: scale(1.05);
+        }
+
+        .category-tile-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 1.5rem;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            text-align: left;
+        }
+
+        .category-tile-content h3 {
+            font-size: 1.75rem;
+            color: #fff;
+            text-shadow: 1px 1px 2px #000;
+        }
+
+        /* 8. Featured Products Grid */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+        }
+        
+        .product-card:hover {
+            border-color: var(--secondary-gold);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+        }
+
+        .product-card-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background-color: #333; /* Placeholder bg */
+        }
+
+        .product-card-content {
+            padding: 1.5rem;
+        }
+
+        .product-card-content h3 {
+            font-size: 1.25rem;
+            color: var(--text-color); /* Product name in white */
+        }
+
+        .product-card-content .price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            margin-bottom: 1rem;
+        }
+        
+        .product-card-content .btn {
+            width: 100%;
+            text-align: center;
+        }
+
+        /* 9. Floating WhatsApp CTA */
+        #whatsapp-cta {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background-color: #25D366; /* WhatsApp Green */
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+        }
+
+        #whatsapp-cta:hover {
+            transform: scale(1.1);
+        }
+
+        #whatsapp-cta svg {
+            width: 32px;
+            height: 32px;
+            fill: #fff;
+        }
+
+        /* 10. Footer */
+        .main-footer {
+            background-color: #000;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            margin-top: 3rem;
+            border-top: 1px solid #333;
+        }
+        
+        /* 11. Mobile Responsiveness */
+        @media (max-width: 768px) {
+            .main-header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .logo {
+                margin-bottom: 1rem;
+            }
+            
+            .main-nav ul {
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+            
+            .main-nav li {
+                margin: 0.25rem 0.75rem;
+            }
+            
+            #home-video {
+                height: 50vh;
+            }
+            
+            .video-overlay h1 {
+                font-size: 2.25rem;
+            }
+            
+            .video-overlay p {
+                font-size: 1rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 1.5rem 1rem;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Header -->
+    <header class="main-header">
+        <div class="logo">AL AMBAR</div>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="#home-video" class="active">Home</a></li>
+                <li><a href="categories.html">Categories</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="admin.html">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- 2. Home Video Section (as suggested in 5B) -->
+        <section id="home-video">
+            <!-- 
+              User should replace this 'src' with their Firebase Storage URL 
+              e.g., "https://firebasestorage.googleapis.com/v0/b/BUCKET/o/brand.mp4?alt=media"
+            -->
+            <video controls muted playsinline autoplay loop id="brandVideo">
+                <source src="https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4" type="video/mp4">
+                Your browser does not support the video tag.
+            </video>
+            <div class="video-overlay">
+                <h1>Experience the Scent of Luxury</h1>
+                <p>Discover our exclusive collection of Attars, Ouds, and Bakhoor.</p>
+                <a href="#categories" class="btn">Shop by Category</a>
+            </div>
+        </section>
+
+        <!-- 3. Categories Section -->
+        <section id="categories" class="container">
+            <h2 class="section-title">Our Collections</h2>
+            <div class="category-grid">
+                <!-- These will be loaded dynamically from Firebase -->
+                <a href="categories.html?filter=attar" class="category-tile">
+                    <img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=Attar" alt="Attar Perfumes">
+                    <div class="category-tile-content">
+                        <h3>Attar</h3>
+                    </div>
+                </a>
+                <a href="categories.html?filter=oud" class="category-tile">
+                    <img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=Oud" alt="Oud Perfumes">
+                    <div class="category-tile-content">
+                        <h3>Oud</h3>
+                    </div>
+                </a>
+                <a href="categories.html?filter=bakhoor" class="category-tile">
+                    <img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=Bakhoor" alt="Bakhoor Incense">
+                    <div class="category-tile-content">
+                        <h3>Bakhoor</h3>
+                    </div>
+                </a>
+            </div>
+        </section>
+
+        <!-- 4. Featured Products Section -->
+        <section id="featured-products" class="container">
+            <h2 class="section-title">Featured Products</h2>
+            <div class="product-grid">
+                <!-- These will be loaded dynamically from Firebase -->
+                <!-- Mock Product 1 -->
+                <div class="product-card">
+                    <img src="https://placehold.co/400x400/1e1e1e/D4AF37?text=Oud+Al+Arab" alt="Oud Al Arab" class="product-card-image">
+                    <div class="product-card-content">
+                        <h3>Oud Al Arab</h3>
+                        <p class="price">250 AED</p>
+                        <a href="product.html?id=OA-12" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+                <!-- Mock Product 2 -->
+                <div class="product-card">
+                    <img src="https://placehold.co/400x400/1e1e1e/D4AF37?text=Musk+Tahira" alt="Musk Tahira" class="product-card-image">
+                    <div class="product-card-content">
+                        <h3>Musk Tahira</h3>
+                        <p class="price">180 AED</p>
+                        <a href="product.html?id=MT-05" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+                <!-- Mock Product 3 -->
+                <div class="product-card">
+                    <img src="https://placehold.co/400x400/1e1e1e/D4AF37?text=Royal+Bakhoor" alt="Royal Bakhoor" class="product-card-image">
+                    <div class="product-card-content">
+                        <h3>Royal Bakhoor</h3>
+                        <p class="price">120 AED</p>
+                        <a href="product.html?id=RB-01" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+                <!-- Mock Product 4 -->
+                <div class="product-card">
+                    <img src="https://placehold.co/400x400/1e1e1e/D4AF37?text=Amber+Gold" alt="Amber Gold" class="product-card-image">
+                    <div class="product-card-content">
+                        <h3>Amber Gold</h3>
+                        <p class="price">300 AED</p>
+                        <a href="product.html?id=AG-07" class="btn btn-outline">View Details</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 5. Footer -->
+    <footer class="main-footer">
+        <p>&copy; 2025 Al Ambar Perfumes. All Rights Reserved.</p>
+        <p>Kochi, Kerala</p>
+    </footer>
+
+    <!-- 6. Floating WhatsApp CTA (as suggested in 5A) -->
+    <!-- This general CTA will just open a blank message -->
+    <a id="whatsapp-cta" href="https://wa.me/918086081985?text=Hello%20Al%20Ambar,%20I%20have%20a%20question." target="_blank" aria-label="Chat on WhatsApp">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+            <!--!Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free Copyright 2024 Fonticons, Inc.-->
+            <path d="M380.9 97.1C339.4 55.6 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.8 0-65-10.1-90.4-28L48.9 450.4l29.8-77.5c-19.8-27.1-31.9-59.7-31.9-94.8 0-106.1 86.1-192.2 192.2-192.2 52.9 0 102.8 20.8 139.9 57.9 37 37 57.9 87 57.9 139.9-.1 106-86.2 192.1-192.2 192.1zM223.9 104.4c-8.7 0-15.8 7.1-15.8 15.8v98.7c0 8.7 7.1 15.8 15.8 15.8h98.7c8.7 0 15.8-7.1 15.8-15.8v-15.8c0-8.7-7.1-15.8-15.8-15.8H239.7v-67.1c0-8.7-7.1-15.8-15.8-15.8z" transform="scale(1.2)" transform-origin="center"/>
+            <!-- Simplified WhatsApp 'phone' icon for this context -->
+            <path d="M223.9,104.4c-8.7,0-15.8,7.1-15.8,15.8v98.7c0,8.7,7.1,15.8,15.8,15.8h98.7c8.7,0,15.8-7.1,15.8-15.8v-15.8c0-8.7-7.1-15.8-15.8-15.8H239.7v-67.1C239.7,111.5,232.6,104.4,223.9,104.4z" style="fill:none;"/> <!-- Hide the clock part -->
+            <path d="M380.9 97.1C339.4 55.6 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.8 0-65-10.1-90.4-28L48.9 450.4l29.8-77.5c-19.8-27.1-31.9-59.7-31.9-94.8 0-106.1 86.1-192.2 192.2-192.2 52.9 0 102.8 20.8 139.9 57.9 37 37 57.9 87 57.9 139.9-.1 106-86.2 192.1-192.2 192.1z"/>
+        </svg>
+    </a>
+
+    <!-- 
+      JavaScript Section 
+      Contains the function for product-specific WhatsApp ordering (as suggested in 5A).
+      This function would be called from `product.html`, not this page.
+    -->
+    <script>
+        /**
+         * This function is for the PRODUCT DETAIL PAGE (product.html).
+         * It opens WhatsApp with a pre-filled message for a specific product.
+         * * @param {object} product - An object with product details (e.g., {id: "OA-12", name: "Oud Al Arab", size: "12ml", price: 250})
+         */
+        function openWhatsAppOrder(product) {
+            const phone = "918086081985"; // Business number with country code, no symbols
+            const msg = `Hello Al Ambar, I want to order: ${product.name} (${product.size}). Price: ${product.price} AED. Product ID: ${product.id}`;
+            const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+            window.open(url, "_blank");
+            
+            // Optional: Log this click event to Firestore (as suggested in "Admin panel" features)
+            // logWhatsAppInquiry(product);
+        }
+
+        // Example: How you MIGHT call it on product.html
+        // const currentProduct = {id: "OA-12", name: "Oud Al Arab", size: "12ml", price: 250};
+        // document.getElementById("orderWhatsAppButton").addEventListener("click", () => openWhatsAppOrder(currentProduct));
+        
+        // ---
+        
+        // This is where you would initialize Firebase and write functions to:
+        // 1. Load categories onto the home page
+        // 2. Load featured products onto the home page
+        // (e.g., in a function called loadHomepageData())
+        
+        document.addEventListener("DOMContentLoaded", () => {
+            console.log("Al Ambar site loaded. Ready to connect to Firebase.");
+            // e.g., loadHomepageData();
+        });
+
+    </script>
+
+</body>
+</html>
