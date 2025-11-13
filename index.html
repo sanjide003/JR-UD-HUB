@@ -30,14 +30,21 @@
 
     <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main>
-        <!-- 3.1. ഹീറോ വീഡിയോ സെക്ഷൻ (മുകളിലെ വീഡിയോ) -->
+        <!-- 3.1. ഹീറോ വീഡിയോ സെക്ഷൻ (പൂർണ്ണമായും മാറ്റിയെഴുതി) -->
         <section class="hero-section" id="hero-section">
-            <div class="hero-video-wrapper">
-                <video id="hero-video-player" autoplay muted loop playsinline preload="metadata">
-                    <!-- വീഡിയോ URL 'common.js' വഴി ഇവിടെ വരും -->
-                </video>
+            
+            <!-- 1. പശ്ചാത്തല സ്ലൈഡർ -->
+            <div class="swiper hero-slider" id="hero-slider-container">
+                <div class="swiper-wrapper" id="hero-slider-wrapper">
+                    <!-- 'index.js' ഉപയോഗിച്ച് സ്ലൈഡുകൾ (വീഡിയോ/ഫോട്ടോ) ഇവിടെ വരും -->
+                </div>
             </div>
-            <div class="hero-content">
+
+            <!-- 2. ഇരുണ്ട ഓവർലേ -->
+            <div class="hero-overlay"></div>
+
+            <!-- 3. മുകളിലെ ഉള്ളടക്കം -->
+            <div class="hero-content" id="hero-content-overlay">
                 <h1 id="hero-title">Essence of the Orient</h1>
                 <p id="hero-subtitle">Discover our exclusive collection</p>
                 <a href="categories.html" class="btn btn-primary">Shop Now</a>
