@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - Al Ambar Perfumes</title>
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS STYLES --- */
+        /* * ഈ സ്റ്റൈലുകൾ index.html/categories.html-ൽ നിന്ന് പകർത്തിയതാണ്.
+         * ഒരു യഥാർത്ഥ പ്രൊഡക്ഷൻ സൈറ്റിൽ, ഇത് ഒരു പൊതുവായ style.css ഫയലിലേക്ക് മാറ്റണം.
+         */
+        
+        /* 1. Theme & Variables */
+        :root {
+            --bg-color: #121212;
+            --primary-gold: #D4AF37;
+            --secondary-gold: #B8860B;
+            --text-color: #F5F5F5;
+            --text-muted: #aaa;
+            --card-bg: #1e1e1e;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        /* 2. Global Resets & Body */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        a {
+            color: var(--primary-gold);
+            text-decoration: none;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--primary-gold);
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 1000px; /* Product പേജിന് അല്പം ചെറിയ container */
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* 3. Header & Navigation (Copied) */
+        .main-header {
+            background-color: var(--bg-color);
+            padding: 1.5rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--secondary-gold);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            letter-spacing: 1px;
+        }
+
+        .main-nav ul {
+            list-style: none;
+            display: flex;
+        }
+        .main-nav li { margin-left: 2rem; }
+        .main-nav a {
+            color: var(--text-color);
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+        .main-nav a:hover,
+        .main-nav a.active {
+            color: var(--primary-gold);
+        }
+
+        /* 4. Button Styles (Copied) */
+        .btn {
+            display: inline-block;
+            padding: 1rem 2rem; /* ബട്ടൺ അല്പം വലുതാക്കുന്നു */
+            background-color: var(--primary-gold);
+            color: var(--bg-color);
+            font-weight: 700;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary-gold);
+            cursor: pointer;
+            text-align: center;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-gold);
+            border-color: var(--secondary-gold);
+            color: #000;
+        }
+        
+        /* WhatsApp ബട്ടണ് വേണ്ടി ഒരു പ്രത്യേക സ്റ്റൈൽ */
+        .btn-whatsapp {
+            background-color: #25D366; /* WhatsApp Green */
+            color: #fff;
+            border-color: #25D366;
+            font-weight: 700;
+        }
+        .btn-whatsapp:hover {
+            background-color: #1DA851;
+            border-color: #1DA851;
+            color: #fff;
+        }
+
+        /* 5. Product Detail Layout */
+        .product-detail-layout {
+            display: grid;
+            grid-template-columns: 1fr; /* Mobile-first */
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .product-detail-layout {
+                grid-template-columns: 1fr 1fr; /* Desktop: 2 columns */
+                gap: 3rem;
+            }
+        }
+
+        .product-image-gallery {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+
+        .product-image-gallery img {
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1; /* Square image */
+            object-fit: cover;
+        }
+        
+        /* (ഭാവിയിൽ ഒന്നിലധികം ചിത്രങ്ങൾ ഉണ്ടെങ്കിൽ ചെറിയ തംബ്നെയിലുകൾ ഇവിടെ ചേർക്കാം) */
+
+        .product-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-info h1 {
+            font-size: 2.5rem;
+            color: var(--text-color); /* ഉൽപ്പന്നത്തിൻ്റെ പേര് വെള്ള നിറത്തിൽ */
+            margin-bottom: 1rem;
+        }
+        
+        .product-info .sku {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1rem;
+            font-family: monospace;
+        }
+
+        .product-info .price {
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            margin-bottom: 0.5rem;
+        }
+        
+        .product-info .size {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        .product-info .description {
+            margin-top: 1.5rem;
+            font-size: 1rem;
+            line-height: 1.7;
+            color: var(--text-muted);
+        }
+        
+        #order-button-container {
+            margin-top: 2rem;
+        }
+        
+        #order-button {
+            width: 100%;
+        }
+
+        /* 6. Loading/Error State */
+        #product-status {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            padding: 4rem 0;
+            display: none; /* JS വഴി കാണിക്കും */
+        }
+
+        /* 7. Footer (Copied) */
+        .main-footer {
+            background-color: #000;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            margin-top: 3rem;
+            border-top: 1px solid #333;
+        }
+        
+        /* 8. Mobile Responsiveness (Copied) */
+        @media (max-width: 768px) {
+            .main-header { flex-direction: column; padding: 1rem; }
+            .logo { margin-bottom: 1rem; }
+            .main-nav ul { justify-content: center; flex-wrap: wrap; }
+            .main-nav li { margin: 0.25rem 0.75rem; }
+            .product-info h1 { font-size: 2rem; }
+            .product-info .price { font-size: 1.8rem; }
+            .container { padding: 1.5rem 1rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Header -->
+    <header class="main-header">
+        <a href="index.html" class="logo">AL AMBAR</a>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="categories.html">Categories</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="admin.html">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- 2. Product Detail Section -->
+        <section id="product-detail" class="container">
+            
+            <!-- സ്റ്റാറ്റസ് മെസ്സേജ് (Loading/Error) -->
+            <div id="product-status">Loading product details...</div>
+
+            <!-- ഉൽപ്പന്ന വിവരങ്ങൾ ലോഡ് ആവുന്ന സ്ഥലം -->
+            <div classs="product-detail-wrapper" id="product-content" style="display: none;">
+                <div class="product-detail-layout">
+                    <!-- Left: Image Gallery -->
+                    <div class="product-image-gallery">
+                        <img id="product-image" src="https://placehold.co/600x600/1e1e1e/D4AF37?text=Loading..." alt="Product Image">
+                    </div>
+                    
+                    <!-- Right: Info -->
+                    <div class="product-info">
+                        <h1 id="product-name">Product Name</h1>
+                        <span class="sku" id="product-sku">SKU: ...</span>
+                        
+                        <div class="price" id="product-price">... AED</div>
+                        <div class="size" id="product-size">Size: ...</div>
+                        
+                        <div id="order-button-container">
+                             <!-- 
+                               ഈ ബട്ടൺ JS വഴി പ്രവർത്തനക്ഷമമാക്കും.
+                               ഇത് നിങ്ങളുടെ പ്ലാനിലെ 5A പോയിന്റ് നടപ്പിലാക്കുന്നു.
+                             -->
+                            <button id="order-whatsapp-button" class="btn btn-whatsapp" disabled>
+                                Order on WhatsApp
+                            </button>
+                        </div>
+                        
+                        <div class="description">
+                            <h3>Description</h3>
+                            <p id="product-description">...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </section>
+    </main>
+
+    <!-- 3. Footer -->
+    <footer class="main-footer">
+        <p>&copy; 2025 Al Ambar Perfumes. All Rights Reserved.</p>
+        <p>Kochi, Kerala</p>
+    </footer>
+
+    <!-- Firebase SDK (Using modern v11 modular scripts) -->
+    <script type="module">
+        // Import functions from the SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            getDocs,
+            query,
+            where,
+            limit,
+            setLogLevel
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration (നിങ്ങൾ നൽകിയത്)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCePcVE_BTiFuYXAApNmbMKHdkhQ9Ay_F4",
+            authDomain: "al-ambar-perfume-company.firebaseapp.com",
+            projectId: "al-ambar-perfume-company",
+            storageBucket: "al-ambar-perfume-company.firebasestorage.app",
+            messagingSenderId: "992506041633",
+            appId: "1:992506041633:web:f7277461a577248bb8da60",
+            measurementId: "G-39XB0WLW6P"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        setLogLevel('Debug');
+
+        // --- DOM Elements ---
+        const productStatus = document.getElementById("product-status");
+        const productContent = document.getElementById("product-content");
+        const productName = document.getElementById("product-name");
+        const productSku = document.getElementById("product-sku");
+        const productPrice = document.getElementById("product-price");
+        const productSize = document.getElementById("product-size");
+        const productImage = document.getElementById("product-image");
+        const productDescription = document.getElementById("product-description");
+        const orderButton = document.getElementById("order-whatsapp-button");
+        
+        // നിലവിലെ ഉൽപ്പന്നത്തിൻ്റെ വിവരങ്ങൾ സൂക്ഷിക്കാൻ
+        let currentProduct = null; 
+
+        /**
+         * പ്ലാൻ 5A-യിൽ നിർദ്ദേശിച്ച WhatsApp ഓർഡർ ഫംഗ്ഷൻ
+         * @param {object} product - An object with product details 
+         */
+        function openWhatsAppOrder(product) {
+            const phone = "918086081985"; // നിങ്ങളുടെ ബിസിനസ്സ് നമ്പർ
+            const msg = `Hello Al Ambar, I want to order: ${product.name} (${product.size}). Price: ${product.price} AED. Product ID (SKU): ${product.sku}`;
+            const url = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+            window.open(url, "_blank");
+            
+            // ഓപ്ഷണൽ: ഈ ക്ലിക്ക് ഫയർബേസിൽ ലോഗ് ചെയ്യാം
+            // logWhatsAppInquiry(product);
+        }
+
+        /**
+         * URL-ൽ നിന്ന് ലഭിച്ച SKU ഉപയോഗിച്ച് ഫയർസ്റ്റോറിൽ നിന്ന് ഉൽപ്പന്നം ലോഡ് ചെയ്യുന്നു
+         * @param {string} sku - The product SKU from the URL
+         */
+        async function loadProductBySKU(sku) {
+            console.log(`Querying for SKU: ${sku}`);
+            productStatus.style.display = 'block'; // "Loading..." കാണിക്കുന്നു
+
+            try {
+                const productsCollection = collection(db, "products");
+                // SKU ഉപയോഗിച്ച് ക്വറി ചെയ്യുന്നു
+                const q = query(productsCollection, where("sku", "==", sku), limit(1));
+                
+                const querySnapshot = await getDocs(q);
+
+                if (querySnapshot.empty) {
+                    console.warn("No product found with SKU:", sku);
+                    productStatus.textContent = "Sorry, this product could not be found.";
+                    return;
+                }
+
+                // ഉൽപ്പന്നം കണ്ടെത്തി
+                const productDoc = querySnapshot.docs[0];
+                currentProduct = productDoc.data();
+                currentProduct.id = productDoc.id; // ഡോക്യുമെന്റ് ഐഡി കൂടി സേവ് ചെയ്യുന്നു
+
+                console.log("Product found:", currentProduct);
+
+                // പേജിൽ വിവരങ്ങൾ പ്രദർശിപ്പിക്കുന്നു
+                document.title = `${currentProduct.name} - Al Ambar Perfumes`;
+                productName.textContent = currentProduct.name;
+                productSku.textContent = `SKU: ${currentProduct.sku}`;
+                productPrice.textContent = `${currentProduct.price || 'N/A'} AED`;
+                productSize.textContent = `Size: ${currentProduct.size || 'N/A'}`;
+                productDescription.textContent = currentProduct.description || 'No description available.';
+                
+                // ചിത്രം ലോഡ് ചെയ്യുന്നു
+                const imageUrl = currentProduct.images && currentProduct.images[0]
+                    ? currentProduct.images[0]
+                    : 'https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image';
+                
+                productImage.src = imageUrl;
+                productImage.alt = currentProduct.name;
+                
+                productStatus.style.display = 'none'; // "Loading..." മറയ്ക്കുന്നു
+                productContent.style.display = 'block'; // ഉൽപ്പന്ന വിവരങ്ങൾ കാണിക്കുന്നു
+
+                // WhatsApp ബട്ടൺ പ്രവർത്തനക്ഷമമാക്കുന്നു
+                orderButton.disabled = false;
+                orderButton.onclick = () => openWhatsAppOrder(currentProduct);
+
+            } catch (error) {
+                console.error("Error loading product: ", error);
+                productStatus.textContent = "Error loading product details. Please try again later.";
+            }
+        }
+
+        // --- പേജ് ലോഡ് ആവുമ്പോൾ പ്രവർത്തിക്കുന്നു ---
+        document.addEventListener("DOMContentLoaded", () => {
+            // URL-ൽ നിന്ന് 'sku' പാരാമീറ്റർ എടുക്കുന്നു
+            const urlParams = new URLSearchParams(window.location.search);
+            const sku = urlParams.get('sku'); 
+            
+            if (sku) {
+                loadProductBySKU(sku);
+            } else {
+                console.error("No SKU provided in URL.");
+                productStatus.style.display = 'block';
+                productStatus.textContent = "No product specified. Please go back and select a product.";
+            }
+        });
+
+    </script>
+</body>
+</html>
