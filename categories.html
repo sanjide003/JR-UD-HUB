@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Collections - Al Ambar Perfumes</title>
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS STYLES --- */
+        /* * ഈ സ്റ്റൈലുകൾ index.html-ൽ നിന്ന് പകർത്തിയതാണ്.
+         * ഒരു യഥാർത്ഥ പ്രൊഡക്ഷൻ സൈറ്റിൽ, ഇത് ഒരു പൊതുവായ style.css ഫയലിലേക്ക് മാറ്റണം.
+         */
+        
+        /* 1. Theme & Variables */
+        :root {
+            --bg-color: #121212;
+            --primary-gold: #D4AF37;
+            --secondary-gold: #B8860B;
+            --text-color: #F5F5F5;
+            --text-muted: #aaa;
+            --card-bg: #1e1e1e;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        /* 2. Global Resets & Body */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        a {
+            color: var(--primary-gold);
+            text-decoration: none;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--primary-gold);
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* 3. Header & Navigation (Copied) */
+        .main-header {
+            background-color: var(--bg-color);
+            padding: 1.5rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--secondary-gold);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            letter-spacing: 1px;
+        }
+
+        .main-nav ul {
+            list-style: none;
+            display: flex;
+        }
+
+        .main-nav li {
+            margin-left: 2rem;
+        }
+
+        .main-nav a {
+            color: var(--text-color);
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+
+        .main-nav a:hover,
+        .main-nav a.active {
+            color: var(--primary-gold);
+        }
+
+        /* 4. Button Styles (Copied) */
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-gold);
+            color: var(--bg-color);
+            font-weight: 700;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary-gold);
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-gold);
+            border-color: var(--secondary-gold);
+            color: #000;
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-gold);
+        }
+
+        .btn-outline:hover {
+            background-color: var(--primary-gold);
+            color: var(--bg-color);
+        }
+
+        /* 5. Section Heading (Copied) */
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background-color: var(--secondary-gold);
+            margin: 0.5rem auto 0;
+        }
+
+        /* 6. Product Grid (Copied from index.html) */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #333;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column; /* Ensure footer button aligns */
+        }
+        
+        .product-card:hover {
+            border-color: var(--secondary-gold);
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+        }
+
+        .product-card-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            background-color: #333; /* Placeholder bg */
+        }
+
+        .product-card-content {
+            padding: 1.5rem;
+            flex-grow: 1; /* Make content area grow */
+        }
+
+        .product-card-content h3 {
+            font-size: 1.25rem;
+            color: var(--text-color);
+        }
+
+        .product-card-content .price {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            margin-bottom: 1rem;
+        }
+        
+        .product-card-content .btn {
+            width: 100%;
+            text-align: center;
+            margin-top: auto; /* Push button to bottom */
+        }
+        
+        /* 7. Loading/Empty State */
+        #loading-state, #empty-state {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            padding: 4rem 0;
+        }
+        
+        #empty-state {
+            display: none; /* Hidden by default */
+        }
+
+        /* 8. Footer (Copied) */
+        .main-footer {
+            background-color: #000;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            margin-top: 3rem;
+            border-top: 1px solid #333;
+        }
+        
+        /* 9. Mobile Responsiveness (Copied) */
+        @media (max-width: 768px) {
+            .main-header {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            .logo { margin-bottom: 1rem; }
+            .main-nav ul { justify-content: center; flex-wrap: wrap; }
+            .main-nav li { margin: 0.25rem 0.75rem; }
+            .section-title { font-size: 2rem; }
+            .container { padding: 1.5rem 1rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Header -->
+    <header class="main-header">
+        <a href="index.html" class="logo">AL AMBAR</a>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="categories.html" class="active">Categories</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="admin.html">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- 2. Product Listing Section -->
+        <section id="product-listing" class="container">
+            <h2 class="section-title" id="category-title">All Products</h2>
+            
+            <!-- Loading Message -->
+            <div id="loading-state">
+                <p>Loading products...</p>
+            </div>
+            
+            <!-- Empty State Message -->
+            <div id="empty-state">
+                <p>No products found in this category.</p>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="product-grid" id="product-grid">
+                <!-- ഉൽപ്പന്നങ്ങൾ ഇവിടെ JavaScript വഴി ലോഡ് ആവും -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- 3. Footer -->
+    <footer class="main-footer">
+        <p>&copy; 2025 Al Ambar Perfumes. All Rights Reserved.</p>
+        <p>Kochi, Kerala</p>
+    </footer>
+
+    <!-- Firebase SDK (Using modern v11 modular scripts) -->
+    <script type="module">
+        // Import functions from the SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getFirestore, 
+            collection, 
+            getDocs,
+            query,
+            where,
+            setLogLevel
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // Your web app's Firebase configuration (നിങ്ങൾ നൽകിയത്)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCePcVE_BTiFuYXAApNmbMKHdkhQ9Ay_F4",
+            authDomain: "al-ambar-perfume-company.firebaseapp.com",
+            projectId: "al-ambar-perfume-company",
+            storageBucket: "al-ambar-perfume-company.firebasestorage.app",
+            messagingSenderId: "992506041633",
+            appId: "1:992506041633:web:f7277461a577248bb8da60",
+            measurementId: "G-39XB0WLW6P"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        setLogLevel('Debug'); // ലോഗിംഗ് ഓൺ ആക്കുന്നു
+
+        // --- DOM Elements ---
+        const productGrid = document.getElementById("product-grid");
+        const categoryTitle = document.getElementById("category-title");
+        const loadingState = document.getElementById("loading-state");
+        const emptyState = document.getElementById("empty-state");
+
+        /**
+         * ഫയർസ്റ്റോറിൽ നിന്ന് ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
+         * @param {string | null} categoryId - ഫിൽട്ടർ ചെയ്യാനുള്ള കാറ്റഗറി ഐഡി
+         */
+        async function loadProducts(categoryId = null) {
+            console.log(`Loading products... Category ID: ${categoryId}`);
+            loadingState.style.display = 'block';
+            emptyState.style.display = 'none';
+            productGrid.innerHTML = ''; // പഴയവ നീക്കം ചെയ്യുന്നു
+
+            try {
+                // ഫയർസ്റ്റോർ ക്വറി നിർമ്മിക്കുന്നു
+                const productsCollection = collection(db, "products");
+                let productsQuery;
+
+                if (categoryId) {
+                    // കാറ്റഗറി ഐഡി ഉണ്ടെങ്കിൽ, അതനുസരിച്ച് ഫിൽട്ടർ ചെയ്യുന്നു
+                    console.log(`Querying for categoryId: ${categoryId}`);
+                    productsQuery = query(productsCollection, where("categoryId", "==", categoryId));
+                    // നമുക്ക് കാറ്റഗറിയുടെ പേര് എടുക്കാൻ ശ്രമിക്കാം (optional)
+                    // const catDoc = await getDoc(doc(db, "categories", categoryId));
+                    // if (catDoc.exists()) {
+                    //    categoryTitle.textContent = catDoc.data().name;
+                    // }
+                } else {
+                    // കാറ്റഗറി ഐഡി ഇല്ലെങ്കിൽ, എല്ലാ ഉൽപ്പന്നങ്ങളും എടുക്കുന്നു
+                    console.log("Querying for all products.");
+                    productsQuery = query(productsCollection);
+                    categoryTitle.textContent = "All Products";
+                }
+
+                const querySnapshot = await getDocs(productsQuery);
+                
+                loadingState.style.display = 'none'; // ലോഡിംഗ് മറയ്ക്കുന്നു
+
+                if (querySnapshot.empty) {
+                    console.log("No products found.");
+                    emptyState.style.display = 'block';
+                    return;
+                }
+
+                querySnapshot.forEach((doc) => {
+                    const product = doc.data();
+                    const productId = doc.id; // ഡോക്യുമെന്റ് ഐഡി എടുക്കുന്നു
+                    
+                    // admin.html-ൽ നമ്മൾ sku ഫീൽഡ് ആണ് ഉപയോഗിച്ചത്, 
+                    // അതിനാൽ product.html-ലേക്ക് sku പാസ്സ് ചെയ്യുന്നതാണ് നല്ലത്.
+                    // പക്ഷെ എളുപ്പത്തിനായി തൽക്കാലം doc id ഉപയോഗിക്കാം.
+                    // നമുക്ക് sku തന്നെ ഉപയോഗിക്കാം (പ്ലാൻ അനുസരിച്ച്)
+                    const productSKU = product.sku; 
+
+                    // ഒരു പ്രൊഡക്റ്റ് കാർഡ് HTML ഉണ്ടാക്കുന്നു
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <img src="${product.images[0] || 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image'}" 
+                             alt="${product.name}" 
+                             class="product-card-image"
+                             onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Image+Error'">
+                        <div class="product-card-content">
+                            <h3>${product.name}</h3>
+                            <p class="price">${product.price || 'N/A'} AED</p>
+                            <p style="color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem;">${product.size || ''}</p>
+                            
+                            <!-- 
+                              പ്രധാനപ്പെട്ടത്: product.html-ലേക്ക് SKU ഉപയോഗിച്ച് ലിങ്ക് ചെയ്യുന്നു 
+                              (നിങ്ങളുടെ പ്ലാൻ 7-B അനുസരിച്ച്).
+                            -->
+                            <a href="product.html?sku=${productSKU}" class="btn btn-outline">View Details</a>
+                        </div>
+                    `;
+                    productGrid.appendChild(card);
+                });
+
+            } catch (error) {
+                console.error("Error loading products: ", error);
+                loadingState.style.display = 'none';
+                emptyState.textContent = "Error loading products. Please try again later.";
+                emptyState.style.display = 'block';
+            }
+        }
+
+        // --- പേജ് ലോഡ് ആവുമ്പോൾ പ്രവർത്തിക്കുന്നു ---
+        document.addEventListener("DOMContentLoaded", () => {
+            // URL-ൽ നിന്ന് 'filter' (categoryId) എടുക്കുന്നു
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryId = urlParams.get('filter'); // index.html-ൽ നിന്ന് ?filter=categoryId
+            
+            if(categoryId) {
+                // കാറ്റഗറിയുടെ പേര് ഹെഡ്ഡിംഗ് ആക്കാം (തൽക്കാലം ലളിതമാക്കുന്നു)
+                // ഇപ്പോൾ നമ്മൾ 'filter' എന്ന വാക്ക് ഉപയോഗിച്ചു, പക്ഷെ നിങ്ങളുടെ പ്ലാനിൽ 'categoryId' ആണ്. 
+                // index.html-ലെ ലിങ്ക് "categories.html?filter=attar" എന്നാണ്.
+                // ഇത് categoryId അല്ല, slug ആണ്.
+                // അതിനാൽ, `where("slug", "==", categorySlug)` എന്നായിരിക്കും യഥാർത്ഥ ക്വറി.
+                
+                // ക്ഷമിക്കണം, admin.html-ൽ നമ്മൾ slug ഉണ്ടാക്കുന്നുണ്ട്, പക്ഷെ ഉൽപ്പന്നത്തിൽ categoryId ആണ് സേവ് ചെയ്യുന്നത്.
+                // അതിനാൽ `index.html`-ലെ ലിങ്കുകൾ `categories.html?categoryId=...` എന്നായിരിക്കണം.
+                
+                // തൽക്കാലം, URL-ൽ വരുന്നത് categoryId ആണെന്ന് കരുതുന്നു.
+                // ഉദാ: categories.html?categoryId=XyZ...
+                const categoryIdFromUrl = urlParams.get('categoryId'); 
+                
+                // 'filter' എന്ന പേരാണ് നമ്മൾ index.html-ൽ ഉപയോഗിച്ചത്, പക്ഷെ അത് slug ആയിരുന്നു.
+                // 'categoryId' എന്നാക്കി അത് മാറ്റുന്നതാണ് ഉചിതം.
+                // തൽക്കാലം, 'filter' എന്നതിനെ categoryId ആയി പരിഗണിക്കുന്നു.
+                
+                const filterValue = urlParams.get('filter'); // This should be the categoryId
+                
+                if (filterValue) {
+                     // TODO: കാറ്റഗറിയുടെ പേര് ഇവിടെ ലോഡ് ചെയ്യാം.
+                    categoryTitle.textContent = "Products"; // Placeholder
+                    loadProducts(filterValue);
+                } else {
+                    loadProducts(); // ഫിൽട്ടർ ഇല്ലെങ്കിൽ എല്ലാം ലോഡ് ചെയ്യുന്നു
+                }
+                
+            } else {
+                loadProducts(); // URL-ൽ പാരാമീറ്ററുകൾ ഇല്ലെങ്കിൽ എല്ലാം ലോഡ് ചെയ്യുന്നു
+            }
+        });
+
+    </script>
+</body>
+</html>
