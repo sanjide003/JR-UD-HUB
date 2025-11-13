@@ -7,7 +7,7 @@
     <!-- Google Font: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
     
     <style>
         /* --- CSS STYLES --- */
@@ -19,6 +19,7 @@
             --card-bg: #1e1e1e;
             --error-red: #e74c3c;
             --success-green: #2ecc71;
+            --border-color: #333;
             --font-main: 'Inter', sans-serif;
         }
 
@@ -31,9 +32,9 @@
         }
 
         .container {
-            max-width: 600px;
+            max-width: 1100px; /* വീതി കൂട്ടി */
             margin: 2rem auto;
-            padding: 2rem;
+            padding: 1rem 2rem;
         }
 
         /* --- Login Box --- */
@@ -41,8 +42,10 @@
             background-color: var(--card-bg);
             padding: 2.5rem;
             border-radius: 8px;
-            border: 1px solid #333;
+            border: 1px solid var(--border-color);
             box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+            max-width: 500px;
+            margin: 5rem auto;
         }
         
         #login-section h1 {
@@ -61,7 +64,7 @@
             justify-content: space-between;
             align-items: center;
             margin-bottom: 2rem;
-            border-bottom: 1px solid var(--secondary-gold);
+            border-bottom: 1px solid var(--primary-gold);
             padding-bottom: 1rem;
         }
         
@@ -70,13 +73,55 @@
             margin-bottom: 0;
         }
 
+        /* --- Tabs --- */
+        .tab-links {
+            display: flex;
+            background-color: var(--card-bg);
+            border-radius: 8px 8px 0 0;
+            overflow: hidden;
+            border-bottom: 2px solid var(--primary-gold);
+        }
+        .tab-link {
+            padding: 1rem 1.5rem;
+            cursor: pointer;
+            background-color: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .tab-link:hover {
+            background-color: #2a2a2a;
+            color: var(--text-color);
+        }
+        .tab-link.active {
+            color: var(--primary-gold);
+            border-bottom: 2px solid var(--primary-gold);
+            background-color: #252525;
+            margin-bottom: -2px; /* Border-മായി യോജിപ്പിക്കാൻ */
+        }
+
+        .tab-content {
+            display: none; /* JS വഴി കാണിക്കും */
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 0 0 8px 8px;
+            border: 1px solid var(--border-color);
+            border-top: none;
+            animation: fadeIn 0.5s;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
         /* --- Form Elements --- */
         .form-section {
-            background-color: var(--card-bg);
-            padding: 1.5rem 2rem;
-            border-radius: 8px;
-            margin-bottom: 2rem;
-            border: 1px solid #333;
+            padding: 1.5rem 0;
         }
         
         .form-section h2 {
@@ -84,10 +129,29 @@
             border-bottom: 1px solid #444;
             padding-bottom: 0.5rem;
             margin-bottom: 1.5rem;
+            font-size: 1.5rem;
         }
 
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+        
+        @media (min-width: 768px) {
+            /* വലിയ സ്ക്രീനിൽ ഫോമുകൾ 2 കോളമാക്കുന്നു */
+            .form-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+            }
+        }
+        
         .form-group {
             margin-bottom: 1.5rem;
+        }
+        
+        .form-group.full-width {
+            grid-column: 1 / -1; /* 2 കോളത്തിലും നിറഞ്ഞുനിൽക്കാൻ */
         }
 
         .form-group label {
@@ -116,14 +180,28 @@
         
         textarea {
             resize: vertical;
-            min-height: 80px;
+            min-height: 100px;
+        }
+
+        /* --- Image Preview --- */
+        .image-preview {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .image-preview img {
+            width: 80px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 5px;
+            border: 2px solid var(--border-color);
         }
 
         /* --- Buttons --- */
         .btn {
             display: inline-block;
-            width: 100%;
-            padding: 1rem;
+            padding: 0.9rem 1.5rem;
             background-color: var(--primary-gold);
             color: #000;
             font-weight: 700;
@@ -134,39 +212,38 @@
             text-align: center;
             transition: background-color 0.3s ease;
         }
-
-        .btn:hover {
-            background-color: #b8860b;
-        }
+        .btn:hover { background-color: #b8860b; }
         
         .btn-logout {
             background-color: var(--error-red);
             color: #fff;
             padding: 0.5rem 1rem;
-            width: auto;
+        }
+        .btn-edit {
+            background-color: #3498db;
+            color: #fff;
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
+            margin-right: 5px;
+        }
+        .btn-delete {
+            background-color: var(--error-red);
+            color: #fff;
+            font-size: 0.8rem;
+            padding: 0.4rem 0.8rem;
         }
 
         /* --- Status Messages --- */
         .status-message {
             padding: 1rem;
             border-radius: 5px;
-            margin-top: 1rem;
+            margin: 1.5rem 0;
             text-align: center;
             font-weight: 500;
             display: none; /* JS വഴി കാണിക്കും */
         }
-        
-        .status-message.error {
-            background-color: rgba(231, 76, 60, 0.2);
-            color: var(--error-red);
-            display: block;
-        }
-        
-        .status-message.success {
-            background-color: rgba(46, 204, 113, 0.2);
-            color: var(--success-green);
-            display: block;
-        }
+        .status-message.error { background-color: rgba(231, 76, 60, 0.2); color: var(--error-red); display: block; }
+        .status-message.success { background-color: rgba(46, 204, 113, 0.2); color: var(--success-green); display: block; }
         
         /* Loading Spinner */
         .loader {
@@ -179,19 +256,90 @@
             margin: 1rem auto;
             display: none;
         }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        /* --- Data Table --- */
+        .data-list-section { margin-top: 2rem; }
+        .data-table-wrapper {
+            max-height: 500px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th, .data-table td {
+            padding: 0.8rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .data-table th {
+            background-color: #2a2a2a;
+            color: var(--primary-gold);
+            position: sticky;
+            top: 0;
+        }
+        .data-table td img {
+            width: 40px;
+            height: 40px;
+            object-fit: cover;
+            border-radius: 4px;
+            vertical-align: middle;
+            margin-right: 10px;
+        }
+        .data-table td:last-child { text-align: right; white-space: nowrap; }
+
+        /* --- Modal (for Editing) --- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none; /* JS വഴി കാണിക്കും */
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--primary-gold);
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1.5rem;
+        }
+        .modal-header h2 { color: var(--primary-gold); margin: 0; }
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 2rem;
+            cursor: pointer;
         }
         
         @media (max-width: 768px) {
-            .container {
-                margin: 0 auto;
-                padding: 1rem;
-            }
+            .container { padding: 1rem; }
             .login-box { padding: 1.5rem; }
-            .form-section { padding: 1rem; }
+            .tab-link { padding: 0.8rem; font-size: 0.9rem; }
+            .tab-content { padding: 1.5rem; }
+            .data-table th, .data-table td { padding: 0.5rem; }
+            .btn { width: 100%; }
+            .btn-edit, .btn-delete { width: auto; }
+            .admin-header { flex-direction: column; gap: 1rem; }
         }
     </style>
 </head>
@@ -222,87 +370,177 @@
         <section id="admin-panel">
 
             <div class="admin-header">
-                <h1>Admin Panel</h1>
+                <h1>Al Ambar - Admin Panel</h1>
                 <button id="logout-button" class="btn btn-logout">Logout</button>
             </div>
             
             <div id="admin-status" class="status-message"></div>
 
-            <!-- Add Category Form -->
-            <form id="add-category-form" class="form-section">
-                <h2>Add New Category</h2>
-                <div class="form-group">
-                    <label for="category-name">Category Name</label>
-                    <input type="text" id="category-name" placeholder="e.g., Attar, Bakhoor" required>
-                </div>
-                
-                <!-- *** മാറ്റം ഇവിടെ *** -->
-                <div class="form-group">
-                    <label for="category-image-url">Category Image URL</label>
-                    <input type="text" id="category-image-url" placeholder="Paste image URL from Imgur, etc." required>
-                </div>
-                
-                <button type="submit" class="btn" id="add-category-button">Add Category</button>
-                <div class="loader" id="category-loader"></div>
-            </form>
+            <!-- Tab Links -->
+            <nav class="tab-links">
+                <button class="tab-link active" data-tab="tab-products">Manage Products</button>
+                <button class="tab-link" data-tab="tab-categories">Manage Categories</button>
+                <button class="tab-link" data-tab="tab-settings">Site Settings</button>
+            </nav>
 
-            <!-- Add Product Form -->
-            <form id="add-product-form" class="form-section">
-                <h2>Add New Product</h2>
-                
-                <div class="form-group">
-                    <label for="product-category">Category</label>
-                    <select id="product-category" required>
-                        <option value="">Select a category...</option>
-                        <!-- കാറ്റഗറികൾ ഫയർബേസിൽ നിന്ന് ഇവിടെ ലോഡ് ആവും -->
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label for="product-name">Product Name</label>
-                    <input type="text" id="product-name" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="product-sku">SKU (Unique ID)</label>
-                    <input type="text" id="product-sku" placeholder="e.g., OA-12" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="product-size">Size</label>
-                    <input type="text" id="product-size" placeholder="e.g., 12ml">
-                </div>
-                
-                <div class="form-group">
-                    <label for="product-price">Price (in AED)</label>
-                    <input type="number" id="product-price" placeholder="e.g., 250">
-                </div>
-                
-                <div class="form-group">
-                    <label for="product-description">Description</label>
-                    <textarea id="product-description" rows="4"></textarea>
-                </div>
-                
-                <!-- *** മാറ്റം ഇവിടെ *** -->
-                <div class="form-group">
-                    <label for="product-image-urls">Product Image URLs (One URL per line)</label>
-                    <textarea id="product-image-urls" rows="4" placeholder="Paste image links here, each on a new line." required></textarea>
-                </div>
+            <!-- Tab Content: Manage Products -->
+            <div id="tab-products" class="tab-content active">
+                <form id="add-product-form" class="form-section">
+                    <h2>Add New Product</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="product-name">Product Name</label>
+                            <input type="text" id="product-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-sku">SKU (Unique ID)</label>
+                            <input type="text" id="product-sku" placeholder="e.g., OA-12" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-category">Category</label>
+                            <select id="product-category" required>
+                                <option value="">Loading categories...</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-price">Price (AED)</label>
+                            <input type="number" id="product-price" placeholder="e.g., 250">
+                        </div>
+                         <div class="form-group">
+                            <label for="product-size">Size</label>
+                            <input type="text" id="product-size" placeholder="e.g., 12ml">
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" id="product-featured" style="width: auto; margin-right: 10px;">
+                            <label for="product-featured" style="display: inline;">Featured on Home Page?</label>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="product-description">Description</label>
+                            <textarea id="product-description" rows="4"></textarea>
+                        </div>
+                        <div class="form-group full-width">
+                            <label for="product-image-urls">Product Image URLs (One URL per line)</label>
+                            <textarea class="image-url-input" id="product-image-urls" rows="4" placeholder="Paste image links here, each on a new line." required></textarea>
+                            <div class="image-preview" id="product-image-preview"></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" id="add-product-button">Add Product</button>
+                    <div class="loader" id="product-loader"></div>
+                </form>
 
-                <div class="form-group">
-                    <input type="checkbox" id="product-featured" style="width: auto; margin-right: 10px;">
-                    <label for="product-featured" style="display: inline;">Featured on Home Page?</label>
+                <div class="data-list-section">
+                    <h2>Existing Products</h2>
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>SKU</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-list-body">
+                                <!-- ഉൽപ്പന്നങ്ങൾ JS വഴി ഇവിടെ വരും -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+            </div>
 
-                <button type="submit" class="btn" id="add-product-button">Add Product</button>
-                <div class="loader" id="product-loader"></div>
-            </form>
+            <!-- Tab Content: Manage Categories -->
+            <div id="tab-categories" class="tab-content">
+                <form id="add-category-form" class="form-section">
+                    <h2>Add New Category</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="category-name">Category Name</label>
+                            <input type="text" id="category-name" placeholder="e.g., Attar" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="category-image-url">Category Image URL</label>
+                            <input type="text" class="image-url-input" id="category-image-url" placeholder="Paste image URL from Imgur, etc." required>
+                            <div class="image-preview" id="category-image-preview"></div>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" id="add-category-button">Add Category</button>
+                    <div class="loader" id="category-loader"></div>
+                </form>
+                
+                <div class="data-list-section">
+                    <h2>Existing Categories</h2>
+                     <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="categories-list-body">
+                                <!-- കാറ്റഗറികൾ JS വഴി ഇവിടെ വരും -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tab Content: Site Settings -->
+            <div id="tab-settings" class="tab-content">
+                <form id="site-settings-form" class="form-section">
+                    <h2>Site Settings (Home Page & Footer)</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="setting-logo-text">Logo Text</label>
+                            <input type="text" id="setting-logo-text" placeholder="e.g., AL AMBAR">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-video-url">Home Page Video URL (YouTube or .mp4)</label>
+                            <input type="text" id="setting-video-url" placeholder="Paste video link here">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-phone">Contact Phone</label>
+                            <input type="text" id="setting-phone" placeholder="+91 ...">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-email">Contact Email</label>
+                            <input type="email" id="setting-email" placeholder="info@alambar.com">
+                        </div>
+                         <div class="form-group">
+                            <label for="setting-address">Contact Address</label>
+                            <input type="text" id="setting-address" placeholder="Kerala, India">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-whatsapp">WhatsApp Number</label>
+                            <input type="text" id="setting-whatsapp" placeholder="918086081985 (without +)">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" id="save-settings-button">Save Settings</button>
+                    <div class="loader" id="settings-loader"></div>
+                </form>
+            </div>
 
         </section>
+        
+        <!-- Modal for Editing -->
+        <div id="edit-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title">Edit Item</h2>
+                    <button class="modal-close" id="modal-close-button">&times;</button>
+                </div>
+                <form id="modal-form">
+                    <!-- JS വഴി ഫോം ഫീൽഡുകൾ ഇവിടെ വരും -->
+                </form>
+                <div class="loader" id="modal-loader"></div>
+            </div>
+        </div>
+        
     </div>
 
     <!-- Firebase SDK (v11 Modular) -->
-    <!-- Firestore and Auth മാത്രം മതി. Storage SDK നീക്കം ചെയ്തു. -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { 
@@ -315,8 +553,14 @@
             getFirestore, 
             collection, 
             addDoc, 
-            serverTimestamp,
+            getDoc,
             getDocs,
+            setDoc,
+            doc,
+            deleteDoc,
+            onSnapshot, // തത്സമയം മാറ്റങ്ങൾ അറിയാൻ
+            query,
+            serverTimestamp,
             setLogLevel
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
@@ -325,7 +569,7 @@
             apiKey: "AIzaSyCePcVE_BTiFuYXAApNmbMKHdkhQ9Ay_F4",
             authDomain: "al-ambar-perfume-company.firebaseapp.com",
             projectId: "al-ambar-perfume-company",
-            storageBucket: "al-ambar-perfume-company.firebasestorage.app", // ഇത് ഇവിടെ থাকলেও നമ്മൾ ഉപയോഗിക്കുന്നില്ല
+            storageBucket: "al-ambar-perfume-company.firebasestorage.app",
             messagingSenderId: "992506041633",
             appId: "1:992506041633:web:f7277461a577248bb8da60",
             measurementId: "G-39XB0WLW6P"
@@ -346,36 +590,56 @@
         const logoutButton = document.getElementById("logout-button");
         const adminStatus = document.getElementById("admin-status");
         
+        const tabLinks = document.querySelectorAll(".tab-link");
+        const tabContents = document.querySelectorAll(".tab-content");
+        
+        // Category elements
         const addCategoryForm = document.getElementById("add-category-form");
         const categoryLoader = document.getElementById("category-loader");
+        const categoriesListBody = document.getElementById("categories-list-body");
+        const categoryImagePreview = document.getElementById("category-image-preview");
         
+        // Product elements
         const addProductForm = document.getElementById("add-product-form");
         const productCategorySelect = document.getElementById("product-category");
         const productLoader = document.getElementById("product-loader");
+        const productsListBody = document.getElementById("products-list-body");
+        const productImagePreview = document.getElementById("product-image-preview");
+        
+        // Settings elements
+        const siteSettingsForm = document.getElementById("site-settings-form");
+        const settingsLoader = document.getElementById("settings-loader");
+        
+        // Modal elements
+        const editModal = document.getElementById("edit-modal");
+        const modalCloseButton = document.getElementById("modal-close-button");
+        const modalTitle = document.getElementById("modal-title");
+        const modalForm = document.getElementById("modal-form");
+        const modalLoader = document.getElementById("modal-loader");
 
         // --- Helper Functions ---
         function showStatus(element, message, isError = true) {
             element.textContent = message;
             element.className = isError ? 'status-message error' : 'status-message success';
+            setTimeout(() => clearStatus(element), 4000); // 4 സെക്കൻഡിന് ശേഷം മായ്ക്കുന്നു
         }
         function clearStatus(element) {
             element.textContent = '';
             element.className = 'status-message';
         }
-
+        function showLoader(loader) { loader.style.display = 'block'; }
+        function hideLoader(loader) { loader.style.display = 'none'; }
+        
         // --- 1. Authentication Logic ---
         loginForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             clearStatus(loginStatus);
             loginButton.disabled = true;
             loginButton.textContent = "Logging in...";
-
             const email = document.getElementById("login-email").value;
             const password = document.getElementById("login-password").value;
-
             try {
                 await signInWithEmailAndPassword(auth, email, password);
-                // Auth state change (താഴെ) ബാക്കി കാര്യങ്ങൾ നോക്കിക്കോളും
             } catch (error) {
                 console.error("Login Error:", error);
                 showStatus(loginStatus, `Login Failed: ${error.message}`);
@@ -384,19 +648,18 @@
             }
         });
 
-        logoutButton.addEventListener("click", () => {
-            signOut(auth);
-        });
+        logoutButton.addEventListener("click", () => { signOut(auth); });
 
-        // Auth State Change Listener (ലോഗിൻ ആയോ ഇല്ലയോ എന്ന് നോക്കുന്നു)
+        // Auth State Change Listener
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in
                 loginSection.style.display = "none";
                 adminPanel.style.display = "block";
-                loadCategoriesForSelect(); // അഡ്മിൻ പാനലിലെ ഡ്രോപ്പ്ഡൗൺ ലോഡ് ചെയ്യുന്നു
+                // ലോഗിൻ ആയാൽ ഉടൻ ഡാറ്റ ലോഡ് ചെയ്യുന്നു
+                loadCategories();
+                loadProducts();
+                loadSiteSettings();
             } else {
-                // User is signed out
                 loginSection.style.display = "block";
                 adminPanel.style.display = "none";
                 loginButton.disabled = false;
@@ -404,111 +667,400 @@
             }
         });
 
-        // --- 2. Load Categories into Product Form Dropdown ---
-        async function loadCategoriesForSelect() {
+        // --- 2. Tab Switching Logic ---
+        tabLinks.forEach(link => {
+            link.addEventListener("click", () => {
+                const tabId = link.getAttribute("data-tab");
+                
+                tabLinks.forEach(item => item.classList.remove("active"));
+                tabContents.forEach(item => item.classList.remove("active"));
+                
+                link.classList.add("active");
+                document.getElementById(tabId).classList.add("active");
+            });
+        });
+
+        // --- 3. Image Preview Logic ---
+        function setupImagePreview(inputId, previewId) {
+            const input = document.getElementById(inputId);
+            const previewContainer = document.getElementById(previewId);
+            
+            function updatePreview() {
+                previewContainer.innerHTML = ''; // പഴയ പ്രിവ്യൂ മാറ്റുന്നു
+                const urls = input.value.split('\n')
+                                     .map(url => url.trim())
+                                     .filter(url => url.length > 0);
+                
+                urls.forEach(url => {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.onerror = () => { img.style.display = 'none'; }; // ലിങ്ക് തെറ്റാണെങ്കിൽ
+                    previewContainer.appendChild(img);
+                });
+            }
+            
+            input.addEventListener('input', updatePreview);
+            input.addEventListener('change', updatePreview);
+        }
+        setupImagePreview('category-image-url', 'category-image-preview');
+        setupImagePreview('product-image-urls', 'product-image-preview');
+
+
+        // --- 4. Site Settings Logic ---
+        async function loadSiteSettings() {
             try {
-                const querySnapshot = await getDocs(collection(db, "categories"));
-                productCategorySelect.innerHTML = '<option value="">Select a category...</option>'; // Clear
+                const docRef = doc(db, "settings", "global");
+                const docSnap = await getDoc(docRef);
+                if (docSnap.exists()) {
+                    const settings = docSnap.data();
+                    document.getElementById("setting-logo-text").value = settings.logoText || '';
+                    document.getElementById("setting-video-url").value = settings.videoUrl || '';
+                    document.getElementById("setting-phone").value = settings.phone || '';
+                    document.getElementById("setting-email").value = settings.email || '';
+                    document.getElementById("setting-address").value = settings.address || '';
+                    document.getElementById("setting-whatsapp").value = settings.whatsapp || '';
+                }
+            } catch (error) {
+                console.error("Error loading settings: ", error);
+                showStatus(adminStatus, "Error loading site settings.");
+            }
+        }
+        
+        siteSettingsForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            showLoader(settingsLoader);
+            try {
+                const settings = {
+                    logoText: document.getElementById("setting-logo-text").value,
+                    videoUrl: document.getElementById("setting-video-url").value,
+                    phone: document.getElementById("setting-phone").value,
+                    email: document.getElementById("setting-email").value,
+                    address: document.getElementById("setting-address").value,
+                    whatsapp: document.getElementById("setting-whatsapp").value,
+                };
+                
+                const docRef = doc(db, "settings", "global");
+                await setDoc(docRef, settings, { merge: true }); // 'merge: true' ഉപയോഗിച്ച് അപ്‌ഡേറ്റ് ചെയ്യുന്നു
+                
+                showStatus(adminStatus, "Settings saved successfully!", false);
+            } catch (error) {
+                console.error("Error saving settings: ", error);
+                showStatus(adminStatus, `Error: ${error.message}`);
+            } finally {
+                hideLoader(settingsLoader);
+            }
+        });
+
+        // --- 5. Category Logic (Full CRUD) ---
+        
+        // തത്സമയം കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു
+        function loadCategories() {
+            const q = query(collection(db, "categories"));
+            onSnapshot(q, (querySnapshot) => {
+                categoriesListBody.innerHTML = '';
+                productCategorySelect.innerHTML = '<option value="">Select a category...</option>';
+                
+                if (querySnapshot.empty) {
+                    categoriesListBody.innerHTML = '<tr><td colspan="3">No categories found.</td></tr>';
+                    return;
+                }
+                
                 querySnapshot.forEach((doc) => {
                     const category = doc.data();
+                    const id = doc.id;
+                    
+                    // കാറ്റഗറി ലിസ്റ്റിൽ ചേർക്കുന്നു
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><img src="${category.imageUrl || ''}" alt="${category.name}"></td>
+                        <td>${category.name}</td>
+                        <td>
+                            <button class="btn btn-edit" data-id="${id}" data-type="category">Edit</button>
+                            <button class="btn btn-delete" data-id="${id}" data-type="category">Delete</button>
+                        </td>
+                    `;
+                    categoriesListBody.appendChild(row);
+                    
+                    // പ്രോഡക്റ്റ് ഫോമിലെ ഡ്രോപ്പ്ഡൗണിൽ ചേർക്കുന്നു
                     const option = document.createElement('option');
-                    option.value = doc.id; // We use the Document ID
+                    option.value = id;
                     option.textContent = category.name;
                     productCategorySelect.appendChild(option);
                 });
-            } catch (error) {
-                console.error("Error loading categories for select:", error);
-                showStatus(adminStatus, "Error loading categories dropdown.");
-            }
+            }, (error) => {
+                console.error("Error loading categories: ", error);
+                showStatus(adminStatus, "Error loading categories.");
+            });
         }
-
-        // --- 3. Add Category Logic (Storage ഇല്ലാതെ) ---
+        
+        // പുതിയ കാറ്റഗറി ചേർക്കുന്നു
         addCategoryForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            clearStatus(adminStatus);
-            categoryLoader.style.display = 'block';
-            addCategoryForm.querySelector('button').disabled = true;
-
-            const name = document.getElementById("category-name").value;
-            const imageUrl = document.getElementById("category-image-url").value;
-
-            if (!name || !imageUrl) {
-                showStatus(adminStatus, "Please fill in all category fields.");
-                categoryLoader.style.display = 'none';
-                addCategoryForm.querySelector('button').disabled = false;
-                return;
-            }
-
+            showLoader(categoryLoader);
             try {
-                // നേരെ ഫയർസ്റ്റോറിലേക്ക് സേവ് ചെയ്യുന്നു
+                const name = document.getElementById("category-name").value;
+                const imageUrl = document.getElementById("category-image-url").value;
+                
                 await addDoc(collection(db, "categories"), {
                     name: name,
-                    imageUrl: imageUrl, // അപ്‌ലോഡ് ചെയ്യുന്നതിന് പകരം ലിങ്ക് സേവ് ചെയ്യുന്നു
+                    imageUrl: imageUrl,
                     createdAt: serverTimestamp()
                 });
                 
                 showStatus(adminStatus, "Category added successfully!", false);
                 addCategoryForm.reset();
-                loadCategoriesForSelect(); // ഡ്രോപ്പ്ഡൗൺ റീഫ്രഷ് ചെയ്യുന്നു
+                document.getElementById('category-image-preview').innerHTML = ''; // പ്രിവ്യൂ ക്ലിയർ ചെയ്യുന്നു
 
             } catch (error) {
                 console.error("Error adding category: ", error);
                 showStatus(adminStatus, `Error: ${error.message}`);
             } finally {
-                categoryLoader.style.display = 'none';
-                addCategoryForm.querySelector('button').disabled = false;
+                hideLoader(categoryLoader);
             }
         });
 
-        // --- 4. Add Product Logic (Storage ഇല്ലാതെ) ---
+        // --- 6. Product Logic (Full CRUD) ---
+        
+        // തത്സമയം ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
+        function loadProducts() {
+             const q = query(collection(db, "products"));
+             onSnapshot(q, (querySnapshot) => {
+                productsListBody.innerHTML = '';
+                if (querySnapshot.empty) {
+                    productsListBody.innerHTML = '<tr><td colspan="5">No products found.</td></tr>';
+                    return;
+                }
+                
+                querySnapshot.forEach((doc) => {
+                    const product = doc.data();
+                    const id = doc.id;
+                    const imageUrl = product.images && product.images[0] ? product.images[0] : '';
+                    
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><img src="${imageUrl}" alt="${product.name}"></td>
+                        <td>${product.name}</td>
+                        <td>${product.sku}</td>
+                        <td>${product.price || 'N/A'}</td>
+                        <td>
+                            <button class="btn btn-edit" data-id="${id}" data-type="product">Edit</button>
+                            <button class="btn btn-delete" data-id="${id}" data-type="product">Delete</button>
+                        </td>
+                    `;
+                    productsListBody.appendChild(row);
+                });
+             }, (error) => {
+                console.error("Error loading products: ", error);
+                showStatus(adminStatus, "Error loading products.");
+            });
+        }
+
+        // പുതിയ ഉൽപ്പന്നം ചേർക്കുന്നു
         addProductForm.addEventListener("submit", async (e) => {
             e.preventDefault();
-            clearStatus(adminStatus);
-            productLoader.style.display = 'block';
-            addProductForm.querySelector('button').disabled = true;
-
+            showLoader(productLoader);
             try {
-                const categoryId = productCategorySelect.value;
-                const name = document.getElementById("product-name").value;
-                const sku = document.getElementById("product-sku").value;
-                const size = document.getElementById("product-size").value;
-                const price = document.getElementById("product-price").value;
-                const description = document.getElementById("product-description").value;
-                const featured = document.getElementById("product-featured").checked;
-                
-                // *** മാറ്റം ഇവിടെ ***
-                // ടെക്സ്റ്റ് ഏരിയയിൽ നിന്ന് ലിങ്കുകൾ എടുക്കുന്നു
                 const imageUrlsText = document.getElementById("product-image-urls").value;
-                const imageUrls = imageUrlsText.split('\n')
-                                            .map(url => url.trim())
-                                            .filter(url => url.length > 0); // ഒഴിഞ്ഞ ലൈനുകൾ ഒഴിവാക്കുന്നു
+                const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
 
-                if (!categoryId || !name || !sku || imageUrls.length === 0) {
-                    throw new Error("Category, Name, SKU, and at least one Image URL are required.");
-                }
-
-                // നേരെ ഫയർസ്റ്റോറിലേക്ക് സേവ് ചെയ്യുന്നു
-                await addDoc(collection(db, "products"), {
-                    categoryId: categoryId,
-                    name: name,
-                    sku: sku,
-                    size: size,
-                    price: Number(price),
-                    description: description,
-                    featured: featured,
-                    images: imageUrls, // അപ്‌ലോഡ് ചെയ്ത ലിങ്കുകൾക്ക് പകരം പേസ്റ്റ് ചെയ്ത ലിങ്കുകൾ
+                const product = {
+                    categoryId: productCategorySelect.value,
+                    name: document.getElementById("product-name").value,
+                    sku: document.getElementById("product-sku").value,
+                    size: document.getElementById("product-size").value,
+                    price: Number(document.getElementById("product-price").value),
+                    description: document.getElementById("product-description").value,
+                    featured: document.getElementById("product-featured").checked,
+                    images: imageUrls,
                     createdAt: serverTimestamp()
-                });
-                
+                };
+
+                await addDoc(collection(db, "products"), product);
                 showStatus(adminStatus, "Product added successfully!", false);
                 addProductForm.reset();
+                document.getElementById('product-image-preview').innerHTML = ''; // പ്രിവ്യൂ ക്ലിയർ ചെയ്യുന്നു
 
             } catch (error) {
                 console.error("Error adding product: ", error);
                 showStatus(adminStatus, `Error: ${error.message}`);
             } finally {
-                productLoader.style.display = 'none';
-                addProductForm.querySelector('button').disabled = false;
+                hideLoader(productLoader);
+            }
+        });
+
+
+        // --- 7. Edit & Delete Logic (Modal) ---
+        
+        // "Edit" അല്ലെങ്കിൽ "Delete" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
+        document.body.addEventListener('click', async (e) => {
+            const target = e.target;
+            
+            // Delete ബട്ടൺ
+            if (target.classList.contains('btn-delete')) {
+                const id = target.dataset.id;
+                const type = target.dataset.type;
+                
+                // ഒരു ലളിതമായ കസ്റ്റം കൺഫർമേഷൻ
+                if (confirm(`Are you sure you want to delete this ${type}? This action cannot be undone.`)) {
+                    try {
+                        await deleteDoc(doc(db, type === 'product' ? 'products' : 'categories', id));
+                        showStatus(adminStatus, `${type} deleted successfully.`, false);
+                    } catch (error) {
+                        console.error("Error deleting item: ", error);
+                        showStatus(adminStatus, `Error: ${error.message}`);
+                    }
+                }
+            }
+            
+            // Edit ബട്ടൺ
+            if (target.classList.contains('btn-edit')) {
+                const id = target.dataset.id;
+                const type = target.dataset.type;
+                openEditModal(id, type);
+            }
+        });
+        
+        // എഡിറ്റ് മോഡൽ തുറക്കുന്നു
+        async function openEditModal(id, type) {
+            modalForm.innerHTML = ''; // പഴയ ഫോം മാറ്റുന്നു
+            showLoader(modalLoader);
+            editModal.style.display = 'flex';
+            
+            try {
+                const docRef = doc(db, type === 'product' ? 'products' : 'categories', id);
+                const docSnap = await getDoc(docRef);
+                
+                if (!docSnap.exists()) {
+                    throw new Error("Item not found.");
+                }
+                
+                const data = docSnap.data();
+                modalTitle.textContent = `Edit ${type}`;
+                
+                // മോഡലിൽ ഏത് ഫോം കാണിക്കണം എന്ന് തീരുമാനിക്കുന്നു
+                if (type === 'category') {
+                    modalForm.innerHTML = `
+                        <input type="hidden" id="modal-item-id" value="${id}">
+                        <input type="hidden" id="modal-item-type" value="category">
+                        <div class="form-group">
+                            <label for="modal-category-name">Category Name</label>
+                            <input type="text" id="modal-category-name" value="${data.name}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-category-image-url">Category Image URL</label>
+                            <input type="text" class="image-url-input" id="modal-category-image-url" value="${data.imageUrl}" required>
+                            <div class="image-preview" id="modal-category-image-preview"></div>
+                        </div>
+                        <button type="submit" class="btn">Save Changes</button>
+                    `;
+                    setupImagePreview('modal-category-image-url', 'modal-category-image-preview');
+                    document.getElementById('modal-category-image-url').dispatchEvent(new Event('input')); // പ്രിവ്യൂ ലോഡ് ചെയ്യാൻ
+                    
+                } else if (type === 'product') {
+                    const imagesText = data.images ? data.images.join('\n') : '';
+                    modalForm.innerHTML = `
+                        <input type="hidden" id="modal-item-id" value="${id}">
+                        <input type="hidden" id="modal-item-type" value="product">
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="modal-product-name">Product Name</label>
+                                <input type="text" id="modal-product-name" value="${data.name}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="modal-product-sku">SKU</label>
+                                <input type="text" id="modal-product-sku" value="${data.sku}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="modal-product-category">Category</label>
+                                <select id="modal-product-category" required>${productCategorySelect.innerHTML}</select>
+                            </div>
+                            <div class="form-group">
+                                <label for="modal-product-price">Price (AED)</label>
+                                <input type="number" id="modal-product-price" value="${data.price || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label for="modal-product-size">Size</label>
+                                <input type="text" id="modal-product-size" value="${data.size || ''}">
+                            </div>
+                            <div class="form-group">
+                                <input type="checkbox" id="modal-product-featured" style="width: auto; margin-right: 10px;" ${data.featured ? 'checked' : ''}>
+                                <label for="modal-product-featured" style="display: inline;">Featured?</label>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="modal-product-description">Description</label>
+                                <textarea id="modal-product-description" rows="4">${data.description || ''}</textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="modal-product-image-urls">Product Image URLs (One URL per line)</label>
+                                <textarea class="image-url-input" id="modal-product-image-urls" rows="4" required>${imagesText}</textarea>
+                                <div class="image-preview" id="modal-product-image-preview"></div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn">Save Changes</button>
+                    `;
+                    document.getElementById('modal-product-category').value = data.categoryId; // സെലക്റ്റ് ശരിയാക്കുന്നു
+                    setupImagePreview('modal-product-image-urls', 'modal-product-image-preview');
+                    document.getElementById('modal-product-image-urls').dispatchEvent(new Event('input')); // പ്രിവ്യൂ ലോഡ് ചെയ്യാൻ
+                }
+                
+            } catch (error) {
+                console.error("Error opening modal: ", error);
+                showStatus(adminStatus, `Error: ${error.message}`);
+                closeEditModal();
+            } finally {
+                hideLoader(modalLoader);
+            }
+        }
+        
+        // മോഡൽ അടയ്ക്കുന്നു
+        function closeEditModal() {
+            editModal.style.display = 'none';
+        }
+        modalCloseButton.addEventListener('click', closeEditModal);
+        
+        // എഡിറ്റ് ചെയ്ത ഡാറ്റ സേവ് ചെയ്യുന്നു
+        modalForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            showLoader(modalLoader);
+            
+            const id = document.getElementById('modal-item-id').value;
+            const type = document.getElementById('modal-item-type').value;
+            
+            try {
+                let dataToSave = {};
+                if (type === 'category') {
+                    dataToSave = {
+                        name: document.getElementById('modal-category-name').value,
+                        imageUrl: document.getElementById('modal-category-image-url').value,
+                    };
+                } else if (type === 'product') {
+                    const imageUrlsText = document.getElementById("modal-product-image-urls").value;
+                    const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
+                    
+                    dataToSave = {
+                        categoryId: document.getElementById('modal-product-category').value,
+                        name: document.getElementById('modal-product-name').value,
+                        sku: document.getElementById('modal-product-sku').value,
+                        size: document.getElementById('modal-product-size').value,
+                        price: Number(document.getElementById('modal-product-price').value),
+                        description: document.getElementById('modal-product-description').value,
+                        featured: document.getElementById('modal-product-featured').checked,
+                        images: imageUrls,
+                    };
+                }
+                
+                const docRef = doc(db, type === 'product' ? 'products' : 'categories', id);
+                await setDoc(docRef, dataToSave, { merge: true }); // 'merge: true' പഴയ ഡാറ്റ പോവാതെ അപ്‌ഡേറ്റ് ചെയ്യുന്നു
+                
+                showStatus(adminStatus, `${type} updated successfully!`, false);
+                closeEditModal();
+                
+            } catch (error) {
+                console.error("Error saving changes: ", error);
+                showStatus(adminStatus, `Error: ${error.message}`);
+            } finally {
+                hideLoader(modalLoader);
             }
         });
 
