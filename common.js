@@ -2,12 +2,44 @@
 // എല്ലാ പബ്ലിക് പേജുകൾക്കും (Home, Categories,...) വേണ്ടിയുള്ള പൊതുവായ കാര്യങ്ങൾ
 // (ഹെഡർ, ഫൂട്ടർ, സൈഡ് മെനു, കാർട്ട് ഐക്കൺ) ഈ ഫയലാണ് നിർമ്മിക്കുന്നത്.
 
-import { db } from './firebase-config.js';
+import { db, auth } from './firebase-config.js'; // അപ്‌ഡേറ്റ് ചെയ്ത കോൺഫിഗ്
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+// --- പുതിയതായി ചേർത്തത് (Authentication) ---
+import { 
+    signInAnonymously, 
+    signInWithCustomToken 
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+// --- ---
 import { getCartItemCount } from './cart.js'; // കാർട്ടിലെ എണ്ണം അറിയാൻ
 
 // സൈറ്റ് സെറ്റിംഗ്സ് ഡാറ്റ ഒരിക്കൽ മാത്രം ലോഡ് ചെയ്യാൻ
 let siteSettings = null;
+let authPromise = null; // ഓതന്റിക്കേഷൻ പൂർത്തിയായോ എന്നറിയാൻ
+
+/**
+ * പ്ലാറ്റ്ഫോം ടോക്കൺ ഉപയോഗിച്ചോ അല്ലാതെയോ യൂസറെ സൈൻ ഇൻ ചെയ്യിക്കുന്നു
+ * ഫയർസ്റ്റോർ റൂളുകൾ (allow read: if request.auth != null) പാലിക്കാൻ ഇത് സഹായിക്കുന്നു
+ */
+function authenticateUser() {
+    if (authPromise) return authPromise; // ഒരിക്കൽ മാത്രം ചെയ്താൽ മതി
+
+    authPromise = new Promise(async (resolve, reject) => {
+        try {
+            if (typeof __initial_auth_token !== 'undefined') {
+                await signInWithCustomToken(auth, __initial_auth_token);
+                console.log("Authenticated with custom token.");
+            } else {
+                await signInAnonymously(auth);
+                console.log("Authenticated anonymously.");
+            }
+            resolve(auth.currentUser);
+        } catch (error) {
+            console.error("Authentication Error:", error);
+            reject(error);
+        }
+    });
+    return authPromise;
+}
 
 /**
  * ഫയർബേസിൽ നിന്ന് സൈറ്റ് സെറ്റിംഗ്സ് (ലോഗോ, ഫോൺ, സോഷ്യൽ ലിങ്കുകൾ) എടുക്കുന്നു
@@ -17,6 +49,9 @@ async function fetchSiteSettings() {
         return siteSettings; // നേരത്തെ ലോഡ് ചെയ്തെങ്കിൽ അത് തിരികെ നൽകുന്നു
     }
     try {
+        // ഡാറ്റ എടുക്കുന്നതിന് മുമ്പ് ഓതന്റിക്കേഷൻ ഉറപ്പാക്കുന്നു
+        await authenticateUser(); 
+        
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -221,6 +256,9 @@ window.addEventListener('cartUpdated', updateCartIcon);
  * എല്ലാ പൊതുവായ കാര്യങ്ങളും ലോഡ് ചെയ്യാനുള്ള പ്രധാന ഫംഗ്ഷൻ
  */
 export async function loadSiteSettings() {
+    // ആദ്യം ഓതന്റിക്കേഷൻ നടപ്പിലാക്കുന്നു
+    await authenticateUser();
+    // അതിനുശേഷം ഹെഡറും ഫൂട്ടറും ലോഡ് ചെയ്യുന്നു
     await buildHeader();
     await buildSideNav();
     await buildFooter();
