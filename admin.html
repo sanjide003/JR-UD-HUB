@@ -1,23 +1,22 @@
+<!-- 
+  ഇതാണ് അഡ്മിൻ പാനൽ. 
+  ഇതിൻ്റെ ഡിസൈൻ വരുന്നത് 'admin.css'-ൽ നിന്നും,
+  പ്രവർത്തനങ്ങൾ വരുന്നത് 'admin.js'-ൽ നിന്നുമാണ്.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Al Ambar Perfumes</title>
-    <!-- Google Font: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
-    
-    <!-- **** CSS നീക്കം ചെയ്തു, പുതിയ ഫയൽ ലിങ്ക് ചെയ്തു **** -->
+    <!-- അഡ്മിൻ പാനലിൻ്റെ ഡിസൈൻ ഫയൽ -->
     <link rel="stylesheet" href="admin.css">
-    
 </head>
 <body>
 
     <div class="container">
 
-        <!-- 1. Login Section -->
+        <!-- 1. ലോഗിൻ സെക്ഷൻ -->
         <section id="login-section">
             <div class="login-box">
                 <h1>Admin Login</h1>
@@ -36,7 +35,7 @@
             </div>
         </section>
 
-        <!-- 2. Admin Panel Section (Hidden by default) -->
+        <!-- 2. അഡ്മിൻ പാനൽ (ലോഗിൻ ചെയ്ത ശേഷം മാത്രം) -->
         <section id="admin-panel">
 
             <div class="admin-header">
@@ -46,14 +45,14 @@
             
             <div id="admin-status" class="status-message"></div>
 
-            <!-- Tab Links -->
+            <!-- ടാബുകൾ -->
             <nav class="tab-links">
                 <button class="tab-link active" data-tab="tab-products">Manage Products</button>
                 <button class="tab-link" data-tab="tab-categories">Manage Categories</button>
                 <button class="tab-link" data-tab="tab-settings">Site Settings</button>
             </nav>
 
-            <!-- Tab Content: Manage Products -->
+            <!-- ടാബ് 1: ഉൽപ്പന്നങ്ങൾ കൈകാര്യം ചെയ്യാൻ -->
             <div id="tab-products" class="tab-content active">
                 <form id="add-product-form" class="form-section">
                     <h2>Add New Product</h2>
@@ -70,11 +69,11 @@
                         </div>
                         <div class="form-group">
                             <label for="product-mrp">MRP (₹)</label>
-                            <input type="number" id="product-mrp" placeholder="e.g., 1000">
+                            <input type="number" id="product-mrp" placeholder="e.g., 500">
                         </div>
                         <div class="form-group">
                             <label for="product-price">Retail Price (₹)</label>
-                            <input type="number" id="product-price" placeholder="e.g., 800">
+                            <input type="number" id="product-price" placeholder="e.g., 350" required>
                         </div>
                          <div class="form-group">
                             <label for="product-size">Size</label>
@@ -82,7 +81,7 @@
                         </div>
                         <div class="form-group">
                             <input type="checkbox" id="product-featured" style="width: auto; margin-right: 10px;">
-                            <label for="product-featured" style="display: inline;">Featured on Home Page?</label>
+                            <label for="product-featured" style="display: inline;">Featured on Home Page? (Top Seller)</label>
                         </div>
                         <div class="form-group full-width">
                             <label for="product-description">Description</label>
@@ -107,19 +106,18 @@
                                     <th>Image</th>
                                     <th>Name</th>
                                     <th>Price</th>
-                                    <th>Featured</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tbody id="products-list-body">
-                                <!-- ഉൽപ്പന്നങ്ങൾ JS വഴി ഇവിടെ വരും -->
+                                <!-- 'admin.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- Tab Content: Manage Categories -->
+            <!-- ടാബ് 2: കാറ്റഗറികൾ കൈകാര്യം ചെയ്യാൻ -->
             <div id="tab-categories" class="tab-content">
                 <form id="add-category-form" class="form-section">
                     <h2>Add New Category</h2>
@@ -150,51 +148,55 @@
                                 </tr>
                             </thead>
                             <tbody id="categories-list-body">
-                                <!-- കാറ്റഗറികൾ JS വഴി ഇവിടെ വരും -->
+                                <!-- 'admin.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ ഇവിടെ വരും -->
                             </tbody>
                         </table>
                     </div>
                 </div>
             </div>
             
-            <!-- Tab Content: Site Settings -->
+            <!-- ടാബ് 3: സൈറ്റ് സെറ്റിംഗ്സ് -->
             <div id="tab-settings" class="tab-content">
                 <form id="site-settings-form" class="form-section">
                     <h2>Site Settings (Home Page & Footer)</h2>
                     <div class="form-grid">
-                        <div class="form-group">
+                         <div class="form-group">
                             <label for="setting-logo-image-url">Logo Image URL</label>
-                            <input type="text" id="setting-logo-image-url" placeholder="Paste logo image URL here">
+                            <input type="text" id="setting-logo-image-url" placeholder="Paste logo image link here">
                         </div>
                         <div class="form-group">
-                            <label for="setting-hero-video-url">Hero Background Video URL</label>
-                            <input type="text" id="setting-hero-video-url" placeholder="Paste hero video link here">
+                            <label for="setting-logo-text">Logo Text (Shown next to logo)</label>
+                            <input type="text" id="setting-logo-text" placeholder="e.g., AL AMBAR">
                         </div>
                         <div class="form-group">
-                            <label for="setting-video-url">Home Page Video URL (YouTube or .mp4)</label>
-                            <input type="text" id="setting-video-url" placeholder="Paste video link here">
+                            <label for="setting-hero-video-url">Home Page Hero Video URL</label>
+                            <input type="text" id="setting-hero-video-url" placeholder="Paste .mp4 link here">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-video-url">Home Page Experience Video URL</label>
+                            <input type="text" id="setting-video-url" placeholder="Paste YouTube or .mp4 link here">
                         </div>
                         <div class="form-group">
                             <label for="setting-phone">Contact Phone</label>
                             <input type="text" id="setting-phone" placeholder="+91 ...">
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label for="setting-email">Contact Email</label>
                             <input type="email" id="setting-email" placeholder="info@alambar.com">
                         </div>
-                        <div class="form-group">
+                         <div class="form-group">
                             <label for="setting-address">Contact Address</label>
                             <input type="text" id="setting-address" placeholder="Kerala, India">
                         </div>
                         <div class="form-group">
-                            <label for="setting-whatsapp">WhatsApp Number</label>
+                            <label for="setting-whatsapp">WhatsApp Number (For Orders)</label>
                             <input type="text" id="setting-whatsapp" placeholder="918086081985 (without +)">
                         </div>
                          <div class="form-group">
                             <label for="setting-facebook-url">Facebook URL</label>
                             <input type="text" id="setting-facebook-url" placeholder="https://facebook.com/yourpage">
                         </div>
-                         <div class="form-group">
+                        <div class="form-group">
                             <label for="setting-instagram-url">Instagram URL</label>
                             <input type="text" id="setting-instagram-url" placeholder="https://instagram.com/yourpage">
                         </div>
@@ -206,7 +208,7 @@
 
         </section>
         
-        <!-- Modal for Editing -->
+        <!-- എഡിറ്റ് ചെയ്യാനുള്ള മോഡൽ -->
         <div id="edit-modal" class="modal-overlay">
             <div class="modal-content">
                 <div class="modal-header">
@@ -214,15 +216,16 @@
                     <button class="modal-close" id="modal-close-button">&times;</button>
                 </div>
                 <form id="modal-form">
-                    <!-- JS വഴി ഫോം ഫീൽഡുകൾ ഇവിടെ വരും -->
-                </imgdir>
+                    <!-- 'admin.js' ഉപയോഗിച്ച് ഫോം ഫീൽഡുകൾ ഇവിടെ വരും -->
+                </form>
                 <div class="loader" id="modal-loader"></div>
             </div>
         </div>
         
     </div>
 
-    <!-- **** JavaScript നീക്കം ചെയ്തു, പുതിയ ഫയൽ ലിങ്ക് ചെയ്തു **** -->
+    <!-- JS ഫയലുകൾ -->
+    <script type="module" src="firebase-config.js"></script>
     <script type="module" src="admin.js"></script>
 
 </body>
