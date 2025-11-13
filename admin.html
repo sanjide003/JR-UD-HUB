@@ -22,22 +22,8 @@
             --border-color: #333;
             --font-main: 'Inter', sans-serif;
         }
-
-        body {
-            font-family: var(--font-main);
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 0;
-        }
-
-        .container {
-            max-width: 1100px;
-            margin: 2rem auto;
-            padding: 1rem 2rem;
-        }
-        
-        /* (Login, Header, Tabs, Forms എന്നിവയുടെ സ്റ്റൈലുകൾ മാറ്റമില്ല) */
+        body { font-family: var(--font-main); background-color: var(--bg-color); color: var(--text-color); margin: 0; padding: 0; }
+        .container { max-width: 1100px; margin: 2rem auto; padding: 1rem 2rem; }
         .login-box { background-color: var(--card-bg); padding: 2.5rem; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.3); max-width: 500px; margin: 5rem auto; }
         #login-section h1 { text-align: center; color: var(--primary-gold); margin-bottom: 2rem; }
         #admin-panel { display: none; }
@@ -78,16 +64,7 @@
         .data-table th { background-color: #2a2a2a; color: var(--primary-gold); position: sticky; top: 0; }
         .data-table td img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; vertical-align: middle; margin-right: 10px; }
         .data-table td:last-child { text-align: right; white-space: nowrap; }
-        
-        /* *** പുതിയ സ്റ്റൈൽ: MRP വെട്ടി കാണിക്കാൻ *** */
-        .price-mrp {
-            text-decoration: line-through;
-            color: var(--text-muted);
-            font-size: 0.9rem;
-            margin-left: 0.5rem;
-        }
-
-        /* (Modal, Responsive സ്റ്റൈലുകൾ മാറ്റമില്ല) */
+        .data-table .price-col del { color: var(--text-muted); margin-left: 5px; font-size: 0.9rem; }
         .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
         .modal-content { background-color: var(--card-bg); padding: 2rem; border-radius: 8px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--primary-gold); }
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem; }
@@ -119,14 +96,14 @@
             </div>
         </section>
 
-        <!-- 2. Admin Panel Section -->
+        <!-- 2. Admin Panel Section (Hidden by default) -->
         <section id="admin-panel">
 
-            <!-- Admin Header (മാറ്റമില്ല) -->
             <div class="admin-header">
                 <h1>Al Ambar - Admin Panel</h1>
                 <button id="logout-button" class="btn btn-logout">Logout</button>
             </div>
+            
             <div id="admin-status" class="status-message"></div>
 
             <!-- Tab Links (മാറ്റമില്ല) -->
@@ -151,18 +128,14 @@
                                 <option value="">Loading categories...</option>
                             </select>
                         </div>
-                        
-                        <!-- *** വില ഫീൽഡുകൾ മാറ്റി *** -->
                         <div class="form-group">
                             <label for="product-mrp">MRP (₹)</label>
-                            <input type="number" id="product-mrp" placeholder="e.g., 1000">
+                            <input type="number" id="product-mrp" placeholder="e.g., 999">
                         </div>
                         <div class="form-group">
                             <label for="product-price">Retail Price (₹)</label>
-                            <input type="number" id="product-price" placeholder="e.g., 800" required>
+                            <input type="number" id="product-price" placeholder="e.g., 799" required>
                         </div>
-                        <!-- *** /വില ഫീൽഡുകൾ മാറ്റി *** -->
-                        
                          <div class="form-group">
                             <label for="product-size">Size</label>
                             <input type="text" id="product-size" placeholder="e.g., 12ml">
@@ -193,7 +166,7 @@
                                 <tr>
                                     <th>Image</th>
                                     <th>Name</th>
-                                    <th>Price (Retail / MRP)</th> <!-- *** ഹെഡർ മാറ്റി *** -->
+                                    <th>Price (₹)</th> <!-- SKU നീക്കം ചെയ്തു -->
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -243,18 +216,26 @@
                 </div>
             </div>
             
-            <!-- Tab Content: Site Settings (മാറ്റമില്ല) -->
+            <!-- Tab Content: Site Settings (*** മാറ്റം വരുത്തി ***) -->
             <div id="tab-settings" class="tab-content">
                 <form id="site-settings-form" class="form-section">
                     <h2>Site Settings (Home Page & Footer)</h2>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="setting-logo-text">Logo Text</label>
-                            <input type="text" id="setting-logo-text" placeholder="e.g., AL AMBAR">
+                            <label for="setting-logo-image-url">Logo Image URL</label>
+                            <input type="text" id="setting-logo-image-url" placeholder="Paste logo image link here">
                         </div>
                         <div class="form-group">
-                            <label for="setting-video-url">Home Page Video URL (YouTube or .mp4)</label>
-                            <input type="text" id="setting-video-url" placeholder="Paste video link here">
+                            <label for="setting-hero-video-url">Hero Background Video URL (Optional)</label>
+                            <input type="text" id="setting-hero-video-url" placeholder="Paste .mp4 link for hero background">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-video-url">Home Page Video URL (Section Video)</label>
+                            <input type="text" id="setting-video-url" placeholder="Paste YouTube or .mp4 link here">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-whatsapp">WhatsApp Number</label>
+                            <input type="text" id="setting-whatsapp" placeholder="918086081985 (without +)">
                         </div>
                         <div class="form-group">
                             <label for="setting-phone">Contact Phone</label>
@@ -269,8 +250,12 @@
                             <input type="text" id="setting-address" placeholder="Kerala, India">
                         </div>
                         <div class="form-group">
-                            <label for="setting-whatsapp">WhatsApp Number</label>
-                            <input type="text" id="setting-whatsapp" placeholder="918086081985 (without +)">
+                            <label for="setting-facebook-url">Facebook URL</label>
+                            <input type="text" id="setting-facebook-url" placeholder="https://facebook.com/yourpage">
+                        </div>
+                         <div class="form-group">
+                            <label for="setting-instagram-url">Instagram URL</label>
+                            <input type="text" id="setting-instagram-url" placeholder="https://instagram.com/yourpage">
                         </div>
                     </div>
                     <button type="submit" class="btn" id="save-settings-button">Save Settings</button>
@@ -320,7 +305,7 @@
             setLogLevel
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Firebase കോൺഫിഗറേഷൻ (മാറ്റമില്ല)
+        // ഫയർബേസ് കോൺഫിഗറേഷൻ (മാറ്റമില്ല)
         const firebaseConfig = {
             apiKey: "AIzaSyCePcVE_BTiFuYXAApNmbMKHdkhQ9Ay_F4",
             authDomain: "al-ambar-perfume-company.firebaseapp.com",
@@ -331,7 +316,7 @@
             measurementId: "G-39XB0WLW6P"
         };
 
-        // Initialize Firebase
+        // Initialize Firebase (മാറ്റമില്ല)
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
@@ -368,7 +353,7 @@
         function showStatus(element, message, isError = true) {
             element.textContent = message;
             element.className = isError ? 'status-message error' : 'status-message success';
-            setTimeout(() => clearStatus(element), 4000);
+            setTimeout(() => clearStatus(element), 4000); 
         }
         function clearStatus(element) {
             element.textContent = '';
@@ -394,14 +379,16 @@
                 loginButton.textContent = "Login";
             }
         });
+
         logoutButton.addEventListener("click", () => { signOut(auth); });
+
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 loginSection.style.display = "none";
                 adminPanel.style.display = "block";
                 loadCategories();
                 loadProducts();
-                loadSiteSettings();
+                loadSiteSettings(); // *** loadSiteSettings ഇപ്പോൾ ഇവിടെയാണ് ***
             } else {
                 loginSection.style.display = "block";
                 adminPanel.style.display = "none";
@@ -424,12 +411,15 @@
         // --- 3. Image Preview Logic (മാറ്റമില്ല) ---
         function setupImagePreview(inputId, previewId) {
             const input = document.getElementById(inputId);
+            if (!input) return; // മോഡലിൽ ഇൻപുട്ട് ഇല്ലാതിരിക്കുമ്പോൾ എറർ ഒഴിവാക്കാൻ
             const previewContainer = document.getElementById(previewId);
+            
             function updatePreview() {
                 previewContainer.innerHTML = ''; 
                 const urls = input.value.split('\n')
                                      .map(url => url.trim())
                                      .filter(url => url.length > 0);
+                
                 urls.forEach(url => {
                     const img = document.createElement('img');
                     img.src = url;
@@ -437,6 +427,7 @@
                     previewContainer.appendChild(img);
                 });
             }
+            
             input.addEventListener('input', updatePreview);
             input.addEventListener('change', updatePreview);
         }
@@ -444,39 +435,50 @@
         setupImagePreview('product-image-urls', 'product-image-preview');
 
 
-        // --- 4. Site Settings Logic (മാറ്റമില്ല) ---
+        // --- 4. Site Settings Logic (*** മാറ്റം വരുത്തി ***) ---
         async function loadSiteSettings() {
             try {
                 const docRef = doc(db, "settings", "global");
                 const docSnap = await getDoc(docRef);
                 if (docSnap.exists()) {
                     const settings = docSnap.data();
-                    document.getElementById("setting-logo-text").value = settings.logoText || '';
+                    // *** പുതിയ ഫീൽഡുകൾ ലോഡ് ചെയ്യുന്നു ***
+                    document.getElementById("setting-logo-image-url").value = settings.logoImageUrl || '';
+                    document.getElementById("setting-hero-video-url").value = settings.heroVideoUrl || '';
                     document.getElementById("setting-video-url").value = settings.videoUrl || '';
                     document.getElementById("setting-phone").value = settings.phone || '';
                     document.getElementById("setting-email").value = settings.email || '';
                     document.getElementById("setting-address").value = settings.address || '';
                     document.getElementById("setting-whatsapp").value = settings.whatsapp || '';
+                    document.getElementById("setting-facebook-url").value = settings.facebookUrl || '';
+                    document.getElementById("setting-instagram-url").value = settings.instagramUrl || '';
                 }
             } catch (error) {
                 console.error("Error loading settings: ", error);
                 showStatus(adminStatus, "Error loading site settings.");
             }
         }
+        
         siteSettingsForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             showLoader(settingsLoader);
             try {
+                // *** പുതിയ ഫീൽഡുകൾ സേവ് ചെയ്യുന്നു ***
                 const settings = {
-                    logoText: document.getElementById("setting-logo-text").value,
+                    logoImageUrl: document.getElementById("setting-logo-image-url").value,
+                    heroVideoUrl: document.getElementById("setting-hero-video-url").value,
                     videoUrl: document.getElementById("setting-video-url").value,
                     phone: document.getElementById("setting-phone").value,
                     email: document.getElementById("setting-email").value,
                     address: document.getElementById("setting-address").value,
                     whatsapp: document.getElementById("setting-whatsapp").value,
+                    facebookUrl: document.getElementById("setting-facebook-url").value,
+                    instagramUrl: document.getElementById("setting-instagram-url").value,
                 };
+                
                 const docRef = doc(db, "settings", "global");
                 await setDoc(docRef, settings, { merge: true }); 
+                
                 showStatus(adminStatus, "Settings saved successfully!", false);
             } catch (error) {
                 console.error("Error saving settings: ", error);
@@ -492,13 +494,16 @@
             onSnapshot(q, (querySnapshot) => {
                 categoriesListBody.innerHTML = '';
                 productCategorySelect.innerHTML = '<option value="">Select a category...</option>';
+                
                 if (querySnapshot.empty) {
                     categoriesListBody.innerHTML = '<tr><td colspan="3">No categories found.</td></tr>';
                     return;
                 }
+                
                 querySnapshot.forEach((doc) => {
                     const category = doc.data();
                     const id = doc.id;
+                    
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td><img src="${category.imageUrl || ''}" alt="${category.name}"></td>
@@ -509,6 +514,7 @@
                         </td>
                     `;
                     categoriesListBody.appendChild(row);
+                    
                     const option = document.createElement('option');
                     option.value = id;
                     option.textContent = category.name;
@@ -519,20 +525,24 @@
                 showStatus(adminStatus, "Error loading categories.");
             });
         }
+        
         addCategoryForm.addEventListener("submit", async (e) => {
             e.preventDefault();
             showLoader(categoryLoader);
             try {
                 const name = document.getElementById("category-name").value;
                 const imageUrl = document.getElementById("category-image-url").value;
+                
                 await addDoc(collection(db, "categories"), {
                     name: name,
                     imageUrl: imageUrl,
                     createdAt: serverTimestamp()
                 });
+                
                 showStatus(adminStatus, "Category added successfully!", false);
                 addCategoryForm.reset();
                 document.getElementById('category-image-preview').innerHTML = ''; 
+
             } catch (error) {
                 console.error("Error adding category: ", error);
                 showStatus(adminStatus, `Error: ${error.message}`);
@@ -541,9 +551,9 @@
             }
         });
 
-        // --- 6. Product Logic (Full CRUD) (*** മാറ്റം വരുത്തി ***) ---
+        // --- 6. Product Logic (Full CRUD) (*** SKU നീക്കം ചെയ്തു ***) ---
         
-        // തത്സമയം ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
+        // ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
         function loadProducts() {
              const q = query(collection(db, "products"));
              onSnapshot(q, (querySnapshot) => {
@@ -558,18 +568,19 @@
                     const id = doc.id;
                     const imageUrl = product.images && product.images[0] ? product.images[0] : '';
                     
-                    const row = document.createElement('tr');
-                    
-                    // *** വില കാണിക്കുന്ന രീതി മാറ്റി ***
-                    let priceHTML = `₹${product.price || 'N/A'}`;
-                    if (product.mrp && product.mrp > product.price) {
-                        priceHTML += ` <span class="price-mrp">₹${product.mrp}</span>`;
+                    // വില കാണിക്കുന്നു
+                    const price = product.price || 0;
+                    const mrp = product.mrp || 0;
+                    let priceDisplay = `₹${price}`;
+                    if (mrp > price) {
+                        priceDisplay += ` <del>₹${mrp}</del>`;
                     }
                     
+                    const row = document.createElement('tr');
                     row.innerHTML = `
                         <td><img src="${imageUrl}" alt="${product.name}"></td>
                         <td>${product.name}</td>
-                        <td>${priceHTML}</td> <!-- *** വില മാറ്റി *** -->
+                        <td class="price-col">${priceDisplay}</td> <!-- SKU മാറ്റി വിലയാക്കി -->
                         <td>
                             <button class="btn btn-edit" data-id="${id}" data-type="product">Edit</button>
                             <button class="btn btn-delete" data-id="${id}" data-type="product">Delete</button>
@@ -591,13 +602,12 @@
                 const imageUrlsText = document.getElementById("product-image-urls").value;
                 const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
 
-                // *** സേവ് ചെയ്യുന്ന ഡാറ്റ മാറ്റി ***
                 const product = {
                     categoryId: productCategorySelect.value,
                     name: document.getElementById("product-name").value,
                     size: document.getElementById("product-size").value,
-                    mrp: Number(document.getElementById("product-mrp").value) || 0,
-                    price: Number(document.getElementById("product-price").value) || 0,
+                    mrp: Number(document.getElementById("product-mrp").value), // MRP ചേർത്തു
+                    price: Number(document.getElementById("product-price").value),
                     description: document.getElementById("product-description").value,
                     featured: document.getElementById("product-featured").checked,
                     images: imageUrls,
@@ -618,12 +628,12 @@
         });
 
 
-        // --- 7. Edit & Delete Logic (Modal) (*** മാറ്റം വരുത്തി ***) ---
+        // --- 7. Edit & Delete Logic (Modal) (*** SKU നീക്കം ചെയ്തു ***) ---
         
-        // "Edit" അല്ലെങ്കിൽ "Delete" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ (മാറ്റമില്ല)
         document.body.addEventListener('click', async (e) => {
             const target = e.target;
             
+            // Delete ബട്ടൺ
             if (target.classList.contains('btn-delete')) {
                 const id = target.dataset.id;
                 const type = target.dataset.type;
@@ -639,6 +649,7 @@
                 }
             }
             
+            // Edit ബട്ടൺ
             if (target.classList.contains('btn-edit')) {
                 const id = target.dataset.id;
                 const type = target.dataset.type;
@@ -646,7 +657,6 @@
             }
         });
         
-        // എഡിറ്റ് മോഡൽ തുറക്കുന്നു
         async function openEditModal(id, type) {
             modalForm.innerHTML = ''; 
             showLoader(modalLoader);
@@ -656,13 +666,14 @@
                 const docRef = doc(db, type === 'product' ? 'products' : 'categories', id);
                 const docSnap = await getDoc(docRef);
                 
-                if (!docSnap.exists()) { throw new Error("Item not found."); }
+                if (!docSnap.exists()) {
+                    throw new Error("Item not found.");
+                }
                 
                 const data = docSnap.data();
                 modalTitle.textContent = `Edit ${type}`;
                 
                 if (type === 'category') {
-                    // Category modal (മാറ്റമില്ല)
                     modalForm.innerHTML = `
                         <input type="hidden" id="modal-item-id" value="${id}">
                         <input type="hidden" id="modal-item-type" value="category">
@@ -681,7 +692,6 @@
                     document.getElementById('modal-category-image-url').dispatchEvent(new Event('input')); 
                     
                 } else if (type === 'product') {
-                    // *** Product modal (വില ഫീൽഡുകൾ മാറ്റി) ***
                     const imagesText = data.images ? data.images.join('\n') : '';
                     modalForm.innerHTML = `
                         <input type="hidden" id="modal-item-id" value="${id}">
@@ -696,8 +706,6 @@
                                 <label for="modal-product-category">Category</label>
                                 <select id="modal-product-category" required>${productCategorySelect.innerHTML}</select>
                             </div>
-                            
-                            <!-- *** വില ഫീൽഡുകൾ മാറ്റി *** -->
                             <div class="form-group">
                                 <label for="modal-product-mrp">MRP (₹)</label>
                                 <input type="number" id="modal-product-mrp" value="${data.mrp || ''}">
@@ -706,7 +714,6 @@
                                 <label for="modal-product-price">Retail Price (₹)</label>
                                 <input type="number" id="modal-product-price" value="${data.price || ''}" required>
                             </div>
-                            
                             <div class="form-group">
                                 <label for="modal-product-size">Size</label>
                                 <input type="text" id="modal-product-size" value="${data.size || ''}">
@@ -741,13 +748,11 @@
             }
         }
         
-        // മോഡൽ അടയ്ക്കുന്നു (മാറ്റമില്ല)
         function closeEditModal() {
             editModal.style.display = 'none';
         }
         modalCloseButton.addEventListener('click', closeEditModal);
         
-        // എഡിറ്റ് ചെയ്ത ഡാറ്റ സേവ് ചെയ്യുന്നു
         modalForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             showLoader(modalLoader);
@@ -763,7 +768,6 @@
                         imageUrl: document.getElementById('modal-category-image-url').value,
                     };
                 } else if (type === 'product') {
-                    // *** സേവ് ചെയ്യുന്ന ഡാറ്റ മാറ്റി ***
                     const imageUrlsText = document.getElementById("modal-product-image-urls").value;
                     const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
                     
@@ -771,8 +775,8 @@
                         categoryId: document.getElementById('modal-product-category').value,
                         name: document.getElementById('modal-product-name').value,
                         size: document.getElementById('modal-product-size').value,
-                        mrp: Number(document.getElementById('modal-product-mrp').value) || 0,
-                        price: Number(document.getElementById('modal-product-price').value) || 0,
+                        mrp: Number(document.getElementById('modal-product-mrp').value), // MRP ചേർത്തു
+                        price: Number(document.getElementById('modal-product-price').value),
                         description: document.getElementById('modal-product-description').value,
                         featured: document.getElementById('modal-product-featured').checked,
                         images: imageUrls,
