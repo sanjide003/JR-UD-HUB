@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-  പുതിയ ഡിസൈൻ അനുസരിച്ച് ഇത് പൂർണ്ണമായും മാറ്റിയെഴുതിയിട്ടുണ്ട്.
+   വീഡിയോ ഡിസൈൻ അനുസരിച്ച് വലിയ മാറ്റങ്ങൾ വരുത്തിയിട്ടുണ്ട്.
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -13,10 +13,11 @@
     --text-muted: #aaa;
     --card-bg: #111111;
     --border-color: #333;
-    --error-red: #e74c3c; /* പുതിയതായി ചേർത്തത് */
+    --error-red: #e74c3c;
     
     --font-main: 'Inter', sans-serif;
-    --font-heading: 'Playfair Display', serif;
+    --font-heading: 'Playfair Display', serif; /* പഴയ ഹെഡിംഗ് ഫോണ്ട്, ആവശ്യമെങ്കിൽ മാറ്റാം */
+    --font-new-heading: 'Inter', sans-serif; /* വീഡിയോയിലെ ഹെഡിംഗുകൾക്ക് ഈ ഫോണ്ട് ആണ് */
     
     --header-height: 70px;
 }
@@ -29,7 +30,7 @@ body {
     line-height: 1.6;
     margin: 0;
     padding: 0;
-    padding-top: var(--header-height); /* ഹെഡറിന് വേണ്ടി സ്ഥലം വിടുന്നു */
+    padding-top: var(--header-height);
 }
 
 * {
@@ -57,19 +58,22 @@ a:hover {
 img {
     max-width: 100%;
     height: auto;
+    display: block; /* പ്രധാനപ്പെട്ടത് */
 }
 
-.section-title {
+/* വീഡിയോയിലെ പുതിയ സെക്ഷൻ ടൈറ്റിൽ */
+.section-title-new {
     text-align: center;
-    font-family: var(--font-heading);
-    font-size: 2.5rem;
-    margin-bottom: 2.5rem;
+    font-family: var(--font-new-heading);
+    font-size: 1.5rem;
+    font-weight: 500;
     color: var(--primary-gold);
-    letter-spacing: 1px;
-    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
 }
 
-/* --- 3. ഹെഡർ (Main Header) --- */
+/* --- 3. ഹെഡർ (Main Header) - മാറ്റമില്ല --- */
 .main-header {
     background-color: var(--bg-color);
     padding: 0 1.5rem;
@@ -84,8 +88,6 @@ img {
     width: 100%;
     z-index: 1000;
 }
-
-/* 3.1. ലോഗോ (Logo) */
 .header-logo {
     display: flex;
     align-items: center;
@@ -93,7 +95,7 @@ img {
     gap: 10px;
 }
 .header-logo-img {
-    height: 40px; /* ലോഗോയുടെ വലിപ്പം */
+    height: 40px;
     width: auto;
 }
 .header-logo-text {
@@ -102,8 +104,6 @@ img {
     color: var(--primary-gold);
     font-weight: 700;
 }
-
-/* 3.2. ഹെഡർ ഐക്കണുകൾ (Header Icons) */
 .header-icons {
     display: flex;
     align-items: center;
@@ -142,11 +142,11 @@ img {
     line-height: 1;
 }
 
-/* --- 4. വശത്തുള്ള മെനു (Side Nav) --- */
+/* --- 4. വശത്തുള്ള മെനു (Side Nav) - മാറ്റമില്ല --- */
 .side-nav {
     position: fixed;
     top: 0;
-    left: -100%; /* തുടക്കത്തിൽ മറഞ്ഞിരിക്കും */
+    left: -100%;
     width: 300px;
     height: 100%;
     background-color: var(--bg-color);
@@ -157,9 +157,7 @@ img {
     flex-direction: column;
     padding: 1.5rem;
 }
-.side-nav.open {
-    left: 0;
-}
+.side-nav.open { left: 0; }
 .nav-overlay {
     position: fixed;
     top: 0;
@@ -172,10 +170,7 @@ img {
     visibility: hidden;
     transition: opacity 0.4s ease;
 }
-.nav-overlay.open {
-    opacity: 1;
-    visibility: visible;
-}
+.nav-overlay.open { opacity: 1; visibility: visible; }
 .side-nav-header {
     display: flex;
     justify-content: space-between;
@@ -189,18 +184,13 @@ img {
     color: var(--text-color);
     cursor: pointer;
 }
-.side-nav-close-btn svg {
-    width: 28px;
-    height: 28px;
-}
+.side-nav-close-btn svg { width: 28px; height: 28px; }
 .side-nav-links {
     list-style: none;
     margin-top: 1.5rem;
     flex-grow: 1;
 }
-.side-nav-links li {
-    border-bottom: 1px solid var(--border-color);
-}
+.side-nav-links li { border-bottom: 1px solid var(--border-color); }
 .side-nav-links a {
     display: block;
     padding: 1rem 0;
@@ -209,9 +199,7 @@ img {
     font-size: 1.1rem;
     font-weight: 500;
 }
-.side-nav-links a:hover {
-    color: var(--primary-gold);
-}
+.side-nav-links a:hover { color: var(--primary-gold); }
 .side-nav-social {
     display: flex;
     justify-content: center;
@@ -219,209 +207,155 @@ img {
     padding-top: 1rem;
     border-top: 1px solid var(--border-color);
 }
-.side-nav-social a {
-    color: var(--text-muted);
-}
-.side-nav-social a svg {
-    width: 24px;
-    height: 24px;
-}
+.side-nav-social a { color: var(--text-muted); }
+.side-nav-social a svg { width: 24px; height: 24px; }
 
-/* --- 5. ഫൂട്ടർ (Main Footer) --- */
-.main-footer {
-    background-color: var(--card-bg);
-    color: var(--text-muted);
-    padding: 4rem 1.5rem 2rem;
-    margin-top: 3rem;
-    border-top: 2px solid var(--primary-gold);
-}
-.footer-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 2.5rem;
-}
-.footer-col h3 {
-    font-size: 1.25rem;
-    color: var(--primary-gold);
-    margin-bottom: 1.5rem;
-    font-weight: 700;
-}
-.footer-col ul {
-    list-style: none;
-}
-.footer-col li {
-    margin-bottom: 0.75rem;
-}
-.footer-col a, .footer-col .contact-item-footer span {
-    color: var(--text-muted);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
-.footer-col a:hover {
-    color: var(--primary-gold);
-}
-.contact-item-footer {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-    gap: 1rem;
-}
-.contact-item-footer svg {
-    width: 20px;
-    height: 20px;
-    fill: var(--primary-gold);
-    flex-shrink: 0;
-}
-.footer-social-icons {
-    display: flex;
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-}
-.footer-social-icons a {
-    color: var(--text-muted);
-}
-.footer-social-icons a svg {
-    width: 24px;
-    height: 24px;
-}
-.footer-bottom {
-    text-align: center;
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
-    font-size: 0.9rem;
-}
 
-/* --- 6. ഹോം പേജ് (Home Page) --- */
+/* --- 6. ഹോം പേജ് (Home Page) - പുതിയ സ്റ്റൈലുകൾ --- */
 
-/* 6.1. ഹീറോ വീഡിയോ (Hero Video) - അപ്ഡേറ്റ് ചെയ്തു */
-.hero-section {
-    position: relative;
-    height: 70vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
+/* 6.1. പുതിയ ഹീറോ സ്ലൈഡർ */
+.hero-section-new {
+    width: 100%;
+    height: 70vh; /* നിങ്ങൾക്ക് ഇത് മൊബൈലിൽ കൂട്ടാം */
     overflow: hidden;
 }
-/* പഴയ .hero-video-wrapper നീക്കം ചെയ്തു */
-
-/* പുതിയ ഹീറോ സ്ലൈഡർ സ്റ്റൈലുകൾ */
-.hero-slider {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1; /* 1. ഏറ്റവും പിന്നിൽ */
-}
-.hero-slider .swiper-slide {
+.hero-slider-new {
     width: 100%;
     height: 100%;
 }
-.hero-slider .swiper-slide img,
-.hero-slider .swiper-slide video {
+.hero-slider-new .swiper-slide {
+    width: 100%;
+    height: 100%;
+}
+.hero-slider-new .swiper-slide img,
+.hero-slider-new .swiper-slide video {
     width: 100%;
     height: 100%;
     object-fit: cover; /* വീഡിയോ/ഫോട്ടോ സ്ക്രീൻ നിറഞ്ഞുനിൽക്കാൻ */
 }
-/* പുതിയ ഓവർലേ സ്റ്റൈൽ */
-.hero-overlay {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    z-index: 2; /* 2. സ്ലൈഡറിന് മുകളിൽ */
-}
-.hero-content {
-    position: relative;
-    z-index: 3; /* 3. ഏറ്റവും മുകളിൽ */
-    padding: 1.5rem;
-    /* ബോർഡറും ബാക്ക്ഗ്രൗണ്ടും നീക്കം ചെയ്തു */
-    /* border: 2px solid var(--primary-gold); */
-    /* background-color: rgba(0, 0, 0, 0.4); */
-}
-.hero-content h1 {
-    font-family: var(--font-heading);
-    font-size: 3.5rem;
-    color: var(--primary-gold);
-    margin-bottom: 0.5rem;
-}
-.hero-content p {
-    font-size: 1.25rem;
-    color: var(--text-color);
-    margin-bottom: 2rem;
-}
-/* 6.1 - മാറ്റങ്ങൾ കഴിഞ്ഞു */
 
-
-/* 6.2. ഹോം പേജ് സെക്ഷനുകൾ */
-.home-section {
-    margin-bottom: 3rem;
-}
-.full-width-section {
-    padding-left: 0;
-    padding-right: 0;
-}
-.fragrance-story {
+/* 6.2. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ */
+.hero-text-section {
     text-align: center;
+    padding: 2.5rem 1.5rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
     max-width: 800px;
 }
-.fragrance-story h2 {
-    font-family: var(--font-heading);
-    font-size: 2rem;
-    color: var(--primary-gold);
-    margin-bottom: 1rem;
+
+/* 6.3. പുതിയ ടോപ്പ് സെല്ലേഴ്സ് */
+.top-sellers-swiper-new {
+    padding-bottom: 3rem; /* ഡോട്ടുകൾക്ക് വേണ്ടി */
 }
-.fragrance-story p {
+.top-sellers-swiper-new .swiper-slide {
+    text-align: center;
+}
+.top-sellers-product-image {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    margin-bottom: 1.5rem;
+}
+.top-sellers-product-name {
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+.top-sellers-product-price {
     font-size: 1.1rem;
     color: var(--text-muted);
+    margin-bottom: 1.5rem;
 }
-
-/* 6.3. താഴെയുള്ള വീഡിയോ (Experience Video) */
-.video-wrapper {
-    max-width: 900px;
-    margin: 0 auto;
-    aspect-ratio: 16 / 9;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 2px solid var(--secondary-gold);
-    background-color: #000;
-}
-.video-wrapper iframe, .video-wrapper video {
-    width: 100%;
-    height: 100%;
-    border: 0;
-}
-
-/* 6.4. ഹോം പേജിലെ കാറ്റഗറി ഗ്രിഡ് */
-.category-grid-home {
+.top-sellers-buttons {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0 1rem;
+}
+/* പുതിയ ബട്ടൺ സ്റ്റൈലുകൾ */
+.btn-primary-new {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: var(--primary-gold);
+    border: 2px solid var(--primary-gold);
+    color: var(--bg-color);
+    transition: all 0.3s ease;
+}
+.btn-primary-new:hover {
+    background-color: var(--secondary-gold);
+    border-color: var(--secondary-gold);
+}
+.btn-secondary-new {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: transparent;
+    border: 2px solid var(--primary-gold);
+    color: var(--primary-gold);
+    transition: all 0.3s ease;
+}
+.btn-secondary-new:hover {
+    background-color: var(--primary-gold);
+    color: var(--bg-color);
+}
+/* സ്ലൈഡർ ഡോട്ടുകൾ */
+.top-sellers-swiper-new .swiper-pagination {
+    bottom: 0;
+}
+.top-sellers-swiper-new .swiper-pagination-bullet {
+    background-color: var(--border-color);
+    width: 10px;
+    height: 10px;
+}
+.top-sellers-swiper-new .swiper-pagination-bullet-active {
+    background-color: var(--primary-gold);
+}
+
+/* 6.4. പുതിയ കാറ്റഗറി ഗ്രിഡ് */
+.category-grid-new {
+    display: grid;
+    grid-template-columns: 1fr;
     gap: 1.5rem;
 }
-.category-card-home {
+@media (min-width: 768px) {
+    .category-grid-new {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+}
+.category-card-new {
     position: relative;
     text-decoration: none;
     border-radius: 8px;
     overflow: hidden;
-    aspect-ratio: 1 / 1;
+    height: 300px;
 }
-.category-card-home img {
+.category-card-new img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.4s ease;
 }
-.category-card-home:hover img {
+.category-card-new:hover img {
     transform: scale(1.1);
 }
-.category-card-home-content {
+.category-card-new-content {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -430,22 +364,256 @@ img {
     text-align: center;
     background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
 }
-.category-card-home-content h3 {
+.category-card-new-content h3 {
     color: var(--text-color);
-    font-family: var(--font-heading);
-    font-size: 1.75rem;
+    font-family: var(--font-new-heading);
+    font-weight: 500;
+    font-size: 1.25rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
 }
 
-/* --- 7. ഉൽപ്പന്ന കാർഡ് (Product Card) & ഗ്രിഡ് --- */
+/* 6.5. ഫീച്ചേർഡ് സെക്ഷൻ */
+.featured-section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: center;
+}
+@media (min-width: 768px) {
+    .featured-section {
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+    }
+    .featured-section .featured-content {
+        order: 1; /* മൊബൈലിൽ ഇമേജ് ആദ്യം, ഡെസ്ക്ടോപ്പിൽ രണ്ടാമത് */
+    }
+}
+.featured-image img {
+    border-radius: 8px;
+    width: 100%;
+    height: auto;
+}
+.featured-content {
+    text-align: center;
+}
+.featured-content p {
+    color: var(--text-muted);
+    margin: 1.5rem 0;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.featured-content .btn-primary-new {
+    display: inline-block;
+    width: auto;
+}
 
-/* 7.1. ഉൽപ്പന്ന ഗ്രിഡ് */
+/* 6.6. ബൊട്ടീക് സ്റ്റോർസ് (വീഡിയോ) */
+.boutique-section {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 400px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+.boutique-poster-img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+.boutique-section::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 2;
+}
+.boutique-content {
+    position: relative;
+    z-index: 3;
+    padding: 2rem;
+}
+.boutique-play-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+.boutique-play-btn svg {
+    width: 60px;
+    height: 60px;
+    opacity: 0.8;
+    transition: opacity 0.3s;
+}
+.boutique-play-btn:hover svg {
+    opacity: 1;
+}
+.boutique-content h2 {
+    font-family: var(--font-new-heading);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--text-color);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+
+/* 6.7. ഫ്രാഗ്രൻസ് സ്റ്റോറി */
+.fragrance-story-new {
+    text-align: center;
+    max-width: 800px;
+    padding-top: 2rem;
+}
+.fragrance-story-new h2 {
+    font-family: var(--font-new-heading);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--primary-gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 1.5rem;
+}
+.fragrance-story-new p {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+}
+
+/* --- 5. ഫൂട്ടർ (Main Footer) - പുതിയ അക്കോർഡിയൻ സ്റ്റൈൽ --- */
+.main-footer-new {
+    background-color: var(--bg-color); /* കറുപ്പ് പശ്ചാത്തലം */
+    color: var(--text-muted);
+    padding: 3rem 1.5rem;
+    margin-top: 3rem;
+    border-top: 1px solid var(--border-color);
+}
+.footer-container-new {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.footer-accordion-item {
+    border-bottom: 1px solid var(--border-color);
+}
+.footer-accordion-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    padding: 1.5rem 0;
+    font-family: var(--font-new-heading);
+    font-size: 1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+.footer-accordion-toggle svg {
+    transition: transform 0.3s ease;
+    width: 16px;
+    height: 16px;
+}
+.footer-accordion-toggle.active svg {
+    transform: rotate(180deg);
+}
+.footer-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+}
+.footer-accordion-content ul {
+    list-style: none;
+    padding: 0 0 1.5rem 0;
+}
+.footer-accordion-content li {
+    margin-bottom: 0.75rem;
+}
+.footer-accordion-content a {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+.footer-newsletter {
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 0;
+}
+.footer-newsletter p {
+    color: var(--text-color);
+    font-family: var(--font-new-heading);
+    font-size: 1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1rem;
+}
+.newsletter-form {
+    display: flex;
+}
+.newsletter-input {
+    flex-grow: 1;
+    background: none;
+    border: none;
+    border-bottom: 1px solid var(--text-muted);
+    color: var(--text-color);
+    padding: 0.5rem 0;
+    font-size: 1rem;
+}
+.newsletter-input::placeholder {
+    color: var(--text-muted);
+}
+.newsletter-button {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    padding: 0.5rem;
+    cursor: pointer;
+}
+.newsletter-button svg {
+    width: 24px;
+    height: 24px;
+}
+.footer-social-new {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem 0;
+}
+.footer-social-new a {
+    color: var(--text-color);
+}
+.footer-social-new a svg {
+    width: 24px;
+    height: 24px;
+}
+.footer-bottom-new {
+    text-align: center;
+    font-size: 0.9rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+/* ഫൂട്ടർ സ്റ്റൈൽ കഴിഞ്ഞു */
+
+
+/* --- 7. ഉൽപ്പന്ന കാർഡ് (Product Card) & ഗ്രിഡ് - പഴയത് - */
+/* കാറ്റഗറി പേജിന് വേണ്ടി ഇത് നിലനിർത്തുന്നു */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1.5rem;
 }
-
-/* 7.2. ഉൽപ്പന്ന കാർഡ് (പുതിയ ഡിസൈൻ) */
 .product-card {
     background-color: var(--card-bg);
     border-radius: 8px;
@@ -486,9 +654,8 @@ img {
     color: var(--text-color);
     font-weight: 500;
     margin-bottom: 0.5rem;
-    min-height: 40px; /* 2 ലൈൻ വരെ ഒരേ വലിപ്പം */
+    min-height: 40px;
 }
-/* വില */
 .price-container {
     display: flex;
     align-items: center;
@@ -514,79 +681,26 @@ img {
     padding: 2px 6px;
     border-radius: 4px;
 }
-/* ബട്ടണുകൾ */
 .product-card-buttons {
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.5rem;
     margin-top: auto;
 }
-
-/* 7.3. "Top Sellers" കറൗസൽ സ്റ്റൈൽ */
-.top-sellers-swiper .product-card {
-    text-align: center;
-}
-.top-sellers-swiper .product-card-content {
-    align-items: center;
-}
-.top-sellers-swiper .product-card-buttons {
-    grid-template-columns: 1fr 1fr; /* 2 ബട്ടണുകൾ */
-}
-/* കറൗസൽ നാവിഗേഷൻ */
-.swiper-button-next, .swiper-button-prev {
-    color: var(--primary-gold);
-    background-color: rgba(0, 0, 0, 0.5);
-    padding: 20px;
-    border-radius: 50%;
-}
-.swiper-button-next::after, .swiper-button-prev::after {
-    font-size: 1.5rem;
-}
-
-/* --- 8. ബട്ടണുകൾ (Buttons) --- */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
-    font-weight: 700;
-    border-radius: 5px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
-    text-decoration: none;
-    cursor: pointer;
-    font-size: 0.9rem;
-}
+/* പഴയ ബട്ടണുകൾ (കാറ്റഗറി പേജിന് വേണ്ടി) */
 .btn-primary {
     background-color: var(--primary-gold);
-    border-color: var(--primary-gold);
+    border: 2px solid var(--primary-gold);
     color: var(--bg-color);
-}
-.btn-primary:hover {
-    background-color: var(--secondary-gold);
-    border-color: var(--secondary-gold);
-    color: #000;
 }
 .btn-secondary {
     background-color: transparent;
-    border-color: var(--primary-gold);
+    border: 2px solid var(--primary-gold);
     color: var(--primary-gold);
 }
-.btn-secondary:hover {
-    background-color: var(--primary-gold);
-    color: var(--bg-color);
-}
-.btn:disabled {
-    background-color: #555;
-    border-color: #555;
-    color: #999;
-    cursor: not-allowed;
-}
 
-/* --- 9. ഉൽപ്പന്നം വിശദമായി കാണിക്കുന്ന പേജ് (Product Detail) --- */
+
+/* --- 9. ഉൽപ്പന്നം വിശദമായി കാണിക്കുന്ന പേജ് (Product Detail) - മാറ്റമില്ല --- */
 .product-detail-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -597,9 +711,7 @@ img {
         grid-template-columns: 1fr 1fr;
     }
 }
-.product-gallery {
-    width: 100%;
-}
+.product-gallery { width: 100%; }
 .main-image-wrapper {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -632,24 +744,16 @@ img {
     opacity: 1;
     border-color: var(--primary-gold);
 }
-.product-info {
-    padding-top: 1rem;
-}
+.product-info { padding-top: 1rem; }
 .product-title {
     font-family: var(--font-heading);
     font-size: 2.5rem;
     color: var(--primary-gold);
     margin-bottom: 1rem;
 }
-.product-info .price-container.large {
-    margin-bottom: 1.5rem;
-}
-.product-info .price-container.large .price-main {
-    font-size: 2rem;
-}
-.product-info .price-container.large .price-mrp {
-    font-size: 1.25rem;
-}
+.product-info .price-container.large { margin-bottom: 1.5rem; }
+.product-info .price-container.large .price-main { font-size: 2rem; }
+.product-info .price-container.large .price-mrp { font-size: 1.25rem; }
 .product-description {
     margin-bottom: 1.5rem;
     color: var(--text-muted);
@@ -676,9 +780,7 @@ img {
 }
 
 /* --- 10. കാറ്റഗറി / കോൺടാക്റ്റ് പേജ് (Other Pages) --- */
-.page-container {
-    margin-top: 3rem;
-}
+.page-container { margin-top: 3rem; }
 .page-header-bar {
     text-align: center;
     margin-bottom: 3rem;
@@ -696,9 +798,7 @@ img {
     gap: 2rem;
 }
 @media (min-width: 900px) {
-    .contact-page-grid {
-        grid-template-columns: 1fr 1fr;
-    }
+    .contact-page-grid { grid-template-columns: 1fr 1fr; }
 }
 .contact-page-info {
     background-color: var(--card-bg);
@@ -749,6 +849,7 @@ img {
 }
 
 /* --- 11. ഷോപ്പിംഗ് കാർട്ട് പേജ് (Cart Page) --- */
+/* മാറ്റങ്ങൾ വരുത്തിയിട്ടില്ല */
 .cart-page-layout {
     display: grid;
     grid-template-columns: 1fr;
@@ -773,17 +874,12 @@ img {
     align-items: center;
     border-bottom: 1px solid var(--border-color);
 }
-.cart-item:last-child {
-    border-bottom: none;
-}
+.cart-item:last-child { border-bottom: none; }
 .cart-item-image {
     width: 80px;
     height: 80px;
     object-fit: cover;
     border-radius: 4px;
-}
-.cart-item-info {
-    flex-grow: 1;
 }
 .cart-item-info h3 {
     font-size: 1.1rem;
@@ -831,16 +927,14 @@ img {
     font-size: 0.9rem;
     cursor: pointer;
 }
-.cart-remove-btn:hover {
-    color: var(--error-red, #e74c3c);
-}
+.cart-remove-btn:hover { color: var(--error-red, #e74c3c); }
 .cart-summary {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1.5rem;
     position: sticky;
-    top: 100px; /* ഹെഡറിന് താഴെ */
+    top: 100px;
 }
 .cart-summary h2 {
     font-family: var(--font-heading);
@@ -885,9 +979,6 @@ img {
     color: var(--primary-gold);
     margin-bottom: 1rem;
 }
-
-/* പുതിയതായി ചേർത്തത്: കാർട്ട് പേജിലെ എറർ മെസ്സേജ് സ്റ്റൈൽ 
-*/
 .cart-error {
     color: var(--error-red);
     background-color: rgba(231, 76, 60, 0.1);
@@ -897,6 +988,84 @@ img {
     text-align: center;
     font-size: 0.95rem;
     margin-top: 1rem;
+}
+
+/* --- പുതിയതായി ചേർത്തത്: വീഡിയോ മോഡൽ --- */
+.video-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease;
+}
+.video-modal.open {
+    opacity: 1;
+    visibility: visible;
+}
+.video-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 3rem;
+    cursor: pointer;
+}
+.video-modal-content {
+    width: 90%;
+    max-width: 900px;
+    aspect-ratio: 16 / 9;
+    background-color: #000;
+}
+.video-modal-content iframe,
+.video-modal-content video {
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* --- പുതിയതായി ചേർത്തത്: ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ --- */
+.floating-action-buttons {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.float-btn {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #25D366; /* WhatsApp Green */
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease;
+}
+.float-btn:hover {
+    transform: scale(1.1);
+}
+.float-btn.phone {
+    background-color: var(--primary-gold);
+}
+.float-btn svg {
+    width: 28px;
+    height: 28px;
+    fill: currentColor;
 }
 
 
@@ -914,28 +1083,50 @@ img {
     .header-icons {
         gap: 1rem;
     }
-    .hero-content h1 {
-        font-size: 2.5rem;
+    .section-title-new {
+        font-size: 1.2rem;
     }
-    .hero-content p {
-        font-size: 1.1rem;
-    }
+    /* പഴയ ടൈറ്റിൽ */
     .section-title {
         font-size: 2rem;
     }
     .product-title {
         font-size: 2rem;
     }
-    .footer-col {
+    
+    .hero-section-new {
+        height: 60vh; /* മൊബൈലിൽ ഉയരം കുറയ്ക്കാം */
+    }
+    .hero-text-section {
+        padding: 2rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .top-sellers-buttons {
+        padding: 0;
+    }
+    .btn-primary-new, .btn-secondary-new {
+        font-size: 0.75rem;
+        padding: 0.6rem 0.5rem;
+    }
+
+    .featured-section {
         text-align: center;
     }
-    .contact-item-footer {
-        justify-content: center;
+    .featured-section .featured-content {
+        order: 0; /* മൊബൈലിൽ ക്രമം മാറ്റുന്നു */
     }
-    .footer-social-icons {
-        justify-content: center;
+    
+    .floating-action-buttons {
+        bottom: 15px;
+        left: 15px;
     }
-    .top-sellers-swiper .product-card-buttons {
-        grid-template-columns: 1fr; /* മൊബൈലിൽ 1 ബട്ടൺ */
+    .float-btn {
+        width: 45px;
+        height: 45px;
+    }
+    .float-btn svg {
+        width: 24px;
+        height: 24px;
     }
 }
