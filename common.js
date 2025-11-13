@@ -1,27 +1,25 @@
 // ഇതാണ് 'common.js' ഫയൽ.
 // എല്ലാ പബ്ലിക് പേജുകൾക്കും (Home, Categories,...) വേണ്ടിയുള്ള പൊതുവായ കാര്യങ്ങൾ
 // (ഹെഡർ, ഫൂട്ടർ, സൈഡ് മെനു, കാർട്ട് ഐക്കൺ) ഈ ഫയലാണ് നിർമ്മിക്കുന്നത്.
+// പുതിയ ഫൂട്ടറും ഫ്ലോട്ടിംഗ് ബട്ടണുകളും ചേർത്തു.
 
-import { db, auth } from './firebase-config.js'; // അപ്‌ഡേറ്റ് ചെയ്ത കോൺഫിഗ്
+import { db, auth } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-// --- പുതിയതായി ചേർത്തത് (Authentication) ---
 import { 
     signInAnonymously, 
     signInWithCustomToken 
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-// --- ---
 import { getCartItemCount } from './cart.js'; // കാർട്ടിലെ എണ്ണം അറിയാൻ
 
 // സൈറ്റ് സെറ്റിംഗ്സ് ഡാറ്റ ഒരിക്കൽ മാത്രം ലോഡ് ചെയ്യാൻ
 let siteSettings = null;
-let authPromise = null; // ഓതന്റിക്കേഷൻ പൂർത്തിയായോ എന്നറിയാൻ
+let authPromise = null;
 
 /**
- * പ്ലാറ്റ്ഫോം ടോക്കൺ ഉപയോഗിച്ചോ അല്ലാതെയോ യൂസറെ സൈൻ ഇൻ ചെയ്യിക്കുന്നു
- * ഫയർസ്റ്റോർ റൂളുകൾ (allow read: if request.auth != null) പാലിക്കാൻ ഇത് സഹായിക്കുന്നു
+ * യൂസറെ സൈൻ ഇൻ ചെയ്യിക്കുന്നു
  */
 function authenticateUser() {
-    if (authPromise) return authPromise; // ഒരിക്കൽ മാത്രം ചെയ്താൽ മതി
+    if (authPromise) return authPromise;
 
     authPromise = new Promise(async (resolve, reject) => {
         try {
@@ -49,7 +47,6 @@ async function fetchSiteSettings() {
         return siteSettings; // നേരത്തെ ലോഡ് ചെയ്തെങ്കിൽ അത് തിരികെ നൽകുന്നു
     }
     try {
-        // ഡാറ്റ എടുക്കുന്നതിന് മുമ്പ് ഓതന്റിക്കേഷൻ ഉറപ്പാക്കുന്നു
         await authenticateUser(); 
         
         const docRef = doc(db, "settings", "global");
@@ -68,7 +65,7 @@ async function fetchSiteSettings() {
 }
 
 /**
- * 1. പ്രധാന ഹെഡർ നിർമ്മിക്കുന്നു
+ * 1. പ്രധാന ഹെഡർ നിർമ്മിക്കുന്നു (മാറ്റമില്ല)
  */
 async function buildHeader() {
     const settings = await fetchSiteSettings();
@@ -79,21 +76,11 @@ async function buildHeader() {
     const logoText = settings.logoText ? `<span class="header-logo-text">${settings.logoText}</span>` : '';
     
     headerElement.innerHTML = `
-        <!-- ഇടത് വശം: ലോഗോയും പേരും -->
         <a href="index.html" class="header-logo">
             ${logoImg}
             ${logoText}
         </a>
-
-        <!-- വലത് വശം: ഐക്കണുകൾ -->
         <div class="header-icons">
-            <!-- സെർച്ച് (ഭാവിയിൽ ഉപയോഗിക്കാം)
-            <button class="header-icon-btn" id="search-btn" aria-label="Search">
-                <svg ...>...</svg>
-            </button>
-            -->
-            
-            <!-- ഷോപ്പിംഗ് കാർട്ട് ഐക്കൺ -->
             <a href="cart.html" class="header-icon-btn cart-icon-wrapper" aria-label="Shopping Cart">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle>
@@ -101,8 +88,6 @@ async function buildHeader() {
                 </svg>
                 <span class="cart-item-count" id="cart-item-count">0</span>
             </a>
-
-            <!-- മെനു (ഹാംബർഗർ) ഐക്കൺ -->
             <button class="header-icon-btn" id="nav-open-btn" aria-label="Open Menu">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -112,13 +97,11 @@ async function buildHeader() {
             </button>
         </div>
     `;
-
-    // കാർട്ടിലെ എണ്ണം അപ്ഡേറ്റ് ചെയ്യുന്നു
     updateCartIcon();
 }
 
 /**
- * 2. വശത്തുള്ള മെനു (Side Nav) നിർമ്മിക്കുന്നു
+ * 2. വശത്തുള്ള മെനു (Side Nav) നിർമ്മിക്കുന്നു (മാറ്റമില്ല)
  */
 async function buildSideNav() {
     const settings = await fetchSiteSettings();
@@ -139,10 +122,6 @@ async function buildSideNav() {
             <li><a href="index.html">Home</a></li>
             <li><a href="categories.html">Catalog</a></li>
             <li><a href="contact.html">Contact</a></li>
-            <!-- ഭാവിയിൽ ഈ പേജുകൾ ചേർക്കാം
-            <li><a href="#">Stores</a></li>
-            <li><a href="#">About Us</a></li>
-            -->
         </ul>
         <div class="side-nav-social">
             <a href="${settings.instagramUrl || '#'}" target="_blank" aria-label="Instagram">
@@ -153,61 +132,162 @@ async function buildSideNav() {
             </a>
         </div>
     `;
-
-    // മെനു തുറക്കാനും അടക്കാനുമുള്ള ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
     setupNavEvents();
 }
 
 /**
- * 3. പ്രധാന ഫൂട്ടർ നിർമ്മിക്കുന്നു
+ * 3. പുതിയ അക്കോർഡിയൻ ഫൂട്ടർ നിർമ്മിക്കുന്നു
  */
 async function buildFooter() {
     const settings = await fetchSiteSettings();
     const footerElement = document.getElementById('main-footer');
     if (!footerElement) return;
+    
+    // ഫൂട്ടർ എലമെന്റിന് പുതിയ ക്ലാസ് നൽകുന്നു
+    footerElement.className = 'main-footer-new';
 
     footerElement.innerHTML = `
-        <div class="footer-container">
-            <div class="footer-col">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="categories.html">Products</a></li>
-                    <li><a href="cart.html">Cart</a></li>
-                    <li><a href="contact.html">Contact Us</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Contact</h3>
-                <ul>
-                    <li class="contact-item-footer">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/></svg>
-                        <span>${settings.phone || 'N/A'}</span>
-                    </li>
-                    <li class="contact-item-footer">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"/></svg>
-                        <span>${settings.email || 'N/A'}</span>
-                    </li>
-                </ul>
-                <div class="footer-social-icons">
-                    <a href="${settings.instagramUrl || '#'}" target="_blank" aria-label="Instagram">
-                        <svg ...>...</svg>
-                    </a>
-                    <a href="${settings.facebookUrl || '#'}" target="_blank" aria-label="Facebook">
-                        <svg ...>...</svg>
-                    </a>
+        <div class="footer-container-new">
+            <!-- ഐറ്റം 1: About -->
+            <div class="footer-accordion-item">
+                <button class="footer-accordion-toggle" data-target="footer-content-1">
+                    <span>ABOUT OUDARABIA</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 11.293l-4.646-4.647a.5.5 0 0 1 .708-.708L8 9.879l4.939-4.939a.5.5 0 0 1 .708.708L8 11.293z"></path></svg>
+                </button>
+                <div class="footer-accordion-content" id="footer-content-1">
+                    <ul>
+                        <li><a href="#">Our Story</a></li>
+                        <li><a href="contact.html">Contact Us</a></li>
+                        <li><a href="#">Store Locator</a></li>
+                    </ul>
                 </div>
             </div>
-            <div class="footer-col">
-                <h3>Newsletter</h3>
-                <p>Get notified about new products.</p>
-                <!-- ഭാവിയിൽ ന്യൂസ് ലെറ്റർ ഫോം ഇവിടെ ചേർക്കാം -->
+            
+            <!-- ഐറ്റം 2: Customer Care -->
+            <div class="footer-accordion-item">
+                <button class="footer-accordion-toggle" data-target="footer-content-2">
+                    <span>CUSTOMER CARE</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 11.293l-4.646-4.647a.5.5 0 0 1 .708-.708L8 9.879l4.939-4.939a.5.5 0 0 1 .708.708L8 11.293z"></path></svg>
+                </button>
+                <div class="footer-accordion-content" id="footer-content-2">
+                    <ul>
+                        <li><a href="#">Shipping Policy</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- ഐറ്റം 3: Quick Links -->
+            <div class="footer-accordion-item">
+                <button class="footer-accordion-toggle" data-target="footer-content-3">
+                    <span>QUICK LINKS</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 11.293l-4.646-4.647a.5.5 0 0 1 .708-.708L8 9.879l4.939-4.939a.5.5 0 0 1 .708.708L8 11.293z"></path></svg>
+                </button>
+                <div class="footer-accordion-content" id="footer-content-3">
+                    <ul>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="categories.html">Perfumes</a></li>
+                        <li><a href="cart.html">Cart</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- ന്യൂസ് ലെറ്റർ -->
+            <div class="footer-newsletter">
+                <p>Get notified about new products</p>
+                <form class="newsletter-form" id="newsletter-form">
+                    <input type="email" class="newsletter-input" placeholder="Enter your email" required>
+                    <button type="submit" class="newsletter-button" aria-label="Subscribe">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M1.946 9.315c-.522-.174-.527-.455.01-.634l19.087-6.362c.529-.176.832.12.684.638l-5.454 19.086c-.15.529-.455.547-.679.045L12 14l-7 3.737c-.57.305-.755-.188-.363-.676l5.097-5.118-4.79-1.63z"></path></svg>
+                    </button>
+                </form>
+            </div>
+
+            <!-- സോഷ്യൽ ഐക്കണുകൾ -->
+            <div class="footer-social-new">
+                <a href="${settings.instagramUrl || '#'}" target="_blank" aria-label="Instagram">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.225 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.85-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.308.196-6.106 1.99-6.3 6.3C.014 8.333 0 8.741 0 12s.014 3.667.072 4.947c.196 4.308 1.99 6.106 6.3 6.3 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c4.308-.196 6.106-1.99 6.3-6.3.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947c-.196-4.308-1.99-6.106-6.3-6.3C15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"></path></svg>
+                </a>
+                <a href="${settings.facebookUrl || '#'}" target="_blank" aria-label="Facebook">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.9V12h2.538v-2.245c0-2.508 1.493-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.465l-1.26.001c-1.243 0-1.63.771-1.63 1.562V12h2.771l-.443 2.89H13.63v6.988C18.343 21.128 22 16.991 22 12z"></path></svg>
+                </a>
+            </div>
+
+            <!-- കോപ്പിറൈറ്റ് -->
+            <div class="footer-bottom-new">
+                <p>&copy; ${new Date().getFullYear()} ${settings.logoText || 'Al Ambar'}. All Rights Reserved.</p>
             </div>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; ${new Date().getFullYear()} ${settings.logoText || 'Al Ambar'}. All Rights Reserved.</p>
-        </div>
     `;
+
+    // അക്കോർഡിയൻ പ്രവർത്തിപ്പിക്കുന്നു
+    setupFooterAccordion();
+}
+
+/**
+ * ഫൂട്ടർ അക്കോർഡിയൻ പ്രവർത്തിപ്പിക്കുന്നു
+ */
+function setupFooterAccordion() {
+    const toggles = document.querySelectorAll('.footer-accordion-toggle');
+    toggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            const targetId = toggle.dataset.target;
+            const content = document.getElementById(targetId);
+            
+            if (content.style.maxHeight) {
+                // അടയ്ക്കുന്നു
+                content.style.maxHeight = null;
+                toggle.classList.remove('active');
+            } else {
+                // തുറക്കുന്നു
+                content.style.maxHeight = content.scrollHeight + "px";
+                toggle.classList.add('active');
+            }
+        });
+    });
+    
+    // ന്യൂസ് ലെറ്റർ
+    const newsletterForm = document.getElementById('newsletter-form');
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            alert('Thank you for subscribing!'); // തൽക്കാലം
+            newsletterForm.reset();
+        });
+    }
+}
+
+
+/**
+ * 4. പുതിയ ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ നിർമ്മിക്കുന്നു
+ */
+async function buildFloatingButtons() {
+    const settings = await fetchSiteSettings();
+    const container = document.getElementById('floating-action-buttons');
+    if (!container) return;
+
+    let html = '';
+    
+    // WhatsApp
+    if (settings.whatsapp) {
+        html += `
+            <a href="https://wa.me/${settings.whatsapp}" class="float-btn whatsapp" target="_blank" aria-label="Chat on WhatsApp">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19.06 4.94a10.02 10.02 0 0 0-14.12 0 10.02 10.02 0 0 0 0 14.12 10.02 10.02 0 0 0 14.12 0 10.02 10.02 0 0 0 0-14.12zm-2.82 11.32a8.02 8.02 0 0 1-11.32 0 8.02 8.02 0 0 1 0-11.32 8.02 8.02 0 0 1 11.32 0 8.02 8.02 0 0 1 0 11.32zM12 5.9a6.1 6.1 0 0 0-6.1 6.1c0 1.5.5 2.9 1.4 4l-1 3.6 3.7-1c1.1.9 2.5 1.4 4 1.4a6.1 6.1 0 0 0 0-12.2zm0 10.4a4.3 4.3 0 0 1-3.5-1.7l-.3-.4-2.6.7.7-2.5-.4-.3a4.3 4.3 0 0 1-1.7-3.5 4.3 4.3 0 0 1 8.6 0 4.3 4.3 0 0 1-4.3 4.3zm2.8-3.5l-1.2-1.1c-.2-.1-.3-.1-.5 0l-.3.3c-.1.1-.2.2-.3.2-.1 0-.2 0-.3-.1l-1.3-.8c-.4-.2-.8-.6-.8-1s-.1-.8 0-1c.1-.1.2-.2.3-.3l.3-.3c.1-.1.1-.3 0-.5l-1.1-1.2c-.1-.2-.2-.2-.4-.2h-.3c-.2 0-.4.1-.5.2l-.6.6c-.2.2-.3.4-.3.7s0 .6.1.9c.1.2.3.5.5.7l.2.3c.3.4.6.7.9.9.4.3.8.5 1.2.7.5.2 1 .3 1.5.3h.1c.5 0 1-.1 1.4-.3.5-.2 1-.6 1.3-1l.3-.4c.1-.1.2-.3.2-.5v-.3c0-.2-.1-.4-.2-.5z"></path></svg>
+            </a>
+        `;
+    }
+
+    // Phone
+    if (settings.phone) {
+        html += `
+            <a href="tel:${settings.phone}" class="float-btn phone" aria-label="Call Us">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M16.51 3.08 14.89 4.7a1.99 1.99 0 0 0-2.82 0l-1.24 1.24c-.1.1-.1.2-.1.3s0 .2.1.3l2.82 2.82c.1.1.2.1.3.1s.2-.1.3-.1l1.24-1.24c.78-.78.78-2.04 0-2.82l-1.62-1.62zM5.31 10.99c.1.1.2.1.3.1s.2-.1.3-.1l2.82-2.82c.1-.1.1-.2.1-.3s-.1-.2-.1-.3L7.4 6.3c-.78-.78-2.04-.78-2.82 0L3.08 7.8c-.78.78-.78 2.04 0 2.82L4.7 12.24l-1.62 1.62c-.78.78-.78 2.04 0 2.82l1.24 1.24c.1.1.2.1.3.1s.2-.1.3-.1l2.82-2.82c.1-.1.1-.2.1-.3s-.1-.2-.1-.3l-1.24-1.24c-.78-.78-.78-2.04 0-2.82L7.8 9.08l1.62 1.62c.78.78.78 2.04 0 2.82l-1.24 1.24c-.1.1-.1.2-.1.3s0 .2.1.3l2.82 2.82c.1.1.2.1.3.1s.2-.1.3-.1l1.24-1.24c.78-.78.78-2.04 0-2.82l-1.62-1.62 1.62-1.62c.78-.78.78-2.04 0-2.82L10.99 7.8c-.1-.1-.2-.1-.3-.1s-.2.1-.3.1L7.58 10.7l-1.62-1.62c-.78-.78-.78-2.04 0-2.82L7.8 4.7c.1-.1.2-.1.3-.1s.2.1.3.1l2.82 2.82c.1.1.1.2.1.3s-.1.2-.1.3L9.9 9.54l1.62 1.62c.78.78 2.04.78 2.82 0l1.62-1.62c.1-.1.2-.1.3-.1s.2.1.3.1l2.82 2.82c.1.1.1.2.1.3s-.1.2-.1.3l-1.24 1.24c-.78.78-2.04.78-2.82 0l-1.62-1.62-1.62 1.62c-.78.78-.78 2.04 0 2.82L13.1 19.8c.1.1.2.1.3.1s.2-.1.3-.1l2.82-2.82c.1-.1.1-.2.1-.3s-.1-.2-.1-.3l-1.24-1.24c-.78-.78-.78-2.04 0-2.82l1.62-1.62 1.62 1.62c.78.78.78 2.04 0 2.82l-1.62 1.62c-.1.1-.2.1-.3.1s-.2-.1-.3-.1l-2.82-2.82c-.1-.1-.1-.2-.1-.3s.1-.2.1-.3l1.24-1.24c.78-.78 2.04-.78 2.82 0l1.62 1.62c.78.78.78 2.04 0 2.82L19.8 20.9c-.1.1-.2.1-.3.1s-.2-.1-.3-.1l-2.82-2.82c-.1-.1-.1-.2-.1-.3s.1-.2.1-.3l1.24-1.24c.78-.78 2.04-.78 2.82 0l1.62 1.62c.78.78.78 2.04 0 2.82l-1.62 1.62c-.1.1-.2.1-.3.1s-.2.1-.3-.1z"></path></svg>
+            </a>
+        `;
+    }
+    
+    container.innerHTML = html;
 }
 
 /**
@@ -262,4 +342,5 @@ export async function loadSiteSettings() {
     await buildHeader();
     await buildSideNav();
     await buildFooter();
+    await buildFloatingButtons(); // <-- പുതിയതായി ചേർത്തു
 }
