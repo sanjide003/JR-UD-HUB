@@ -1,586 +1,302 @@
 <!DOCTYPE html>
-<html lang="ml">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Al Ambar Perfumes</title>
+    <!-- Google Font: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
     <style>
+        /* (പഴയ സ്റ്റൈലുകൾ മാറ്റമില്ലാതെ തുടരുന്നു) */
         :root {
-            --bg-color: #f4f7f6;
-            --primary-color: #D4AF37; /* Gold */
-            --secondary-color: #121212; /* Dark */
-            --text-color: #333;
-            --text-light: #F5F5F5;
-            --border-color: #ddd;
-            --card-bg: #ffffff;
-            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            --bg-color: #121212;
+            --primary-gold: #D4AF37;
+            --text-color: #F5F5F5;
+            --text-muted: #aaa;
+            --card-bg: #1e1e1e;
+            --error-red: #e74c3c;
+            --success-green: #2ecc71;
+            --border-color: #333;
             --font-main: 'Inter', sans-serif;
-            --danger-color: #e74c3c;
-            --success-color: #2ecc71;
         }
+
         body {
             font-family: var(--font-main);
             background-color: var(--bg-color);
             color: var(--text-color);
-            line-height: 1.6;
             margin: 0;
             padding: 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
         }
-        * { box-sizing: border-box; }
+
         .container {
-            width: 100%;
             max-width: 1100px;
             margin: 2rem auto;
-            padding: 1.5rem;
-        }
-
-        /* --- Login Form --- */
-        #login-container {
-            max-width: 450px;
-            background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            border-top: 5px solid var(--primary-color);
-        }
-        #login-container h1 {
-            text-align: center;
-            color: var(--secondary-color);
-            margin-bottom: 2rem;
-            font-size: 1.8rem;
-        }
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        .form-group label {
-            display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
-        }
-        .form-group input {
-            width: 100%;
-            padding: 0.85rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: var(--font-main);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-        }
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
-        }
-        .btn {
-            display: inline-block;
-            width: 100%;
-            padding: 0.9rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 700;
-            text-align: center;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-        }
-        .btn-primary {
-            background-color: var(--primary-color);
-            color: var(--secondary-color);
-        }
-        .btn-primary:hover {
-            background-color: #c19d30; /* Darker Gold */
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
-        }
-        .btn-danger { background-color: var(--danger-color); color: white; }
-        .btn-danger:hover { background-color: #c0392b; }
-        .btn-secondary { background-color: #7f8c8d; color: white; }
-        .btn-secondary:hover { background-color: #6c7a7b; }
-        .btn-small { padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; }
-        
-        #error-message {
-            color: var(--danger-color);
-            background: rgba(231, 76, 60, 0.1);
-            border: 1px solid rgba(231, 76, 60, 0.2);
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            text-align: center;
-            margin-top: 1.5rem;
-            display: none;
-        }
-        #success-message {
-            color: #27ae60;
-            background: rgba(46, 204, 113, 0.1);
-            border: 1px solid rgba(46, 204, 113, 0.2);
-            border-radius: 8px;
-            padding: 0.75rem 1rem;
-            text-align: center;
-            margin-top: 1.5rem;
-            display: none;
-        }
-
-        /* --- Admin Panel --- */
-        #admin-panel {
-            display: none; /* Initially hidden */
-        }
-        .admin-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
             padding: 1rem 2rem;
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            margin-bottom: 2rem;
         }
-        .admin-header h1 {
-            color: var(--secondary-color);
-            font-size: 1.5rem;
-        }
-        .admin-header #admin-email {
+        
+        /* (Login, Header, Tabs, Forms എന്നിവയുടെ സ്റ്റൈലുകൾ മാറ്റമില്ല) */
+        .login-box { background-color: var(--card-bg); padding: 2.5rem; border-radius: 8px; border: 1px solid var(--border-color); box-shadow: 0 10px 25px rgba(0,0,0,0.3); max-width: 500px; margin: 5rem auto; }
+        #login-section h1 { text-align: center; color: var(--primary-gold); margin-bottom: 2rem; }
+        #admin-panel { display: none; }
+        .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--primary-gold); padding-bottom: 1rem; }
+        .admin-header h1 { color: var(--primary-gold); margin-bottom: 0; }
+        .tab-links { display: flex; background-color: var(--card-bg); border-radius: 8px 8px 0 0; overflow: hidden; border-bottom: 2px solid var(--primary-gold); }
+        .tab-link { padding: 1rem 1.5rem; cursor: pointer; background-color: transparent; border: none; color: var(--text-muted); font-size: 1rem; font-weight: 500; transition: all 0.3s ease; }
+        .tab-link:hover { background-color: #2a2a2a; color: var(--text-color); }
+        .tab-link.active { color: var(--primary-gold); border-bottom: 2px solid var(--primary-gold); background-color: #252525; margin-bottom: -2px; }
+        .tab-content { display: none; background-color: var(--card-bg); padding: 2rem; border-radius: 0 0 8px 8px; border: 1px solid var(--border-color); border-top: none; animation: fadeIn 0.5s; }
+        .tab-content.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .form-section { padding: 1.5rem 0; }
+        .form-section h2 { color: var(--text-color); border-bottom: 1px solid #444; padding-bottom: 0.5rem; margin-bottom: 1.5rem; font-size: 1.5rem; }
+        .form-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
+        @media (min-width: 768px) { .form-grid { grid-template-columns: 1fr 1fr; gap: 2rem; } }
+        .form-group { margin-bottom: 1.5rem; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label { display: block; margin-bottom: 0.5rem; color: var(--text-muted); font-weight: 500; }
+        input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea, select { width: 100%; padding: 0.85rem; border-radius: 5px; border: 1px solid #555; background-color: #333; color: var(--text-color); font-family: var(--font-main); font-size: 1rem; box-sizing: border-box; }
+        textarea { resize: vertical; min-height: 100px; }
+        .image-preview { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .image-preview img { width: 80px; height: 80px; object-fit: cover; border-radius: 5px; border: 2px solid var(--border-color); }
+        .btn { display: inline-block; padding: 0.9rem 1.5rem; background-color: var(--primary-gold); color: #000; font-weight: 700; border-radius: 5px; border: none; cursor: pointer; font-size: 1rem; text-align: center; transition: background-color 0.3s ease; }
+        .btn:hover { background-color: #b8860b; }
+        .btn-logout { background-color: var(--error-red); color: #fff; padding: 0.5rem 1rem; }
+        .btn-edit { background-color: #3498db; color: #fff; font-size: 0.8rem; padding: 0.4rem 0.8rem; margin-right: 5px; }
+        .btn-delete { background-color: var(--error-red); color: #fff; font-size: 0.8rem; padding: 0.4rem 0.8rem; }
+        .status-message { padding: 1rem; border-radius: 5px; margin: 1.5rem 0; text-align: center; font-weight: 500; display: none; }
+        .status-message.error { background-color: rgba(231, 76, 60, 0.2); color: var(--error-red); display: block; }
+        .status-message.success { background-color: rgba(46, 204, 113, 0.2); color: var(--success-green); display: block; }
+        .loader { border: 4px solid #555; border-top: 4px solid var(--primary-gold); border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite; margin: 1rem auto; display: none; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        .data-list-section { margin-top: 2rem; }
+        .data-table-wrapper { max-height: 500px; overflow-y: auto; border: 1px solid var(--border-color); border-radius: 5px; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th, .data-table td { padding: 0.8rem 1rem; text-align: left; border-bottom: 1px solid var(--border-color); }
+        .data-table th { background-color: #2a2a2a; color: var(--primary-gold); position: sticky; top: 0; }
+        .data-table td img { width: 40px; height: 40px; object-fit: cover; border-radius: 4px; vertical-align: middle; margin-right: 10px; }
+        .data-table td:last-child { text-align: right; white-space: nowrap; }
+        
+        /* *** പുതിയ സ്റ്റൈൽ: MRP വെട്ടി കാണിക്കാൻ *** */
+        .price-mrp {
+            text-decoration: line-through;
+            color: var(--text-muted);
             font-size: 0.9rem;
-            color: #555;
-            margin-right: 1.5rem;
-        }
-        #logout-button {
-            background: none;
-            border: 1px solid var(--danger-color);
-            color: var(--danger-color);
-            padding: 0.5rem 1rem;
-            border-radius: 8px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        #logout-button:hover {
-            background: var(--danger-color);
-            color: white;
+            margin-left: 0.5rem;
         }
 
-        /* --- Tabs --- */
-        .tab-navigation {
-            display: flex;
-            margin-bottom: 2rem;
-            background: var(--card-bg);
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-            padding: 0.5rem;
-        }
-        .tab-btn {
-            flex: 1;
-            padding: 1rem;
-            border: none;
-            background: none;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: 500;
-            color: #555;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-        .tab-btn.active {
-            background-color: var(--primary-color);
-            color: var(--secondary-color);
-            font-weight: 700;
-            box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3);
-        }
-        .tab-content {
-            display: none;
-        }
-        .tab-content.active {
-            display: block;
-        }
-
-        /* --- Form & Table Layout --- */
-        .admin-layout {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
-        .form-container, .list-container {
-            background: var(--card-bg);
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: var(--shadow);
-        }
-        .form-container h2, .list-container h2 {
-            font-size: 1.5rem;
-            color: var(--secondary-color);
-            margin-top: 0;
-            margin-bottom: 2rem;
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 1rem;
-        }
-        
-        /* Single column layout for Site Settings */
-        #tab-settings .admin-layout {
-            grid-template-columns: 1fr;
-        }
-
-        .form-group textarea {
-            width: 100%;
-            padding: 0.85rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: var(--font-main);
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
-            min-height: 100px;
-            resize: vertical;
-        }
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.2);
-        }
-        
-        .form-group select {
-            width: 100%;
-            padding: 0.85rem 1rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
-            font-family: var(--font-main);
-            background-color: white;
-            cursor: pointer;
-        }
-        
-        .form-group label .required-star {
-            color: var(--danger-color);
-            font-weight: 700;
-            margin-left: 4px;
-        }
-
-        .form-group .image-preview {
-            width: 100px;
-            height: 100px;
-            border-radius: 8px;
-            border: 2px dashed var(--border-color);
-            margin-top: 1rem;
-            object-fit: cover;
-            background-color: #f9f9f9;
-        }
-        
-        .form-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-        .form-actions .btn { width: 100%; }
-
-        .list-container ul {
-            list-style: none;
-            padding: 0;
-            margin: 0;
-            max-height: 600px;
-            overflow-y: auto;
-        }
-        .list-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .list-item:last-child {
-            border-bottom: none;
-        }
-        .list-item-content {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-        .list-item-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 8px;
-            object-fit: cover;
-            flex-shrink: 0;
-            border: 1px solid var(--border-color);
-        }
-        .list-item-info {
-            display: flex;
-            flex-direction: column;
-        }
-        .list-item-info strong {
-            font-size: 1rem;
-            color: var(--secondary-color);
-            font-weight: 500;
-        }
-        .list-item-info span {
-            font-size: 0.85rem;
-            color: #666;
-        }
-        .list-item-actions {
-            display: flex;
-            gap: 0.5rem;
-            flex-shrink: 0;
-        }
-        
-        #loading-indicator {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 255, 255, 0.7);
-            z-index: 9998;
-            justify-content: center;
-            align-items: center;
-        }
-        .spinner {
-            width: 50px;
-            height: 50px;
-            border: 5px solid var(--border-color);
-            border-top-color: var(--primary-color);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        /* Responsive */
-        @media (max-width: 900px) {
-            .admin-layout {
-                grid-template-columns: 1fr;
-            }
-            .list-container {
-                order: -1; /* Show list on top */
-            }
-        }
-        @media (max-width: 600px) {
-            .container {
-                padding: 1rem;
-                margin: 0;
-            }
-            #login-container, .form-container, .list-container {
-                padding: 1.5rem;
-            }
-            .admin-header {
-                flex-direction: column;
-                gap: 1rem;
-            }
-            .tab-navigation {
-                flex-direction: column;
-            }
-            .list-item {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-            .list-item-actions {
-                width: 100%;
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-            }
-        }
+        /* (Modal, Responsive സ്റ്റൈലുകൾ മാറ്റമില്ല) */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-content { background-color: var(--card-bg); padding: 2rem; border-radius: 8px; width: 90%; max-width: 700px; max-height: 90vh; overflow-y: auto; border: 1px solid var(--primary-gold); }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem; margin-bottom: 1.5rem; }
+        .modal-header h2 { color: var(--primary-gold); margin: 0; }
+        .modal-close { background: none; border: none; color: var(--text-muted); font-size: 2rem; cursor: pointer; }
+        @media (max-width: 768px) { .container { padding: 1rem; } .login-box { padding: 1.5rem; } .tab-link { padding: 0.8rem; font-size: 0.9rem; } .tab-content { padding: 1.5rem; } .data-table th, .data-table td { padding: 0.5rem; } .btn { width: 100%; } .btn-edit, .btn-delete { width: auto; } .admin-header { flex-direction: column; gap: 1rem; } }
     </style>
 </head>
 <body>
 
-    <!-- Loading Spinner -->
-    <div id="loading-indicator">
-        <div class="spinner"></div>
-    </div>
+    <div class="container">
 
-    <!-- Login Container -->
-    <div id="login-container" class="container">
-        <h1>Admin Login</h1>
-        <form id="login-form">
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" required>
+        <!-- 1. Login Section (മാറ്റമില്ല) -->
+        <section id="login-section">
+            <div class="login-box">
+                <h1>Admin Login</h1>
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="login-email">Email</label>
+                        <input type="email" id="login-email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="login-password">Password</label>
+                        <input type="password" id="login-password" required>
+                    </div>
+                    <button type="submit" class="btn" id="login-button">Login</button>
+                    <div id="login-status" class="status-message"></div>
+                </form>
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" required>
+        </section>
+
+        <!-- 2. Admin Panel Section -->
+        <section id="admin-panel">
+
+            <!-- Admin Header (മാറ്റമില്ല) -->
+            <div class="admin-header">
+                <h1>Al Ambar - Admin Panel</h1>
+                <button id="logout-button" class="btn btn-logout">Logout</button>
             </div>
-            <button type="submit" class="btn btn-primary">Login</button>
-            <div id="error-message"></div>
-        </form>
-    </div>
+            <div id="admin-status" class="status-message"></div>
 
-    <!-- Admin Panel (Hidden by default) -->
-    <div id="admin-panel" class="container">
-        <header class="admin-header">
-            <h1>Al Ambar - Admin Panel</h1>
-            <div>
-                <span id="admin-email"></span>
-                <button id="logout-button">Logout</button>
-            </div>
-        </header>
+            <!-- Tab Links (മാറ്റമില്ല) -->
+            <nav class="tab-links">
+                <button class="tab-link active" data-tab="tab-products">Manage Products</button>
+                <button class="tab-link" data-tab="tab-categories">Manage Categories</button>
+                <button class="tab-link" data-tab="tab-settings">Site Settings</button>
+            </nav>
 
-        <!-- General Success/Error Message -->
-        <div id="success-message"></div>
-
-        <!-- Tab Navigation -->
-        <nav class="tab-navigation">
-            <button class="tab-btn active" data-tab="tab-products">Manage Products</button>
-            <button class="tab-btn" data-tab="tab-categories">Manage Categories</button>
-            <button class="tab-btn" data-tab="tab-settings">Site Settings</button>
-        </nav>
-
-        <!-- Tab 1: Manage Products -->
-        <div id="tab-products" class="tab-content active">
-            <div class="admin-layout">
-                <div class="form-container">
-                    <h2 id="product-form-title">Add New Product</h2>
-                    <form id="product-form">
-                        <input type="hidden" id="product-id">
+            <!-- Tab Content: Manage Products (*** മാറ്റം വരുത്തി ***) -->
+            <div id="tab-products" class="tab-content active">
+                <form id="add-product-form" class="form-section">
+                    <h2>Add New Product</h2>
+                    <div class="form-grid">
                         <div class="form-group">
-                            <label for="product-name">Product Name <span class="required-star">*</span></label>
+                            <label for="product-name">Product Name</label>
                             <input type="text" id="product-name" required>
                         </div>
                         <div class="form-group">
-                            <label for="product-sku">SKU <span class="required-star">*</span></label>
-                            <input type="text" id="product-sku" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="product-category">Category <span class="required-star">*</span></label>
+                            <label for="product-category">Category</label>
                             <select id="product-category" required>
-                                <option value="">Select a category</option>
-                                <!-- Categories loaded by JS -->
+                                <option value="">Loading categories...</option>
                             </select>
                         </div>
+                        
+                        <!-- *** വില ഫീൽഡുകൾ മാറ്റി *** -->
                         <div class="form-group">
-                            <label for="product-price">Price in ₹ <span class="required-star">*</span></label>
-                            <input type="number" id="product-price" step="0.01" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="product-desc">Description</label>
-                            <textarea id="product-desc" rows="4"></textarea>
-                        </div>
-                         <!-- New Fields -->
-                        <div class="form-group">
-                            <label for="product-fragrance">Fragrance Classification</label>
-                            <input type="text" id="product-fragrance" placeholder="e.g., Woody, Floral, Oriental">
+                            <label for="product-mrp">MRP (₹)</label>
+                            <input type="number" id="product-mrp" placeholder="e.g., 1000">
                         </div>
                         <div class="form-group">
-                            <label for="product-ideal">Ideal For</label>
-                            <input type="text" id="product-ideal" placeholder="e.g., Men, Women, Unisex">
+                            <label for="product-price">Retail Price (₹)</label>
+                            <input type="number" id="product-price" placeholder="e.g., 800" required>
+                        </div>
+                        <!-- *** /വില ഫീൽഡുകൾ മാറ്റി *** -->
+                        
+                         <div class="form-group">
+                            <label for="product-size">Size</label>
+                            <input type="text" id="product-size" placeholder="e.g., 12ml">
                         </div>
                         <div class="form-group">
-                            <label for="product-video">Product Video URL (YouTube or .mp4)</label>
-                            <input type="url" id="product-video">
+                            <input type="checkbox" id="product-featured" style="width: auto; margin-right: 10px;">
+                            <label for="product-featured" style="display: inline;">Featured on Home Page?</label>
                         </div>
-                        <!-- End New Fields -->
-                        <div class="form-group">
-                            <label for="product-image1">Image 1 URL</label>
-                            <input type="url" id="product-image1" class="image-url-input" data-preview="preview-img1">
-                            <img src="https://placehold.co/100x100/f4f7f6/ccc?text=Preview" id="preview-img1" class="image-preview" alt="Image 1 Preview">
+                        <div class="form-group full-width">
+                            <label for="product-description">Description</label>
+                            <textarea id="product-description" rows="4"></textarea>
                         </div>
-                        <div class="form-group">
-                            <label for="product-image2">Image 2 URL</label>
-                            <input type="url" id="product-image2" class="image-url-input" data-preview="preview-img2">
-                            <img src="https://placehold.co/100x100/f4f7f6/ccc?text=Preview" id="preview-img2" class="image-preview" alt="Image 2 Preview">
+                        <div class="form-group full-width">
+                            <label for="product-image-urls">Product Image URLs (One URL per line)</label>
+                            <textarea class="image-url-input" id="product-image-urls" rows="4" placeholder="Paste image links here, each on a new line." required></textarea>
+                            <div class="image-preview" id="product-image-preview"></div>
                         </div>
-                        <div class="form-group">
-                            <label for="product-featured">
-                                <input type="checkbox" id="product-featured" style="width: auto; margin-right: 10px;">
-                                Feature this product on Home Page
-                            </label>
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">Save Product</button>
-                            <button type="button" id="clear-product-form" class="btn btn-secondary">Clear</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="list-container">
+                    </div>
+                    <button type="submit" class="btn" id="add-product-button">Add Product</button>
+                    <div class="loader" id="product-loader"></div>
+                </form>
+
+                <div class="data-list-section">
                     <h2>Existing Products</h2>
-                    <ul id="product-list">
-                        <!-- Products loaded by JS -->
-                    </ul>
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Price (Retail / MRP)</th> <!-- *** ഹെഡർ മാറ്റി *** -->
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="products-list-body">
+                                <!-- ഉൽപ്പന്നങ്ങൾ JS വഴി ഇവിടെ വരും -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Tab 2: Manage Categories -->
-        <div id="tab-categories" class="tab-content">
-            <div class="admin-layout">
-                <div class="form-container">
-                    <h2 id="category-form-title">Add New Category</h2>
-                    <form id="category-form">
-                        <input type="hidden" id="category-id">
+            <!-- Tab Content: Manage Categories (മാറ്റമില്ല) -->
+            <div id="tab-categories" class="tab-content">
+                <form id="add-category-form" class="form-section">
+                    <h2>Add New Category</h2>
+                    <div class="form-grid">
                         <div class="form-group">
-                            <label for="category-name">Category Name <span class="required-star">*</span></label>
-                            <input type="text" id="category-name" required>
+                            <label for="category-name">Category Name</label>
+                            <input type="text" id="category-name" placeholder="e.g., Attar" required>
                         </div>
                         <div class="form-group">
-                            <label for="category-image">Image URL</label>
-                            <input type="url" id="category-image" class="image-url-input" data-preview="preview-cat-img">
-                            <img src="https://placehold.co/100x100/f4f7f6/ccc?text=Preview" id="preview-cat-img" class="image-preview" alt="Category Image Preview">
+                            <label for="category-image-url">Category Image URL</label>
+                            <input type="text" class="image-url-input" id="category-image-url" placeholder="Paste image URL from Imgur, etc." required>
+                            <div class="image-preview" id="category-image-preview"></div>
                         </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">Save Category</button>
-                            <button type="button" id="clear-category-form" class="btn btn-secondary">Clear</button>
-                        </div>
-                    </form>
-                </div>
-                <div class="list-container">
+                    </div>
+                    <button type="submit" class="btn" id="add-category-button">Add Category</button>
+                    <div class="loader" id="category-loader"></div>
+                </form>
+                
+                <div class="data-list-section">
                     <h2>Existing Categories</h2>
-                    <ul id="category-list">
-                        <!-- Categories loaded by JS -->
-                    </ul>
+                     <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="categories-list-body">
+                                <!-- കാറ്റഗറികൾ JS വഴി ഇവിടെ വരും -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
-        </div>
+            
+            <!-- Tab Content: Site Settings (മാറ്റമില്ല) -->
+            <div id="tab-settings" class="tab-content">
+                <form id="site-settings-form" class="form-section">
+                    <h2>Site Settings (Home Page & Footer)</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="setting-logo-text">Logo Text</label>
+                            <input type="text" id="setting-logo-text" placeholder="e.g., AL AMBAR">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-video-url">Home Page Video URL (YouTube or .mp4)</label>
+                            <input type="text" id="setting-video-url" placeholder="Paste video link here">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-phone">Contact Phone</label>
+                            <input type="text" id="setting-phone" placeholder="+91 ...">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-email">Contact Email</label>
+                            <input type="email" id="setting-email" placeholder="info@alambar.com">
+                        </div>
+                         <div class="form-group">
+                            <label for="setting-address">Contact Address</label>
+                            <input type="text" id="setting-address" placeholder="Kerala, India">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-whatsapp">WhatsApp Number</label>
+                            <input type="text" id="setting-whatsapp" placeholder="918086081985 (without +)">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" id="save-settings-button">Save Settings</button>
+                    <div class="loader" id="settings-loader"></div>
+                </form>
+            </div>
 
-        <!-- Tab 3: Site Settings -->
-        <div id="tab-settings" class="tab-content">
-            <div class="admin-layout">
-                <div class="form-container">
-                    <h2>Site-Wide Settings</h2>
-                    <p style="margin-top: -1.5rem; margin-bottom: 2rem; color: #555;">Changes here will update the header, footer, and home page.</p>
-                    <form id="settings-form">
-                        <div class="form-group">
-                            <label for="setting-logo">Logo Text (Header)</label>
-                            <input type="text" id="setting-logo" placeholder="e.g., Al Ambar">
-                        </div>
-                        <div class="form-group">
-                            <label for="setting-video">Home Page Video URL (YouTube or .mp4)</label>
-                            <input type="url" id="setting-video" placeholder="https://www.youtube.com/watch?v=...">
-                        </div>
-                        <hr style="border: 0; border-top: 1px solid var(--border-color); margin: 2rem 0;">
-                        <h3>Contact & Footer Settings</h3>
-                        <div class="form-group">
-                            <label for="setting-whatsapp">WhatsApp Number (with country code)</label>
-                            <input type="text" id="setting-whatsapp" placeholder="e.g., 918086081985 (without +)">
-                        </div>
-                        <div class="form-group">
-                            <label for="setting-phone">Phone Number (for Footer)</label>
-                            <input type="text" id="setting-phone" placeholder="e.g., +91 80860 81985">
-                        </div>
-                        <div class="form-group">
-                            <label for="setting-email">Email Address (for Footer)</label>
-                            <input type="email" id="setting-email" placeholder="e.g., info@alambar.com">
-                        </div>
-                        <div class="form-group">
-                            <label for="setting-address">Address (for Footer)</label>
-                            <input type="text" id="setting-address" placeholder="e.g., Kochi, Kerala">
-                        </div>
-                        <div class="form-actions">
-                            <button type="submit" class="btn btn-primary">Save Settings</button>
-                        </div>
-                    </form>
+        </section>
+        
+        <!-- Modal for Editing (*** മാറ്റം വരുത്തി ***) -->
+        <div id="edit-modal" class="modal-overlay">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="modal-title">Edit Item</h2>
+                    <button class="modal-close" id="modal-close-button">&times;</button>
                 </div>
+                <form id="modal-form">
+                    <!-- JS വഴി ഫോം ഫീൽഡുകൾ ഇവിടെ വരും -->
+                </form>
+                <div class="loader" id="modal-loader"></div>
             </div>
         </div>
+        
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Firebase SDK (v11 Modular) -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { 
@@ -592,20 +308,19 @@
         import { 
             getFirestore, 
             collection, 
-            doc, 
             addDoc, 
-            getDoc, 
-            getDocs, 
-            setDoc, 
-            updateDoc, 
-            deleteDoc, 
-            onSnapshot,
+            getDoc,
+            getDocs,
+            setDoc,
+            doc,
+            deleteDoc,
+            onSnapshot, 
             query,
-            orderBy,
+            serverTimestamp,
             setLogLevel
         } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-        // Your web app's Firebase configuration
+        // Firebase കോൺഫിഗറേഷൻ (മാറ്റമില്ല)
         const firebaseConfig = {
             apiKey: "AIzaSyCePcVE_BTiFuYXAApNmbMKHdkhQ9Ay_F4",
             authDomain: "al-ambar-perfume-company.firebaseapp.com",
@@ -620,487 +335,465 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
-        setLogLevel('Debug'); // ലോഗുകൾ കാണാൻ
+        setLogLevel('Debug');
 
-        // DOM Elements
-        const loginContainer = document.getElementById("login-container");
+        // --- DOM Elements (മാറ്റമില്ല) ---
+        const loginSection = document.getElementById("login-section");
         const adminPanel = document.getElementById("admin-panel");
         const loginForm = document.getElementById("login-form");
-        const emailInput = document.getElementById("email");
-        const passwordInput = document.getElementById("password");
-        const errorMessage = document.getElementById("error-message");
-        const successMessage = document.getElementById("success-message");
+        const loginButton = document.getElementById("login-button");
+        const loginStatus = document.getElementById("login-status");
         const logoutButton = document.getElementById("logout-button");
-        const adminEmailSpan = document.getElementById("admin-email");
-        const loadingIndicator = document.getElementById("loading-indicator");
-        
-        const tabButtons = document.querySelectorAll(".tab-btn");
+        const adminStatus = document.getElementById("admin-status");
+        const tabLinks = document.querySelectorAll(".tab-link");
         const tabContents = document.querySelectorAll(".tab-content");
-        
-        // Category Form
-        const categoryForm = document.getElementById("category-form");
-        const categoryFormTitle = document.getElementById("category-form-title");
-        const categoryIdInput = document.getElementById("category-id");
-        const categoryNameInput = document.getElementById("category-name");
-        const categoryImageInput = document.getElementById("category-image");
-        const categoryList = document.getElementById("category-list");
-        const clearCategoryFormBtn = document.getElementById("clear-category-form");
-        const categoryPreview = document.getElementById("preview-cat-img");
-
-        // Product Form
-        const productForm = document.getElementById("product-form");
-        const productFormTitle = document.getElementById("product-form-title");
-        const productIdInput = document.getElementById("product-id");
-        const productNameInput = document.getElementById("product-name");
-        const productSkuInput = document.getElementById("product-sku");
+        const addCategoryForm = document.getElementById("add-category-form");
+        const categoryLoader = document.getElementById("category-loader");
+        const categoriesListBody = document.getElementById("categories-list-body");
+        const categoryImagePreview = document.getElementById("category-image-preview");
+        const addProductForm = document.getElementById("add-product-form");
         const productCategorySelect = document.getElementById("product-category");
-        const productPriceInput = document.getElementById("product-price");
-        const productDescInput = document.getElementById("product-desc");
-        const productFragranceInput = document.getElementById("product-fragrance");
-        const productIdealInput = document.getElementById("product-ideal");
-        const productVideoInput = document.getElementById("product-video");
-        const productImage1Input = document.getElementById("product-image1");
-        const productImage2Input = document.getElementById("product-image2");
-        const productFeaturedInput = document.getElementById("product-featured");
-        const productList = document.getElementById("product-list");
-        const clearProductFormBtn = document.getElementById("clear-product-form");
+        const productLoader = document.getElementById("product-loader");
+        const productsListBody = document.getElementById("products-list-body");
+        const productImagePreview = document.getElementById("product-image-preview");
+        const siteSettingsForm = document.getElementById("site-settings-form");
+        const settingsLoader = document.getElementById("settings-loader");
+        const editModal = document.getElementById("edit-modal");
+        const modalCloseButton = document.getElementById("modal-close-button");
+        const modalTitle = document.getElementById("modal-title");
+        const modalForm = document.getElementById("modal-form");
+        const modalLoader = document.getElementById("modal-loader");
 
-        // Settings Form
-        const settingsForm = document.getElementById("settings-form");
-        const settingLogoInput = document.getElementById("setting-logo");
-        const settingVideoInput = document.getElementById("setting-video");
-        const settingWhatsappInput = document.getElementById("setting-whatsapp");
-        const settingPhoneInput = document.getElementById("setting-phone");
-        const settingEmailInput = document.getElementById("setting-email");
-        const settingAddressInput = document.getElementById("setting-address");
-        
-        // --- Utility Functions ---
-        function showLoading() { loadingIndicator.style.display = 'flex'; }
-        function hideLoading() { loadingIndicator.style.display = 'none'; }
-        
-        function showSuccess(message) {
-            successMessage.textContent = message;
-            successMessage.style.display = 'block';
-            setTimeout(() => { successMessage.style.display = 'none'; }, 3000);
+        // --- Helper Functions (മാറ്റമില്ല) ---
+        function showStatus(element, message, isError = true) {
+            element.textContent = message;
+            element.className = isError ? 'status-message error' : 'status-message success';
+            setTimeout(() => clearStatus(element), 4000);
         }
-        function showLoginError(message) {
-            errorMessage.textContent = message;
-            errorMessage.style.display = 'block';
+        function clearStatus(element) {
+            element.textContent = '';
+            element.className = 'status-message';
         }
+        function showLoader(loader) { loader.style.display = 'block'; }
+        function hideLoader(loader) { loader.style.display = 'none'; }
         
-        function clearProductForm() {
-            productForm.reset();
-            productIdInput.value = '';
-            productFormTitle.textContent = 'Add New Product';
-            document.querySelectorAll('.image-preview').forEach(img => {
-                img.src = 'https://placehold.co/100x100/f4f7f6/ccc?text=Preview';
-            });
-        }
-        
-        function clearCategoryForm() {
-            categoryForm.reset();
-            categoryIdInput.value = '';
-            categoryFormTitle.textContent = 'Add New Category';
-            categoryPreview.src = 'https://placehold.co/100x100/f4f7f6/ccc?text=Preview';
-        }
-        
-        // --- Authentication ---
+        // --- 1. Authentication Logic (മാറ്റമില്ല) ---
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            clearStatus(loginStatus);
+            loginButton.disabled = true;
+            loginButton.textContent = "Logging in...";
+            const email = document.getElementById("login-email").value;
+            const password = document.getElementById("login-password").value;
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+            } catch (error) {
+                console.error("Login Error:", error);
+                showStatus(loginStatus, `Login Failed: ${error.message}`);
+                loginButton.disabled = false;
+                loginButton.textContent = "Login";
+            }
+        });
+        logoutButton.addEventListener("click", () => { signOut(auth); });
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                // User is signed in
-                loginContainer.style.display = 'none';
-                adminPanel.style.display = 'block';
-                adminEmailSpan.textContent = user.email;
-                // Load initial data
+                loginSection.style.display = "none";
+                adminPanel.style.display = "block";
                 loadCategories();
                 loadProducts();
                 loadSiteSettings();
             } else {
-                // User is signed out
-                loginContainer.style.display = 'block';
-                adminPanel.style.display = 'none';
-                adminEmailSpan.textContent = '';
+                loginSection.style.display = "block";
+                adminPanel.style.display = "none";
+                loginButton.disabled = false;
+                loginButton.textContent = "Login";
             }
         });
 
-        loginForm.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            showLoading();
-            const email = emailInput.value;
-            const password = passwordInput.value;
-            try {
-                await signInWithEmailAndPassword(auth, email, password);
-                // Auth state change will handle UI
-                errorMessage.style.display = 'none';
-            } catch (error) {
-                console.error("Login Error: ", error);
-                showLoginError(`Login Failed: ${error.message}`);
-            }
-            hideLoading();
-        });
-
-        logoutButton.addEventListener("click", async () => {
-            showLoading();
-            try {
-                await signOut(auth);
-            } catch (error) {
-                console.error("Logout Error: ", error);
-            }
-            hideLoading();
-        });
-
-        // --- Tab Navigation ---
-        tabButtons.forEach(button => {
-            button.addEventListener("click", () => {
-                // Deactivate all
-                tabButtons.forEach(btn => btn.classList.remove("active"));
-                tabContents.forEach(content => content.classList.remove("active"));
-                
-                // Activate clicked
-                button.classList.add("active");
-                document.getElementById(button.dataset.tab).classList.add("active");
-            });
-        });
-        
-        // --- Image Preview ---
-        document.querySelectorAll('.image-url-input').forEach(input => {
-            input.addEventListener('input', (e) => {
-                const previewId = e.target.dataset.preview;
-                const previewImg = document.getElementById(previewId);
-                if (e.target.value) {
-                    previewImg.src = e.target.value;
-                    previewImg.onerror = () => {
-                        previewImg.src = 'https://placehold.co/100x100/f4f7f6/ccc?text=Invalid';
-                    };
-                } else {
-                    previewImg.src = 'https://placehold.co/100x100/f4f7f6/ccc?text=Preview';
-                }
+        // --- 2. Tab Switching Logic (മാറ്റമില്ല) ---
+        tabLinks.forEach(link => {
+            link.addEventListener("click", () => {
+                const tabId = link.getAttribute("data-tab");
+                tabLinks.forEach(item => item.classList.remove("active"));
+                tabContents.forEach(item => item.classList.remove("active"));
+                link.classList.add("active");
+                document.getElementById(tabId).classList.add("active");
             });
         });
 
-        // --- Categories CRUD ---
-        
-        // Save/Update Category
-        categoryForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            showLoading();
-            const categoryId = categoryIdInput.value;
-            const categoryData = {
-                name: categoryNameInput.value,
-                imageUrl: categoryImageInput.value || ''
-            };
-            
-            try {
-                if (categoryId) {
-                    // Update existing
-                    const docRef = doc(db, 'categories', categoryId);
-                    await updateDoc(docRef, categoryData);
-                    showSuccess('Category updated successfully!');
-                } else {
-                    // Add new
-                    await addDoc(collection(db, 'categories'), categoryData);
-                    showSuccess('Category added successfully!');
-                }
-                clearCategoryForm();
-            } catch (error) {
-                console.error("Error saving category: ", error);
-                showLoginError("Error saving category. Check console.");
-            }
-            hideLoading();
-        });
-        
-        // Load Categories
-        async function loadCategories() {
-            try {
-                // Listen for realtime updates
-                const q = query(collection(db, "categories"));
-                onSnapshot(q, (querySnapshot) => {
-                    categoryList.innerHTML = ''; // Clear list
-                    productCategorySelect.innerHTML = '<option value="">Select a category</option>'; // Clear select
-                    
-                    if (querySnapshot.empty) {
-                        categoryList.innerHTML = '<li>No categories found.</li>';
-                        return;
-                    }
-                    
-                    const categories = [];
-                    querySnapshot.forEach((doc) => {
-                        categories.push({ id: doc.id, ...doc.data() });
-                    });
-
-                    // Sort alphabetically by name
-                    categories.sort((a, b) => a.name.localeCompare(b.name));
-                    
-                    categories.forEach((category) => {
-                        const { id, name, imageUrl } = category;
-                        
-                        // Populate list
-                        const li = document.createElement('li');
-li.className = 'list-item';
-li.innerHTML = `
-    <div class="list-item-content">
-        <img src="${imageUrl || 'https://placehold.co/50x50/f4f7f6/ccc?text=N/A'}" alt="${name}" class="list-item-img" onerror="this.src='https://placehold.co/50x50/f4f7f6/ccc?text=Error'">
-        <div class="list-item-info">
-            <strong>${name}</strong>
-        </div>
-    </div>
-    <div class="list-item-actions">
-        <button class="btn btn-secondary btn-small btn-edit-category" data-id="${id}">Edit</button>
-        <button class="btn btn-danger btn-small btn-delete-category" data-id="${id}">Delete</button>
-    </div>
-`;
-categoryList.appendChild(li);
-                        
-                        // Populate product form select
-                        const option = document.createElement('option');
-                        option.value = id;
-                        option.textContent = name;
-                        productCategorySelect.appendChild(option);
-                    });
+        // --- 3. Image Preview Logic (മാറ്റമില്ല) ---
+        function setupImagePreview(inputId, previewId) {
+            const input = document.getElementById(inputId);
+            const previewContainer = document.getElementById(previewId);
+            function updatePreview() {
+                previewContainer.innerHTML = ''; 
+                const urls = input.value.split('\n')
+                                     .map(url => url.trim())
+                                     .filter(url => url.length > 0);
+                urls.forEach(url => {
+                    const img = document.createElement('img');
+                    img.src = url;
+                    img.onerror = () => { img.style.display = 'none'; }; 
+                    previewContainer.appendChild(img);
                 });
-            } catch (error) {
-                console.error("Error loading categories: ", error);
-                categoryList.innerHTML = '<li>Error loading categories.</li>';
             }
+            input.addEventListener('input', updatePreview);
+            input.addEventListener('change', updatePreview);
         }
-        
-        // Edit/Delete Category Listeners
-        categoryList.addEventListener('click', async (e) => {
-            const target = e.target.closest('button');
-            if (!target) return;
-            
-            const id = target.dataset.id;
-            
-            if (target.classList.contains('btn-delete-category')) {
-                if (confirm('Are you sure you want to delete this category? This cannot be undone.')) {
-                    showLoading();
-                    try {
-                        await deleteDoc(doc(db, 'categories', id));
-                        showSuccess('Category deleted.');
-                    } catch (error) {
-                        console.error("Error deleting category: ", error);
-                        showLoginError("Error. See console.");
-                    }
-                    hideLoading();
-                }
-            } else if (target.classList.contains('btn-edit-category')) {
-                showLoading();
-                try {
-                    const docRef = doc(db, 'categories', id);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        categoryIdInput.value = id;
-                        categoryNameInput.value = data.name;
-                        categoryImageInput.value = data.imageUrl || '';
-                        categoryPreview.src = data.imageUrl || 'https://placehold.co/100x100/f4f7f6/ccc?text=Preview';
-                        categoryFormTitle.textContent = 'Edit Category';
-                        window.scrollTo(0, 0); // Scroll to top
-                    }
-                } catch (error) {
-                    console.error("Error fetching category: ", error);
-                    showLoginError("Error. See console.");
-                }
-                hideLoading();
-            }
-        });
-        
-        clearCategoryFormBtn.addEventListener('click', clearCategoryForm);
+        setupImagePreview('category-image-url', 'category-image-preview');
+        setupImagePreview('product-image-urls', 'product-image-preview');
 
-        // --- Products CRUD ---
 
-        // Save/Update Product
-        productForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            showLoading();
-            
-            const productId = productIdInput.value;
-            const images = [productImage1Input.value, productImage2Input.value].filter(url => url); // Filter out empty strings
-            
-            const productData = {
-                name: productNameInput.value,
-                sku: productSkuInput.value,
-                categoryId: productCategorySelect.value,
-                price: parseFloat(productPriceInput.value) || 0,
-                description: productDescInput.value || '',
-                fragrance: productFragranceInput.value || '',
-                idealFor: productIdealInput.value || '',
-                videoUrl: productVideoInput.value || '',
-                images: images,
-                featured: productFeaturedInput.checked
-            };
-            
-            try {
-                if (productId) {
-                    // Update
-                    const docRef = doc(db, 'products', productId);
-                    await updateDoc(docRef, productData);
-                    showSuccess('Product updated successfully!');
-                } else {
-                    // Add new
-                    await addDoc(collection(db, 'products'), productData);
-                    showSuccess('Product added successfully!');
-                }
-                clearProductForm();
-            } catch (error) {
-                console.error("Error saving product: ", error);
-                showLoginError("Error saving product. Check console.");
-            }
-            hideLoading();
-        });
-        
-        // Load Products
-        async function loadProducts() {
-            try {
-                // Listen for realtime updates
-                const q = query(collection(db, "products"));
-                onSnapshot(q, (querySnapshot) => {
-                    productList.innerHTML = ''; // Clear list
-                    
-                    if (querySnapshot.empty) {
-                        productList.innerHTML = '<li>No products found.</li>';
-                        return;
-                    }
-
-                    const products = [];
-                    querySnapshot.forEach((doc) => {
-                        products.push({ id: doc.id, ...doc.data() });
-                    });
-
-                    // Sort alphabetically by name
-                    products.sort((a, b) => a.name.localeCompare(b.name));
-                    
-                    products.forEach((product) => {
-                        const { id, name, sku, images, price } = product;
-                        
-                        const li = document.createElement('li');
-li.className = 'list-item';
-li.innerHTML = `
-    <div class="list-item-content">
-        <img src="${(images && images[0]) || 'https://placehold.co/50x50/f4f7f6/ccc?text=N/A'}" alt="${name}" class="list-item-img" onerror="this.src='https://placehold.co/50x50/f4f7f6/ccc?text=Error'">
-        <div class="list-item-info">
-            <strong>${name}</strong>
-            <span>SKU: ${sku} | ₹${price}</span>
-        </div>
-    </div>
-    <div class="list-item-actions">
-        <button class="btn btn-secondary btn-small btn-edit-product" data-id="${id}">Edit</button>
-        <button class="btn btn-danger btn-small btn-delete-product" data-id="${id}">Delete</button>
-    </div>
-`;
-productList.appendChild(li);
-                    });
-                });
-            } catch (error) {
-                console.error("Error loading products: ", error);
-                productList.innerHTML = '<li>Error loading products.</li>';
-            }
-        }
-        
-        // Edit/Delete Product Listeners
-        productList.addEventListener('click', async (e) => {
-            const target = e.target.closest('button');
-            if (!target) return;
-            
-            const id = target.dataset.id;
-            
-            if (target.classList.contains('btn-delete-product')) {
-                if (confirm('Are you sure you want to delete this product? This cannot be undone.')) {
-                    showLoading();
-                    try {
-                        await deleteDoc(doc(db, 'products', id));
-                        showSuccess('Product deleted.');
-                    } catch (error) {
-                        console.error("Error deleting product: ", error);
-                        showLoginError("Error. See console.");
-                    }
-                    hideLoading();
-                }
-            } else if (target.classList.contains('btn-edit-product')) {
-                showLoading();
-                try {
-                    const docRef = doc(db, 'products', id);
-                    const docSnap = await getDoc(docRef);
-                    if (docSnap.exists()) {
-                        const data = docSnap.data();
-                        productIdInput.value = id;
-                        productNameInput.value = data.name || '';
-                        productSkuInput.value = data.sku || '';
-                        productCategorySelect.value = data.categoryId || '';
-                        productPriceInput.value = data.price || 0;
-                        productDescInput.value = data.description || '';
-                        productFragranceInput.value = data.fragrance || '';
-                        productIdealInput.value = data.idealFor || '';
-                        productVideoInput.value = data.videoUrl || '';
-                        productFeaturedInput.checked = data.featured || false;
-                        
-                        productImage1Input.value = data.images && data.images[0] ? data.images[0] : '';
-                        productImage2Input.value = data.images && data.images[1] ? data.images[1] : '';
-                        
-                        // Trigger preview update
-                        productImage1Input.dispatchEvent(new Event('input'));
-                        productImage2Input.dispatchEvent(new Event('input'));
-                        
-                        productFormTitle.textContent = 'Edit Product';
-                        window.scrollTo(0, 0); // Scroll to top
-                    }
-                } catch (error) {
-                    console.error("Error fetching product: ", error);
-                    showLoginError("Error. See console.");
-                }
-                hideLoading();
-            }
-        });
-        
-        clearProductFormBtn.addEventListener('click', clearProductForm);
-
-        // --- Site Settings ---
-        
-        // Load Settings
+        // --- 4. Site Settings Logic (മാറ്റമില്ല) ---
         async function loadSiteSettings() {
             try {
                 const docRef = doc(db, "settings", "global");
                 const docSnap = await getDoc(docRef);
-                
                 if (docSnap.exists()) {
-                    const data = docSnap.data();
-                    settingLogoInput.value = data.logoText || '';
-                    settingVideoInput.value = data.videoUrl || '';
-                    settingWhatsappInput.value = data.whatsapp || '';
-                    settingPhoneInput.value = data.phone || '';
-                    settingEmailInput.value = data.email || '';
-                    settingAddressInput.value = data.address || '';
+                    const settings = docSnap.data();
+                    document.getElementById("setting-logo-text").value = settings.logoText || '';
+                    document.getElementById("setting-video-url").value = settings.videoUrl || '';
+                    document.getElementById("setting-phone").value = settings.phone || '';
+                    document.getElementById("setting-email").value = settings.email || '';
+                    document.getElementById("setting-address").value = settings.address || '';
+                    document.getElementById("setting-whatsapp").value = settings.whatsapp || '';
                 }
             } catch (error) {
                 console.error("Error loading settings: ", error);
+                showStatus(adminStatus, "Error loading site settings.");
+            }
+        }
+        siteSettingsForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            showLoader(settingsLoader);
+            try {
+                const settings = {
+                    logoText: document.getElementById("setting-logo-text").value,
+                    videoUrl: document.getElementById("setting-video-url").value,
+                    phone: document.getElementById("setting-phone").value,
+                    email: document.getElementById("setting-email").value,
+                    address: document.getElementById("setting-address").value,
+                    whatsapp: document.getElementById("setting-whatsapp").value,
+                };
+                const docRef = doc(db, "settings", "global");
+                await setDoc(docRef, settings, { merge: true }); 
+                showStatus(adminStatus, "Settings saved successfully!", false);
+            } catch (error) {
+                console.error("Error saving settings: ", error);
+                showStatus(adminStatus, `Error: ${error.message}`);
+            } finally {
+                hideLoader(settingsLoader);
+            }
+        });
+
+        // --- 5. Category Logic (Full CRUD) (മാറ്റമില്ല) ---
+        function loadCategories() {
+            const q = query(collection(db, "categories"));
+            onSnapshot(q, (querySnapshot) => {
+                categoriesListBody.innerHTML = '';
+                productCategorySelect.innerHTML = '<option value="">Select a category...</option>';
+                if (querySnapshot.empty) {
+                    categoriesListBody.innerHTML = '<tr><td colspan="3">No categories found.</td></tr>';
+                    return;
+                }
+                querySnapshot.forEach((doc) => {
+                    const category = doc.data();
+                    const id = doc.id;
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td><img src="${category.imageUrl || ''}" alt="${category.name}"></td>
+                        <td>${category.name}</td>
+                        <td>
+                            <button class="btn btn-edit" data-id="${id}" data-type="category">Edit</button>
+                            <button class="btn btn-delete" data-id="${id}" data-type="category">Delete</button>
+                        </td>
+                    `;
+                    categoriesListBody.appendChild(row);
+                    const option = document.createElement('option');
+                    option.value = id;
+                    option.textContent = category.name;
+                    productCategorySelect.appendChild(option);
+                });
+            }, (error) => {
+                console.error("Error loading categories: ", error);
+                showStatus(adminStatus, "Error loading categories.");
+            });
+        }
+        addCategoryForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            showLoader(categoryLoader);
+            try {
+                const name = document.getElementById("category-name").value;
+                const imageUrl = document.getElementById("category-image-url").value;
+                await addDoc(collection(db, "categories"), {
+                    name: name,
+                    imageUrl: imageUrl,
+                    createdAt: serverTimestamp()
+                });
+                showStatus(adminStatus, "Category added successfully!", false);
+                addCategoryForm.reset();
+                document.getElementById('category-image-preview').innerHTML = ''; 
+            } catch (error) {
+                console.error("Error adding category: ", error);
+                showStatus(adminStatus, `Error: ${error.message}`);
+            } finally {
+                hideLoader(categoryLoader);
+            }
+        });
+
+        // --- 6. Product Logic (Full CRUD) (*** മാറ്റം വരുത്തി ***) ---
+        
+        // തത്സമയം ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
+        function loadProducts() {
+             const q = query(collection(db, "products"));
+             onSnapshot(q, (querySnapshot) => {
+                productsListBody.innerHTML = '';
+                if (querySnapshot.empty) {
+                    productsListBody.innerHTML = '<tr><td colspan="4">No products found.</td></tr>';
+                    return;
+                }
+                
+                querySnapshot.forEach((doc) => {
+                    const product = doc.data();
+                    const id = doc.id;
+                    const imageUrl = product.images && product.images[0] ? product.images[0] : '';
+                    
+                    const row = document.createElement('tr');
+                    
+                    // *** വില കാണിക്കുന്ന രീതി മാറ്റി ***
+                    let priceHTML = `₹${product.price || 'N/A'}`;
+                    if (product.mrp && product.mrp > product.price) {
+                        priceHTML += ` <span class="price-mrp">₹${product.mrp}</span>`;
+                    }
+                    
+                    row.innerHTML = `
+                        <td><img src="${imageUrl}" alt="${product.name}"></td>
+                        <td>${product.name}</td>
+                        <td>${priceHTML}</td> <!-- *** വില മാറ്റി *** -->
+                        <td>
+                            <button class="btn btn-edit" data-id="${id}" data-type="product">Edit</button>
+                            <button class="btn btn-delete" data-id="${id}" data-type="product">Delete</button>
+                        </td>
+                    `;
+                    productsListBody.appendChild(row);
+                });
+             }, (error) => {
+                console.error("Error loading products: ", error);
+                showStatus(adminStatus, "Error loading products.");
+            });
+        }
+
+        // പുതിയ ഉൽപ്പന്നം ചേർക്കുന്നു
+        addProductForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            showLoader(productLoader);
+            try {
+                const imageUrlsText = document.getElementById("product-image-urls").value;
+                const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
+
+                // *** സേവ് ചെയ്യുന്ന ഡാറ്റ മാറ്റി ***
+                const product = {
+                    categoryId: productCategorySelect.value,
+                    name: document.getElementById("product-name").value,
+                    size: document.getElementById("product-size").value,
+                    mrp: Number(document.getElementById("product-mrp").value) || 0,
+                    price: Number(document.getElementById("product-price").value) || 0,
+                    description: document.getElementById("product-description").value,
+                    featured: document.getElementById("product-featured").checked,
+                    images: imageUrls,
+                    createdAt: serverTimestamp()
+                };
+
+                await addDoc(collection(db, "products"), product);
+                showStatus(adminStatus, "Product added successfully!", false);
+                addProductForm.reset();
+                document.getElementById('product-image-preview').innerHTML = ''; 
+
+            } catch (error) {
+                console.error("Error adding product: ", error);
+                showStatus(adminStatus, `Error: ${error.message}`);
+            } finally {
+                hideLoader(productLoader);
+            }
+        });
+
+
+        // --- 7. Edit & Delete Logic (Modal) (*** മാറ്റം വരുത്തി ***) ---
+        
+        // "Edit" അല്ലെങ്കിൽ "Delete" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ (മാറ്റമില്ല)
+        document.body.addEventListener('click', async (e) => {
+            const target = e.target;
+            
+            if (target.classList.contains('btn-delete')) {
+                const id = target.dataset.id;
+                const type = target.dataset.type;
+                
+                if (confirm(`Are you sure you want to delete this ${type}? This action cannot be undone.`)) {
+                    try {
+                        await deleteDoc(doc(db, type === 'product' ? 'products' : 'categories', id));
+                        showStatus(adminStatus, `${type} deleted successfully.`, false);
+                    } catch (error) {
+                        console.error("Error deleting item: ", error);
+                        showStatus(adminStatus, `Error: ${error.message}`);
+                    }
+                }
+            }
+            
+            if (target.classList.contains('btn-edit')) {
+                const id = target.dataset.id;
+                const type = target.dataset.type;
+                openEditModal(id, type);
+            }
+        });
+        
+        // എഡിറ്റ് മോഡൽ തുറക്കുന്നു
+        async function openEditModal(id, type) {
+            modalForm.innerHTML = ''; 
+            showLoader(modalLoader);
+            editModal.style.display = 'flex';
+            
+            try {
+                const docRef = doc(db, type === 'product' ? 'products' : 'categories', id);
+                const docSnap = await getDoc(docRef);
+                
+                if (!docSnap.exists()) { throw new Error("Item not found."); }
+                
+                const data = docSnap.data();
+                modalTitle.textContent = `Edit ${type}`;
+                
+                if (type === 'category') {
+                    // Category modal (മാറ്റമില്ല)
+                    modalForm.innerHTML = `
+                        <input type="hidden" id="modal-item-id" value="${id}">
+                        <input type="hidden" id="modal-item-type" value="category">
+                        <div class="form-group">
+                            <label for="modal-category-name">Category Name</label>
+                            <input type="text" id="modal-category-name" value="${data.name}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-category-image-url">Category Image URL</label>
+                            <input type="text" class="image-url-input" id="modal-category-image-url" value="${data.imageUrl}" required>
+                            <div class="image-preview" id="modal-category-image-preview"></div>
+                        </div>
+                        <button type="submit" class="btn">Save Changes</button>
+                    `;
+                    setupImagePreview('modal-category-image-url', 'modal-category-image-preview');
+                    document.getElementById('modal-category-image-url').dispatchEvent(new Event('input')); 
+                    
+                } else if (type === 'product') {
+                    // *** Product modal (വില ഫീൽഡുകൾ മാറ്റി) ***
+                    const imagesText = data.images ? data.images.join('\n') : '';
+                    modalForm.innerHTML = `
+                        <input type="hidden" id="modal-item-id" value="${id}">
+                        <input type="hidden" id="modal-item-type" value="product">
+                        
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="modal-product-name">Product Name</label>
+                                <input type="text" id="modal-product-name" value="${data.name}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="modal-product-category">Category</label>
+                                <select id="modal-product-category" required>${productCategorySelect.innerHTML}</select>
+                            </div>
+                            
+                            <!-- *** വില ഫീൽഡുകൾ മാറ്റി *** -->
+                            <div class="form-group">
+                                <label for="modal-product-mrp">MRP (₹)</label>
+                                <input type="number" id="modal-product-mrp" value="${data.mrp || ''}">
+                            </div>
+                            <div class="form-group">
+                                <label for="modal-product-price">Retail Price (₹)</label>
+                                <input type="number" id="modal-product-price" value="${data.price || ''}" required>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="modal-product-size">Size</label>
+                                <input type="text" id="modal-product-size" value="${data.size || ''}">
+                            </div>
+                            <div class="form-group">
+                                <input type="checkbox" id="modal-product-featured" style="width: auto; margin-right: 10px;" ${data.featured ? 'checked' : ''}>
+                                <label for="modal-product-featured" style="display: inline;">Featured?</label>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="modal-product-description">Description</label>
+                                <textarea id="modal-product-description" rows="4">${data.description || ''}</textarea>
+                            </div>
+                            <div class="form-group full-width">
+                                <label for="modal-product-image-urls">Product Image URLs (One URL per line)</label>
+                                <textarea class="image-url-input" id="modal-product-image-urls" rows="4" required>${imagesText}</textarea>
+                                <div class="image-preview" id="modal-product-image-preview"></div>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn">Save Changes</button>
+                    `;
+                    document.getElementById('modal-product-category').value = data.categoryId; 
+                    setupImagePreview('modal-product-image-urls', 'modal-product-image-preview');
+                    document.getElementById('modal-product-image-urls').dispatchEvent(new Event('input')); 
+                }
+                
+            } catch (error) {
+                console.error("Error opening modal: ", error);
+                showStatus(adminStatus, `Error: ${error.message}`);
+                closeEditModal();
+            } finally {
+                hideLoader(modalLoader);
             }
         }
         
-        // Save Settings
-        settingsForm.addEventListener('submit', async (e) => {
+        // മോഡൽ അടയ്ക്കുന്നു (മാറ്റമില്ല)
+        function closeEditModal() {
+            editModal.style.display = 'none';
+        }
+        modalCloseButton.addEventListener('click', closeEditModal);
+        
+        // എഡിറ്റ് ചെയ്ത ഡാറ്റ സേവ് ചെയ്യുന്നു
+        modalForm.addEventListener('submit', async (e) => {
             e.preventDefault();
-            showLoading();
+            showLoader(modalLoader);
             
-            const settingsData = {
-                logoText: settingLogoInput.value,
-                videoUrl: settingVideoInput.value,
-                whatsapp: settingWhatsappInput.value,
-                phone: settingPhoneInput.value,
-                email: settingEmailInput.value,
-                address: settingAddressInput.value
-            };
+            const id = document.getElementById('modal-item-id').value;
+            const type = document.getElementById('modal-item-type').value;
             
             try {
-                const docRef = doc(db, "settings", "global");
-                await setDoc(docRef, settingsData, { merge: true }); // Use setDoc with merge to create if not exists
-                showSuccess('Site settings saved successfully!');
+                let dataToSave = {};
+                if (type === 'category') {
+                    dataToSave = {
+                        name: document.getElementById('modal-category-name').value,
+                        imageUrl: document.getElementById('modal-category-image-url').value,
+                    };
+                } else if (type === 'product') {
+                    // *** സേവ് ചെയ്യുന്ന ഡാറ്റ മാറ്റി ***
+                    const imageUrlsText = document.getElementById("modal-product-image-urls").value;
+                    const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
+                    
+                    dataToSave = {
+                        categoryId: document.getElementById('modal-product-category').value,
+                        name: document.getElementById('modal-product-name').value,
+                        size: document.getElementById('modal-product-size').value,
+                        mrp: Number(document.getElementById('modal-product-mrp').value) || 0,
+                        price: Number(document.getElementById('modal-product-price').value) || 0,
+                        description: document.getElementById('modal-product-description').value,
+                        featured: document.getElementById('modal-product-featured').checked,
+                        images: imageUrls,
+                    };
+                }
+                
+                const docRef = doc(db, type === 'product' ? 'products' : 'categories', id);
+                await setDoc(docRef, dataToSave, { merge: true }); 
+                
+                showStatus(adminStatus, `${type} updated successfully!`, false);
+                closeEditModal();
+                
             } catch (error) {
-                console.error("Error saving settings: ", error);
-                showLoginError("Error saving settings. See console.");
+                console.error("Error saving changes: ", error);
+                showStatus(adminStatus, `Error: ${error.message}`);
+            } finally {
+                hideLoader(modalLoader);
             }
-            hideLoading();
         });
 
     </script>
+
 </body>
 </html>
