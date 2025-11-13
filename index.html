@@ -1,3 +1,9 @@
+<!-- 
+  ഇതാണ് ഹോം പേജ്. 
+  ഈ ഫയലിൽ HTML ഘടന മാത്രമേ ഉള്ളൂ.
+  ഡിസൈൻ വരുന്നത് 'public.css'-ൽ നിന്നും,
+  പ്രവർത്തനങ്ങൾ വരുന്നത് 'index.js', 'common.js', 'cart.js' എന്നിവയിൽ നിന്നുമാണ്.
+-->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -5,116 +11,87 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Al Ambar Perfumes - Luxury Arabic Perfumes</title>
     
-    <!-- Google Font: Inter -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
-    
-    <!-- **** CSS നീക്കം ചെയ്തു, പുതിയ ഫയൽ ലിങ്ക് ചെയ്തു **** -->
+    <!-- പൊതുവായ ഡിസൈൻ ഫയൽ -->
     <link rel="stylesheet" href="public.css">
+    
+    <!-- ഹോം പേജിന് മാത്രമുള്ള ചില സ്റ്റൈലുകൾ (കറൗസൽ) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body>
 
-    <!-- 1. Header (ലോഗോ JS വഴി ലോഡ് ആവും) -->
-    <header class="main-header">
-        <a href="index.html" class="logo" id="header-logo-link">
-            <span class="logo-text">AL AMBAR</span>
-        </a>
-        <nav class="main-nav">
-            <ul>
-                <li><a href="index.html" class="active">Home</a></li>
-                <li><a href="categories.html">Categories</a></li>
-                <li><a href="contact.html">Contact</a></li>
-            </ul>
-        </nav>
+    <!-- 1. ഹെഡർ (common.js ഉപയോഗിച്ച് ഓട്ടോമാറ്റിക്കായി ഇവിടെ വരും) -->
+    <header class="main-header" id="main-header">
+        <!-- ഹെഡർ ലോഡ് ആവുന്നു... -->
     </header>
+    
+    <!-- 2. വശത്തുള്ള മെനു (common.js ഉപയോഗിച്ച് ഓട്ടോമാറ്റിക്കായി ഇവിടെ വരും) -->
+    <nav class="side-nav" id="side-nav"></nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
 
-    <!-- 2. Hero Section (വീഡിയോ JS വഴി ലോഡ് ആവും) -->
+    <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main>
-        <section class="hero-section">
-            <div class="hero-video-bg" id="hero-video-bg">
-                <!-- ഹീറോ വീഡിയോ JS വഴി ഇവിടെ വരും -->
+        <!-- 3.1. ഹീറോ വീഡിയോ സെക്ഷൻ (മുകളിലെ വീഡിയോ) -->
+        <section class="hero-section" id="hero-section">
+            <div class="hero-video-wrapper">
+                <video id="hero-video-player" autoplay muted loop playsinline preload="metadata">
+                    <!-- വീഡിയോ URL 'common.js' വഴി ഇവിടെ വരും -->
+                </video>
             </div>
-            <div class="hero-overlay"></div>
             <div class="hero-content">
-                <h1>Essence of the Orient</h1>
-                <p>Discover our exclusive collection of luxury Arabic perfumes and concentrated oils.</p>
-                <a href="#featured-products" class="btn">View Collection</a>
+                <h1 id="hero-title">Essence of the Orient</h1>
+                <p id="hero-subtitle">Discover our exclusive collection</p>
+                <a href="categories.html" class="btn btn-primary">Shop Now</a>
             </div>
         </section>
 
-        <!-- 3. Categories Section (ഈ സെക്ഷൻ നീക്കം ചെയ്തു) -->
-        
-        <!-- 4. Video Section (വീഡിയോ JS വഴി ലോഡ് ആവും) -->
-        <section id="home-video" class="video-section">
+        <!-- 3.2. ടോപ്പ് സെല്ലേഴ്സ് (Top Sellers) -->
+        <section class="home-section container">
+            <h2 class="section-title">Top Sellers</h2>
+            <!-- Swiper കറൗസൽ -->
+            <div class="swiper top-sellers-swiper">
+                <div class="swiper-wrapper" id="top-sellers-grid">
+                    <!-- 'index.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
+                </div>
+                <!-- കറൗസൽ ബട്ടണുകൾ -->
+                <div class="swiper-button-next"></div>
+                <div class="swiper-button-prev"></div>
+            </div>
+        </section>
+
+        <!-- 3.3. ഷോപ്പ് ബൈ കാറ്റഗറി (Shop by Category) -->
+        <section class="home-section container">
+            <h2 class="section-title">Shop by Category</h2>
+            <div class="category-grid-home" id="category-grid-home">
+                <!-- 'index.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ ഇവിടെ വരും -->
+            </div>
+        </section>
+
+        <!-- 3.4. താഴെയുള്ള വീഡിയോ സെക്ഷൻ (The Al Ambar Experience) -->
+        <section class="home-section full-width-section">
             <h2 class="section-title">The Al Ambar Experience</h2>
             <div class="video-wrapper" id="video-wrapper-container">
                 <div class="loading-placeholder">Loading video...</div>
-                <!-- വീഡിയോ പ്ലെയർ JS വഴി ഇവിടെ വരും -->
+                <!-- 'index.js' ഉപയോഗിച്ച് വീഡിയോ ഇവിടെ വരും -->
             </div>
         </section>
-
-        <!-- 5. Featured Products Section (ഉൽപ്പന്നങ്ങൾ JS വഴി ലോഡ് ആവും) -->
-        <section id="featured-products" class="container">
-            <h2 class="section-title">Featured Products</h2>
-            <div class="product-grid" id="product-grid">
-                <div class="loading-placeholder">Loading featured products...</div>
-            </div>
+        
+        <!-- 3.5. ഫ്രാഗ്രൻസ് സ്റ്റോറി (A Fragrance Story) -->
+        <section class="home-section container fragrance-story">
+            <h2>A FRAGRANCE STORY</h2>
+            <p>Luxury perfumes with blended Nature and most iconic fragrances, inspired by the scent of natural flowers and natural resources. The Jewel of Dubai.</p>
         </section>
     </main>
 
-    <!-- 6. Floating WhatsApp CTA (ലിങ്ക് JS വഴി ലോഡ് ആവും) -->
-    <a href="#" class="whatsapp-cta" id="whatsapp-float-btn" target="_blank" aria-label="Contact us on WhatsApp">
-        <svg xmlns="http://www.w.org/2000/svg" viewBox="0 0 448 512"><path d="M380.9 97.1C339.4 55.6 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115.4-67.1-157zm-157 341.6c-33.8 0-65-10.1-90.4-27.8l-6.4-3.8-67.1 17.6 17.9-65.5-4.1-6.7c-19.5-31.8-30-67.8-30-104.4 0-100.9 82.1-183 183-183 49.3 0 95.6 19.2 130.4 54.1 34.8 34.8 56.2 81.1 56.1 130.5 0 100.8-82.1 182.9-183 182.9zm101.7-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
-    </a>
-
-    <!-- 7. Footer Section (വിവരങ്ങൾ JS വഴി ലോഡ് ആവും) -->
-    <footer class="main-footer">
-        <div class="footer-container">
-            <div class="footer-col">
-                <h3>Quick Links</h3>
-                <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="categories.html">Products</a></li>
-                    <li><a href="categories.html">Categories</a></li>
-                    <li><a href="contact.html">Contact Us</a></li>
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Categories</h3>
-                <ul id="footer-category-list">
-                    <!-- JS വഴി ലോഡ് ആവും -->
-                </ul>
-            </div>
-            <div class="footer-col">
-                <h3>Contact</h3>
-                <ul>
-                    <li class="contact-item-footer">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/></svg>
-                        <a href="tel:" id="footer-phone">Loading...</a>
-                    </li>
-                    <li class="contact-item-footer">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"/></svg>
-                        <a href="mailto:" id="footer-email">Loading...</a>
-                    </li>
-                    <li class="contact-item-footer">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
-                        <span id="footer-address">Loading...</span>
-                    </li>
-                </ul>
-                <div class="social-icons">
-                    <a href="#" aria-label="Facebook" id="facebook-link" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256C0 376 82.7 476.8 194.2 504.5V334.2H137.4V256H194.2V195.6c0-56.1 33.4-87.2 84.7-87.2c24.4 0 50.3 4.3 50.3 4.3V186H292.1c-27.1 0-35.3 16.4-35.3 34.3V256H368l-11.6 78.2H256.8V504.5C429.3 476.8 512 376 512 256z"/></svg></a>
-                    <a href="#" aria-label="Instagram" id="instagram-link" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9S287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7s74.7 33.5 74.7 74.7s-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9 26.2 26.2 58 34.4 93.9 36.2 37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1 9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg></a>
-                </div>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>&copy; 2025 Al Ambar Perfumes. All Rights Reserved. Kochi, Kerala.</p>
-        </div>
+    <!-- 4. ഫൂട്ടർ (common.js ഉപയോഗിച്ച് ഓട്ടോമാറ്റിക്കായി ഇവിടെ വരും) -->
+    <footer class="main-footer" id="main-footer">
+        <!-- ഫൂട്ടർ ലോഡ് ആവുന്നു... -->
     </footer>
-    
-    <!-- **** JavaScript നീക്കം ചെയ്തു, പുതിയ ഫയൽ ലിങ്ക് ചെയ്തു **** -->
-    <script type="module" src="index.js"></script>
 
+    <!-- JS ഫയലുകൾ -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="cart.js"></script>
+    <script type="module" src="common.js"></script>
+    <script type="module" src="index.js"></script>
 </body>
 </html>
