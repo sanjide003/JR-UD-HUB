@@ -1,6 +1,7 @@
-// ഈ ഫയൽ ഫയർബേസ് സെറ്റപ്പ് ചെയ്യുന്നു
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+// 'auth' കൂടി ഇമ്പോർട്ട് ചെയ്യുന്നു
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
 // നിങ്ങളുടെ ഫയർബേസ് കോൺഫിഗറേഷൻ
 const firebaseConfig = {
@@ -15,9 +16,10 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
-setLogLevel('Debug');
 
-// db എക്സ്പോർട്ട് ചെയ്യുന്നു,
-// ഇത് മറ്റ് ഫയലുകൾക്ക് ഉപയോഗിക്കാൻ വേണ്ടിയാണ്
-export { db };
+// db, auth എന്നിവ ഇനിഷ്യലൈസ് ചെയ്യുന്നു
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// **** 'db'-യോടൊപ്പം 'auth' കൂടി എക്സ്പോർട്ട് ചെയ്യുന്നു ****
+export { db, auth };
