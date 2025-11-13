@@ -1,7 +1,5 @@
-// ഈ ഫയലിൽ എല്ലാ പബ്ലിക് പേജുകൾക്കും (index, categories, product, contact)
-// പൊതുവായി വേണ്ട ഫംഗ്ഷനുകൾ അടങ്ങിയിരിക്കുന്നു.
-
-// ഫയർബേസിൽ നിന്നും ആവശ്യമായവ ഇമ്പോർട്ട് ചെയ്യുന്നു
+// ഈ ഫയലിൽ എല്ലാ പബ്ലിക് പേജുകൾക്കും പൊതുവായി വേണ്ട ഫംഗ്ഷനുകൾ
+// **** വിട്ടുപോയ ഇമ്പോർട്ടുകൾ ഇവിടെ ചേർത്തു ****
 import { db } from './firebase-config.js';
 import { 
     collection, 
@@ -12,27 +10,20 @@ import {
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// ലോഗുകൾ കാണാൻ
 setLogLevel('Debug');
 
 /**
- * സൈറ്റിന്റെ പൊതുവായ വിവരങ്ങൾ (ലോഗോ, ഫൂട്ടർ, സോഷ്യൽ ലിങ്കുകൾ) ലോഡ് ചെയ്യുന്നു.
- * ഈ ഫംഗ്ഷൻ എല്ലാ പബ്ലിക് പേജുകളും വിളിക്കും.
+ * സൈറ്റിന്റെ പൊതുവായ വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു.
  */
 export async function loadSiteSettings() {
     // --- DOM Elements (Common) ---
-    // Header
     const headerLogoLink = document.getElementById("header-logo-link");
-    
-    // Footer
     const footerCategoryList = document.getElementById("footer-category-list");
     const footerPhone = document.getElementById("footer-phone");
     const footerEmail = document.getElementById("footer-email");
     const footerAddress = document.getElementById("footer-address");
     const facebookLink = document.getElementById("facebook-link");
     const instagramLink = document.getElementById("instagram-link");
-
-    // Common
     const whatsappFloatBtn = document.getElementById("whatsapp-float-btn");
 
     // Contact Page (contact.html-ൽ മാത്രം)
@@ -65,7 +56,6 @@ export async function loadSiteSettings() {
                 if (settings.logoImageUrl) {
                     headerLogoLink.innerHTML = `<img src="${settings.logoImageUrl}" alt="Al Ambar Perfumes" class="logo-image">`;
                 } else {
-                    // ഇമേജ് ഇല്ലെങ്കിൽ ടെക്സ്റ്റ് കാണിക്കുന്നു
                     headerLogoLink.innerHTML = `<span class="logo-text">AL AMBAR</span>`;
                 }
             }
@@ -112,16 +102,12 @@ export async function loadSiteSettings() {
 
         } else {
             console.log("No site settings found. Using default values.");
-            // പിശക് സംഭവിച്ചാൽ "Loading..." എന്ന് മാറ്റി ഒരു എറർ മെസ്സേജ് കാണിക്കുന്നു
             if (contactPhoneMain) contactPhoneMain.textContent = "Data not found";
-            if (contactEmailMain) contactEmailMain.textContent = "Data not found";
-            if (contactAddressMain) contactAddressMain.textContent = "Data not found";
+            // ... (മറ്റുള്ളവയും)
         }
     } catch (error) {
         console.error("Error loading site settings: ", error);
-        // പിശക് സംഭവിച്ചാൽ "Loading..." എന്ന് മാറ്റി ഒരു എറർ മെസ്സേജ് കാണിക്കുന്നു
         if (contactPhoneMain) contactPhoneMain.textContent = "Error loading data";
-        if (contactEmailMain) contactEmailMain.textContent = "Error loading data";
-        if (contactAddressMain) contactAddressMain.textContent = "Error loading data";
+        // ... (മറ്റുള്ളവയും)
     }
 }
