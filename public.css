@@ -296,7 +296,7 @@ img {
 
 /* --- 6. ഹോം പേജ് (Home Page) --- */
 
-/* 6.1. ഹീറോ വീഡിയോ (Hero Video) */
+/* 6.1. ഹീറോ വീഡിയോ (Hero Video) - അപ്ഡേറ്റ് ചെയ്തു */
 .hero-section {
     position: relative;
     height: 70vh;
@@ -306,21 +306,29 @@ img {
     text-align: center;
     overflow: hidden;
 }
-.hero-video-wrapper {
+/* പഴയ .hero-video-wrapper നീക്കം ചെയ്തു */
+
+/* പുതിയ ഹീറോ സ്ലൈഡർ സ്റ്റൈലുകൾ */
+.hero-slider {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    z-index: 1;
+    z-index: 1; /* 1. ഏറ്റവും പിന്നിൽ */
 }
-.hero-video-wrapper video {
+.hero-slider .swiper-slide {
     width: 100%;
     height: 100%;
-    object-fit: cover;
 }
-/* വീഡിയോയ്ക്ക് മുകളിൽ ഒരു ഇരുണ്ട പാളി */
-.hero-video-wrapper::after {
+.hero-slider .swiper-slide img,
+.hero-slider .swiper-slide video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* വീഡിയോ/ഫോട്ടോ സ്ക്രീൻ നിറഞ്ഞുനിൽക്കാൻ */
+}
+/* പുതിയ ഓവർലേ സ്റ്റൈൽ */
+.hero-overlay {
     content: '';
     position: absolute;
     top: 0;
@@ -328,13 +336,15 @@ img {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.6);
+    z-index: 2; /* 2. സ്ലൈഡറിന് മുകളിൽ */
 }
 .hero-content {
     position: relative;
-    z-index: 2;
+    z-index: 3; /* 3. ഏറ്റവും മുകളിൽ */
     padding: 1.5rem;
-    border: 2px solid var(--primary-gold);
-    background-color: rgba(0, 0, 0, 0.4);
+    /* ബോർഡറും ബാക്ക്ഗ്രൗണ്ടും നീക്കം ചെയ്തു */
+    /* border: 2px solid var(--primary-gold); */
+    /* background-color: rgba(0, 0, 0, 0.4); */
 }
 .hero-content h1 {
     font-family: var(--font-heading);
@@ -347,6 +357,8 @@ img {
     color: var(--text-color);
     margin-bottom: 2rem;
 }
+/* 6.1 - മാറ്റങ്ങൾ കഴിഞ്ഞു */
+
 
 /* 6.2. ഹോം പേജ് സെക്ഷനുകൾ */
 .home-section {
