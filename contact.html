@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Al Ambar Perfumes</title>
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS STYLES --- */
+        /* * ഈ സ്റ്റൈലുകൾ മറ്റ് പേജുകളിൽ നിന്ന് പകർത്തിയതാണ്.
+         * ഒരു യഥാർത്ഥ പ്രൊഡക്ഷൻ സൈറ്റിൽ, ഇത് ഒരു പൊതുവായ style.css ഫയലിലേക്ക് മാറ്റണം.
+         */
+        
+        /* 1. Theme & Variables */
+        :root {
+            --bg-color: #121212;
+            --primary-gold: #D4AF37;
+            --secondary-gold: #B8860B;
+            --text-color: #F5F5F5;
+            --text-muted: #aaa;
+            --card-bg: #1e1e1e;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        /* 2. Global Resets & Body */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        a {
+            color: var(--primary-gold);
+            text-decoration: none;
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            color: var(--primary-gold);
+            margin-bottom: 0.75rem;
+            font-weight: 700;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        /* 3. Header & Navigation (Copied) */
+        .main-header {
+            background-color: var(--bg-color);
+            padding: 1.5rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--secondary-gold);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .logo {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary-gold);
+            letter-spacing: 1px;
+        }
+
+        .main-nav ul {
+            list-style: none;
+            display: flex;
+        }
+        .main-nav li { margin-left: 2rem; }
+        .main-nav a {
+            color: var(--text-color);
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+        .main-nav a:hover,
+        .main-nav a.active {
+            color: var(--primary-gold);
+        }
+
+        /* 4. Section Heading (Copied) */
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 2.5rem;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 3px;
+            background-color: var(--secondary-gold);
+            margin: 0.5rem auto 0;
+        }
+
+        /* 5. Contact Page Layout */
+        .contact-layout {
+            display: grid;
+            grid-template-columns: 1fr; /* Mobile-first */
+            gap: 2rem;
+            margin-top: 2rem;
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+
+        @media (min-width: 768px) {
+            .contact-layout {
+                grid-template-columns: 1fr 1fr; /* Desktop: 2 columns */
+                gap: 3rem;
+                padding: 3rem;
+            }
+        }
+        
+        .contact-info h3 {
+            font-size: 1.8rem;
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+        }
+        
+        .contact-info p {
+            font-size: 1.1rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .contact-info p strong {
+            color: var(--text-color);
+            display: block;
+            font-weight: 700;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--primary-gold);
+        }
+        
+        .contact-map iframe {
+            width: 100%;
+            height: 400px;
+            border: 0;
+            border-radius: 8px;
+            filter: invert(90%) hue-rotate(180deg); /* Map-നെ ഡാർക്ക് മോഡ് ആക്കുന്നു */
+        }
+
+        /* 6. Footer (Copied) */
+        .main-footer {
+            background-color: #000;
+            color: var(--text-muted);
+            text-align: center;
+            padding: 2.5rem 1.5rem;
+            margin-top: 3rem;
+            border-top: 1px solid #333;
+        }
+        
+        /* 7. Mobile Responsiveness (Copied) */
+        @media (max-width: 768px) {
+            .main-header { flex-direction: column; padding: 1rem; }
+            .logo { margin-bottom: 1rem; }
+            .main-nav ul { justify-content: center; flex-wrap: wrap; }
+            .main-nav li { margin: 0.25rem 0.75rem; }
+            .section-title { font-size: 2rem; }
+            .container { padding: 1.5rem 1rem; }
+            .contact-layout { padding: 1.5rem; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- 1. Header -->
+    <header class="main-header">
+        <a href="index.html" class="logo">AL AMBAR</a>
+        <nav class="main-nav">
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="categories.html">Categories</a></li>
+                <li><a href="contact.html" class="active">Contact</a></li>
+                <li><a href="admin.html">Admin</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <!-- 2. Contact Section -->
+        <section id="contact" class="container">
+            <h2 class="section-title">Contact Us</h2>
+            
+            <div class="contact-layout">
+                <!-- Left: Info -->
+                <div class="contact-info">
+                    <h3>Get In Touch</h3>
+                    <p>
+                        <strong>Address:</strong>
+                        [നിങ്ങളുടെ വിലാസം ഇവിടെ ചേർക്കുക]<br>
+                        Lulu Mall, Edappally<br>
+                        Kochi, Kerala, 682024
+                    </p>
+                    <p>
+                        <strong>Phone (WhatsApp):</strong>
+                        <!-- പ്ലാനിൽ നൽകിയ നമ്പർ -->
+                        <a href="https://wa.me/918086081985">+91 80860 81985</a>
+                    </p>
+                    <p>
+                        <strong>Email:</strong>
+                        <a href="mailto:info@al-ambar.com">info@al-ambar.com</a>
+                    </p>
+                    <p>
+                        <strong>Opening Hours:</strong>
+                        Mon - Sun: 10:00 AM - 10:00 PM
+                    </p>
+                </div>
+                
+                <!-- Right: Map -->
+                <div class="contact-map">
+                    <!-- 
+                      Google Maps Embed:
+                      നിങ്ങളുടെ യഥാർത്ഥ ലൊക്കേഷൻ Google Maps-ൽ കണ്ടെത്തി, 
+                      "Share" -> "Embed a map" എന്ന ഓപ്ഷൻ എടുത്ത് 
+                      താഴെ കാണുന്ന iframe കോഡ് റീപ്ലേസ് ചെയ്യുക.
+                      ഇതൊരു സാമ്പിൾ ലൊക്കേഷൻ ആണ്.
+                    -->
+                    <iframe 
+                        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3928.6015600000000!2d76.30600000000000!3d10.049000000000000!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b080c3000000000%3A0x0000000000000000!2sLuLu%20International%20Shopping%20Mall!5e0!3m2!1sen!2sin!4v1678888888888!5m2!1sen!2sin" 
+                        width="600" 
+                        height="450" 
+                        style="border:0;" 
+                        allowfullscreen="" 
+                        loading="lazy" 
+                        referrerpolicy="no-referrer-when-downgrade">
+                    </iframe>
+                </div>
+            </div>
+            
+        </section>
+    </main>
+
+    <!-- 3. Footer -->
+    <footer class="main-footer">
+        <p>&copy; 2025 Al Ambar Perfumes. All Rights Reserved.</p>
+        <p>Kochi, Kerala</p>
+    </footer>
+
+    <!-- ഈ പേജിന് പ്രത്യേക JavaScript ആവശ്യമില്ല -->
+
+</body>
+</html>
