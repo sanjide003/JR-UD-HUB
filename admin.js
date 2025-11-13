@@ -1,6 +1,5 @@
-// ഈ ഫയലിൽ admin.html പേജിന് മാത്രം വേണ്ട എല്ലാ കോഡുകളും
-
-// ഫയർബേസിൽ നിന്നും ആവശ്യമായവ ഇമ്പോർട്ട് ചെയ്യുന്നു
+// ഫയർബേസിൽ നിന്നും 'db'-യോടൊപ്പം 'auth'-ഉം ഇമ്പോർട്ട് ചെയ്യുന്നു
+// **** ഇതാണ് പ്രധാന തിരുത്തൽ ****
 import { db, auth } from './firebase-config.js';
 import { 
     signInWithEmailAndPassword, 
@@ -15,7 +14,7 @@ import {
     setDoc,
     doc,
     deleteDoc,
-    onSnapshot, // തത്സമയം മാറ്റങ്ങൾ അറിയാൻ
+    onSnapshot,
     query,
     serverTimestamp,
     setLogLevel
@@ -174,15 +173,25 @@ async function loadSiteSettings() {
         if (docSnap.exists()) {
             const settings = docSnap.data();
             // null അല്ലെങ്കിൽ undefined അല്ലെങ്കിൽ ഒബ്ജക്റ്റിൽ ആ കീ ഇല്ലെങ്കിൽ '' (empty string) ഉപയോഗിക്കുന്നു
-            document.getElementById("setting-logo-image-url").value = settings.logoImageUrl || '';
-            document.getElementById("setting-hero-video-url").value = settings.heroVideoUrl || '';
-            document.getElementById("setting-video-url").value = settings.videoUrl || '';
-            document.getElementById("setting-phone").value = settings.phone || '';
-            document.getElementById("setting-email").value = settings.email || '';
-            document.getElementById("setting-address").value = settings.address || '';
-            document.getElementById("setting-whatsapp").value = settings.whatsapp || '';
-            document.getElementById("setting-facebook-url").value = settings.facebookUrl || '';
-            document.getElementById("setting-instagram-url").value = settings.instagramUrl || '';
+            const logoUrlEl = document.getElementById("setting-logo-image-url");
+            const heroVideoEl = document.getElementById("setting-hero-video-url");
+            const videoUrlEl = document.getElementById("setting-video-url");
+            const phoneEl = document.getElementById("setting-phone");
+            const emailEl = document.getElementById("setting-email");
+            const addressEl = document.getElementById("setting-address");
+            const whatsappEl = document.getElementById("setting-whatsapp");
+            const facebookEl = document.getElementById("setting-facebook-url");
+            const instagramEl = document.getElementById("setting-instagram-url");
+
+            if(logoUrlEl) logoUrlEl.value = settings.logoImageUrl || '';
+            if(heroVideoEl) heroVideoEl.value = settings.heroVideoUrl || '';
+            if(videoUrlEl) videoUrlEl.value = settings.videoUrl || '';
+            if(phoneEl) phoneEl.value = settings.phone || '';
+            if(emailEl) emailEl.value = settings.email || '';
+            if(addressEl) addressEl.value = settings.address || '';
+            if(whatsappEl) whatsappEl.value = settings.whatsapp || '';
+            if(facebookEl) facebookEl.value = settings.facebookUrl || '';
+            if(instagramEl) instagramEl.value = settings.instagramUrl || '';
         }
     } catch (error) {
         console.error("Error loading settings: ", error);
@@ -221,8 +230,6 @@ if (siteSettingsForm) {
 }
 
 // --- 5. Category Logic (Full CRUD) ---
-
-// തത്സമയം കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു
 function loadCategories() {
     const q = query(collection(db, "categories"));
     onSnapshot(q, (querySnapshot) => {
@@ -238,7 +245,6 @@ function loadCategories() {
             const category = doc.data();
             const id = doc.id;
             
-            // കാറ്റഗറി ലിസ്റ്റിൽ ചേർക്കുന്നു
             if (categoriesListBody) {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -252,7 +258,6 @@ function loadCategories() {
                 categoriesListBody.appendChild(row);
             }
             
-            // പ്രോഡക്റ്റ് ഫോമിലെ ഡ്രോപ്പ്ഡൗണിൽ ചേർക്കുന്നു
             if (productCategorySelect) {
                 const option = document.createElement('option');
                 option.value = id;
@@ -266,7 +271,6 @@ function loadCategories() {
     });
 }
 
-// പുതിയ കാറ്റഗറി ചേർക്കുന്നു
 if (addCategoryForm) {
     addCategoryForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -283,8 +287,7 @@ if (addCategoryForm) {
             
             showStatus(adminStatus, "Category added successfully!", false);
             addCategoryForm.reset();
-            if (categoryImagePreview) categoryImagePreview.innerHTML = ''; // പ്രിവ്യൂ ക്ലിയർ ചെയ്യുന്നു
-
+            if (categoryImagePreview) categoryImagePreview.innerHTML = '';
         } catch (error) {
             console.error("Error adding category: ", error);
             showStatus(adminStatus, `Error: ${error.message}`);
@@ -295,8 +298,6 @@ if (addCategoryForm) {
 }
 
 // --- 6. Product Logic (Full CRUD) ---
-
-// തത്സമയം ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
 function loadProducts() {
      const q = query(collection(db, "products"));
      onSnapshot(q, (querySnapshot) => {
@@ -312,7 +313,6 @@ function loadProducts() {
             const id = doc.id;
             const imageUrl = product.images && product.images[0] ? product.images[0] : '';
             
-            // വില ഫോർമാറ്റ് ചെയ്യുന്നു
             let priceDisplay = '';
             const price = product.price || 0;
             const mrp = product.mrp || 0;
@@ -344,7 +344,6 @@ function loadProducts() {
     });
 }
 
-// പുതിയ ഉൽപ്പന്നം ചേർക്കുന്നു
 if (addProductForm) {
     addProductForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -368,8 +367,7 @@ if (addProductForm) {
             await addDoc(collection(db, "products"), product);
             showStatus(adminStatus, "Product added successfully!", false);
             addProductForm.reset();
-            if (productImagePreview) productImagePreview.innerHTML = ''; // പ്രിവ്യൂ ക്ലിയർ ചെയ്യുന്നു
-
+            if (productImagePreview) productImagePreview.innerHTML = '';
         } catch (error) {
             console.error("Error adding product: ", error);
             showStatus(adminStatus, `Error: ${error.message}`);
@@ -379,19 +377,14 @@ if (addProductForm) {
     });
 }
 
-
 // --- 7. Edit & Delete Logic (Modal) ---
-
-// "Edit" അല്ലെങ്കിൽ "Delete" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
 document.body.addEventListener('click', async (e) => {
     const target = e.target;
     
-    // Delete ബട്ടൺ
     if (target.classList.contains('btn-delete')) {
         const id = target.dataset.id;
         const type = target.dataset.type;
         
-        // ഒരു ലളിതമായ കസ്റ്റം കൺഫർമേഷൻ
         if (confirm(`Are you sure you want to delete this ${type}? This action cannot be undone.`)) {
             try {
                 await deleteDoc(doc(db, type === 'product' ? 'products' : 'categories', id));
@@ -403,7 +396,6 @@ document.body.addEventListener('click', async (e) => {
         }
     }
     
-    // Edit ബട്ടൺ
     if (target.classList.contains('btn-edit')) {
         const id = target.dataset.id;
         const type = target.dataset.type;
@@ -411,11 +403,10 @@ document.body.addEventListener('click', async (e) => {
     }
 });
 
-// എഡിറ്റ് മോഡൽ തുറക്കുന്നു
 async function openEditModal(id, type) {
     if (!modalForm || !editModal || !modalLoader || !modalTitle) return;
     
-    modalForm.innerHTML = ''; // പഴയ ഫോം മാറ്റുന്നു
+    modalForm.innerHTML = '';
     showLoader(modalLoader);
     editModal.style.display = 'flex';
     
@@ -430,7 +421,6 @@ async function openEditModal(id, type) {
         const data = docSnap.data();
         modalTitle.textContent = `Edit ${type}`;
         
-        // മോഡലിൽ ഏത് ഫോം കാണിക്കണം എന്ന് തീരുമാനിക്കുന്നു
         if (type === 'category') {
             modalForm.innerHTML = `
                 <input type="hidden" id="modal-item-id" value="${id}">
@@ -447,7 +437,6 @@ async function openEditModal(id, type) {
                 <button type="submit" class="btn">Save Changes</button>
             `;
             setupImagePreview('modal-category-image-url', 'modal-category-image-preview');
-            // പ്രിവ്യൂ ലോഡ് ചെയ്യാൻ
             document.getElementById('modal-category-image-url')?.dispatchEvent(new Event('input')); 
             
         } else if (type === 'product') {
@@ -493,12 +482,10 @@ async function openEditModal(id, type) {
                 </div>
                 <button type="submit" class="btn">Save Changes</button>
             `;
-            // സെലക്റ്റ് ശരിയാക്കുന്നു
             const modalCatSelect = document.getElementById('modal-product-category');
             if (modalCatSelect) modalCatSelect.value = data.categoryId; 
             
             setupImagePreview('modal-product-image-urls', 'modal-product-image-preview');
-            // പ്രിവ്യൂ ലോഡ് ചെയ്യാൻ
             document.getElementById('modal-product-image-urls')?.dispatchEvent(new Event('input'));
         }
         
@@ -511,13 +498,11 @@ async function openEditModal(id, type) {
     }
 }
 
-// മോഡൽ അടയ്ക്കുന്നു
 function closeEditModal() {
     if (editModal) editModal.style.display = 'none';
 }
 if (modalCloseButton) modalCloseButton.addEventListener('click', closeEditModal);
 
-// എഡിറ്റ് ചെയ്ത ഡാറ്റ സേവ് ചെയ്യുന്നു
 if (modalForm) {
     modalForm.addEventListener('submit', async (e) => {
         e.preventDefault();
@@ -550,7 +535,7 @@ if (modalForm) {
             }
             
             const docRef = doc(db, type === 'product' ? 'products' : 'categories', id);
-            await setDoc(docRef, dataToSave, { merge: true }); // 'merge: true' പഴയ ഡാറ്റ പോവാതെ അപ്‌ഡേറ്റ് ചെയ്യുന്നു
+            await setDoc(docRef, dataToSave, { merge: true });
             
             showStatus(adminStatus, `${type} updated successfully!`, false);
             closeEditModal();
