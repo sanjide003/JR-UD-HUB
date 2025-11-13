@@ -25,33 +25,70 @@ document.addEventListener("DOMContentLoaded", () => {
     loadSiteSettings();
     
     // 2. ഈ പേജിന് മാത്രമുള്ള കാര്യങ്ങൾ ലോഡ് ചെയ്യുന്നു
-    loadHeroVideo();
+    loadHeroSlider(); // <-- ഫംഗ്ഷൻ മാറ്റി
     loadTopSellers();
     loadHomeCategories();
     loadExperienceVideo();
 });
 
 /**
- * 1. ഹീറോ സെക്ഷനിലെ പശ്ചാത്തല വീഡിയോ ലോഡ് ചെയ്യുന്നു
+ * 1. ഹീറോ സെക്ഷനിലെ പശ്ചാത്തല സ്ലൈഡർ ലോഡ് ചെയ്യുന്നു
  */
-async function loadHeroVideo() {
-    const videoPlayer = document.getElementById('hero-video-player');
-    if (!videoPlayer) return;
+async function loadHeroSlider() {
+    const sliderWrapper = document.getElementById('hero-slider-wrapper');
+    const heroSection = document.getElementById('hero-section');
+    if (!sliderWrapper || !heroSection) return;
 
     try {
-        const docRef = doc(db, "settings", "global");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().heroVideoUrl) {
-            videoPlayer.src = docSnap.data().heroVideoUrl;
-            videoPlayer.load(); // വീഡിയോ ലോഡ് ചെയ്യാൻ നിർദ്ദേശിക്കുന്നു
-        } else {
-            console.log("Hero video URL not found.");
-            videoPlayer.parentElement.style.display = 'none'; // വീഡിയോ ഇല്ലെങ്കിൽ സെക്ഷൻ മറയ്ക്കുന്നു
+        const q = query(collection(db, "heroSlides"), orderBy("order"));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            console.log("No hero slides found.");
+            // സ്ലൈഡ് ഇല്ലെങ്കിൽ, ഹീറോ സെക്ഷൻ ഒരുപക്ഷെ മറയ്ക്കാം
+            // heroSection.style.display = 'none'; 
+            return;
         }
+
+        sliderWrapper.innerHTML = ''; // Loading... നീക്കം ചെയ്യുന്നു
+
+        querySnapshot.forEach((doc) => {
+            const slide = doc.data();
+            const slideEl = document.createElement('div');
+            slideEl.className = 'swiper-slide';
+
+            if (slide.type === 'video') {
+                slideEl.innerHTML = `
+                    <video src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>
+                `;
+            } else if (slide.type === 'image') {
+                slideEl.innerHTML = `
+                    <img src="${slide.url}" alt="Hero Background Image">
+                `;
+            }
+            sliderWrapper.appendChild(slideEl);
+        });
+
+        // സ്ലൈഡർ ആരംഭിക്കുന്നു
+        new Swiper('.hero-slider', {
+            loop: true,
+            effect: 'fade', // ഫേഡ് ആയി മാറുമ്പോൾ ഭംഗി കൂടും
+            fadeEffect: {
+                crossFade: true
+            },
+            autoplay: {
+                delay: 5000, // 5 സെക്കൻഡ്
+                disableOnInteraction: false
+            },
+            allowTouchMove: false, // മൗസ് കൊണ്ട് നീക്കാൻ പറ്റില്ല
+            speed: 1000,
+        });
+
     } catch (error) {
-        console.error("Error loading hero video: ", error);
+        console.error("Error loading hero slider: ", error);
     }
 }
+
 
 /**
  * 2. "Top Sellers" കറൗസൽ ലോഡ് ചെയ്യുന്നു
