@@ -13,6 +13,7 @@
     --text-muted: #aaa;
     --card-bg: #111111;
     --border-color: #333;
+    --error-red: #e74c3c; /* പുതിയതായി ചേർത്തത് */
     
     --font-main: 'Inter', sans-serif;
     --font-heading: 'Playfair Display', serif;
@@ -872,6 +873,20 @@ img {
     color: var(--primary-gold);
     margin-bottom: 1rem;
 }
+
+/* പുതിയതായി ചേർത്തത്: കാർട്ട് പേജിലെ എറർ മെസ്സേജ് സ്റ്റൈൽ 
+*/
+.cart-error {
+    color: var(--error-red);
+    background-color: rgba(231, 76, 60, 0.1);
+    border: 1px solid var(--error-red);
+    padding: 0.75rem;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.95rem;
+    margin-top: 1rem;
+}
+
 
 /* --- 12. മൊബൈൽ റെസ്പോൺസീവ് (Responsive) --- */
 @media (max-width: 768px) {
