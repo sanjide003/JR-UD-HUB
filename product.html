@@ -19,13 +19,18 @@
             --card-bg: #1e1e1e;
             --font-main: 'Inter', sans-serif;
             --border-color: #333;
-            --discount-red: #e74c3c; /* ഡിസ്കൗണ്ടിന് നിറം */
+            --discount-red: #e74c3c;
         }
         body { font-family: var(--font-main); background-color: var(--bg-color); color: var(--text-color); line-height: 1.6; margin: 0; padding: 0; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         .container { max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem; }
-        .main-header { background-color: var(--bg-color); padding: 1.5rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--secondary-gold); position: sticky; top: 0; z-index: 100; }
-        .logo { font-size: 1.75rem; font-weight: 700; color: var(--primary-gold); letter-spacing: 1px; text-decoration: none; }
+
+        /* *** ഹെഡർ മാറ്റം: ലോഗോ ഇമേജിനായി *** */
+        .main-header { background-color: var(--bg-color); padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--secondary-gold); position: sticky; top: 0; z-index: 100; }
+        .logo { text-decoration: none; }
+        .logo img { max-height: 50px; width: auto; object-fit: contain; }
+        .logo-text { font-size: 1.75rem; font-weight: 700; color: var(--primary-gold); letter-spacing: 1px; }
+
         .main-nav ul { list-style: none; display: flex; }
         .main-nav li { margin-left: 2rem; }
         .main-nav a { color: var(--text-color); font-weight: 400; text-decoration: none; transition: color 0.3s ease; }
@@ -34,134 +39,53 @@
         .btn:hover { background-color: var(--secondary-gold); border-color: var(--secondary-gold); color: #000; }
         .loading-placeholder { text-align: center; color: var(--text-muted); font-size: 1.1rem; padding: 4rem 0; grid-column: 1 / -1; }
         
-        /* *** ഉൽപ്പന്ന പേജിനുള്ള പുതിയ സ്റ്റൈലുകൾ *** */
-        .product-detail-container {
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 2rem;
-        }
-        @media (min-width: 768px) {
-            .product-detail-container {
-                grid-template-columns: 1fr 1fr;
-                gap: 3rem;
-            }
-        }
-        
-        /* ഇമേജ് ഗാലറി */
-        .product-gallery {
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            overflow: hidden;
-        }
-        .gallery-main-image {
-            width: 100%;
-            height: auto;
-            aspect-ratio: 1 / 1;
-            object-fit: cover;
-            background-color: var(--card-bg);
-            border-bottom: 1px solid var(--border-color);
-        }
-        .gallery-thumbnails {
-            display: flex;
-            gap: 10px;
-            padding: 10px;
-            background-color: var(--card-bg);
-            overflow-x: auto;
-        }
-        .gallery-thumb {
-            width: 70px;
-            height: 70px;
-            object-fit: cover;
-            border-radius: 5px;
-            border: 2px solid transparent;
-            cursor: pointer;
-            transition: border-color 0.3s ease;
-        }
-        .gallery-thumb:hover, .gallery-thumb.active {
-            border-color: var(--primary-gold);
-        }
-
-        /* ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ */
-        .product-info h1 {
-            font-size: 2.5rem;
-            color: var(--text-color);
-            margin-bottom: 1rem;
-        }
-        .product-info .product-size {
-            font-size: 1.1rem;
-            color: var(--text-muted);
-            margin-bottom: 1.5rem;
-        }
-        
-        /* *** പുതിയ വില സ്റ്റൈലുകൾ (വലുത്) *** */
-        .price-container-large {
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-color);
-        }
-        .price-retail-large {
-            font-size: 2.2rem;
-            font-weight: 700;
-            color: var(--primary-gold);
-            margin-right: 0.75rem;
-        }
-        .price-mrp-large {
-            font-size: 1.2rem;
-            color: var(--text-muted);
-            text-decoration: line-through;
-            margin-right: 0.75rem;
-        }
-        .price-discount-large {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--discount-red);
-            background-color: rgba(231, 76, 60, 0.1);
-            padding: 0.3rem 0.6rem;
-            border-radius: 4px;
-        }
-        /* *** /പുതിയ വില സ്റ്റൈലുകൾ *** */
-        
-        .product-description {
-            line-height: 1.7;
-        }
-        .product-description h3 {
-            color: var(--primary-gold);
-            margin-top: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-        
-        .whatsapp-order-btn {
-            margin-top: 2rem;
-            background-color: #25D366; /* WhatsApp Green */
-            color: #fff;
-            font-weight: 700;
-            padding: 1rem 1.5rem;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.75rem;
-            border: none;
-            border-radius: 5px;
-            font-size: 1.1rem;
-            text-decoration: none;
-            transition: background-color 0.3s ease;
-        }
-        .whatsapp-order-btn:hover {
-            background-color: #128C7E;
-        }
-        .whatsapp-order-btn svg {
-            width: 24px;
-            height: 24px;
-            fill: #fff;
-        }
-
-        /* *** /ഉൽപ്പന്ന പേജിനുള്ള പുതിയ സ്റ്റൈലുകൾ *** */
+        /* (ഉൽപ്പന്ന പേജിന്റെ സ്റ്റൈലുകൾ - മാറ്റമില്ല) */
+        .product-detail-container { display: grid; grid-template-columns: 1fr; gap: 2rem; }
+        @media (min-width: 768px) { .product-detail-container { grid-template-columns: 1fr 1fr; gap: 3rem; } }
+        .product-gallery { border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; }
+        .gallery-main-image { width: 100%; height: auto; aspect-ratio: 1 / 1; object-fit: cover; background-color: var(--card-bg); border-bottom: 1px solid var(--border-color); }
+        .gallery-thumbnails { display: flex; gap: 10px; padding: 10px; background-color: var(--card-bg); overflow-x: auto; }
+        .gallery-thumb { width: 70px; height: 70px; object-fit: cover; border-radius: 5px; border: 2px solid transparent; cursor: pointer; transition: border-color 0.3s ease; }
+        .gallery-thumb:hover, .gallery-thumb.active { border-color: var(--primary-gold); }
+        .product-info h1 { font-size: 2.5rem; color: var(--text-color); margin-bottom: 1rem; }
+        .product-info .product-size { font-size: 1.1rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+        .price-container-large { margin-bottom: 2rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); }
+        .price-retail-large { font-size: 2.2rem; font-weight: 700; color: var(--primary-gold); margin-right: 0.75rem; }
+        .price-mrp-large { font-size: 1.2rem; color: var(--text-muted); text-decoration: line-through; margin-right: 0.75rem; }
+        .price-discount-large { font-size: 1.2rem; font-weight: 700; color: var(--discount-red); background-color: rgba(231, 76, 60, 0.1); padding: 0.3rem 0.6rem; border-radius: 4px; }
+        .product-description { line-height: 1.7; }
+        .product-description h3 { color: var(--primary-gold); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+        .whatsapp-order-btn { margin-top: 2rem; background-color: #25D366; color: #fff; font-weight: 700; padding: 1rem 1.5rem; display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem; border: none; border-radius: 5px; font-size: 1.1rem; text-decoration: none; transition: background-color 0.3s ease; }
+        .whatsapp-order-btn:hover { background-color: #128C7E; }
+        .whatsapp-order-btn svg { width: 24px; height: 24px; fill: #fff; }
 
         .whatsapp-cta { position: fixed; bottom: 25px; right: 25px; background-color: #25D366; color: #fff; width: 60px; height: 60px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 2.5rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); z-index: 100; transition: transform 0.3s ease; }
         .whatsapp-cta:hover { transform: scale(1.1); }
         .whatsapp-cta svg { width: 32px; height: 32px; fill: #fff; }
         
-        /* (Footer സ്റ്റൈലുകൾ മാറ്റമില്ലാതെ തുടരുന്നു) */
+        /* *** "Related Products"-നുള്ള പുതിയ സ്റ്റൈലുകൾ *** */
+        .related-products-section {
+            padding-top: 3rem;
+            margin-top: 3rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .section-title { text-align: center; font-size: 2.5rem; margin-bottom: 2.5rem; position: relative; }
+        .section-title::after { content: ''; display: block; width: 80px; height: 3px; background-color: var(--secondary-gold); margin: 0.5rem auto 0; }
+        
+        /* (index.html-ലെ അതേ പ്രോഡക്റ്റ് കാർഡ് സ്റ്റൈലുകൾ) */
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
+        .product-card { background-color: var(--card-bg); border-radius: 8px; overflow: hidden; border: 1px solid #333; transition: all 0.3s ease; display: flex; flex-direction: column; }
+        .product-card:hover { border-color: var(--secondary-gold); transform: translateY(-5px); box-shadow: 0 8px 15px rgba(0,0,0,0.3); }
+        .product-card-image { width: 100%; height: 250px; object-fit: cover; background-color: #333; }
+        .product-card-content { padding: 1.5rem; flex-grow: 1; }
+        .product-card-content h3 { font-size: 1.25rem; color: var(--text-color); }
+        .price-container { margin-bottom: 1rem; }
+        .price-retail { font-size: 1.3rem; font-weight: 700; color: var(--primary-gold); margin-right: 0.5rem; }
+        .price-mrp { font-size: 0.9rem; color: var(--text-muted); text-decoration: line-through; margin-right: 0.5rem; }
+        .price-discount { font-size: 0.9rem; font-weight: 700; color: var(--discount-red); background-color: rgba(231, 76, 60, 0.1); padding: 0.2rem 0.4rem; border-radius: 4px; }
+        /* *** /Related Products-നുള്ള സ്റ്റൈലുകൾ *** */
+
+        /* (Footer സ്റ്റൈലുകൾ - മാറ്റമില്ല) */
         .main-footer { background-color: #000; color: var(--text-muted); padding: 4rem 1.5rem 2rem; margin-top: 3rem; border-top: 1px solid var(--secondary-gold); }
         .footer-container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2.5rem; }
         .footer-col h3 { font-size: 1.5rem; color: var(--primary-gold); margin-bottom: 1.5rem; font-weight: 700; }
@@ -179,7 +103,7 @@
         .footer-bottom { text-align: center; margin-top: 3rem; padding-top: 2rem; border-top: 1px solid #333; font-size: 0.9rem; }
         
         @media (max-width: 768px) {
-            /* (മറ്റ് Responsive സ്റ്റൈലുകൾ മാറ്റമില്ല) */
+            /* (Responsive സ്റ്റൈലുകൾ - മാറ്റമില്ല) */
             .main-header { flex-direction: column; padding: 1rem; }
             .logo { margin-bottom: 1rem; }
             .main-nav ul { justify-content: center; flex-wrap: wrap; }
@@ -188,6 +112,7 @@
             .product-info h1 { font-size: 2rem; }
             .price-retail-large { font-size: 1.8rem; }
             .price-mrp-large, .price-discount-large { font-size: 1rem; }
+            .section-title { font-size: 2rem; }
             .footer-col { text-align: center; }
             .contact-item-footer { justify-content: center; }
             .social-icons { justify-content: center; }
@@ -196,25 +121,32 @@
 </head>
 <body>
 
-    <!-- 1. Header (മാറ്റമില്ല) -->
+    <!-- 1. Header (*** ലോഗോ മാറ്റി ***) -->
     <header class="main-header">
-        <a href="index.html" class="logo" id="header-logo">AL AMBAR</a>
+        <a href="index.html" class="logo" id="header-logo-link">
+            <span class="logo-text">AL AMBAR</span>
+        </a>
         <nav class="main-nav">
             <ul>
                 <li><a href="index.html">Home</a></li>
-                <li><a href="categories.html">Categories</a></li>
+                <li><a href="categories.html" class="active">Categories</a></li>
                 <li><a href="contact.html">Contact</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- 2. Main Content (*** മാറ്റം വരുത്തി ***) -->
+    <!-- 2. Main Content -->
     <main>
         <section class="container">
+            <!-- പ്രധാന ഉൽപ്പന്നം -->
             <div id="product-detail-wrapper">
                 <div class="loading-placeholder">Loading product details...</div>
-                <!-- ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ JS വഴി ഇവിടെ വരും -->
             </div>
+            
+            <!-- *** "Related Products" സെക്ഷൻ *** -->
+            <section class="related-products-section" id="related-products-section">
+                <!-- JS വഴി ടൈറ്റിലും ഉൽപ്പന്നങ്ങളും ഇവിടെ വരും -->
+            </section>
         </section>
     </main>
 
@@ -223,7 +155,7 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M380.9 97.1C339.4 55.6 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115.4-67.1-157zm-157 341.6c-33.8 0-65-10.1-90.4-27.8l-6.4-3.8-67.1 17.6 17.9-65.5-4.1-6.7c-19.5-31.8-30-67.8-30-104.4 0-100.9 82.1-183 183-183 49.3 0 95.6 19.2 130.4 54.1 34.8 34.8 56.2 81.1 56.1 130.5 0 100.8-82.1 182.9-183 182.9zm101.7-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
     </a>
 
-    <!-- 4. Footer (മാറ്റമില്ല) -->
+    <!-- 4. Footer (*** സോഷ്യൽ ലിങ്കുകൾ ചേർത്തു ***) -->
     <footer class="main-footer">
         <div class="footer-container">
             <div class="footer-col">
@@ -258,8 +190,8 @@
                     </li>
                 </ul>
                 <div class="social-icons">
-                    <a href="#" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256C0 376 82.7 476.8 194.2 504.5V334.2H137.4V256H194.2V195.6c0-56.1 33.4-87.2 84.7-87.2c24.4 0 50.3 4.3 50.3 4.3V186H292.1c-27.1 0-35.3 16.4-35.3 34.3V256H368l-11.6 78.2H256.8V504.5C429.3 476.8 512 376 512 256z"/></svg></a>
-                    <a href="#" aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9S287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7s74.7 33.5 74.7 74.7s-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9 26.2 26.2 58 34.4 93.9 36.2 37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1 9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg></a>
+                    <a href="#" aria-label="Facebook" id="facebook-link" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M512 256C512 114.6 397.4 0 256 0S0 114.6 0 256C0 376 82.7 476.8 194.2 504.5V334.2H137.4V256H194.2V195.6c0-56.1 33.4-87.2 84.7-87.2c24.4 0 50.3 4.3 50.3 4.3V186H292.1c-27.1 0-35.3 16.4-35.3 34.3V256H368l-11.6 78.2H256.8V504.5C429.3 476.8 512 376 512 256z"/></svg></a>
+                    <a href="#" aria-label="Instagram" id="instagram-link" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M224.1 141c-63.6 0-114.9 51.3-114.9 114.9s51.3 114.9 114.9 114.9S339 319.5 339 255.9S287.7 141 224.1 141zm0 189.6c-41.1 0-74.7-33.5-74.7-74.7s33.5-74.7 74.7-74.7s74.7 33.5 74.7 74.7s-33.6 74.7-74.7 74.7zm146.4-194.3c0 14.9-12 26.8-26.8 26.8-14.9 0-26.8-12-26.8-26.8s12-26.8 26.8-26.8 26.8 12 26.8 26.8zm76.1 27.2c-1.7-35.9-9.9-67.7-36.2-93.9-26.2-26.2-58-34.4-93.9-36.2-37-2.1-147.9-2.1-184.9 0-35.8 1.7-67.6 9.9-93.9 36.1s-34.4 58-36.2 93.9c-2.1 37-2.1 147.9 0 184.9 1.7 35.9 9.9 67.7 36.2 93.9 26.2 26.2 58 34.4 93.9 36.2 37 2.1 147.9 2.1 184.9 0 35.9-1.7 67.7-9.9 93.9-36.2 26.2-26.2 34.4-58 36.2-93.9 2.1-37 2.1-147.8 0-184.8zM398.8 388c-7.8 19.6-22.9 34.7-42.6 42.6-29.5 11.7-99.5 9-132.1 9s-102.7 2.6-132.1-9c-19.6-7.8-34.7-22.9-42.6-42.6-11.7-29.5-9-99.5-9-132.1s-2.6-102.7 9-132.1c7.8-19.6 22.9-34.7 42.6-42.6 29.5-11.7 99.5-9 132.1 9s102.7-2.6 132.1 9c19.6 7.8 34.7 22.9 42.6 42.6 11.7 29.5 9 99.5 9 132.1s2.7 102.7-9 132.1z"/></svg></a>
                 </div>
             </div>
         </div>
@@ -268,10 +200,20 @@
         </div>
     </footer>
     
-    <!-- **** JavaScript-ൽ മാറ്റം വരുത്തിയിട്ടുണ്ട് **** -->
+    <!-- **** JavaScript-ൽ വലിയ മാറ്റങ്ങൾ വരുത്തിയിട്ടുണ്ട് **** -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getFirestore, collection, getDocs, doc, getDoc, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { 
+            getFirestore, 
+            collection, 
+            getDocs, 
+            doc, 
+            getDoc, 
+            query, // *** പുതിയ import ***
+            where, // *** പുതിയ import ***
+            limit, // *** പുതിയ import ***
+            setLogLevel 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
         
         // Firebase കോൺഫിഗറേഷൻ (മാറ്റമില്ല)
         const firebaseConfig = {
@@ -287,44 +229,49 @@
         const db = getFirestore(app);
         setLogLevel('Debug');
 
-        // DOM Elements (മാറ്റമില്ല)
-        const headerLogo = document.getElementById("header-logo");
+        // DOM Elements
+        const headerLogoLink = document.getElementById("header-logo-link");
         const whatsappFloatBtn = document.getElementById("whatsapp-float-btn");
         const footerPhone = document.getElementById("footer-phone");
         const footerEmail = document.getElementById("footer-email");
         const footerAddress = document.getElementById("footer-address");
         const footerCategoryList = document.getElementById("footer-category-list");
+        const facebookLink = document.getElementById("facebook-link");
+        const instagramLink = document.getElementById("instagram-link");
         const productDetailWrapper = document.getElementById("product-detail-wrapper");
+        const relatedProductsSection = document.getElementById("related-products-section");
         
-        let globalSettings = {}; // സെറ്റിംഗ്സ് സേവ് ചെയ്യാൻ
+        let globalSettings = {}; 
 
         /**
-         * ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു (*** മാറ്റം വരുത്തി ***)
+         * ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു
          */
         async function loadProductDetails() {
+            let currentProductId = '';
+            let currentCategoryId = '';
+            
             try {
                 const urlParams = new URLSearchParams(window.location.search);
-                const productId = urlParams.get('id'); // 'sku' എന്നതിന് പകരം 'id' ഉപയോഗിക്കുന്നു
+                currentProductId = urlParams.get('id'); 
                 
-                if (!productId) {
+                if (!currentProductId) {
                     productDetailWrapper.innerHTML = '<p class="loading-placeholder">Product ID not found in URL.</p>';
                     return;
                 }
                 
-                const docRef = doc(db, "products", productId);
+                const docRef = doc(db, "products", currentProductId);
                 const docSnap = await getDoc(docRef);
 
                 if (docSnap.exists()) {
                     const product = docSnap.data();
+                    currentCategoryId = product.categoryId; // കാറ്റഗറി ID സേവ് ചെയ്യുന്നു
                     
-                    // *** വിലയും ഡിസ്കൗണ്ടും കണക്കാക്കുന്നു ***
+                    // വിലയും ഡിസ്കൗണ്ടും കണക്കാക്കുന്നു (മാറ്റമില്ല)
                     let priceHTML = '';
                     const price = product.price || 0;
                     const mrp = product.mrp || 0;
-
                     if (price > 0) {
                         priceHTML = `<span class="price-retail-large">₹${price}</span>`;
-                        
                         if (mrp > price) {
                             const discount = Math.round(((mrp - price) / mrp) * 100);
                             priceHTML += `<del class="price-mrp-large">₹${mrp}</del>`;
@@ -333,9 +280,8 @@
                     } else {
                         priceHTML = `<span class="price-retail-large">Price on request</span>`;
                     }
-                    // *** /വിലയും ഡിസ്കൗണ്ടും ***
 
-                    // ചിത്രങ്ങളുടെ ഗാലറി
+                    // ഇമേജ് ഗാലറി (മാറ്റമില്ല)
                     const images = product.images && product.images.length > 0 ? product.images : ['https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image'];
                     const firstImage = images[0];
                     let thumbnailsHTML = '';
@@ -343,35 +289,25 @@
                         thumbnailsHTML += `<img src="${imgUrl}" alt="${product.name} thumbnail ${index + 1}" class="gallery-thumb ${index === 0 ? 'active' : ''}" onclick="updateMainImage(this, '${imgUrl}')">`;
                     });
 
-                    // WhatsApp സന്ദേശം തയ്യാറാക്കുന്നു
+                    // WhatsApp സന്ദേശം
                     const whatsappMessage = encodeURIComponent(`Hello Al Ambar, I am interested in the product: ${product.name} (Size: ${product.size || 'N/A'})`);
                     const whatsappLink = `https://wa.me/${globalSettings.whatsapp || ''}?text=${whatsappMessage}`;
 
-                    // HTML അപ്ഡേറ്റ് ചെയ്യുന്നു
+                    // HTML അപ്ഡേറ്റ് ചെയ്യുന്നു (മാറ്റമില്ല)
                     productDetailWrapper.innerHTML = `
                         <div class="product-detail-container">
-                            <!-- ഇമേജ് ഗാലറി -->
                             <div class="product-gallery">
                                 <img src="${firstImage}" alt="${product.name}" id="main-product-image" class="gallery-main-image">
-                                <div class="gallery-thumbnails">
-                                    ${thumbnailsHTML}
-                                </div>
+                                <div class="gallery-thumbnails">${thumbnailsHTML}</div>
                             </div>
-                            
-                            <!-- ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ -->
                             <div class="product-info">
                                 <h1>${product.name}</h1>
                                 ${product.size ? `<p class="product-size">Size: ${product.size}</p>` : ''}
-                                
-                                <div class="price-container-large">
-                                    ${priceHTML} <!-- അപ്‌ഡേറ്റ് ചെയ്ത വില -->
-                                </div>
-                                
+                                <div class="price-container-large">${priceHTML}</div>
                                 <a href="${whatsappLink}" target="_blank" class="whatsapp-order-btn">
                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path d="M380.9 97.1C339.4 55.6 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115.4-67.1-157zm-157 341.6c-33.8 0-65-10.1-90.4-27.8l-6.4-3.8-67.1 17.6 17.9-65.5-4.1-6.7c-19.5-31.8-30-67.8-30-104.4 0-100.9 82.1-183 183-183 49.3 0 95.6 19.2 130.4 54.1 34.8 34.8 56.2 81.1 56.1 130.5 0 100.8-82.1 182.9-183 182.9zm101.7-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
                                     Order on WhatsApp
                                 </a>
-                                
                                 <div class="product-description">
                                     <h3>Description</h3>
                                     <p>${product.description ? product.description.replace(/\n/g, '<br>') : 'No description available.'}</p>
@@ -382,18 +318,25 @@
 
                 } else {
                     productDetailWrapper.innerHTML = '<p class="loading-placeholder">Product not found. It may have been removed.</p>';
+                    return; // ഉൽപ്പന്നം ഇല്ലെങ്കിൽ "Related Products" ലോഡ് ചെയ്യേണ്ടതില്ല
                 }
             } catch (error) {
                 console.error("Error loading product details: ", error);
                 productDetailWrapper.innerHTML = '<p class="loading-placeholder">Error loading product details. Check console.</p>';
             }
+            
+            // *** "Related Products" ലോഡ് ചെയ്യുന്നു ***
+            if (currentCategoryId && currentProductId) {
+                await loadRelatedProducts(currentCategoryId, currentProductId);
+            }
         }
 
         /**
-         * സൈറ്റ് സെറ്റിംഗ്സ് ലോഡ് ചെയ്യുന്നു (മാറ്റമില്ല)
+         * സൈറ്റ് സെറ്റിംഗ്സ് ലോഡ് ചെയ്യുന്നു (*** ലോഗോയും സോഷ്യൽ ലിങ്കുകളും ചേർത്തു ***)
          */
         async function loadSiteSettings() {
             try {
+                // കാറ്റഗറികൾ ഫൂട്ടറിൽ ലോഡ് ചെയ്യുന്നു
                 const catSnapshot = await getDocs(collection(db, "categories"));
                 footerCategoryList.innerHTML = '';
                 catSnapshot.forEach((doc) => {
@@ -407,14 +350,20 @@
                 const docSnap = await getDoc(docRef);
                 
                 if (docSnap.exists()) {
-                    globalSettings = docSnap.data(); // സെറ്റിംഗ്സ് ഗ്ലോബൽ വേരിയബിളിൽ സേവ് ചെയ്യുന്നു
+                    globalSettings = docSnap.data(); 
                     
-                    if (globalSettings.logoText) {
-                        headerLogo.textContent = globalSettings.logoText;
+                    // ലോഗോ ഇമേജ്
+                    if (globalSettings.logoImageUrl) {
+                        headerLogoLink.innerHTML = `<img src="${globalSettings.logoImageUrl}" alt="Al Ambar Logo" id="header-logo-img">`;
+                    } else {
+                        headerLogoLink.innerHTML = `<span class="logo-text">AL AMBAR</span>`;
                     }
+                    
+                    // WhatsApp
                     if (globalSettings.whatsapp) {
                         whatsappFloatBtn.href = `https://wa.me/${globalSettings.whatsapp}?text=Hello%20Al%20Ambar`;
                     }
+                    // ഫൂട്ടർ വിവരങ്ങൾ
                     if (globalSettings.phone) {
                         footerPhone.textContent = globalSettings.phone;
                         footerPhone.href = `tel:${globalSettings.phone}`;
@@ -426,28 +375,105 @@
                     if (globalSettings.address) {
                         footerAddress.textContent = globalSettings.address;
                     }
+                    // സോഷ്യൽ മീഡിയ ലിങ്കുകൾ
+                    if (globalSettings.facebookUrl) {
+                        facebookLink.href = globalSettings.facebookUrl;
+                    }
+                    if (globalSettings.instagramUrl) {
+                        instagramLink.href = globalSettings.instagramUrl;
+                    }
                 } else {
                     console.log("No site settings found.");
+                    headerLogoLink.innerHTML = `<span class="logo-text">AL AMBAR</span>`;
                 }
             } catch (error) {
                 console.error("Error loading site settings: ", error);
             }
         }
+        
+        /**
+         * *** പുതിയ ഫംഗ്ഷൻ: "Related Products" ലോഡ് ചെയ്യാൻ ***
+         */
+        async function loadRelatedProducts(categoryId, currentProductId) {
+            try {
+                const q = query(
+                    collection(db, "products"),
+                    where("categoryId", "==", categoryId), // അതേ കാറ്റഗറി
+                    limit(5) // പരമാവധി 5 എണ്ണം എടുക്കുന്നു (നിലവിലെ ഉൽപ്പന്നം ഉൾപ്പെടെ)
+                );
+                
+                const querySnapshot = await getDocs(q);
+                
+                const relatedProducts = [];
+                querySnapshot.forEach((doc) => {
+                    // നിലവിൽ നോക്കുന്ന ഉൽപ്പന്നം ഒഴിവാക്കുന്നു
+                    if (doc.id !== currentProductId) {
+                        relatedProducts.push({ id: doc.id, ...doc.data() });
+                    }
+                });
+                
+                // ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ഇല്ലെങ്കിൽ, സെക്ഷൻ കാണിക്കണ്ട
+                if (relatedProducts.length === 0) {
+                    relatedProductsSection.style.display = 'none';
+                    return;
+                }
+                
+                // ടൈറ്റിൽ ചേർക്കുന്നു
+                relatedProductsSection.innerHTML = '<h2 class="section-title">You may also like</h2>';
+                const grid = document.createElement('div');
+                grid.className = 'product-grid';
+                
+                // പരമാവധി 4 ഉൽപ്പന്നങ്ങൾ കാണിക്കുന്നു
+                relatedProducts.slice(0, 4).forEach((product) => {
+                    // വിലയും ഡിസ്കൗണ്ടും കണക്കാക്കുന്നു (കാർഡ് സ്റ്റൈൽ)
+                    let priceHTML = '';
+                    const price = product.price || 0;
+                    const mrp = product.mrp || 0;
+
+                    if (price > 0) {
+                        priceHTML = `<span class="price-retail">₹${price}</span>`;
+                        if (mrp > price) {
+                            const discount = Math.round(((mrp - price) / mrp) * 100);
+                            priceHTML += `<del class="price-mrp">₹${mrp}</del>`;
+                            priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
+                        }
+                    } else {
+                        priceHTML = `<span class="price-retail">Price on request</span>`;
+                    }
+                    
+                    const card = document.createElement('div');
+                    card.className = 'product-card';
+                    card.innerHTML = `
+                        <img src="${product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image'}" 
+                             alt="${product.name}" 
+                             class="product-card-image"
+                             onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
+                        <div class="product-card-content">
+                            <h3>${product.name}</h3>
+                            <div class="price-container">${priceHTML}</div>
+                            <a href="product.html?id=${product.id}" class="btn">View Details</a>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+                
+                relatedProductsSection.appendChild(grid);
+                
+            } catch (error) {
+                console.error("Error loading related products: ", error);
+            }
+        }
 
         // --- പേജ് ലോഡ് ആവുമ്പോൾ ---
         document.addEventListener("DOMContentLoaded", async () => {
-            await loadSiteSettings(); // ആദ്യം സെറ്റിംഗ്സ് ലോഡ് ചെയ്യുന്നു (WhatsApp നമ്പറിനായി)
-            await loadProductDetails(); // അതിനുശേഷം ഉൽപ്പന്നം ലോഡ് ചെയ്യുന്നു
+            await loadSiteSettings(); // ആദ്യം സെറ്റിംഗ്സ് ലോഡ് ചെയ്യുന്നു
+            await loadProductDetails(); // അതിനുശേഷം ഉൽപ്പന്നവും "Related"-ഉം ലോഡ് ചെയ്യുന്നു
         });
 
-        // ഗാലറി ചിത്രം മാറ്റാനുള്ള ഫംഗ്ഷൻ
+        // ഗാലറി ചിത്രം മാറ്റാനുള്ള ഫംഗ്ഷൻ (മാറ്റമില്ല)
         window.updateMainImage = function(thumbElement, newImageUrl) {
             document.getElementById('main-product-image').src = newImageUrl;
-            
-            // പഴയ 'active' ക്ലാസ് മാറ്റുന്നു
             document.querySelectorAll('.gallery-thumb').forEach(thumb => thumb.classList.remove('active'));
-            
-            // പുതിയ തംബിന് 'active' ക്ലാസ് നൽകുന്നു
             thumbElement.classList.add('active');
         }
     </script>
