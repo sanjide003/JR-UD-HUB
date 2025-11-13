@@ -1,26 +1,700 @@
-{
-  "name": "al-ambar-perfume-company",
-  "version": "1.0.0",
-  "description": "Al Ambar Perfume Company - Premium Arabic Perfumes & Luxury Fragrances",
-  "private": true,
-  "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "firebase": "^10.7.1"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test"
-  },
-  "devDependencies": {
-    "react-scripts": "5.0.1"
-  },
-  "eslintConfig": {
-    "extends": ["react-app"]
-  },
-  "browserslist": {
-    "production": [">0.2%", "not dead", "not op_mini all"],
-    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
-  }
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Al Ambar - Admin Panel</title>
+    <!-- Google Font: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS STYLES --- */
+        
+        /* 1. Theme & Variables (Matching index.html) */
+        :root {
+            --bg-color: #121212;
+            --primary-gold: #D4AF37;
+            --secondary-gold: #B8860B;
+            --text-color: #F5F5F5;
+            --text-muted: #aaa;
+            --card-bg: #1e1e1e;
+            --error-red: #e74c3c;
+            --success-green: #2ecc71;
+            --font-main: 'Inter', sans-serif;
+        }
+
+        /* 2. Global Resets & Body */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        h1, h2 {
+            color: var(--primary-gold);
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        /* 3. Login Container */
+        .login-container {
+            display: flex; /* Will be toggled */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .login-form {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 8px;
+            border: 1px solid #333;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+        }
+
+        /* 4. Admin Panel Container (Hidden by default) */
+        .admin-panel {
+            display: none; /* Will be toggled */
+            padding: 2rem;
+            max-width: 1000px;
+            margin: 2rem auto;
+        }
+        
+        .admin-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            border-bottom: 1px solid var(--secondary-gold);
+            padding-bottom: 1rem;
+        }
+        
+        .admin-header h1 {
+            text-align: left;
+            margin: 0;
+        }
+
+        /* 5. Form Elements */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        input[type="password"],
+        input[type="number"],
+        input[type="url"],
+        textarea,
+        select {
+            width: 100%;
+            padding: 0.8rem 1rem;
+            background-color: #2a2a2a;
+            border: 1px solid #444;
+            border-radius: 5px;
+            color: var(--text-color);
+            font-family: var(--font-main);
+            font-size: 1rem;
+        }
+        
+        input[type="file"] {
+            padding: 0.5rem;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        input[type="checkbox"] {
+            margin-right: 0.5rem;
+        }
+
+        /* 6. Button Styles */
+        .btn {
+            display: inline-block;
+            width: 100%;
+            padding: 0.8rem 1.5rem;
+            background-color: var(--primary-gold);
+            color: #000;
+            font-weight: 700;
+            border-radius: 5px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary-gold);
+            cursor: pointer;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        .btn:hover {
+            background-color: var(--secondary-gold);
+            border-color: var(--secondary-gold);
+        }
+        
+        .btn-logout {
+            width: auto;
+            background-color: transparent;
+            color: var(--primary-gold);
+            border-color: var(--primary-gold);
+        }
+        .btn-logout:hover {
+            background-color: var(--primary-gold);
+            color: #000;
+        }
+        
+        .btn-delete {
+            background-color: var(--error-red);
+            border-color: var(--error-red);
+            color: #fff;
+            padding: 0.3rem 0.6rem;
+            font-size: 0.8rem;
+            width: auto;
+            margin-left: 1rem;
+        }
+
+        /* 7. Admin Sections (Cards) */
+        .admin-section {
+            background-color: var(--card-bg);
+            padding: 2rem;
+            border-radius: 8px;
+            border: 1px solid #333;
+            margin-bottom: 2rem;
+        }
+        
+        .admin-section h2 {
+            text-align: left;
+            border-bottom: 1px solid #444;
+            padding-bottom: 0.5rem;
+        }
+        
+        /* 8. Data Lists (Categories/Products) */
+        .data-list {
+            list-style: none;
+            margin-top: 1.5rem;
+        }
+        
+        .data-list-item {
+            background-color: #2a2a2a;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .data-list-item span {
+            font-weight: 500;
+        }
+
+        /* 9. Utilities */
+        .status-message {
+            text-align: center;
+            padding: 0.75rem;
+            margin-top: 1rem;
+            border-radius: 5px;
+            display: none; /* Toggled by JS */
+        }
+        .status-message.error {
+            background-color: var(--error-red);
+            color: #fff;
+        }
+        .status-message.success {
+            background-color: var(--success-green);
+            color: #000;
+        }
+        
+        /* 10. Responsive */
+        @media (max-width: 768px) {
+            .admin-panel {
+                padding: 1rem;
+                margin: 1rem auto;
+            }
+            .admin-header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            .admin-header h1 {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. Login Container -->
+    <div class="login-container" id="login-container">
+        <form class="login-form" id="login-form">
+            <h1>Admin Login</h1>
+            <div class="form-group">
+                <label for="login-email">Email</label>
+                <input type="email" id="login-email" required>
+            </div>
+            <div class="form-group">
+                <label for="login-password">Password</label>
+                <input type="password" id="login-password" required>
+            </div>
+            <button type="submit" class="btn">Login</button>
+            <div id="login-status" class="status-message"></div>
+        </form>
+    </div>
+
+    <!-- 2. Admin Panel (Hidden by default) -->
+    <div class="admin-panel" id="admin-panel">
+        <header class="admin-header">
+            <h1>Al Ambar - Admin</h1>
+            <div>
+                <span id="admin-email" style="margin-right: 1rem; color: var(--text-muted);"></span>
+                <button class="btn btn-logout" id="logout-button">Logout</button>
+            </div>
+        </header>
+
+        <!-- Status Message Bar -->
+        <div id="admin-status" class="status-message" style="margin-bottom: 2rem;"></div>
+
+        <!-- Section: Manage Categories -->
+        <section class="admin-section">
+            <h2>Manage Categories</h2>
+            <form id="category-form">
+                <div class="form-group">
+                    <label for="category-name">New Category Name</label>
+                    <input type="text" id="category-name" placeholder="e.g., Attar, Oud" required>
+                </div>
+                <button type="submit" class="btn">Add Category</button>
+            </form>
+            <hr style="border-color: #333; margin: 2rem 0;">
+            <h3>Existing Categories</h3>
+            <ul id="category-list" class="data-list">
+                <!-- Categories will be loaded here by JS -->
+            </ul>
+        </section>
+
+        <!-- Section: Manage Products -->
+        <section class="admin-section">
+            <h2>Manage Products</h2>
+            <form id="product-form">
+                <div class="form-group">
+                    <label for="product-name">Product Name</label>
+                    <input type="text" id="product-name" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-sku">SKU (ID)</label>
+                    <input type="text" id="product-sku" placeholder="e.g., OA-12" required>
+                </div>
+                <div class="form-group">
+                    <label for="product-category">Category</label>
+                    <select id="product-category" required>
+                        <option value="">Select a category...</option>
+                        <!-- Categories will be loaded here by JS -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="product-description">Description</label>
+                    <textarea id="product-description"></textarea>
+                </div>
+                <!-- Simple Price/Size for this MVP -->
+                <div class="form-group">
+                    <label for="product-size">Size (e.g., 12ml)</label>
+                    <input type="text" id="product-size" placeholder="e.g., 12ml, 1 Tola">
+                </div>
+                 <div class="form-group">
+                    <label for="product-price">Price (AED)</label>
+                    <input type="number" id="product-price" step="0.01">
+                </div>
+                <!-- End Simple Price/Size -->
+                <div class="form-group">
+                    <label for="product-image">Product Image</label>
+                    <input type="file" id="product-image" accept="image/png, image/jpeg, image/webp">
+                    <small style="color: var(--text-muted);">Upload one main image. Will be stored in Firebase Storage.</small>
+                    <div id="upload-progress" style="display:none; margin-top: 1rem; width: 100%; background: #333; border-radius: 5px;">
+                        <div id="upload-progress-bar" style="width: 0%; background: var(--success-green); color: #000; text-align: center; padding: 0.2rem; border-radius: 5px;">0%</div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="product-featured">
+                        Show on Homepage (Featured)
+                    </label>
+                </div>
+                <button type="submit" class="btn" id="add-product-btn">Add Product</button>
+            </form>
+            
+            <hr style="border-color: #333; margin: 2rem 0;">
+            <h3>Existing Products</h3>
+            <ul id="product-list" class="data-list">
+                <!-- Products will be loaded here by JS -->
+            </ul>
+        </section>
+        
+        <!-- Other sections like Logo Upload can be added here -->
+
+    </div>
+
+    <!-- Firebase SDK (Using modern v11 modular scripts) -->
+    <!-- We MUST use type="module" for this syntax -->
+    <script type="module">
+        // Import functions from the SDKs
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword, 
+            onAuthStateChanged, 
+            signOut 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { 
+            getFirestore, 
+            collection, 
+            addDoc, 
+            onSnapshot, 
+            doc, 
+            deleteDoc,
+            serverTimestamp,
+            query,
+            setLogLevel
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { 
+            getStorage, 
+            ref, 
+            uploadBytesResumable, 
+            getDownloadURL 
+        } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+
+        // Your web app's Firebase configuration (FROM YOUR INPUT)
+        const firebaseConfig = {
+            apiKey: "AIzaSyCePcVE_BTiFuYXAApNmbMKHdkhQ9Ay_F4",
+            authDomain: "al-ambar-perfume-company.firebaseapp.com",
+            projectId: "al-ambar-perfume-company",
+            storageBucket: "al-ambar-perfume-company.firebasestorage.app",
+            messagingSenderId: "992506041633",
+            appId: "1:992506041633:web:f7277461a577248bb8da60",
+            measurementId: "G-39XB0WLW6P"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const storage = getStorage(app);
+        
+        // Set log level for debugging
+        setLogLevel('Debug');
+
+        // --- DOM Elements ---
+        const loginContainer = document.getElementById("login-container");
+        const adminPanel = document.getElementById("admin-panel");
+        const loginForm = document.getElementById("login-form");
+        const loginStatus = document.getElementById("login-status");
+        const adminStatus = document.getElementById("admin-status");
+        const logoutButton = document.getElementById("logout-button");
+        const adminEmail = document.getElementById("admin-email");
+        
+        const categoryForm = document.getElementById("category-form");
+        const categoryNameInput = document.getElementById("category-name");
+        const categoryList = document.getElementById("category-list");
+        
+        const productForm = document.getElementById("product-form");
+        const productNameInput = document.getElementById("product-name");
+        const productSkuInput = document.getElementById("product-sku");
+        const productCategorySelect = document.getElementById("product-category");
+        const productDescriptionInput = document.getElementById("product-description");
+        const productSizeInput = document.getElementById("product-size");
+        const productPriceInput = document.getElementById("product-price");
+        const productImageInput = document.getElementById("product-image");
+        const productFeaturedInput = document.getElementById("product-featured");
+        const productList = document.getElementById("product-list");
+        const addProductBtn = document.getElementById("add-product-btn");
+        
+        const uploadProgress = document.getElementById("upload-progress");
+        const uploadProgressBar = document.getElementById("upload-progress-bar");
+
+        let currentFile = null; // To hold the file for upload
+
+        // --- Utility Functions ---
+        function showStatus(element, message, isError = false) {
+            element.textContent = message;
+            element.className = 'status-message'; // Reset classes
+            if (isError) {
+                element.classList.add('error');
+            } else {
+                element.classList.add('success');
+            }
+            element.style.display = 'block';
+            setTimeout(() => { element.style.display = 'none'; }, 4000);
+        }
+
+        // --- Authentication ---
+        
+        // Listen for auth state changes
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                // User is signed in
+                console.log("User logged in:", user.email);
+                loginContainer.style.display = "none";
+                adminPanel.style.display = "block";
+                adminEmail.textContent = user.email;
+                
+                // Load data only when authenticated
+                loadCategories();
+                loadProducts();
+                
+            } else {
+                // User is signed out
+                console.log("User logged out.");
+                loginContainer.style.display = "flex";
+                adminPanel.style.display = "none";
+                adminEmail.textContent = "";
+            }
+        });
+
+        // Handle Login
+        loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("login-email").value;
+            const password = document.getElementById("login-password").value;
+            
+            try {
+                await signInWithEmailAndPassword(auth, email, password);
+                // Auth state listener will handle the UI change
+            } catch (error) {
+                console.error("Login Error:", error.message);
+                showStatus(loginStatus, `Login Failed: ${error.message}`, true);
+            }
+        });
+
+        // Handle Logout
+        logoutButton.addEventListener("click", async () => {
+            try {
+                await signOut(auth);
+                // Auth state listener will handle the UI change
+            } catch (error) {
+                console.error("Logout Error:", error.message);
+                showStatus(adminStatus, `Logout Failed: ${error.message}`, true);
+            }
+        });
+        
+        // --- Categories CRUD ---
+        
+        // Add Category
+        categoryForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const categoryName = categoryNameInput.value.trim();
+            if (!categoryName) return;
+            
+            try {
+                const docRef = await addDoc(collection(db, "categories"), {
+                    name: categoryName,
+                    slug: categoryName.toLowerCase().replace(/\s+/g, '-'), // e.g., "Attar Perfume" -> "attar-perfume"
+                    createdAt: serverTimestamp()
+                });
+                console.log("Category added with ID: ", docRef.id);
+                showStatus(adminStatus, "Category added successfully!", false);
+                categoryNameInput.value = "";
+            } catch (error) {
+                console.error("Error adding category: ", error);
+                showStatus(adminStatus, `Error: ${error.message}`, true);
+            }
+        });
+        
+        // Load Categories
+        function loadCategories() {
+            const categoriesCollection = collection(db, "categories");
+            const q = query(categoriesCollection); // Can add orderBy later if needed
+            
+            onSnapshot(q, (snapshot) => {
+                console.log("Loading categories...");
+                categoryList.innerHTML = ""; // Clear list
+                productCategorySelect.innerHTML = '<option value="">Select a category...</option>'; // Clear dropdown
+                
+                snapshot.forEach((docSnap) => {
+                    const category = docSnap.data();
+                    const categoryId = docSnap.id;
+                    
+                    // Add to list
+                    const li = document.createElement("li");
+                    li.className = "data-list-item";
+                    li.innerHTML = `<span>${category.name}</span>`;
+                    
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.className = "btn btn-delete";
+                    deleteBtn.textContent = "Delete";
+                    deleteBtn.onclick = () => deleteData("categories", categoryId, category.name);
+                    
+                    li.appendChild(deleteBtn);
+                    categoryList.appendChild(li);
+                    
+                    // Add to product form dropdown
+                    const option = document.createElement("option");
+                    option.value = categoryId;
+                    option.textContent = category.name;
+                    productCategorySelect.appendChild(option);
+                });
+            }, (error) => {
+                console.error("Error loading categories: ", error);
+                showStatus(adminStatus, `Error loading categories: ${error.message}`, true);
+            });
+        }
+        
+        // --- Products CRUD ---
+        
+        // Handle file selection
+        productImageInput.addEventListener("change", (e) => {
+            currentFile = e.target.files[0];
+            if(currentFile) {
+                console.log("File selected:", currentFile.name);
+            }
+        });
+        
+        // Add Product (with Image Upload)
+        productForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            addProductBtn.disabled = true;
+            addProductBtn.textContent = "Uploading...";
+            
+            if (!currentFile) {
+                showStatus(adminStatus, "Please select an image to upload.", true);
+                addProductBtn.disabled = false;
+                addProductBtn.textContent = "Add Product";
+                return;
+            }
+
+            try {
+                // 1. Upload Image to Firebase Storage
+                const storagePath = `products/${currentFile.name}_${Date.now()}`;
+                const storageRef = ref(storage, storagePath);
+                const uploadTask = uploadBytesResumable(storageRef, currentFile);
+                
+                // Listen for state changes, errors, and completion of the upload.
+                uploadTask.on('state_changed',
+                    (snapshot) => {
+                        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+                        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+                        console.log('Upload is ' + progress + '% done');
+                        uploadProgress.style.display = 'block';
+                        uploadProgressBar.style.width = progress + '%';
+                        uploadProgressBar.textContent = Math.round(progress) + '%';
+                    }, 
+                    (error) => {
+                        console.error("Upload Error:", error);
+                        showStatus(adminStatus, `Image upload failed: ${error.message}`, true);
+                        addProductBtn.disabled = false;
+                        addProductBtn.textContent = "Add Product";
+                    }, 
+                    async () => {
+                        // Upload completed successfully, now get the download URL
+                        const downloadURL = await getDownloadURL(uploadTask.snapshot.ref);
+                        console.log('File available at', downloadURL);
+
+                        // 2. Add Product Data to Firestore
+                        const productData = {
+                            name: productNameInput.value,
+                            sku: productSkuInput.value,
+                            categoryId: productCategorySelect.value,
+                            description: productDescriptionInput.value,
+                            // As per plan: [{size: "12ml", price: 250}, ...]
+                            // For this simple form, we store them directly
+                            // For multiple sizes, you'd need a more complex UI
+                            size: productSizeInput.value,
+                            price: parseFloat(productPriceInput.value),
+                            images: [downloadURL], // Store as an array
+                            featured: productFeaturedInput.checked,
+                            createdAt: serverTimestamp()
+                        };
+
+                        await addDoc(collection(db, "products"), productData);
+                        
+                        showStatus(adminStatus, "Product added successfully!", false);
+                        productForm.reset();
+                        currentFile = null;
+                        uploadProgress.style.display = 'none';
+                        uploadProgressBar.style.width = '0%';
+                        addProductBtn.disabled = false;
+                        addProductBtn.textContent = "Add Product";
+                    }
+                );
+
+            } catch (error) {
+                console.error("Error adding product: ", error);
+                showStatus(adminStatus, `Error: ${error.message}`, true);
+                addProductBtn.disabled = false;
+                addProductBtn.textContent = "Add Product";
+            }
+        });
+        
+        // Load Products
+        function loadProducts() {
+            const productsCollection = collection(db, "products");
+            const q = query(productsCollection); // Can add orderBy later
+            
+            onSnapshot(q, (snapshot) => {
+                console.log("Loading products...");
+                productList.innerHTML = ""; // Clear list
+                
+                snapshot.forEach((docSnap) => {
+                    const product = docSnap.data();
+                    const productId = docSnap.id;
+                    
+                    const li = document.createElement("li");
+                    li.className = "data-list-item";
+                    li.innerHTML = `<span>${product.name} (${product.sku}) - ${product.price} AED</span>`;
+                    
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.className = "btn btn-delete";
+                    deleteBtn.textContent = "Delete";
+                    deleteBtn.onclick = () => deleteData("products", productId, product.name);
+                    
+                    li.appendChild(deleteBtn);
+                    productList.appendChild(li);
+                });
+            }, (error) => {
+                console.error("Error loading products: ", error);
+                showStatus(adminStatus, `Error loading products: ${error.message}`, true);
+            });
+        }
+        
+        // --- Generic Delete Function ---
+        async function deleteData(collectionName, docId, name) {
+            // NOTE: This does NOT delete the image from Storage. That's a more complex operation.
+            // We use a simple confirm here.
+            
+            // !! IMPORTANT: Do not use window.confirm() in a real app, use a modal.
+            // This is a placeholder as window.confirm might be blocked.
+            const userConfirmed = true; // Simulating confirm for this environment
+            
+            if (userConfirmed) {
+                console.warn(`Attempting to delete: ${collectionName}/${docId} (${name})`);
+                try {
+                    await deleteDoc(doc(db, collectionName, docId));
+                    showStatus(adminStatus, `"${name}" deleted successfully.`, false);
+                } catch (error) {
+                    console.error("Error deleting document: ", error);
+                    showStatus(adminStatus, `Error deleting: ${error.message}`, true);
+                }
+            } else {
+                console.log("Delete cancelled.");
+            }
+        }
+
+    </script>
+</body>
+</html>
