@@ -49,6 +49,8 @@
             <nav class="tab-links">
                 <button class="tab-link active" data-tab="tab-products">Manage Products</button>
                 <button class="tab-link" data-tab="tab-categories">Manage Categories</button>
+                <!-- പുതിയതായി ചേർത്ത ഹീറോ ടാബ് -->
+                <button class="tab-link" data-tab="tab-hero">Manage Hero</button>
                 <button class="tab-link" data-tab="tab-settings">Site Settings</button>
             </nav>
 
@@ -155,7 +157,53 @@
                 </div>
             </div>
             
-            <!-- ടാബ് 3: സൈറ്റ് സെറ്റിംഗ്സ് -->
+            <!-- പുതിയതായി ചേർത്ത ടാബ് 3: ഹീറോ സ്ലൈഡർ -->
+            <div id="tab-hero" class="tab-content">
+                <form id="add-hero-slide-form" class="form-section">
+                    <h2>Add New Hero Slide</h2>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="hero-slide-url">Media URL (Video or Image)</label>
+                            <input type="text" id="hero-slide-url" placeholder="Paste .mp4 or .jpg link here" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="hero-slide-type">Media Type</label>
+                            <select id="hero-slide-type" required>
+                                <option value="video">Video</option>
+                                <option value="image">Image</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="hero-slide-order">Display Order</label>
+                            <input type="number" id="hero-slide-order" placeholder="e.g., 1, 2, 3..." value="1" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" id="add-hero-slide-button">Add Slide</button>
+                    <div class="loader" id="hero-slide-loader"></div>
+                </form>
+
+                <div class="data-list-section">
+                    <h2>Existing Hero Slides</h2>
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Preview</th>
+                                    <th>Type</th>
+                                    <th>Order</th>
+                                    <th>URL</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="hero-slides-list-body">
+                                <!-- 'admin.js' ഉപയോഗിച്ച് സ്ലൈഡുകൾ ഇവിടെ വരും -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ടാബ് 4: സൈറ്റ് സെറ്റിംഗ്സ് -->
             <div id="tab-settings" class="tab-content">
                 <form id="site-settings-form" class="form-section">
                     <h2>Site Settings (Home Page & Footer)</h2>
@@ -168,10 +216,10 @@
                             <label for="setting-logo-text">Logo Text (Shown next to logo)</label>
                             <input type="text" id="setting-logo-text" placeholder="e.g., AL AMBAR">
                         </div>
-                        <div class="form-group">
-                            <label for="setting-hero-video-url">Home Page Hero Video URL</label>
-                            <input type="text" id="setting-hero-video-url" placeholder="Paste .mp4 link here">
-                        </div>
+                        <!-- 
+                          ഹീറോ വീഡിയോ URL ഇവിടെ നിന്ന് നീക്കം ചെയ്തു,
+                          പകരം 'Manage Hero' ടാബ് ഉപയോഗിക്കുന്നു
+                        -->
                         <div class="form-group">
                             <label for="setting-video-url">Home Page Experience Video URL</label>
                             <input type="text" id="setting-video-url" placeholder="Paste YouTube or .mp4 link here">
