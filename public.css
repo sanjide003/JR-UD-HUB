@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** ഇൻഫിനിറ്റ് സ്ക്രോൾ ലോഡർ സ്റ്റൈലുകൾ ചേർത്തു ***
+   *** കാറ്റഗറി പേജ് ലേഔട്ട്, പുതിയ കാർഡ് സ്റ്റൈൽ എന്നിവ ചേർത്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -610,7 +610,7 @@ img {
 }
 
 
-/* --- 7. ഉൽപ്പന്ന കാർഡ് (Product Card) & ഗ്രിഡ് --- */
+/* --- 7. ഉൽപ്പന്ന കാർഡ് (പഴയത്) --- */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -715,7 +715,6 @@ img {
     width: 16px;
     height: 16px;
 }
-
 .btn-primary {
     background-color: var(--primary-gold);
     border: 2px solid var(--primary-gold);
@@ -810,7 +809,127 @@ img {
 }
 
 /* --- 10. കാറ്റഗറി / കോൺടാക്റ്റ് പേജ് (Other Pages) --- */
-.page-container { margin-top: 3rem; }
+.page-container { margin-top: 1rem; } /* കുറച്ചു മുകളിലേക്ക് ആക്കി */
+
+/* *** കാറ്റഗറി പേജിന്റെ പുതിയ ലേഔട്ട് *** */
+.category-page-layout {
+    display: grid;
+    grid-template-columns: 240px 1fr; /* സൈഡ്ബാർ + ഉൽപ്പന്നങ്ങൾ */
+    gap: 2rem;
+}
+.category-sidebar {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    align-self: start; /* മുകളിൽ ഒട്ടിനിൽക്കാൻ */
+    position: sticky;
+    top: calc(var(--header-height) + 24px); /* ഹെഡറിന് താഴെ */
+}
+.category-sidebar-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+.category-sidebar-link {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0.9rem 1rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+.category-sidebar-icon {
+    width: 24px;
+    height: 24px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.category-sidebar-link:hover {
+    color: var(--text-color);
+    background-color: rgba(255, 255, 255, 0.05);
+}
+.category-sidebar-link.active {
+    color: var(--primary-gold);
+    background-color: rgba(212, 175, 55, 0.1);
+    font-weight: 700;
+}
+.category-page-title {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    color: var(--primary-gold);
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+}
+/* *** പുതിയ പ്രൊഡക്റ്റ് ഗ്രിഡ് സ്റ്റൈൽ (നിങ്ങൾ ആവശ്യപ്പെട്ട 2/3 കോളം) *** */
+.product-grid-new {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* മൊബൈലിൽ 2 കോളം */
+    gap: 1.5rem;
+}
+/* മീഡിയം സ്ക്രീനിൽ (ടാബ്ലെറ്റ്) */
+@media (min-width: 768px) {
+    .product-grid-new {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+/* വലിയ സ്ക്രീനിൽ (ഡെസ്ക്ടോപ്പ്) */
+@media (min-width: 1024px) {
+    .product-grid-new {
+        grid-template-columns: repeat(3, 1fr); /* 3 കോളം */
+    }
+}
+
+/* *** പുതിയ പ്രൊഡക്റ്റ് കാർഡ് സ്റ്റൈൽ *** */
+.product-card-simple {
+    text-align: center;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.3s ease;
+}
+.product-card-simple:hover {
+    border-color: var(--secondary-gold);
+    transform: translateY(-5px);
+}
+.product-card-simple-image-link {
+    display: block;
+    margin-bottom: 1rem;
+}
+.product-card-simple-image {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 6px;
+}
+.product-card-simple-title {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    font-weight: 500;
+    margin-bottom: 1rem;
+    /* പേര് 2 ലൈനിൽ ഒതുക്കാൻ */
+    height: 2.6em; 
+    line-height: 1.3em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;
+}
+.product-card-simple-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+}
+/* ------------------------------------- */
+
+
 .page-header-bar {
     text-align: center;
     margin-bottom: 3rem;
@@ -1098,14 +1217,14 @@ img {
 }
 
 
-/* --- *** പുതിയത്: ഇൻഫിനിറ്റ് സ്ക്രോൾ ലോഡർ *** --- */
+/* --- ഇൻഫിനിറ്റ് സ്ക്രോൾ ലോഡർ --- */
 .loader-container {
-    display: none; /* സാധാരണ ഇത് കാണില്ല */
+    display: none;
     padding: 2rem;
     text-align: center;
 }
 .loader-container.active {
-    display: block; /* JS വഴി active ആക്കുമ്പോൾ കാണിക്കും */
+    display: block; 
 }
 .loader-spinner {
     border: 4px solid var(--border-color);
@@ -1126,13 +1245,12 @@ img {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
 }
-/* ------------------------------------- */
 
 
 /* --- 12. മൊബൈൽ റെസ്പോൺസീവ് (Responsive) --- */
 @media (max-width: 768px) {
     .container {
-        padding: 2rem 1rem;
+        padding: 1.5rem 1rem; /* മൊബൈലിൽ പാഡിംഗ് കുറച്ചു */
     }
     .main-header {
         padding: 0 1rem;
@@ -1178,7 +1296,60 @@ img {
     .featured-section .featured-content {
         order: 0; 
     }
-    
+
+    /* *** കാറ്റഗറി പേജ് മൊബൈൽ സ്റ്റൈൽ *** */
+    .category-page-layout {
+        grid-template-columns: 1fr; /* ലേഔട്ട് ഒന്നിന് താഴെ ഒന്നാക്കി */
+        gap: 1rem;
+    }
+    .category-sidebar {
+        position: relative;
+        top: 0;
+        display: flex; /* സൈഡ്ബാർ തിരശ്ചീനമാക്കി */
+        overflow-x: auto; /* സ്ക്രോൾ ബാർ */
+        white-space: nowrap;
+        background: transparent;
+        border: none;
+        padding: 0.5rem 0;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid var(--border-color);
+        /* സ്ക്രോൾബാർ ഭംഗിയാക്കാൻ (Optional) */
+        -ms-overflow-style: none;  /* IE and Edge */
+        scrollbar-width: none;  /* Firefox */
+    }
+    .category-sidebar::-webkit-scrollbar {
+        display: none; /* Chrome, Safari */
+    }
+    .category-sidebar-list {
+        display: flex;
+        gap: 0.5rem;
+    }
+    .category-sidebar-link {
+        flex-shrink: 0; /* ഐറ്റംസ് ചുരുങ്ങാതിരിക്കാൻ */
+        background-color: var(--card-bg);
+        border: 1px solid var(--border-color);
+        padding: 0.5rem 1rem;
+    }
+    .category-sidebar-link.active {
+        border-color: var(--primary-gold);
+    }
+    .category-page-title {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    .product-grid-new {
+        gap: 1rem; /* മൊബൈലിൽ ഗ്യാപ് കുറച്ചു */
+    }
+    .product-card-simple-title {
+        font-size: 0.9rem;
+        height: 2.4em;
+    }
+    .product-card-simple-buttons .btn {
+        font-size: 0.8rem;
+        padding: 0.6rem;
+    }
+    /* ---------------------------------- */
+
     .floating-action-buttons {
         bottom: 15px;
         left: 15px;
