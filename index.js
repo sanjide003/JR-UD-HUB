@@ -1,6 +1,6 @@
 // ഇതാണ് 'index.js' ഫയൽ.
 // ഹോം പേജിന് (index.html) മാത്രം വേണ്ടിയുള്ള കാര്യങ്ങൾ ഈ ഫയൽ ചെയ്യുന്നു.
-// **** "Add to Cart" ബട്ടണിൽ ഐക്കൺ ചേർത്തു ****
+// *** "Shop by Category" ഡിസൈൻ മാറ്റി ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -27,8 +27,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. ഈ പേജിന് മാത്രമുള്ള കാര്യങ്ങൾ
     loadHeroSlider();
     loadTopSellers();
-    loadHomeCategories();
-    setupBoutiqueVideo(); // <-- ഫംഗ്ഷൻ മാറ്റി
+    loadHomeCategories(); // <-- ഈ ഫംഗ്ഷൻ അപ്ഡേറ്റ് ചെയ്തു
+    setupBoutiqueVideo(); 
 });
 
 /**
@@ -75,7 +75,7 @@ async function loadHeroSlider() {
                 delay: 4000, // 4 സെക്കൻഡ്
                 disableOnInteraction: false
             },
-            allowTouchMove: true, // മൊബൈലിൽ സ്വൈപ്പ് ചെയ്യാൻ
+            allowTouchMove: true, 
             speed: 1000,
         });
 
@@ -114,12 +114,10 @@ async function loadTopSellers() {
             const card = document.createElement('div');
             card.className = 'swiper-slide';
 
-            // വില (MRP ഇല്ലെങ്കിൽ കാണിക്കില്ല)
             let priceHTML = `₹${product.price || 0} /-`;
             
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
-            // **** പുതിയ HTML ഘടന (ഐക്കൺ ചേർത്തു) ****
             card.innerHTML = `
                 <a href="product.html?id=${productId}">
                     <img src="${imageUrl}" 
@@ -137,7 +135,6 @@ async function loadTopSellers() {
                             data-price="${product.price}"
                             data-mrp="${product.mrp}"
                             data-image="${imageUrl}">
-                            <svg class="icon-cart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                             ADD TO CART
                         </button>
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">VIEW PRODUCT</a>
@@ -151,7 +148,7 @@ async function loadTopSellers() {
         new Swiper('.top-sellers-swiper-new', {
             slidesPerView: 1,
             spaceBetween: 20,
-            pagination: { // ഡോട്ടുകൾ ചേർക്കുന്നു
+            pagination: { 
                 el: '.swiper-pagination',
                 clickable: true,
             },
@@ -169,18 +166,18 @@ async function loadTopSellers() {
 }
 
 /**
- * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു (പുതിയ ഡിസൈൻ)
+ * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു (***പുതിയ ചെറിയ ഡിസൈൻ***)
  */
 async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
 
     try {
-        // കാറ്റഗറികൾ നേരിട്ട് എടുക്കുന്നു
+        // കാറ്റഗറികൾ 6 എണ്ണം ലോഡ് ചെയ്യുന്നു
         const catQuery = query(
             collection(db, "categories"),
             orderBy("name"),
-            limit(3)
+            limit(6) // 3-ന് പകരം 6 എണ്ണം
         );
         const catSnapshot = await getDocs(catQuery);
 
@@ -195,15 +192,18 @@ async function loadHomeCategories() {
             const category = doc.data();
             const catId = doc.id;
             const card = document.createElement('a');
-            card.className = 'category-card-new';
+            // *** പുതിയ CSS ക്ലാസ്സ് ***
+            card.className = 'category-card-new'; 
             card.href = `categories.html?filter=${catId}`;
             
-            const imageUrl = category.imageUrl || 'https://placehold.co/400x400/1e1e1e/D4AF37?text=Category';
+            // ഐക്കണുകൾക്ക് 'contain' ആണ് നല്ലത്
+            const imageUrl = category.imageUrl || 'https://placehold.co/100x80/1e1e1e/D4AF37?text=Icon';
             
+            // *** പുതിയ HTML ഘടന ***
             card.innerHTML = `
                 <img src="${imageUrl}" 
                      alt="${category.name}"
-                     onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
+                     onerror="this.src='https://placehold.co/100x80/1e1e1e/D4AF37?text=Error'">
                 <div class="category-card-new-content">
                     <h3>${category.name}</h3>
                 </div>
@@ -244,11 +244,11 @@ async function setupBoutiqueVideo() {
     // 2. പ്ലേ ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
     playButton.addEventListener('click', () => {
         if (!videoUrlFromSettings) {
-            alert("Video is not available at the moment.");
+            // alert()-ന് പകരം കൺസോളിൽ ലോഗ് ചെയ്യുന്നു
+            console.warn("Video is not available at the moment.");
             return;
         }
         
-        // URL പരിശോധിച്ച് പ്ലെയർ ഉണ്ടാക്കുന്നു
         if (videoUrlFromSettings.includes("youtube.com") || videoUrlFromSettings.includes("youtu.be")) {
             const videoId = getYouTubeID(videoUrlFromSettings);
             modalContent.innerHTML = `
@@ -300,7 +300,7 @@ if (topSellersGrid) {
         const button = e.target.closest('.btn-add-to-cart');
         if (!button) return;
 
-        e.preventDefault(); // ലിങ്ക് ആണെങ്കിൽ തടയുന്നു
+        e.preventDefault(); 
 
         const id = button.dataset.id;
         const product = {
@@ -310,18 +310,12 @@ if (topSellersGrid) {
             image: button.dataset.image
         };
 
-        // കാർട്ടിലേക്ക് ചേർക്കുന്നു
         addToCart(id, product);
 
-        // ഉപഭോക്താവിനെ അറിയിക്കുന്നു
         button.innerHTML = 'ADDED!';
         button.disabled = true;
         setTimeout(() => {
-            // **** ഐക്കൺ സഹിതം തിരികെ കൊണ്ടുവരുന്നു ****
-            button.innerHTML = `
-                <svg class="icon-cart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
-                ADD TO CART
-            `;
+            button.innerHTML = 'ADD TO CART';
             button.disabled = false;
         }, 2000);
     });
