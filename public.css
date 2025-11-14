@@ -1,5 +1,6 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
    റെസ്പോൺസീവ് സ്റ്റൈലുകൾ തിരികെ ചേർത്തു.
+   *** ന്യൂസ്‌ലെറ്റർ സ്റ്റൈലുകൾ നീക്കം ചെയ്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -289,45 +290,9 @@ img {
     color: var(--text-muted);
     font-size: 0.95rem;
 }
-.footer-newsletter {
-    border-bottom: 1px solid var(--border-color);
-    padding: 1.5rem 0;
-}
-.footer-newsletter p {
-    color: var(--text-color);
-    font-family: var(--font-new-heading);
-    font-size: 1rem;
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 1rem;
-}
-.newsletter-form {
-    display: flex;
-}
-.newsletter-input {
-    flex-grow: 1;
-    background: none;
-    border: none;
-    border-bottom: 1px solid var(--text-muted);
-    color: var(--text-color);
-    padding: 0.5rem 0;
-    font-size: 1rem;
-}
-.newsletter-input::placeholder {
-    color: var(--text-muted);
-}
-.newsletter-button {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    padding: 0.5rem;
-    cursor: pointer;
-}
-.newsletter-button svg {
-    width: 24px;
-    height: 24px;
-}
+
+/* *** ന്യൂസ്‌ലെറ്റർ സ്റ്റൈലുകൾ ഇവിടെ നിന്ന് നീക്കം ചെയ്തു *** */
+
 .footer-social-new {
     display: flex;
     justify-content: center;
@@ -348,6 +313,8 @@ img {
     padding-top: 1.5rem;
     border-top: 1px solid var(--border-color);
 }
+/* ഫൂട്ടർ സ്റ്റൈൽ കഴിഞ്ഞു */
+
 
 /* --- 6. ഹോം പേജ് (Home Page) സ്റ്റൈലുകൾ --- */
 
@@ -1302,7 +1269,7 @@ img {
     /* ഫൂട്ടർ */
     .footer-container-new {
         display: grid;
-        grid-template-columns: repeat(4, 1fr); /* 4 കോളങ്ങൾ */
+        grid-template-columns: repeat(3, 1fr); /* 3 കോളങ്ങൾ */
         gap: 2rem;
     }
     .footer-accordion-item {
@@ -1320,11 +1287,6 @@ img {
     .footer-accordion-content ul {
         padding: 0;
         margin-top: 1rem;
-    }
-    .footer-newsletter {
-        border-bottom: none;
-        padding: 0;
-        grid-column: 4 / 5; /* നാലാമത്തെ കോളത്തിൽ */
     }
     .footer-social-new {
         grid-column: 1 / 2;
