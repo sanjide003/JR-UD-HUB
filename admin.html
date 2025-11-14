@@ -1,11 +1,13 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. 
-  *** സബ്ടൈറ്റിൽ ഫീൽഡ് ചേർത്തു ***
+  ഇതിൻ്റെ ഡിസൈൻ വരുന്നത് 'admin.css'-ൽ നിന്നും,
+  പ്രവർത്തനങ്ങൾ വരുന്നത് 'admin.js'-ൽ നിന്നുമാണ്.
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- *** മൊബൈൽ റെസ്പോൺസീവ് ഡിസൈനിനായി ഈ വരി തിരികെ ചേർത്തു *** -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Al Ambar Perfumes</title>
     <!-- അഡ്മിൻ പാനലിൻ്റെ ഡിസൈൻ ഫയൽ -->
@@ -48,6 +50,7 @@
             <nav class="tab-links">
                 <button class="tab-link active" data-tab="tab-products">Manage Products</button>
                 <button class="tab-link" data-tab="tab-categories">Manage Categories</button>
+                <!-- പുതിയതായി ചേർത്ത ഹീറോ ടാബ് -->
                 <button class="tab-link" data-tab="tab-hero">Manage Hero</button>
                 <button class="tab-link" data-tab="tab-settings">Site Settings</button>
             </nav>
@@ -155,7 +158,7 @@
                 </div>
             </div>
             
-            <!-- ടാബ് 3: ഹീറോ സ്ലൈഡർ -->
+            <!-- പുതിയതായി ചേർത്ത ടാബ് 3: ഹീറോ സ്ലൈഡർ -->
             <div id="tab-hero" class="tab-content">
                 <form id="add-hero-slide-form" class="form-section">
                     <h2>Add New Hero Slide</h2>
@@ -211,14 +214,17 @@
                             <input type="text" id="setting-logo-image-url" placeholder="Paste logo image link here">
                         </div>
                         <div class="form-group">
-                            <label for="setting-logo-text">Logo Text (e.g., AL AMBAR)</label>
-                            <input type="text" id="setting-logo-text" placeholder="AL AMBAR PERFUME COMPANY">
+                            <label for="setting-logo-text">Logo Text (Shown next to logo)</label>
+                            <input type="text" id="setting-logo-text" placeholder="e.g., AL AMBAR">
                         </div>
-                        <!-- *** പുതിയ ഫീൽഡ്: സബ്ടൈറ്റിൽ *** -->
-                        <div class="form-group">
-                            <label for="setting-logo-subtitle">Logo Subtitle (e.g., JR UD HUB)</label>
-                            <input type="text" id="setting-logo-subtitle" placeholder="JR UD HUB">
+                         <div class="form-group">
+                            <label for="setting-logo-subtitle">Logo Subtitle (Shown below logo)</label>
+                            <input type="text" id="setting-logo-subtitle" placeholder="e.g., JR UD HUB">
                         </div>
+                        <!-- 
+                          ഹീറോ വീഡിയോ URL ഇവിടെ നിന്ന് നീക്കം ചെയ്തു,
+                          പകരം 'Manage Hero' ടാബ് ഉപയോഗിക്കുന്നു
+                        -->
                         <div class="form-group">
                             <label for="setting-video-url">Home Page Experience Video URL</label>
                             <input type="text" id="setting-video-url" placeholder="Paste YouTube or .mp4 link here">
