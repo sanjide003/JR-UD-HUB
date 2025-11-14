@@ -1,7 +1,6 @@
 <!-- 
   ഇതാണ് കാറ്റഗറി പേജ്. 
-  'index.html' പോലെ, ഇതും 'public.css'-ഉം 'common.js'-ഉം ഉപയോഗിക്കുന്നു.
-  ഈ പേജിന് മാത്രമായി 'categories.js' എന്ന ഫയലുമുണ്ട്.
+  *** "ഇൻഫിനിറ്റ് സ്ക്രോൾ" ലോഡർ ചേർത്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -25,13 +24,23 @@
     <main class="container page-container">
         <!-- പേജിന്റെ തലക്കെട്ട് (categories.js വഴി മാറും) -->
         <div class="page-header-bar">
-            <h1 id="page-title">All Products</h1>
+            <h1 id="page-title">Loading...</h1>
         </div>
 
         <!-- ഉൽപ്പന്നങ്ങൾ കാണിക്കുന്ന ഗ്രിഡ് -->
         <div class="product-grid" id="product-grid">
             <div class="loading-placeholder-full">Loading products...</div>
             <!-- 'categories.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
+        </div>
+
+        <!-- *** പുതിയതായി ചേർത്തത്: ഇൻഫിനിറ്റ് സ്ക്രോൾ ലോഡർ *** -->
+        <div id="infinite-scroll-loader" class="loader-container">
+            <div class="loader-spinner"></div>
+        </div>
+        
+        <!-- *** പുതിയതായി ചേർത്തത്: ഉൽപ്പന്നങ്ങൾ തീരുമ്പോൾ കാണിക്കാൻ *** -->
+        <div id="no-more-products" class="end-of-list-message" style="display: none;">
+            You've reached the end of the list.
         </div>
     </main>
 
