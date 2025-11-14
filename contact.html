@@ -1,89 +1,76 @@
 <!-- 
-  ഇതാണ് കോൺടാക്റ്റ് പേജ്.
-  'public.css', 'common.js' എന്നിവയോടൊപ്പം 'contact.js' എന്ന ഫയലും ഉപയോഗിക്കുന്നു.
+  ഇതാണ് കാറ്റഗറി പേജ്. 
+  *** പുതിയ ലേഔട്ട് (സൈഡ്ബാർ) അനുസരിച്ച് അപ്ഡേറ്റ് ചെയ്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- *** മൊബൈൽ റെസ്പോൺസീവ് ഡിസൈനിനായി ഈ വരി തിരികെ ചേർത്തു *** -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - Al Ambar Perfumes</title>
+    <title>Products - Al Ambar Perfumes</title>
     <!-- പൊതുവായ ഡിസൈൻ ഫയൽ -->
     <link rel="stylesheet" href="public.css">
 </head>
 <body>
 
-    <!-- 1. പുതിയ ഹെഡർ (common.js വഴി ലോഡ് ആവും) -->
+    <!-- 1. ഹെഡർ (common.js വഴി ലോഡ് ആവും) -->
     <header class="main-header" id="main-header"></header>
     
     <!-- 2. വശത്തുള്ള മെനു (common.js വഴി ലോഡ് ആവും) -->
     <nav class="side-nav" id="side-nav"></nav>
     <div class="nav-overlay" id="nav-overlay"></div>
 
-    <!-- 3. പ്രധാന ഉള്ളടക്കം -->
+    <!-- 3. പ്രധാന ഉള്ളടക്കം (പുതിയ ലേഔട്ട്) -->
     <main class="container page-container">
-        
         <!-- പേജിന്റെ തലക്കെട്ട് -->
         <div class="page-header-bar">
-            <h1>Contact Us</h1>
+            <h1 id="page-title">All Products</h1>
         </div>
 
-        <div class="contact-page-grid">
+        <!-- പുതിയ കാറ്റഗറി പേജ് ലേഔട്ട് -->
+        <div class="category-page-layout">
             
-            <!-- ഇടത് വശം: കോൺടാക്റ്റ് വിവരങ്ങൾ -->
-            <div class="contact-page-info">
-                <h2>Get In Touch</h2>
-                <p class="contact-page-subtitle">We'd love to hear from you. Here's how you can reach us.</p>
-                
-                <div class="contact-item-main">
-                    <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M164.9 24.6c-7.7-18.6-28-28.5-47.4-23.2l-88 24C12.1 30.2 0 46 0 64C0 311.4 200.6 512 448 512c18 0 33.8-12.1 38.6-29.5l24-88c5.3-19.4-4.6-39.7-23.2-47.4l-96-40c-16.3-6.8-35.2-2.1-46.3 11.6L304.7 368C234.3 334.7 177.3 277.7 144 207.3L193.3 167c13.7-11.2 18.4-30 11.6-46.3l-40-96z"/></svg>
-                    <div>
-                        <strong>Phone</strong>
-                        <a href="tel:" id="contact-phone-main">Loading...</a>
-                    </div>
-                </div>
-                
-                <div class="contact-item-main">
-                    <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path fill="currentColor" d="M48 64C21.5 64 0 85.5 0 112c0 15.1 7.1 29.3 19.2 38.4L236.8 313.6c11.4 8.5 27 8.5 38.4 0L492.8 150.4c12.1-9.1 19.2-23.3 19.2-38.4c0-26.5-21.5-48-48-48H48zM0 176V384c0 35.3 28.7 64 64 64H448c35.3 0 64-28.7 64-64V176L294.4 339.2c-22.8 17.1-54 17.1-76.8 0L0 176z"/></svg>
-                    <div>
-                        <strong>Email</strong>
-                        <a href="mailto:" id="contact-email-main">Loading...</a>
-                    </div>
-                </div>
+            <!-- 3.1 മൊബൈലിന് മുകളിലുള്ള ബാർ -->
+            <aside class="category-sidebar-mobile" id="category-sidebar-mobile">
+                <nav class="category-sidebar-nav" id="category-nav-mobile">
+                    <!-- 'categories.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ ഇവിടെ വരും -->
+                    <span class="loading-placeholder">Loading categories...</span>
+                </nav>
+            </aside>
+            
+            <!-- 3.2 ഡെസ്ക്ടോപ്പിന് ഇടതുവശത്തുള്ള സൈഡ്ബാർ -->
+            <aside class="category-sidebar-desktop" id="category-sidebar-desktop">
+                <nav class="category-sidebar-nav" id="category-nav-desktop">
+                    <!-- 'categories.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ ഇവിടെ വരും -->
+                    <span class="loading-placeholder">Loading categories...</span>
+                </nav>
+            </aside>
 
-                <div class="contact-item-main">
-                    <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 384 512"><path fill="currentColor" d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 128a64 64 0 1 1 0 128 64 64 0 1 1 0-128z"/></svg>
-                    <div>
-                        <strong>Address</strong>
-                        <span id="contact-address-main">Loading...</span>
-                    </div>
+            <!-- 3.3 ഉൽപ്പന്നങ്ങൾ കാണിക്കുന്ന ഗ്രിഡ് -->
+            <div class="category-product-grid-wrapper">
+                <div class="category-product-grid" id="category-product-grid">
+                    <!-- 'categories.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
+                    <div class="loading-placeholder-full">Loading products...</div>
                 </div>
-            </div>
-            
-            <!-- വലത് വശം: ഗൂഗിൾ മാപ്പ് -->
-            <div class="contact-page-map">
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d125732.32357717467!2d76.22359405626027!3d10.00392330756786!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b080c125136856b%3A0xc5c453cda46f34f0!2sKochi%2C%20Kerala!5e0!3m2!1sen!2sin!4v1699862145318!5m2!1sen!2sin" 
-                    width="100%" 
-                    height="100%" 
-                    style="border:0;" 
-                    allowfullscreen="" 
-                    loading="lazy" 
-                    referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
+                <!-- ഇൻഫിനിറ്റ് സ്ക്രോൾ ലോഡർ -->
+                <div id="infinite-scroll-loader" style="display: none;">
+                    <div class="loader-small"></div>
+                </div>
             </div>
 
         </div>
     </main>
 
-    <!-- 4. പുതിയ ഫൂട്ടർ (common.js വഴി ലോഡ് ആവും) -->
+    <!-- 4. ഫൂട്ടർ (common.js വഴി ലോഡ് ആവും) -->
     <footer class="main-footer-new" id="main-footer"></footer>
+
+    <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ (common.js വഴി ഇവിടെ വരും) -->
+    <div id="floating-action-buttons"></div>
 
     <!-- JS ഫയലുകൾ -->
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="cart.js"></script>
     <script type="module" src="common.js"></script>
-    <script type="module" src="contact.js"></script>
+    <script type="module" src="categories.js"></script>
 </body>
 </html>
