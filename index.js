@@ -1,8 +1,7 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// ഹോം പേജിന് (index.html) മാത്രം വേണ്ടിയുള്ള കാര്യങ്ങൾ ഈ ഫയൽ ചെയ്യുന്നു.
-// *** "Shop by Category" ഡിസൈൻ മാറ്റി ***
+// "Boutique Video" കോഡ് നീക്കം ചെയ്തു.
 
-import { db } from './firebase-config.js';
+import { db, appId } from './firebase-config.js'; // *** appId ഇമ്പോർട്ട് ചെയ്യുന്നു ***
 import { 
     collection, 
     getDocs,
@@ -27,8 +26,8 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. ഈ പേജിന് മാത്രമുള്ള കാര്യങ്ങൾ
     loadHeroSlider();
     loadTopSellers();
-    loadHomeCategories(); // <-- ഈ ഫംഗ്ഷൻ അപ്ഡേറ്റ് ചെയ്തു
-    setupBoutiqueVideo(); 
+    loadHomeCategories();
+    // setupBoutiqueVideo(); // <-- ഈ ഫംഗ്ഷൻ നീക്കം ചെയ്തു
 });
 
 /**
@@ -40,7 +39,8 @@ async function loadHeroSlider() {
     if (!sliderWrapper || !heroSection) return;
 
     try {
-        const q = query(collection(db, "heroSlides"), orderBy("order"));
+        // *** ഡാറ്റാബേസ് പാത്ത് ശരിയാക്കി ***
+        const q = query(collection(db, `artifacts/${appId}/public/data/heroSlides`), orderBy("order"));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
@@ -75,7 +75,7 @@ async function loadHeroSlider() {
                 delay: 4000, // 4 സെക്കൻഡ്
                 disableOnInteraction: false
             },
-            allowTouchMove: true, 
+            allowTouchMove: true, // മൊബൈലിൽ സ്വൈപ്പ് ചെയ്യാൻ
             speed: 1000,
         });
 
@@ -93,8 +93,9 @@ async function loadTopSellers() {
     if (!grid) return;
 
     try {
+        // *** ഡാറ്റാബേസ് പാത്ത് ശരിയാക്കി ***
         const q = query(
-            collection(db, "products"), 
+            collection(db, `artifacts/${appId}/public/data/products`), 
             where("featured", "==", true), 
             limit(10)
         );
@@ -114,10 +115,12 @@ async function loadTopSellers() {
             const card = document.createElement('div');
             card.className = 'swiper-slide';
 
+            // വില (MRP ഇല്ലെങ്കിൽ കാണിക്കില്ല)
             let priceHTML = `₹${product.price || 0} /-`;
             
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
+            // പുതിയ HTML ഘടന
             card.innerHTML = `
                 <a href="product.html?id=${productId}">
                     <img src="${imageUrl}" 
@@ -129,15 +132,19 @@ async function loadTopSellers() {
                     <div class="top-sellers-product-name">${product.name} ${product.size ? `(${product.size})` : ''}</div>
                     <div class="top-sellers-product-price">${priceHTML}</div>
                     <div class="top-sellers-buttons">
-                        <button class="btn btn-secondary-new btn-add-to-cart"
+                        <button class="btn btn-secondary-icon btn-add-to-cart"
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${product.price}"
                             data-mrp="${product.mrp}"
                             data-image="${imageUrl}">
-                            ADD TO CART
+                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
+                            <span>ADD TO CART</span>
                         </button>
-                        <a href="product.html?id=${productId}" class="btn btn-primary-new">VIEW PRODUCT</a>
+                        <a href="product.html?id=${productId}" class="btn btn-primary-icon">
+                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12c-2.48 0-4.5-2.02-4.5-4.5S9.52 7.5 12 7.5s4.5 2.02 4.5 4.5-2.02 4.5-4.5 4.5zm0-7c-1.38 0-2.5 1.12-2.5 2.5S10.62 14.5 12 14.5s2.5-1.12 2.5-2.5S13.38 9.5 12 9.5z"></path></svg>
+                            <span>VIEW</span>
+                        </a>
                     </div>
                 </div>
             `;
@@ -148,14 +155,14 @@ async function loadTopSellers() {
         new Swiper('.top-sellers-swiper-new', {
             slidesPerView: 1,
             spaceBetween: 20,
-            pagination: { 
+            pagination: { // ഡോട്ടുകൾ ചേർക്കുന്നു
                 el: '.swiper-pagination',
                 clickable: true,
             },
             breakpoints: {
                 640: { slidesPerView: 2 },
-                900: { slidesPerView: 3 },
-                1200: { slidesPerView: 4 },
+                900: { slidesPerView: 4 }, // 2 കോളം ആക്കി
+                1200: { slidesPerView: 4 }, // 2 കോളം ആക്കി
             }
         });
 
@@ -166,18 +173,18 @@ async function loadTopSellers() {
 }
 
 /**
- * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു (***പുതിയ ചെറിയ ഡിസൈൻ***)
+ * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു (പുതിയ ഡിസൈൻ)
  */
 async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
 
     try {
-        // കാറ്റഗറികൾ 6 എണ്ണം ലോഡ് ചെയ്യുന്നു
+        // *** ഡാറ്റാബേസ് പാത്ത് ശരിയാക്കി ***
         const catQuery = query(
-            collection(db, "categories"),
+            collection(db, `artifacts/${appId}/public/data/categories`),
             orderBy("name"),
-            limit(6) // 3-ന് പകരം 6 എണ്ണം
+            limit(8) // കൂടുതൽ കാറ്റഗറികൾ കാണിക്കാം
         );
         const catSnapshot = await getDocs(catQuery);
 
@@ -192,21 +199,18 @@ async function loadHomeCategories() {
             const category = doc.data();
             const catId = doc.id;
             const card = document.createElement('a');
-            // *** പുതിയ CSS ക്ലാസ്സ് ***
-            card.className = 'category-card-new'; 
+            card.className = 'category-card-home-new';
             card.href = `categories.html?filter=${catId}`;
             
-            // ഐക്കണുകൾക്ക് 'contain' ആണ് നല്ലത്
-            const imageUrl = category.imageUrl || 'https://placehold.co/100x80/1e1e1e/D4AF37?text=Icon';
+            const imageUrl = category.imageUrl || 'https://placehold.co/100x100/1e1e1e/D4AF37?text=...';
             
-            // *** പുതിയ HTML ഘടന ***
             card.innerHTML = `
-                <img src="${imageUrl}" 
-                     alt="${category.name}"
-                     onerror="this.src='https://placehold.co/100x80/1e1e1e/D4AF37?text=Error'">
-                <div class="category-card-new-content">
-                    <h3>${category.name}</h3>
+                <div class="cat-card-home-img-wrapper">
+                    <img src="${imageUrl}" 
+                         alt="${category.name}"
+                         onerror="this.src='https://placehold.co/100x100/1e1e1e/D4AF37?text=Error'">
                 </div>
+                <h3>${category.name}</h3>
             `;
             grid.appendChild(card);
         });
@@ -217,79 +221,13 @@ async function loadHomeCategories() {
     }
 }
 
-/**
- * 4. ബൊട്ടീക് വീഡിയോ മോഡൽ പ്രവർത്തിപ്പിക്കുന്നു
+/*
+ * 4. ബൊട്ടീക് വീഡിയോ മോഡൽ പ്രവർത്തിപ്പിക്കുന്നു - ഈ ഭാഗം നീക്കം ചെയ്തു
  */
-let videoUrlFromSettings = null;
 
-async function setupBoutiqueVideo() {
-    const playButton = document.getElementById('boutique-play-button');
-    const videoModal = document.getElementById('video-modal');
-    const modalClose = document.getElementById('video-modal-close');
-    const modalContent = document.getElementById('video-modal-content');
-    
-    if (!playButton || !videoModal || !modalClose || !modalContent) return;
-
-    // 1. അഡ്മിനിൽ നിന്ന് വീഡിയോ URL എടുക്കുന്നു
-    try {
-        const docRef = doc(db, "settings", "global");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().videoUrl) {
-            videoUrlFromSettings = docSnap.data().videoUrl;
-        }
-    } catch (error) {
-        console.error("Error fetching videoUrl for modal: ", error);
-    }
-
-    // 2. പ്ലേ ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
-    playButton.addEventListener('click', () => {
-        if (!videoUrlFromSettings) {
-            // alert()-ന് പകരം കൺസോളിൽ ലോഗ് ചെയ്യുന്നു
-            console.warn("Video is not available at the moment.");
-            return;
-        }
-        
-        if (videoUrlFromSettings.includes("youtube.com") || videoUrlFromSettings.includes("youtu.be")) {
-            const videoId = getYouTubeID(videoUrlFromSettings);
-            modalContent.innerHTML = `
-                <iframe 
-                    src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
-                    frameborder="0" 
-                    allow="autoplay; encrypted-media" 
-                    allowfullscreen>
-                </iframe>`;
-        } else {
-            modalContent.innerHTML = `
-                <video controls autoplay loop playsinline>
-                    <source src="${videoUrlFromSettings}" type="video/mp4">
-                    Your browser does not support the video tag.
-                </video>`;
-        }
-        
-        videoModal.classList.add('open');
-    });
-
-    // 3. മോഡൽ ക്ലോസ് ബട്ടൺ
-    modalClose.addEventListener('click', () => {
-        videoModal.classList.remove('open');
-        modalContent.innerHTML = ''; // വീഡിയോ നിർത്തുവാൻ
-    });
-}
-
-/**
- * YouTube URL-ൽ നിന്ന് ID വേർതിരിച്ചെടുക്കുന്നു
+/*
+ * YouTube URL-ൽ നിന്ന് ID വേർതിരിച്ചെടുക്കുന്നു - ഈ ഭാഗം നീക്കം ചെയ്തു
  */
-function getYouTubeID(url) {
-    let ID = '';
-    url = url.replace(/(>|<)/gi, '').split(/(vi\/|v=|\/v\/|youtu\.be\/|\/embed\/)/);
-    if (url[2] !== undefined) {
-        ID = url[2].split(/[^0-9a-z_\-]/i);
-        ID = ID[0];
-    } else {
-        ID = url.toString();
-    }
-    return ID;
-}
 
 /**
  * ഹോം പേജിലെ "Add to Cart" ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
@@ -300,7 +238,7 @@ if (topSellersGrid) {
         const button = e.target.closest('.btn-add-to-cart');
         if (!button) return;
 
-        e.preventDefault(); 
+        e.preventDefault(); // ലിങ്ക് ആണെങ്കിൽ തടയുന്നു
 
         const id = button.dataset.id;
         const product = {
@@ -310,12 +248,17 @@ if (topSellersGrid) {
             image: button.dataset.image
         };
 
+        // കാർട്ടിലേക്ക് ചേർക്കുന്നു
         addToCart(id, product);
 
+        // ഉപഭോക്താവിനെ അറിയിക്കുന്നു
         button.innerHTML = 'ADDED!';
         button.disabled = true;
         setTimeout(() => {
-            button.innerHTML = 'ADD TO CART';
+            button.innerHTML = `
+                <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
+                <span>ADD TO CART</span>
+            `;
             button.disabled = false;
         }, 2000);
     });
