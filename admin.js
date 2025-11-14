@@ -1,5 +1,6 @@
 // ഇതാണ് 'admin.js' ഫയൽ.
-// അഡ്മിൻ പാനലിന്റെ (admin.html) എല്ലാ പ്രവർത്തനങ്ങളും (ലോഗിൻ, ഡാറ്റ ചേർക്കൽ, എഡിറ്റ്, ഡിലീറ്റ്) ഈ ഫയൽ നിയന്ത്രിക്കുന്നു.
+// *** Vercel-ന് വേണ്ടി പാത്തുകൾ പരിശോധിച്ചു ***
+// *** സബ്ടൈറ്റിൽ ലോഡ്/സേവ് ചേർത്തു ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -17,7 +18,7 @@ import {
     setDoc,
     doc,
     deleteDoc,
-    onSnapshot, // തത്സമയം മാറ്റങ്ങൾ അറിയാൻ
+    onSnapshot, 
     query,
     serverTimestamp,
     orderBy,
@@ -50,11 +51,10 @@ const productLoader = document.getElementById("product-loader");
 const productsListBody = document.getElementById("products-list-body");
 const productImagePreview = document.getElementById("product-image-preview");
 
-// --- പുതിയതായി ചേർത്തത്: Hero Slide Elements ---
+// Hero Slide Elements
 const addHeroSlideForm = document.getElementById("add-hero-slide-form");
 const heroSlideLoader = document.getElementById("hero-slide-loader");
 const heroSlidesListBody = document.getElementById("hero-slides-list-body");
-// --- ---
 
 // Settings elements
 const siteSettingsForm = document.getElementById("site-settings-form");
@@ -90,7 +90,6 @@ loginForm.addEventListener("submit", async (e) => {
     const password = document.getElementById("login-password").value;
     try {
         await signInWithEmailAndPassword(auth, email, password);
-        // ലോഗിൻ വിജയിച്ചാൽ, 'onAuthStateChanged' ബാക്കി നോക്കിക്കോളും
     } catch (error) {
         console.error("Login Error:", error);
         showStatus(loginStatus, `Login Failed: ${error.message}`);
@@ -103,19 +102,15 @@ logoutButton.addEventListener("click", () => {
     signOut(auth);
 });
 
-// ലോഗിൻ സ്റ്റാറ്റസ് എപ്പോഴും പരിശോധിക്കുന്നു
 onAuthStateChanged(auth, (user) => {
     if (user) {
-        // ലോഗിൻഡ് ഇൻ
         loginSection.style.display = "none";
         adminPanel.style.display = "block";
-        // ലോഗിൻ ആയാൽ ഉടൻ ഡാറ്റ ലോഡ് ചെയ്യുന്നു
         loadCategories();
         loadProducts();
-        loadHeroSlides(); // <-- പുതിയതായി ചേർത്തു
+        loadHeroSlides(); 
         loadSiteSettings();
     } else {
-        // ലോഗ്ഡ് ഔട്ട്
         loginSection.style.display = "block";
         adminPanel.style.display = "none";
         loginButton.disabled = false;
@@ -163,6 +158,7 @@ setupImagePreview('product-image-urls', 'product-image-preview');
 
 
 // --- 4. Site Settings Logic (സൈറ്റ് സെറ്റിംഗ്സ്) ---
+// *** പാത്ത് 'settings/global' ശരിയാണ് ***
 async function loadSiteSettings() {
     try {
         const docRef = doc(db, "settings", "global");
@@ -171,7 +167,8 @@ async function loadSiteSettings() {
             const settings = docSnap.data();
             document.getElementById("setting-logo-image-url").value = settings.logoImageUrl || '';
             document.getElementById("setting-logo-text").value = settings.logoText || '';
-            // heroVideoUrl നീക്കം ചെയ്തു
+            // *** സബ്ടൈറ്റിൽ ലോഡ് ചെയ്യുന്നു ***
+            document.getElementById("setting-logo-subtitle").value = settings.logoSubtitle || '';
             document.getElementById("setting-video-url").value = settings.videoUrl || '';
             document.getElementById("setting-phone").value = settings.phone || '';
             document.getElementById("setting-email").value = settings.email || '';
@@ -193,7 +190,8 @@ siteSettingsForm.addEventListener("submit", async (e) => {
         const settings = {
             logoImageUrl: document.getElementById("setting-logo-image-url").value,
             logoText: document.getElementById("setting-logo-text").value,
-            // heroVideoUrl നീക്കം ചെയ്തു
+            // *** സബ്ടൈറ്റിൽ സേവ് ചെയ്യുന്നു ***
+            logoSubtitle: document.getElementById("setting-logo-subtitle").value,
             videoUrl: document.getElementById("setting-video-url").value,
             phone: document.getElementById("setting-phone").value,
             email: document.getElementById("setting-email").value,
@@ -203,6 +201,7 @@ siteSettingsForm.addEventListener("submit", async (e) => {
             instagramUrl: document.getElementById("setting-instagram-url").value,
         };
         
+        // *** പാത്ത് 'settings/global' ശരിയാണ് ***
         const docRef = doc(db, "settings", "global");
         await setDoc(docRef, settings, { merge: true });
         
@@ -216,8 +215,7 @@ siteSettingsForm.addEventListener("submit", async (e) => {
 });
 
 // --- 5. Category Logic (കാറ്റഗറി) ---
-        
-// തത്സമയം കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു
+// *** പാത്ത് 'categories' ശരിയാണ് ***
 function loadCategories() {
     const q = query(collection(db, "categories"), orderBy("name"));
     onSnapshot(q, (querySnapshot) => {
@@ -233,7 +231,6 @@ function loadCategories() {
             const category = doc.data();
             const id = doc.id;
             
-            // കാറ്റഗറി ലിസ്റ്റിൽ ചേർക്കുന്നു
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><img src="${category.imageUrl || ''}" alt="${category.name}"></td>
@@ -245,7 +242,6 @@ function loadCategories() {
             `;
             categoriesListBody.appendChild(row);
             
-            // പ്രോഡക്റ്റ് ഫോമിലെ ഡ്രോപ്പ്ഡൗണിൽ ചേർക്കുന്നു
             const option = document.createElement('option');
             option.value = id;
             option.textContent = category.name;
@@ -257,7 +253,6 @@ function loadCategories() {
     });
 }
         
-// പുതിയ കാറ്റഗറി ചേർക്കുന്നു
 addCategoryForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     showLoader(categoryLoader);
@@ -265,6 +260,7 @@ addCategoryForm.addEventListener("submit", async (e) => {
         const name = document.getElementById("category-name").value;
         const imageUrl = document.getElementById("category-image-url").value;
         
+        // *** പാത്ത് 'categories' ശരിയാണ് ***
         await addDoc(collection(db, "categories"), {
             name: name,
             imageUrl: imageUrl,
@@ -283,8 +279,7 @@ addCategoryForm.addEventListener("submit", async (e) => {
 });
 
 // --- 6. Product Logic (ഉൽപ്പന്നം) ---
-        
-// തത്സമയം ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
+// *** പാത്ത് 'products' ശരിയാണ് ***
 function loadProducts() {
      const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
      onSnapshot(q, (querySnapshot) => {
@@ -299,7 +294,6 @@ function loadProducts() {
             const id = doc.id;
             const imageUrl = product.images && product.images[0] ? product.images[0] : '';
             
-            // വിലയും MRP-യും
             let priceDisplay = `₹${product.price || 0}`;
             if (product.mrp && product.mrp > product.price) {
                 priceDisplay += ` <span class="price-mrp-admin">₹${product.mrp}</span>`;
@@ -323,7 +317,6 @@ function loadProducts() {
     });
 }
 
-// പുതിയ ഉൽപ്പന്നം ചേർക്കുന്നു
 addProductForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     showLoader(productLoader);
@@ -343,6 +336,7 @@ addProductForm.addEventListener("submit", async (e) => {
             createdAt: serverTimestamp()
         };
 
+        // *** പാത്ത് 'products' ശരിയാണ് ***
         await addDoc(collection(db, "products"), product);
         showStatus(adminStatus, "Product added successfully!", false);
         addProductForm.reset();
@@ -355,9 +349,8 @@ addProductForm.addEventListener("submit", async (e) => {
     }
 });
 
-// --- പുതിയതായി ചേർത്തത്: 7. Hero Slide Logic ---
-
-// തത്സമയം ഹീറോ സ്ലൈഡുകൾ ലോഡ് ചെയ്യുന്നു
+// --- 7. Hero Slide Logic ---
+// *** പാത്ത് 'heroSlides' ശരിയാണ് ***
 function loadHeroSlides() {
     const q = query(collection(db, "heroSlides"), orderBy("order"));
     onSnapshot(q, (querySnapshot) => {
@@ -397,7 +390,6 @@ function loadHeroSlides() {
     });
 }
 
-// പുതിയ ഹീറോ സ്ലൈഡ് ചേർക്കുന്നു
 addHeroSlideForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     showLoader(heroSlideLoader);
@@ -409,6 +401,7 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
             createdAt: serverTimestamp()
         };
         
+        // *** പാത്ത് 'heroSlides' ശരിയാണ് ***
         await addDoc(collection(db, "heroSlides"), slide);
         
         showStatus(adminStatus, "Hero slide added successfully!", false);
@@ -422,8 +415,6 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
 });
 
 // --- 8. Edit & Delete Logic (എഡിറ്റ്, ഡിലീറ്റ്) ---
-        
-// "Edit" അല്ലെങ്കിൽ "Delete" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
 document.body.addEventListener('click', async (e) => {
     const target = e.target;
     
@@ -434,12 +425,12 @@ document.body.addEventListener('click', async (e) => {
         
         if (confirm(`Are you sure you want to delete this ${type}? This action cannot be undone.`)) {
             try {
-                // ഡിലീറ്റ് ലോജിക് അപ്ഡേറ്റ് ചെയ്തു
                 let collectionName = '';
                 if (type === 'product') collectionName = 'products';
                 else if (type === 'category') collectionName = 'categories';
                 else if (type === 'heroSlide') collectionName = 'heroSlides';
                 
+                // *** പാത്തുകൾ ശരിയാണ് ***
                 if (collectionName) {
                     await deleteDoc(doc(db, collectionName, id));
                     showStatus(adminStatus, `${type} deleted successfully.`, false);
@@ -459,14 +450,13 @@ document.body.addEventListener('click', async (e) => {
     }
 });
         
-// എഡിറ്റ് മോഡൽ തുറക്കുന്നു
 async function openEditModal(id, type) {
     modalForm.innerHTML = '';
     showLoader(modalLoader);
     editModal.style.display = 'flex';
     
     try {
-        // 'heroSlide' എഡിറ്റ് ചെയ്യുന്നില്ല, അതിനാൽ പഴയ കോഡ് മതി
+        // *** പാത്തുകൾ ശരിയാണ് ***
         const collectionName = type === 'product' ? 'products' : 'categories';
         const docRef = doc(db, collectionName, id);
         const docSnap = await getDoc(docRef);
@@ -478,7 +468,6 @@ async function openEditModal(id, type) {
         const data = docSnap.data();
         modalTitle.textContent = `Edit ${type}`;
         
-        // കാറ്റഗറി എഡിറ്റ് ഫോം
         if (type === 'category') {
             modalForm.innerHTML = `
                 <input type="hidden" id="modal-item-id" value="${id}">
@@ -498,7 +487,6 @@ async function openEditModal(id, type) {
             document.getElementById('modal-category-image-url').dispatchEvent(new Event('input'));
             
         } 
-        // ഉൽപ്പന്നം എഡിറ്റ് ഫോം
         else if (type === 'product') {
             const imagesText = data.images ? data.images.join('\n') : '';
             modalForm.innerHTML = `
@@ -556,13 +544,11 @@ async function openEditModal(id, type) {
     }
 }
         
-// മോഡൽ അടയ്ക്കുന്നു
 function closeEditModal() {
     editModal.style.display = 'none';
 }
 modalCloseButton.addEventListener('click', closeEditModal);
         
-// എഡിറ്റ് ചെയ്ത ഡാറ്റ സേവ് ചെയ്യുന്നു
 modalForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     showLoader(modalLoader);
@@ -572,6 +558,7 @@ modalForm.addEventListener('submit', async (e) => {
     
     try {
         let dataToSave = {};
+        // *** പാത്തുകൾ ശരിയാണ് ***
         const collectionName = type === 'product' ? 'products' : 'categories';
 
         if (type === 'category') {
@@ -595,6 +582,7 @@ modalForm.addEventListener('submit', async (e) => {
             };
         }
         
+        // *** പാത്തുകൾ ശരിയാണ് ***
         const docRef = doc(db, collectionName, id);
         await setDoc(docRef, dataToSave, { merge: true });
         
