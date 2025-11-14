@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   വീഡിയോ ഡിസൈൻ അനുസരിച്ച് വലിയ മാറ്റങ്ങൾ വരുത്തിയിട്ടുണ്ട്.
+   **** ഐക്കൺ സ്റ്റൈലുകൾ ചേർത്തു ****
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -208,7 +208,12 @@ img {
     border-top: 1px solid var(--border-color);
 }
 .side-nav-social a { color: var(--text-muted); }
-.side-nav-social a svg { width: 24px; height: 24px; }
+.side-nav-social a svg { 
+    width: 24px; 
+    height: 24px; 
+    transition: color 0.3s ease;
+}
+.side-nav-social a:hover { color: var(--primary-gold); }
 
 
 /* --- 6. ഹോം പേജ് (Home Page) - പുതിയ സ്റ്റൈലുകൾ --- */
@@ -597,6 +602,10 @@ img {
 .footer-social-new a svg {
     width: 24px;
     height: 24px;
+    transition: color 0.3s ease;
+}
+.footer-social-new a:hover {
+    color: var(--primary-gold);
 }
 .footer-bottom-new {
     text-align: center;
@@ -687,16 +696,50 @@ img {
     gap: 0.5rem;
     margin-top: auto;
 }
+
+/* --- **** പുതിയത്: ബട്ടൺ ഐക്കൺ സ്റ്റൈലുകൾ **** --- */
+.btn-primary,
+.btn-secondary,
+.btn-primary-new,
+.btn-secondary-new,
+.btn-checkout,
+.btn-add-to-cart-main {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem; /* 8px */
+}
+/* കാർട്ട് ഐക്കൺ വലിപ്പം */
+.icon-cart {
+    width: 16px;
+    height: 16px;
+}
+/* WhatsApp ബട്ടണിലെ ഐക്കൺ വലിപ്പം */
+.btn-checkout svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor; /* SVG ഫിൽ നിറം ബട്ടൺ ടെക്സ്റ്റിന്റെ നിറം ഉപയോഗിക്കുന്നു */
+}
+/* ഹോം പേജിലെ പുതിയ ബട്ടണുകളിലെ ഐക്കൺ വലിപ്പം */
+.btn-secondary-new .icon-cart {
+    width: 16px;
+    height: 16px;
+}
+/* ------------------------------------------- */
+
+
 /* പഴയ ബട്ടണുകൾ (കാറ്റഗറി പേജിന് വേണ്ടി) */
 .btn-primary {
     background-color: var(--primary-gold);
     border: 2px solid var(--primary-gold);
     color: var(--bg-color);
+    padding: 0.75rem 1rem; /* Padding ക്രമീകരിച്ചു */
 }
 .btn-secondary {
     background-color: transparent;
     border: 2px solid var(--primary-gold);
     color: var(--primary-gold);
+    padding: 0.75rem 1rem; /* Padding ക്രമീകരിച്ചു */
 }
 
 
@@ -965,7 +1008,7 @@ img {
 .btn-checkout svg {
     width: 20px;
     height: 20px;
-    fill: var(--bg-color);
+    fill: var(--bg-color); /* കാർട്ട് പേജിലെ ബട്ടണിൽ ഐക്കൺ കറുപ്പ് നിറമാക്കുന്നു */
 }
 .empty-cart-message {
     text-align: center;
