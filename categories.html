@@ -1,11 +1,13 @@
 <!-- 
   ഇതാണ് കാറ്റഗറി പേജ്. 
-  *** പുതിയ ലേഔട്ട്: സൈഡ്ബാർ + പ്രൊഡക്റ്റ് ഗ്രിഡ് ***
+  'index.html' പോലെ, ഇതും 'public.css'-ഉം 'common.js'-ഉം ഉപയോഗിക്കുന്നു.
+  ഈ പേജിന് മാത്രമായി 'categories.js' എന്ന ഫയലുമുണ്ട്.
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <!-- *** മൊബൈൽ റെസ്പോൺസീവ് ഡിസൈനിനായി ഈ വരി തിരികെ ചേർത്തു *** -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products - Al Ambar Perfumes</title>
     <!-- പൊതുവായ ഡിസൈൻ ഫയൽ -->
@@ -20,43 +22,41 @@
     <nav class="side-nav" id="side-nav"></nav>
     <div class="nav-overlay" id="nav-overlay"></div>
 
-    <!-- 3. പ്രധാന ഉള്ളടക്കം (പുതിയ ലേഔട്ട്) -->
+    <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main class="container page-container">
         
-        <!-- *** പുതിയ ലേഔട്ട് ഗ്രിഡ് *** -->
-        <div class="category-page-layout">
+        <!-- *** പുതിയ കാറ്റഗറി ലേഔട്ട് *** -->
+        <div class="category-page-layout" id="category-page-layout">
             
-            <!-- 1. കാറ്റഗറി സൈഡ്ബാർ -->
-            <aside class="category-sidebar" id="category-sidebar-nav">
-                <div class="loading-placeholder-full">Loading categories...</div>
-                <!-- 'categories.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ ഇവിടെ വരും -->
+            <!-- 3.1 ഇടത് വശം: കാറ്റഗറി സൈഡ്ബാർ -->
+            <aside class="category-sidebar" id="category-sidebar">
+                <ul class="category-sidebar-list" id="category-sidebar-list">
+                    <!-- 'categories.js' വഴി കാറ്റഗറികൾ ഇവിടെ വരും -->
+                    <div class="loading-placeholder-full">Loading...</div>
+                </ul>
             </aside>
-
-            <!-- 2. ഉൽപ്പന്നങ്ങൾ കാണിക്കുന്ന ഭാഗം -->
-            <div class="category-product-content">
-                <h1 id="page-title" class="category-page-title">Loading...</h1>
+            
+            <!-- 3.2 വലത് വശം: ഉൽപ്പന്നങ്ങൾ -->
+            <div class="category-content">
+                <h1 class="category-page-title" id="page-title">All Products</h1>
                 
-                <!-- ഉൽപ്പന്നങ്ങൾ കാണിക്കുന്ന ഗ്രിഡ് -->
+                <!-- ഉൽപ്പന്നങ്ങൾ കാണിക്കുന്ന പുതിയ ഗ്രിഡ് -->
                 <div class="product-grid-new" id="product-grid">
-                    <div class="loading-placeholder-full">Loading products...</div>
                     <!-- 'categories.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
                 </div>
-
+                
                 <!-- ഇൻഫിനിറ്റ് സ്ക്രോൾ ലോഡർ -->
-                <div id="infinite-scroll-loader" class="loader-container">
+                <div class="loader-container" id="infinite-scroll-loader">
                     <div class="loader-spinner"></div>
                 </div>
-                
-                <!-- ഉൽപ്പന്നങ്ങൾ തീരുമ്പോൾ കാണിക്കാൻ -->
-                <div id="no-more-products" class="end-of-list-message" style="display: none;">
-                    You've reached the end of the list.
-                </div>
             </div>
+            
         </div>
+        
     </main>
 
     <!-- 4. പുതിയ ഫൂട്ടർ (common.js വഴി ലോഡ് ആവും) -->
-    <footer class="main-footer" id="main-footer"></footer>
+    <footer class="main-footer-new" id="main-footer"></footer>
 
     <!-- JS ഫയലുകൾ -->
     <script type="module" src="firebase-config.js"></script>
