@@ -3,6 +3,7 @@
  * =========================================
  * * ഈ ഫയൽ admin.html പേജിന് 
  * വേണ്ടി മാത്രമുള്ളതാണ്.
+ * റെസ്പോൺസീവ് സ്റ്റൈലുകൾ തിരികെ ചേർത്തു.
  */
 
 /* --- 1. Root Variables (നിറങ്ങൾ) --- */
@@ -74,7 +75,8 @@ body {
     display: flex;
     background-color: var(--card-bg);
     border-radius: 8px 8px 0 0;
-    overflow: hidden;
+    overflow-x: auto; /* മൊബൈലിൽ സ്ക്രോൾ ചെയ്യാൻ */
+    white-space: nowrap;
     border-bottom: 2px solid var(--primary-gold);
 }
 
@@ -87,6 +89,7 @@ body {
     font-size: 1rem;
     font-weight: 500;
     transition: all 0.3s ease;
+    flex-shrink: 0; /* ടാബുകൾ ചുരുങ്ങാതിരിക്കാൻ */
 }
 
 .tab-link:hover {
@@ -326,7 +329,7 @@ textarea {
 }
 
 /* MRP & Price in table */
-.price-col .mrp-price {
+.price-mrp-admin {
     text-decoration: line-through;
     color: var(--text-muted);
     font-size: 0.9em;
@@ -381,6 +384,8 @@ textarea {
 }
 
 /* --- 12. Responsive (Admin) --- */
+
+/* ടാബ്ലെറ്റ് & ഡെസ്ക്ടോപ്പ് */
 @media (min-width: 768px) {
     /* വലിയ സ്ക്രീനിൽ ഫോമുകൾ 2 കോളമാക്കുന്നു */
     .form-grid {
@@ -389,13 +394,16 @@ textarea {
     }
 }
 
+/* മൊബൈൽ */
 @media (max-width: 768px) {
     .container {
         padding: 1rem;
+        margin-top: 1rem;
     }
 
     .login-box {
         padding: 1.5rem;
+        margin-top: 2rem;
     }
 
     .tab-link {
@@ -411,18 +419,29 @@ textarea {
     .data-table td {
         padding: 0.5rem;
     }
+    
+    /* മൊബൈലിൽ ടേബിൾ സ്ക്രോൾ ചെയ്യാൻ */
+    .data-table-wrapper {
+        overflow-x: auto;
+    }
+    .data-table {
+        min-width: 600px; /* ടേബിളിന് ഒരു മിനിമം വീതി നൽകുന്നു */
+    }
 
     .btn {
-        width: 100%;
+        width: 100%; /* ബട്ടണുകൾ മുഴുവൻ വീതിയിൽ */
     }
 
     .btn-edit,
     .btn-delete {
-        width: auto;
+        width: auto; /* ടേബിളിലെ ബട്ടണുകൾ ഒഴികെ */
     }
 
     .admin-header {
         flex-direction: column;
         gap: 1rem;
+    }
+    .admin-header h1 {
+        font-size: 1.5rem;
     }
 }
