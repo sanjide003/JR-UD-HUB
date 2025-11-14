@@ -1,5 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// *** പുതിയ ലേഔട്ട് (സൈഡ്ബാർ, 2-കോളം ഗ്രിഡ്, ഇൻഫിനിറ്റ് സ്ക്രോൾ) അനുസരിച്ച് പൂർണ്ണമായും അപ്ഡേറ്റ് ചെയ്തു ***
+// *** ഡാറ്റാബേസ് പാത്ത് (appId) ശരിയാക്കി ***
 
 import {
     collection,
@@ -12,7 +12,8 @@ import {
     startAfter,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { db } from './firebase-config.js';
+// *** appId ഇമ്പോർട്ട് ചെയ്യുന്നു ***
+import { db, appId } from './firebase-config.js';
 import { loadSiteSettings } from './common.js'; // ഹെഡർ, ഫൂട്ടർ ലോഡ് ചെയ്യാൻ
 import { addToCart } from './cart.js'; // കാർട്ട് ഫംഗ്ഷൻ
 
@@ -26,17 +27,16 @@ const categoryNavMobile = document.getElementById("category-nav-mobile");
 const loader = document.getElementById("infinite-scroll-loader");
 
 // --- Pagination State ---
-let lastVisible = null; // അവസാനമായി ലോഡ് ചെയ്ത ഡോക്യുമെന്റ്
-let isLoading = false; // ഡാറ്റ ലോഡ് ചെയ്യുകയാണോ എന്ന് അറിയാൻ
-let currentCategoryId = 'all'; // നിലവിൽ തിരഞ്ഞെടുത്ത കാറ്റഗറി
-const productsPerPage = 12; // ഒരു സമയം 12 ഉൽപ്പന്നങ്ങൾ
+let lastVisible = null;
+let isLoading = false;
+let currentCategoryId = 'all';
+const productsPerPage = 12;
 
 // --- പേജ് ലോഡ് ആവുമ്പോൾ ---
 document.addEventListener("DOMContentLoaded", () => {
-    loadSiteSettings(); // 1. പൊതുവായ കാര്യങ്ങൾ (ഹെഡർ, ഫൂട്ടർ)
-    loadCategoryList(); // 2. കാറ്റഗറി ലിസ്റ്റ് (സൈഡ്ബാർ)
+    loadSiteSettings();
+    loadCategoryList();
     
-    // 3. URL-ൽ നിന്ന് കാറ്റഗറി ഉണ്ടോ എന്ന് നോക്കുന്നു
     const urlParams = new URLSearchParams(window.location.search);
     const categoryIdFromUrl = urlParams.get('filter');
     
@@ -44,7 +44,7 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategoryId = categoryIdFromUrl;
     }
     
-    startLoadingProducts(currentCategoryId); // 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
+    startLoadingProducts(currentCategoryId);
 });
 
 /**
@@ -54,7 +54,8 @@ async function loadCategoryList() {
     if (!categoryNavDesktop || !categoryNavMobile) return;
 
     try {
-        const q = query(collection(db, "categories"));
+        // *** ഡാറ്റാബേസ് പാത്ത് ശരിയാക്കി ***
+        const q = query(collection(db, `artifacts/${appId}/public/data/categories`));
         const catSnapshot = await getDocs(q);
 
         let navHtml = '';
@@ -78,15 +79,12 @@ async function loadCategoryList() {
             `;
         });
 
-        // രണ്ട് മെനുവിലും HTML ചേർക്കുന്നു
         categoryNavDesktop.innerHTML = navHtml;
         categoryNavMobile.innerHTML = navHtml;
 
-        // രണ്ട് മെനുവിലും ക്ലിക്ക് ഇവന്റുകൾ ചേർക്കുന്നു
         addNavClickListeners(categoryNavDesktop);
         addNavClickListeners(categoryNavMobile);
         
-        // നിലവിലെ കാറ്റഗറി ഹൈലൈറ്റ് ചെയ്യുന്നു
         updateActiveCategoryUI(currentCategoryId);
 
     } catch (error) {
@@ -106,7 +104,7 @@ function addNavClickListeners(navElement) {
         e.preventDefault();
         const categoryId = link.dataset.id;
         
-        if (categoryId === currentCategoryId) return; // ഒരേ കാറ്റഗറി വീണ്ടും ക്ലിക്ക് ചെയ്താൽ ഒന്നും ചെയ്യേണ്ട
+        if (categoryId === currentCategoryId) return;
 
         currentCategoryId = categoryId;
         startLoadingProducts(categoryId);
@@ -118,11 +116,10 @@ function addNavClickListeners(navElement) {
  */
 async function startLoadingProducts(categoryId) {
     isLoading = true;
-    productGrid.innerHTML = ''; // പഴയ ഉൽപ്പന്നങ്ങൾ നീക്കം ചെയ്യുന്നു
-    lastVisible = null; // പേജിനേഷൻ റീസെറ്റ് ചെയ്യുന്നു
-    window.scrollTo(0, 0); // പേജ് മുകളിലേക്ക് സ്ക്രോൾ ചെയ്യുന്നു
+    productGrid.innerHTML = '';
+    lastVisible = null;
+    window.scrollTo(0, 0);
     
-    // URL അപ്ഡേറ്റ് ചെയ്യുന്നു
     const url = new URL(window.location);
     if (categoryId === 'all') {
         url.searchParams.delete('filter');
@@ -131,22 +128,20 @@ async function startLoadingProducts(categoryId) {
     }
     window.history.pushState({}, '', url);
 
-    // തലക്കെട്ട് മാറ്റുന്നു
     if (categoryId === 'all') {
         pageTitle.textContent = "All Products";
     } else {
         try {
-            const catDoc = await getDoc(doc(db, "categories", categoryId));
+            // *** ഡാറ്റാബേസ് പാത്ത് ശരിയാക്കി ***
+            const catDoc = await getDoc(doc(db, `artifacts/${appId}/public/data/categories`, categoryId));
             if (catDoc.exists()) {
                 pageTitle.textContent = catDoc.data().name;
             }
         } catch (e) { console.error("Error fetching category name", e); }
     }
     
-    // ആക്ടീവ് കാറ്റഗറി ഹൈലൈറ്റ് ചെയ്യുന്നു
     updateActiveCategoryUI(categoryId);
     
-    // ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
     await loadProducts();
     isLoading = false;
 }
@@ -161,20 +156,18 @@ async function loadProducts() {
 
     try {
         let q;
-        const productsRef = collection(db, "products");
+        // *** ഡാറ്റാബേസ് പാത്ത് ശരിയാക്കി ***
+        const productsRef = collection(db, `artifacts/${appId}/public/data/products`);
         
-        // ഫയർബേസ് ക്വറി നിർമ്മിക്കുന്നു
         if (currentCategoryId === 'all') {
             q = query(productsRef, limit(productsPerPage));
         } else {
-            // *** പ്രശ്നം പരിഹരിച്ചു: കാറ്റഗറി ഫിൽട്ടർ ചെയ്യുമ്പോൾ orderBy("name") നീക്കം ചെയ്തു ***
             q = query(productsRef, 
                 where("categoryId", "==", currentCategoryId), 
                 limit(productsPerPage)
             );
         }
 
-        // അടുത്ത പേജ് ലോഡ് ചെയ്യാനായി
         if (lastVisible) {
             q = query(q, startAfter(lastVisible));
         }
@@ -186,24 +179,21 @@ async function loadProducts() {
                 productGrid.innerHTML = '<p class="loading-placeholder-full">No products found in this category.</p>';
             }
             loader.style.display = 'none';
-            return; // നിർത്തുന്നു
+            return;
         }
 
-        // അവസാനത്തെ ഡോക്യുമെന്റ് സേവ് ചെയ്യുന്നു
         lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
 
-        // ഓരോ ഉൽപ്പന്നവും കാർഡായി കാണിക്കുന്നു
         documentSnapshots.forEach((doc) => {
             const product = doc.data();
             const productId = doc.id;
             const card = document.createElement('div');
-            card.className = 'category-product-card'; // പുതിയ സ്റ്റൈൽ
+            card.className = 'category-product-card';
 
             const price = product.price || 0;
             const mrp = product.mrp || 0;
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
-            // നിങ്ങൾ ആവശ്യപ്പെട്ട പുതിയ കാർഡ് ഡിസൈൻ (ഐക്കണുകളോടെ)
             card.innerHTML = `
                 <a href="product.html?id=${productId}" class="cat-product-image-link">
                     <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
@@ -289,7 +279,9 @@ const observer = new IntersectionObserver((entries) => {
         loadProducts();
     }
 }, {
-    rootMargin: '200px' // പേജ് തീരുന്നതിന് 200px മുമ്പ് ലോഡ് ചെയ്യുന്നു
+    rootMargin: '200px'
 });
 
-observer.observe(loader);
+if (loader) {
+    observer.observe(loader);
+}
