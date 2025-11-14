@@ -1,6 +1,6 @@
 // ഇതാണ് 'index.js' ഫയൽ.
 // ഹോം പേജിന് (index.html) മാത്രം വേണ്ടിയുള്ള കാര്യങ്ങൾ ഈ ഫയൽ ചെയ്യുന്നു.
-// വീഡിയോ അനുസരിച്ച് അപ്ഡേറ്റ് ചെയ്തു.
+// **** "Add to Cart" ബട്ടണിൽ ഐക്കൺ ചേർത്തു ****
 
 import { db } from './firebase-config.js';
 import { 
@@ -119,7 +119,7 @@ async function loadTopSellers() {
             
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
-            // പുതിയ HTML ഘടന
+            // **** പുതിയ HTML ഘടന (ഐക്കൺ ചേർത്തു) ****
             card.innerHTML = `
                 <a href="product.html?id=${productId}">
                     <img src="${imageUrl}" 
@@ -137,6 +137,7 @@ async function loadTopSellers() {
                             data-price="${product.price}"
                             data-mrp="${product.mrp}"
                             data-image="${imageUrl}">
+                            <svg class="icon-cart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                             ADD TO CART
                         </button>
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">VIEW PRODUCT</a>
@@ -316,7 +317,11 @@ if (topSellersGrid) {
         button.innerHTML = 'ADDED!';
         button.disabled = true;
         setTimeout(() => {
-            button.innerHTML = 'ADD TO CART';
+            // **** ഐക്കൺ സഹിതം തിരികെ കൊണ്ടുവരുന്നു ****
+            button.innerHTML = `
+                <svg class="icon-cart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                ADD TO CART
+            `;
             button.disabled = false;
         }, 2000);
     });
