@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** സബ്ടൈറ്റിലിന് സ്റ്റൈൽ ചേർത്തു ***
+   *** ഇൻഫിനിറ്റ് സ്ക്രോൾ ലോഡർ സ്റ്റൈലുകൾ ചേർത്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -72,7 +72,7 @@ img {
     margin-bottom: 2.5rem;
 }
 
-/* --- 3. ഹെഡർ (Main Header) - *** സബ്ടൈറ്റിൽ സ്റ്റൈൽ ചേർത്തു *** --- */
+/* --- 3. ഹെഡർ (Main Header) - സബ്ടൈറ്റിൽ സ്റ്റൈൽ ചേർത്തു --- */
 .main-header {
     background-color: var(--bg-color);
     padding: 0 1.5rem;
@@ -97,7 +97,6 @@ img {
     height: 40px;
     width: auto;
 }
-/* *** സബ്ടൈറ്റിൽ ഉള്ളതുകൊണ്ട് ടെക്സ്റ്റിനെ റാപ് ചെയ്തു *** */
 .header-logo-text-wrapper {
     display: flex;
     flex-direction: column;
@@ -109,7 +108,6 @@ img {
     color: var(--primary-gold);
     font-weight: 700;
 }
-/* *** പുതിയ സബ്ടൈറ്റിൽ സ്റ്റൈൽ *** */
 .header-logo-subtitle {
     font-family: var(--font-main);
     font-size: 0.75rem; /* 12px */
@@ -1100,6 +1098,37 @@ img {
 }
 
 
+/* --- *** പുതിയത്: ഇൻഫിനിറ്റ് സ്ക്രോൾ ലോഡർ *** --- */
+.loader-container {
+    display: none; /* സാധാരണ ഇത് കാണില്ല */
+    padding: 2rem;
+    text-align: center;
+}
+.loader-container.active {
+    display: block; /* JS വഴി active ആക്കുമ്പോൾ കാണിക്കും */
+}
+.loader-spinner {
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--primary-gold);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto;
+}
+.end-of-list-message {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+/* ------------------------------------- */
+
+
 /* --- 12. മൊബൈൽ റെസ്പോൺസീവ് (Responsive) --- */
 @media (max-width: 768px) {
     .container {
@@ -1109,11 +1138,10 @@ img {
         padding: 0 1rem;
     }
     .header-logo-text {
-        font-size: 1.25rem; /* മൊബൈലിൽ പേര് ചെറുതാക്കി */
+        font-size: 1.25rem; 
     }
-    /* *** മൊബൈലിൽ സബ്ടൈറ്റിൽ കാണിക്കണമെങ്കിൽ ഈ ലൈൻ നീക്കം ചെയ്യാം *** */
     .header-logo-subtitle {
-        display: none; /* മൊബൈലിൽ സബ്ടൈറ്റിൽ മറയ്ക്കുന്നു */
+        display: none; 
     }
     .header-icons {
         gap: 1rem;
