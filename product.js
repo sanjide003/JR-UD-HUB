@@ -1,6 +1,6 @@
 // ഇതാണ് 'product.js' ഫയൽ.
 // ഉൽപ്പന്നം വിശദമായി കാണിക്കുന്ന പേജിന് (product.html) മാത്രം വേണ്ടിയുള്ള കാര്യങ്ങൾ ഈ ഫയൽ ചെയ്യുന്നു.
-// (ഫോട്ടോ ഗാലറി, "Add to Cart" ബട്ടൺ, ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ)
+// **** "Add to Cart" ബട്ടൺ അപ്‌ഡേറ്റ് ചെയ്തു ****
 
 import { 
     collection, 
@@ -116,6 +116,7 @@ async function loadProductDetails() {
                 <div class="product-size">
                     <strong>Size:</strong> ${product.size || 'N/A'}
                 </div>
+                <!-- **** ഐക്കൺ ഇതിനകം ശരിയാണ് **** -->
                 <button class="btn btn-primary btn-add-to-cart-main" id="add-to-cart-btn">
                     <svg class="icon-cart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                     Add to Cart
@@ -181,7 +182,11 @@ function setupCartButton() {
             feedback.style.display = 'block';
 
             setTimeout(() => {
-                button.innerHTML = `Add to Cart`; // SVG കോഡ് തിരികെ ചേർക്കുന്നില്ല
+                // **** ഐക്കൺ സഹിതം തിരികെ കൊണ്ടുവരുന്നു ****
+                button.innerHTML = `
+                    <svg class="icon-cart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    Add to Cart
+                `;
                 button.disabled = false;
                 feedback.style.display = 'none';
             }, 2500);
@@ -228,6 +233,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
             
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
+            // **** ഐക്കൺ ചേർത്തു ****
             card.innerHTML = `
                 <a href="product.html?id=${productId}" class="product-card-image-link">
                     <img src="${imageUrl}" alt="${product.name}" class="product-card-image">
@@ -242,6 +248,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                             data-price="${price}"
                             data-mrp="${mrp}"
                             data-image="${imageUrl}">
+                            <svg class="icon-cart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                             Add to Cart
                         </button>
                         <a href="product.html?id=${productId}" class="btn btn-primary">View Product</a>
@@ -280,7 +287,11 @@ relatedProductsGrid.addEventListener('click', (e) => {
     button.innerHTML = 'Added!';
     button.disabled = true;
     setTimeout(() => {
-        button.innerHTML = `Add to Cart`;
+        // **** ഐക്കൺ സഹിതം തിരികെ കൊണ്ടുവരുന്നു ****
+        button.innerHTML = `
+            <svg class="icon-cart" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+            Add to Cart
+        `;
         button.disabled = false;
     }, 2000);
 });
