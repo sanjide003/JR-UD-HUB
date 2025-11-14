@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   **** ഐക്കൺ സ്റ്റൈലുകൾ ചേർത്തു ****
+   *** സബ്ടൈറ്റിലിന് സ്റ്റൈൽ ചേർത്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -16,8 +16,8 @@
     --error-red: #e74c3c;
     
     --font-main: 'Inter', sans-serif;
-    --font-heading: 'Playfair Display', serif; /* പഴയ ഹെഡിംഗ് ഫോണ്ട്, ആവശ്യമെങ്കിൽ മാറ്റാം */
-    --font-new-heading: 'Inter', sans-serif; /* വീഡിയോയിലെ ഹെഡിംഗുകൾക്ക് ഈ ഫോണ്ട് ആണ് */
+    --font-heading: 'Playfair Display', serif; 
+    --font-new-heading: 'Inter', sans-serif; 
     
     --header-height: 70px;
 }
@@ -58,10 +58,9 @@ a:hover {
 img {
     max-width: 100%;
     height: auto;
-    display: block; /* പ്രധാനപ്പെട്ടത് */
+    display: block; 
 }
 
-/* വീഡിയോയിലെ പുതിയ സെക്ഷൻ ടൈറ്റിൽ */
 .section-title-new {
     text-align: center;
     font-family: var(--font-new-heading);
@@ -73,7 +72,7 @@ img {
     margin-bottom: 2.5rem;
 }
 
-/* --- 3. ഹെഡർ (Main Header) - മാറ്റമില്ല --- */
+/* --- 3. ഹെഡർ (Main Header) - *** സബ്ടൈറ്റിൽ സ്റ്റൈൽ ചേർത്തു *** --- */
 .main-header {
     background-color: var(--bg-color);
     padding: 0 1.5rem;
@@ -98,11 +97,25 @@ img {
     height: 40px;
     width: auto;
 }
+/* *** സബ്ടൈറ്റിൽ ഉള്ളതുകൊണ്ട് ടെക്സ്റ്റിനെ റാപ് ചെയ്തു *** */
+.header-logo-text-wrapper {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.2;
+}
 .header-logo-text {
     font-family: var(--font-heading);
     font-size: 1.5rem;
     color: var(--primary-gold);
     font-weight: 700;
+}
+/* *** പുതിയ സബ്ടൈറ്റിൽ സ്റ്റൈൽ *** */
+.header-logo-subtitle {
+    font-family: var(--font-main);
+    font-size: 0.75rem; /* 12px */
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 .header-icons {
     display: flex;
@@ -142,7 +155,7 @@ img {
     line-height: 1;
 }
 
-/* --- 4. വശത്തുള്ള മെനു (Side Nav) - മാറ്റമില്ല --- */
+/* --- 4. വശത്തുള്ള മെനു (Side Nav) --- */
 .side-nav {
     position: fixed;
     top: 0;
@@ -216,12 +229,10 @@ img {
 .side-nav-social a:hover { color: var(--primary-gold); }
 
 
-/* --- 6. ഹോം പേജ് (Home Page) - പുതിയ സ്റ്റൈലുകൾ --- */
-
-/* 6.1. പുതിയ ഹീറോ സ്ലൈഡർ */
+/* --- 6. ഹോം പേജ് (Home Page) --- */
 .hero-section-new {
     width: 100%;
-    height: 70vh; /* നിങ്ങൾക്ക് ഇത് മൊബൈലിൽ കൂട്ടാം */
+    height: 70vh; 
     overflow: hidden;
 }
 .hero-slider-new {
@@ -236,10 +247,8 @@ img {
 .hero-slider-new .swiper-slide video {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* വീഡിയോ/ഫോട്ടോ സ്ക്രീൻ നിറഞ്ഞുനിൽക്കാൻ */
+    object-fit: cover; 
 }
-
-/* 6.2. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ */
 .hero-text-section {
     text-align: center;
     padding: 2.5rem 1.5rem;
@@ -248,10 +257,8 @@ img {
     line-height: 1.7;
     max-width: 800px;
 }
-
-/* 6.3. പുതിയ ടോപ്പ് സെല്ലേഴ്സ് */
 .top-sellers-swiper-new {
-    padding-bottom: 3rem; /* ഡോട്ടുകൾക്ക് വേണ്ടി */
+    padding-bottom: 3rem; 
 }
 .top-sellers-swiper-new .swiper-slide {
     text-align: center;
@@ -279,7 +286,6 @@ img {
     gap: 0.5rem;
     padding: 0 1rem;
 }
-/* പുതിയ ബട്ടൺ സ്റ്റൈലുകൾ */
 .btn-primary-new {
     display: inline-flex;
     align-items: center;
@@ -320,7 +326,6 @@ img {
     background-color: var(--primary-gold);
     color: var(--bg-color);
 }
-/* സ്ലൈഡർ ഡോട്ടുകൾ */
 .top-sellers-swiper-new .swiper-pagination {
     bottom: 0;
 }
@@ -332,8 +337,6 @@ img {
 .top-sellers-swiper-new .swiper-pagination-bullet-active {
     background-color: var(--primary-gold);
 }
-
-/* 6.4. പുതിയ കാറ്റഗറി ഗ്രിഡ് */
 .category-grid-new {
     display: grid;
     grid-template-columns: 1fr;
@@ -377,8 +380,6 @@ img {
     letter-spacing: 2px;
     text-transform: uppercase;
 }
-
-/* 6.5. ഫീച്ചേർഡ് സെക്ഷൻ */
 .featured-section {
     display: grid;
     grid-template-columns: 1fr;
@@ -391,7 +392,7 @@ img {
         gap: 3rem;
     }
     .featured-section .featured-content {
-        order: 1; /* മൊബൈലിൽ ഇമേജ് ആദ്യം, ഡെസ്ക്ടോപ്പിൽ രണ്ടാമത് */
+        order: 1; 
     }
 }
 .featured-image img {
@@ -413,8 +414,6 @@ img {
     display: inline-block;
     width: auto;
 }
-
-/* 6.6. ബൊട്ടീക് സ്റ്റോർസ് (വീഡിയോ) */
 .boutique-section {
     position: relative;
     display: flex;
@@ -474,8 +473,6 @@ img {
     text-transform: uppercase;
     margin-bottom: 1.5rem;
 }
-
-/* 6.7. ഫ്രാഗ്രൻസ് സ്റ്റോറി */
 .fragrance-story-new {
     text-align: center;
     max-width: 800px;
@@ -496,9 +493,9 @@ img {
     line-height: 1.7;
 }
 
-/* --- 5. ഫൂട്ടർ (Main Footer) - പുതിയ അക്കോർഡിയൻ സ്റ്റൈൽ --- */
+/* --- 5. ഫൂട്ടർ (Main Footer) --- */
 .main-footer-new {
-    background-color: var(--bg-color); /* കറുപ്പ് പശ്ചാത്തലം */
+    background-color: var(--bg-color);
     color: var(--text-muted);
     padding: 3rem 1.5rem;
     margin-top: 3rem;
@@ -613,11 +610,9 @@ img {
     padding-top: 1.5rem;
     border-top: 1px solid var(--border-color);
 }
-/* ഫൂട്ടർ സ്റ്റൈൽ കഴിഞ്ഞു */
 
 
-/* --- 7. ഉൽപ്പന്ന കാർഡ് (Product Card) & ഗ്രിഡ് - പഴയത് - */
-/* കാറ്റഗറി പേജിന് വേണ്ടി ഇത് നിലനിർത്തുന്നു */
+/* --- 7. ഉൽപ്പന്ന കാർഡ് (Product Card) & ഗ്രിഡ് --- */
 .product-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -697,7 +692,7 @@ img {
     margin-top: auto;
 }
 
-/* --- **** പുതിയത്: ബട്ടൺ ഐക്കൺ സ്റ്റൈലുകൾ **** --- */
+/* --- ബട്ടൺ ഐക്കൺ സ്റ്റൈലുകൾ --- */
 .btn-primary,
 .btn-secondary,
 .btn-primary-new,
@@ -707,43 +702,37 @@ img {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    gap: 0.5rem; /* 8px */
+    gap: 0.5rem; 
 }
-/* കാർട്ട് ഐക്കൺ വലിപ്പം */
 .icon-cart {
     width: 16px;
     height: 16px;
 }
-/* WhatsApp ബട്ടണിലെ ഐക്കൺ വലിപ്പം */
 .btn-checkout svg {
     width: 20px;
     height: 20px;
-    fill: currentColor; /* SVG ഫിൽ നിറം ബട്ടൺ ടെക്സ്റ്റിന്റെ നിറം ഉപയോഗിക്കുന്നു */
+    fill: currentColor; 
 }
-/* ഹോം പേജിലെ പുതിയ ബട്ടണുകളിലെ ഐക്കൺ വലിപ്പം */
 .btn-secondary-new .icon-cart {
     width: 16px;
     height: 16px;
 }
-/* ------------------------------------------- */
 
-
-/* പഴയ ബട്ടണുകൾ (കാറ്റഗറി പേജിന് വേണ്ടി) */
 .btn-primary {
     background-color: var(--primary-gold);
     border: 2px solid var(--primary-gold);
     color: var(--bg-color);
-    padding: 0.75rem 1rem; /* Padding ക്രമീകരിച്ചു */
+    padding: 0.75rem 1rem; 
 }
 .btn-secondary {
     background-color: transparent;
     border: 2px solid var(--primary-gold);
     color: var(--primary-gold);
-    padding: 0.75rem 1rem; /* Padding ക്രമീകരിച്ചു */
+    padding: 0.75rem 1rem; 
 }
 
 
-/* --- 9. ഉൽപ്പന്നം വിശദമായി കാണിക്കുന്ന പേജ് (Product Detail) - മാറ്റമില്ല --- */
+/* --- 9. ഉൽപ്പന്നം വിശദമായി കാണിക്കുന്ന പേജ് (Product Detail) --- */
 .product-detail-grid {
     display: grid;
     grid-template-columns: 1fr;
@@ -892,7 +881,6 @@ img {
 }
 
 /* --- 11. ഷോപ്പിംഗ് കാർട്ട് പേജ് (Cart Page) --- */
-/* മാറ്റങ്ങൾ വരുത്തിയിട്ടില്ല */
 .cart-page-layout {
     display: grid;
     grid-template-columns: 1fr;
@@ -1008,7 +996,7 @@ img {
 .btn-checkout svg {
     width: 20px;
     height: 20px;
-    fill: var(--bg-color); /* കാർട്ട് പേജിലെ ബട്ടണിൽ ഐക്കൺ കറുപ്പ് നിറമാക്കുന്നു */
+    fill: var(--bg-color); 
 }
 .empty-cart-message {
     text-align: center;
@@ -1033,7 +1021,7 @@ img {
     margin-top: 1rem;
 }
 
-/* --- പുതിയതായി ചേർത്തത്: വീഡിയോ മോഡൽ --- */
+/* --- വീഡിയോ മോഡൽ --- */
 .video-modal {
     position: fixed;
     top: 0;
@@ -1076,7 +1064,7 @@ img {
     border: 0;
 }
 
-/* --- പുതിയതായി ചേർത്തത്: ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ --- */
+/* --- ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ --- */
 .floating-action-buttons {
     position: fixed;
     bottom: 20px;
@@ -1090,7 +1078,7 @@ img {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-color: #25D366; /* WhatsApp Green */
+    background-color: #25D366; 
     color: #fff;
     display: flex;
     align-items: center;
@@ -1121,7 +1109,11 @@ img {
         padding: 0 1rem;
     }
     .header-logo-text {
-        display: none; /* മൊബൈലിൽ പേര് കാണിക്കില്ല */
+        font-size: 1.25rem; /* മൊബൈലിൽ പേര് ചെറുതാക്കി */
+    }
+    /* *** മൊബൈലിൽ സബ്ടൈറ്റിൽ കാണിക്കണമെങ്കിൽ ഈ ലൈൻ നീക്കം ചെയ്യാം *** */
+    .header-logo-subtitle {
+        display: none; /* മൊബൈലിൽ സബ്ടൈറ്റിൽ മറയ്ക്കുന്നു */
     }
     .header-icons {
         gap: 1rem;
@@ -1129,7 +1121,6 @@ img {
     .section-title-new {
         font-size: 1.2rem;
     }
-    /* പഴയ ടൈറ്റിൽ */
     .section-title {
         font-size: 2rem;
     }
@@ -1138,7 +1129,7 @@ img {
     }
     
     .hero-section-new {
-        height: 60vh; /* മൊബൈലിൽ ഉയരം കുറയ്ക്കാം */
+        height: 60vh; 
     }
     .hero-text-section {
         padding: 2rem 1rem;
@@ -1157,7 +1148,7 @@ img {
         text-align: center;
     }
     .featured-section .featured-content {
-        order: 0; /* മൊബൈലിൽ ക്രമം മാറ്റുന്നു */
+        order: 0; 
     }
     
     .floating-action-buttons {
