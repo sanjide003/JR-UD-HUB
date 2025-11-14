@@ -1,5 +1,6 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
 // *** "ഇൻഫിനിറ്റ് സ്ക്രോൾ" + പുതിയ സൈഡ്ബാർ ലേഔട്ട് ***
+// *** *** ബഗ് പരിഹരിച്ചു *** ***
 
 import { 
     collection, 
@@ -34,6 +35,10 @@ let currentCategoryId = null;
 
 // പേജ് ലോഡ് ആവുമ്പോൾ
 document.addEventListener("DOMContentLoaded", () => {
+    // *** URL-ൽ നിന്ന് categoryId ആദ്യം തന്നെ എടുക്കുന്നു ***
+    const urlParams = new URLSearchParams(window.location.search);
+    currentCategoryId = urlParams.get('filter'); // നിലവിലെ കാറ്റഗറി ID
+
     loadSiteSettings(); // പൊതുവായ കാര്യങ്ങൾ
     loadAllCategoriesSidebar(); // 1. സൈഡ്ബാർ ലോഡ് ചെയ്യുന്നു
     setupInfiniteScroll(); // 2. സ്ക്രോൾ നിരീക്ഷിക്കുന്നു
@@ -47,9 +52,6 @@ async function loadAllCategoriesSidebar() {
     if (!categorySidebar) return;
 
     try {
-        const urlParams = new URLSearchParams(window.location.search);
-        currentCategoryId = urlParams.get('filter'); // നിലവിലെ കാറ്റഗറി ID
-
         const catQuery = query(collection(db, "categories"), orderBy("name"));
         const catSnapshot = await getDocs(catQuery);
 
@@ -106,18 +108,20 @@ async function loadCategoryInfo() {
             } else {
                 pageTitle.textContent = "Category Not Found";
             }
-            // ആ കാറ്റഗറിയിലുള്ള ഉൽപ്പന്നങ്ങൾ മാത്രം എടുക്കുന്നു
+            
+            // *** പരിഹാരം: orderBy("name") ഇവിടെ നിന്ന് നീക്കം ചെയ്തു ***
+            // കാരണം: `where` കൂടെ `orderBy` മറ്റൊരു ഫീൽഡിൽ ഉപയോഗിക്കുമ്പോൾ ഇൻഡെക്സ് ആവശ്യമാണ്.
             baseQuery = query(
                 collection(db, "products"),
-                where("categoryId", "==", currentCategoryId),
-                orderBy("name") 
+                where("categoryId", "==", currentCategoryId)
+                // orderBy("name") <-- ഇത് നീക്കം ചെയ്തു
             );
         } else {
-            // കാറ്റഗറി ഇല്ലെങ്കിൽ, എല്ലാ ഉൽപ്പന്നങ്ങളും എടുക്കുന്നു
+            // കാറ്റഗറി ഇല്ലെങ്കിൽ (All Products), അടുക്കുന്നത് തുടരാം
             pageTitle.textContent = "All Products";
             baseQuery = query(
                 collection(db, "products"),
-                orderBy("name") 
+                orderBy("name") // "All Products" പേജിൽ ഇത് കുഴപ്പമില്ല
             );
         }
 
@@ -181,12 +185,10 @@ async function fetchMoreProducts() {
  */
 function renderProductCard(product, productId) {
     const card = document.createElement('div');
-    // *** പുതിയ കാർഡ് സ്റ്റൈൽ ***
     card.className = 'product-card-simple'; 
 
     const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
-    // *** പുതിയ HTML ഘടന (ഐക്കണുകൾ സഹിതം) ***
     card.innerHTML = `
         <a href="product.html?id=${productId}" class="product-card-simple-image-link">
             <img src="${imageUrl}" 
