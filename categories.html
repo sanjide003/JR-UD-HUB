@@ -1,6 +1,7 @@
 <!-- 
   ഇതാണ് കാറ്റഗറി പേജ്. 
-  *** JS ഫയലുമായി പ്രവർത്തിക്കാൻ ID-കൾ ശരിയാക്കി ***
+  'categories.js'-മായി പ്രവർത്തിക്കാൻ ID-കൾ ശരിയാക്കി.
+  ആവർത്തനം ഒഴിവാക്കാൻ CSS-മായി യോജിപ്പിച്ചു.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -8,55 +9,55 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products - Al Ambar Perfumes</title>
-    <!-- പൊതുവായ ഡിസൈൻ ഫയൽ -->
     <link rel="stylesheet" href="public.css">
 </head>
 <body>
 
-    <!-- 1. ഹെഡർ (common.js വഴി ലോഡ് ആവും) -->
+    <!-- 1. ഹെഡർ -->
     <header class="main-header" id="main-header"></header>
     
-    <!-- 2. വശത്തുള്ള മെനു (common.js വഴി ലോഡ് ആവും) -->
+    <!-- 2. സൈഡ് മെനു -->
     <nav class="side-nav" id="side-nav"></nav>
     <div class="nav-overlay" id="nav-overlay"></div>
 
-    <!-- 3. പ്രധാന ഉള്ളടക്കം (പുതിയ ലേഔട്ട്) -->
+    <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main class="container page-container">
-        <!-- പേജിന്റെ തലക്കെട്ട് -->
+        <!-- പേജിന്റെ തലക്കെട്ട് (categories.js ഉപയോഗിക്കും) -->
         <div class="page-header-bar">
             <h1 id="page-title">All Products</h1>
         </div>
 
-        <!-- പുതിയ കാറ്റഗറി പേജ് ലേഔട്ട് -->
+        <!-- കാറ്റഗറി പേജ് ലേഔട്ട് -->
         <div class="category-page-layout">
             
-            <!-- 3.1 മൊബൈലിന് മുകളിലുള്ള ബാർ -->
-            <!-- *** ID-കൾ ശരിയാക്കി (categories.js-മായി യോജിപ്പിച്ചു) *** -->
-            <aside class="category-sidebar-mobile" id="category-sidebar-mobile">
-                <nav class="category-sidebar-nav" id="category-nav-mobile">
-                    <!-- 'categories.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ ഇവിടെ വരും -->
-                    <span class="loading-placeholder">Loading categories...</span>
-                </nav>
-            </aside>
+            <!-- 
+              3.1 കാറ്റഗറി ലിസ്റ്റ്
+              'categories.js' ഈ ID-കൾ ഉപയോഗിച്ച് ലിസ്റ്റ് ഉണ്ടാക്കും.
+              'public.css' ഇവയെ മൊബൈലിലും ഡെസ്ക്ടോപ്പിലും ശരിയായി കാണിക്കും/മറയ്ക്കും.
+            -->
             
-            <!-- 3.2 ഡെസ്ക്ടോപ്പിന് ഇടതുവശത്തുള്ള സൈഡ്ബാർ -->
-            <!-- *** ID-കൾ ശരിയാക്കി (categories.js-മായി യോജിപ്പിച്ചു) *** -->
-            <aside class="category-sidebar-desktop" id="category-sidebar-desktop">
-                <nav class="category-sidebar-nav" id="category-nav-desktop">
-                    <!-- 'categories.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ ഇവിടെ വരും -->
-                    <span class="loading-placeholder">Loading categories...</span>
-                </nav>
-            </aside>
+            <!-- മൊബൈലിന് മുകളിലുള്ള ബാർ (public.css ഇത് ഡെസ്ക്ടോപ്പിൽ മറയ്ക്കും) -->
+            <nav class="category-nav-mobile" id="category-nav-mobile">
+                <!-- 'categories.js' വഴി കാറ്റഗറികൾ ഇവിടെ വരും -->
+                <span class="loading-placeholder">Loading categories...</span>
+            </nav>
+            
+            <!-- ഡെസ്ക്ടോപ്പിന് ഇടതുവശത്തുള്ള സൈഡ്ബാർ (public.css ഇത് മൊബൈലിൽ മറയ്ക്കും) -->
+            <nav class="category-nav-desktop" id="category-nav-desktop">
+                <!-- 'categories.js' വഴി കാറ്റഗറികൾ ഇവിടെ വരും -->
+                <span class="loading-placeholder">Loading categories...</span>
+            </nav>
 
-            <!-- 3.3 ഉൽപ്പന്നങ്ങൾ കാണിക്കുന്ന ഗ്രിഡ് -->
-            <div class="category-product-grid-wrapper">
-                <!-- *** ID-കൾ ശരിയാക്കി (categories.js-മായി യോജിപ്പിച്ചു) *** -->
+            <!-- 3.2 ഉൽപ്പന്നങ്ങൾ കാണിക്കുന്ന ഗ്രിഡ് -->
+            <div class="category-page-content">
+                <!-- 'categories.js' ഈ ID ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ നിറയ്ക്കും -->
                 <div class="category-product-grid" id="category-product-grid">
                     <!-- 'categories.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
                     <div class="loading-placeholder-full">Loading products...</div>
                 </div>
+                
                 <!-- ഇൻഫിനിറ്റ് സ്ക്രോൾ ലോഡർ -->
-                <div id="infinite-scroll-loader" style="display: none;">
+                <div class="loader-container" id="infinite-scroll-loader" style="display: none;">
                     <div class="loader-small"></div>
                 </div>
             </div>
@@ -64,10 +65,10 @@
         </div>
     </main>
 
-    <!-- 4. ഫൂട്ടർ (common.js വഴി ലോഡ് ആവും) -->
+    <!-- 4. ഫൂട്ടർ -->
     <footer class="main-footer-new" id="main-footer"></footer>
 
-    <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ (common.js വഴി ഇവിടെ വരും) -->
+    <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ -->
     <div id="floating-action-buttons"></div>
 
     <!-- JS ഫയലുകൾ -->
