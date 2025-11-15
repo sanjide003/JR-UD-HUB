@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** ഫ്ലോട്ടിംഗ് ബട്ടണുകൾ പുതിയ ഡിസൈനിലേക്ക് മാറ്റി ***
+   *** ഏറ്റവും പുതിയ മാറ്റങ്ങൾ ഉൾപ്പെടുത്തിയത് ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -325,12 +325,14 @@ img {
     height: 100%;
     object-fit: cover;
 }
+/* YouTube/Shorts ശരിയാക്കാൻ */
 .hero-slider-new .swiper-slide iframe {
     width: 100%;
     height: 100%;
     object-fit: cover;
     aspect-ratio: 9 / 16; 
 }
+/* സ്വൈപ്പ് ശരിയാക്കാൻ */
 .hero-slider-new .swiper-slide::after {
     content: '';
     position: absolute;
@@ -341,6 +343,7 @@ img {
     background: transparent;
     z-index: 5;
 }
+/* ഡോട്ടുകൾ (Pagination) */
 .hero-slider-new .hero-pagination-dots {
     position: absolute;
     bottom: 20px;
@@ -537,10 +540,13 @@ img {
     color: var(--bg-color);
 }
 .btn-primary-icon svg.icon-btn,
-.btn-secondary-icon svg.icon-btn {
+.btn-secondary-icon svg.icon-btn,
+.btn-primary-new svg.icon-btn,
+.btn-secondary-new svg.icon-btn {
     width: 16px;
     height: 16px;
     fill: currentColor;
+    stroke-width: 2; /* ബാഗ് ഐക്കണിന് വേണ്ടി */
 }
 
 
@@ -740,21 +746,15 @@ img {
     font-size: 1.1rem;
     margin-bottom: 2rem;
 }
-.btn-add-to-cart-main {
-    width: 100%;
-    max-width: 300px;
-    padding: 1rem;
-    font-size: 1.1rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
+/* പ്രൊഡക്റ്റ് പേജിലെ 2 ബട്ടണുകൾ */
+.product-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    max-width: 400px; /* ബട്ടണുകൾ ഒരുപാട് വലുതാവാതിരിക്കാൻ */
+    margin-bottom: 1rem;
 }
-.btn-add-to-cart-main svg {
-    width: 18px;
-    height: 18px;
-    fill: currentColor;
-}
+
 #add-to-cart-feedback {
     margin-top: 1rem;
     color: var(--success-green);
@@ -1016,7 +1016,6 @@ img {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    /* *** മാറ്റം: ബാക്ക്ഗ്രൗണ്ട് കറുപ്പാക്കി *** */
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     display: flex;
@@ -1032,25 +1031,22 @@ img {
     border-color: var(--primary-gold);
 }
 .float-btn.whatsapp {
-    /* ഒന്നുമില്ല */
+    /* ഇടതുവശത്ത് */
 }
 .float-btn.cart {
-    /* പ്രത്യേക ബാക്ക്ഗ്രൗണ്ട് നീക്കം ചെയ്തു */
+    /* വലതുവശത്ത് */
 }
 .float-btn svg {
     width: 28px;
     height: 28px;
 }
-/* *** മാറ്റം: WhatsApp ഐക്കണിന് പച്ച നിറം *** */
 .float-btn.whatsapp svg {
-    fill: #25D366;
+    fill: #25D366; /* പച്ച നിറം */
 }
-/* *** മാറ്റം: കാർട്ട് ഐക്കണിന് സ്വർണ്ണ നിറം *** */
 .float-btn.cart svg {
-    fill: var(--primary-gold);
-    /* Shopping bag ഐക്കൺ ആയതുകൊണ്ട് stroke ആണ് വേണ്ടത് */
-    stroke: var(--primary-gold);
+    stroke: var(--primary-gold); /* സ്വർണ്ണ നിറം */
     fill: none;
+    stroke-width: 2;
 }
 
 
@@ -1139,6 +1135,11 @@ img {
         width: 100%;
         height: 100%;
     }
+    
+    /* പ്രൊഡക്റ്റ് പേജിലെ 2 ബട്ടണുകൾ മൊബൈലിൽ */
+    .product-actions-grid {
+        max-width: 100%; /* മുഴുവൻ വീതി */
+    }
 }
 
 /* ടാബ്ലെറ്റ് & ചെറിയ ഡെസ്ക്ടോപ്പ് */
@@ -1195,5 +1196,10 @@ img {
     
     .top-sellers-swiper-new .swiper-slide {
         text-align: center;
+    }
+    
+    /* പ്രൊഡക്റ്റ് പേജിലെ 2 ബട്ടണുകൾ ഡെസ്ക്ടോപ്പിൽ */
+    .product-actions-grid {
+        max-width: 400px;
     }
 }
