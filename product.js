@@ -1,7 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** എല്ലാ പുതിയ മാറ്റങ്ങളും വരുത്തി ***
-// 1. WhatsApp-ലേക്ക് വിലയും ലിങ്കും അയക്കുന്നു
-// 2. 'You May Also Like' -ലെ 'Buy' ബട്ടൺ WhatsApp-ലേക്ക് ലിങ്ക് ചെയ്തു.
+// *** 'You May Also Like' സ്ലൈഡറും പുതിയ WhatsApp ബട്ടൺ പ്രവർത്തനവും ചേർത്തു ***
 
 import { 
     collection, 
@@ -26,9 +24,7 @@ let whatsappNumber = ''; // WhatsApp നമ്പർ സേവ് ചെയ്�
 
 // പേജ് ലോഡ് ആവുമ്പോൾ
 document.addEventListener("DOMContentLoaded", async () => {
-    // ഹെഡറും ഫൂട്ടറും ലോഡ് ആവാൻ കാത്തുനിൽക്കുന്നു
     await loadSiteSettings();
-    // അതിനുശേഷം പ്രൊഡക്റ്റ് വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു
     loadProductDetails();
 });
 
@@ -47,7 +43,6 @@ async function loadProductDetails() {
             return;
         }
 
-        // WhatsApp നമ്പർ (settings-ൽ നിന്ന്) എടുക്കുന്നു
         try {
             const settingsDoc = await getDoc(doc(db, "settings", "global"));
             if (settingsDoc.exists() && settingsDoc.data().whatsapp) {
@@ -74,17 +69,15 @@ async function loadProductDetails() {
             image: product.images && product.images[0] ? product.images[0] : ''
         };
 
-        // വിലയും ഡിസ്കൗണ്ടും
         const price = product.price || 0;
         const mrp = product.mrp || 0;
-        let priceHTML = `<span class="price-main">₹${price}</span>`; // CSS ഇത് വെള്ള നിറമാക്കും
+        let priceHTML = `<span class="price-main">₹${price}</span>`;
         if (mrp > price) {
             const discount = Math.round(((mrp - price) / mrp) * 100);
-            priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`; // CSS ഇത് ചുവപ്പ് നിറമാക്കും
+            priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
             priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
         }
 
-        // Swiper ഗാലറി
         let galleryHTML = '';
         if (product.images && product.images.length > 0) {
             let slidesHTML = '';
@@ -95,7 +88,6 @@ async function loadProductDetails() {
                     </div>
                 `;
             });
-
             galleryHTML = `
                 <div class="product-gallery-swiper swiper-container">
                     <div class="swiper-wrapper">
@@ -116,25 +108,21 @@ async function loadProductDetails() {
             `;
         }
 
-        // വിവരങ്ങളുടെ ക്രമം (Name -> Size -> Price)
         const infoHTML = `
             <div class="product-info">
                 <h1 class="product-title">${product.name}</h1>
-                
                 <div class="product-size">
                     <strong>Size:</strong> ${product.size || 'N/A'}
                 </div>
-                
                 <div class="price-container large">
                     ${priceHTML}
                 </div>
-                
                 <div class="product-description">
                     ${product.description ? product.description.replace(/\n/g, '<br>') : 'No description available.'}
                 </div>
                 
                 <div class="product-actions-grid">
-                    <!-- ബട്ടൺ 1: Add to Cart (വെള്ള ബാഗ് ഐക്കൺ) -->
+                    <!-- ബട്ടൺ 1: Add to Cart (പുതിയ ഡിസൈൻ) -->
                     <button class="btn-secondary-new" id="add-to-cart-btn">
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -144,7 +132,7 @@ async function loadProductDetails() {
                         Add to Cart
                     </button>
                     
-                    <!-- ബട്ടൺ 2: Buy on WhatsApp (വെള്ള WhatsApp ഐക്കൺ) -->
+                    <!-- ബട്ടൺ 2: Buy on WhatsApp (പുതിയ ഡിസൈൻ) -->
                     <a class="btn-primary-new" id="buy-on-whatsapp-btn" href="#">
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg>
                         Buy on WhatsApp
@@ -191,19 +179,15 @@ function setupProductActionButtons() {
     const whatsappButton = document.getElementById('buy-on-whatsapp-btn');
     const feedback = document.getElementById('add-to-cart-feedback');
     
-    // 1. "Add to Cart" ബട്ടൺ
     if (cartButton) {
         cartButton.addEventListener('click', () => {
             if (currentProduct) {
                 addToCart(currentProduct.id, currentProduct);
-                
                 feedback.textContent = `${currentProduct.name} has been added to your cart.`;
                 feedback.style.display = 'block';
                 feedback.style.color = 'var(--success-green)';
-                
                 cartButton.innerHTML = 'Added!';
                 cartButton.disabled = true;
-
                 setTimeout(() => {
                     cartButton.innerHTML = `
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -220,23 +204,19 @@ function setupProductActionButtons() {
         });
     }
     
-    // 2. "Buy on WhatsApp" ബട്ടൺ (വിലയും ലിങ്കും ചേർത്തു)
     if (whatsappButton) {
         if (!whatsappNumber) {
             whatsappButton.style.display = 'none';
             return;
         }
-        
         whatsappButton.addEventListener('click', (e) => {
             e.preventDefault();
             if (currentProduct) {
                 const productLink = window.location.href; 
                 let message = `Hi, I'm interested in this product:\n\n`;
                 message += `*${currentProduct.name}*\n`;
-                // *** വില ചേർത്തു ***
                 message += `*Price: ₹${currentProduct.price.toFixed(2)}*\n\n`; 
                 message += `Product Link:\n${productLink}`;
-                
                 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
                 window.open(whatsappUrl, '_blank');
             } else {
@@ -249,27 +229,38 @@ function setupProductActionButtons() {
 }
 
 /**
- * ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
+ * ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (പുതിയ സ്ലൈഡർ രൂപത്തിൽ)
  */
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
     try {
-        const q = query(collection(db, "products"), where("categoryId", "==", categoryId), limit(5));
+        // *** 9 എണ്ണം വരെ കാണിക്കാൻ ലിമിറ്റ് 10 ആക്കി ***
+        const q = query(collection(db, "products"), where("categoryId", "==", categoryId), limit(10));
         const querySnapshot = await getDocs(q);
-        relatedProductsGrid.innerHTML = '';
+        
+        // *** Swiper HTML ഘടന ചേർത്തു ***
+        relatedProductsGrid.innerHTML = `
+            <div class="swiper related-products-swiper">
+                <div class="swiper-wrapper" id="related-products-wrapper"></div>
+            </div>
+        `;
+        const swiperWrapper = document.getElementById('related-products-wrapper');
+
         let count = 0;
         querySnapshot.forEach((doc) => {
-            if (doc.id === excludeProductId || count >= 4) return;
+            if (doc.id === excludeProductId || count >= 9) return; // 9 എണ്ണമായി പരിമിതപ്പെടുത്തി
             
             const product = doc.data();
             const productId = doc.id;
             const card = document.createElement('div');
-            card.className = 'category-product-card';
+            // *** swiper-slide ക്ലാസ്സ് ചേർത്തു ***
+            card.className = 'swiper-slide category-product-card';
+            
             const price = product.price || 0;
             const mrp = product.mrp || 0;
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
-            // *** പുതിയ മാറ്റം: 'You May Also Like' ബട്ടണുകൾ അപ്ഡേറ്റ് ചെയ്തു ***
+            // *** 'You May Also Like' ബട്ടണുകൾ പുതിയ ഡിസൈൻ ആക്കി ***
             card.innerHTML = `
                 <a href="product.html?id=${productId}" class="cat-product-image-link">
                     <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
@@ -302,22 +293,35 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                     </div>
                 </div>
             `;
-            relatedProductsGrid.appendChild(card);
+            swiperWrapper.appendChild(card);
             count++;
         });
+
         if (count === 0) {
             relatedProductsGrid.innerHTML = '<p class="loading-placeholder">No related products found.</p>';
+        } else {
+            // *** 'You May Also Like' സ്ലൈഡർ പ്രവർത്തിപ്പിക്കുന്നു ***
+            new Swiper('.related-products-swiper', {
+                loop: false,
+                slidesPerView: 2.2,
+                spaceBetween: 15,
+                allowTouchMove: true,
+                breakpoints: {
+                    640: { slidesPerView: 3.2, spaceBetween: 20 },
+                    900: { slidesPerView: 4.2, spaceBetween: 20 },
+                }
+            });
         }
+
     } catch (error) { console.error("Error loading related products: ", error); }
 }
 
-// *** 'You May Also Like'-ലെ പുതിയ 'Buy' ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ ***
+// 'You May Also Like' സെക്ഷനിലെ ബട്ടണുകൾ
 relatedProductsGrid.addEventListener('click', (e) => {
     const cartButton = e.target.closest('.btn-add-to-cart');
-    const buyButton = e.target.closest('.btn-buy-whatsapp-related'); // പുതിയ ബട്ടൺ
+    const buyButton = e.target.closest('.btn-buy-whatsapp-related'); 
 
     if (cartButton) {
-        // കാർട്ട് ബട്ടൺ ലോജിക് (പഴയതുപോലെ)
         e.preventDefault();
         const id = cartButton.dataset.id;
         const product = {
@@ -342,7 +346,6 @@ relatedProductsGrid.addEventListener('click', (e) => {
         }, 2000);
     } 
     else if (buyButton) {
-        // *** പുതിയ 'Buy' (WhatsApp) ബട്ടൺ ലോജിക് ***
         e.preventDefault();
         if (!whatsappNumber) {
             console.error("WhatsApp number not found.");
@@ -354,12 +357,11 @@ relatedProductsGrid.addEventListener('click', (e) => {
         const name = buyButton.dataset.name;
         const price = parseFloat(buyButton.dataset.price);
         
-        // ഉൽപ്പന്നത്തിന്റെ ലിങ്ക് ഉണ്ടാക്കുന്നു
-        const productLink = `${window.location.origin}${window.location.pathname}?id=${id}`;
+        const productLink = `${window.location.origin}${window.location.pathname.replace('product.html', 'product.html')}?id=${id}`;
         
         let message = `Hi, I'm interested in this product:\n\n`;
         message += `*${name}*\n`;
-        message += `*Price: ₹${price.toFixed(2)}*\n\n`; // വില ചേർത്തു
+        message += `*Price: ₹${price.toFixed(2)}*\n\n`;
         message += `Product Link:\n${productLink}`;
         
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
