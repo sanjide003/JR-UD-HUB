@@ -1,6 +1,5 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** YouTube/Shorts ലിങ്കുകൾ ക്ലീൻ ആക്കി (controls=0) ***
-// *** സ്ലൈഡ് മാറുമ്പോൾ വീഡിയോ നിർത്താനുള്ള കോഡ് മെച്ചപ്പെടുത്തി ***
+// *** Mute/Unmute ബട്ടൺ ലോജിക് ചേർത്തു ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -27,11 +26,18 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ ലോഡ് ചെയ്യുന്നു (പുതിയ മാറ്റങ്ങളോടെ)
+ * 1. ഹീറോ സ്ലൈഡർ ലോഡ് ചെയ്യുന്നു (Mute ബട്ടണോടെ)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
     if (!sliderWrapper) return;
+    
+    // Mute ബട്ടൺ ലോജിക്
+    const muteButton = document.getElementById('hero-mute-btn');
+    const iconMute = muteButton.querySelector('.icon-mute');
+    const iconUnmute = muteButton.querySelector('.icon-unmute');
+    let isMuted = true; // തുടക്കത്തിൽ Mute ആയിരിക്കും
+
     try {
         const q = query(collection(db, "heroSlides"), orderBy("order"));
         const querySnapshot = await getDocs(q);
@@ -58,9 +64,7 @@ async function loadHeroSlider() {
                     isVideo = true;
                 }
 
-                // *** YouTube ലിങ്ക് ക്ലീൻ ആക്കി (വീഡിയോ മാത്രം) ***
                 if (videoId) {
-                    // loop=1 പ്രവർത്തിക്കാൻ playlist=${videoId} കൂടി ചേർക്കണം
                     embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&playsinline=1`;
                 }
 
@@ -68,11 +72,11 @@ async function loadHeroSlider() {
                     slideEl.innerHTML = `<img src="${slide.url}" alt="Hero Image">`;
                 }
                 else if (isVideo && embedUrl) {
-                    // YouTube വീഡിയോ
+                    // YouTube വീഡിയോ (ശബ്ദമില്ലാതെ തുടരും)
                     slideEl.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 }
                 else if (isVideo) {
-                    // നേരിട്ടുള്ള .mp4 വീഡിയോ
+                    // നേരിട്ടുള്ള .mp4 വീഡിയോ (ശബ്ദം നിയന്ത്രിക്കാം)
                     slideEl.innerHTML = `<video src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>`;
                 }
                 
@@ -80,55 +84,53 @@ async function loadHeroSlider() {
             });
         }
 
-        // --- സ്ലൈഡർ ആരംഭിക്കുന്നു (ഓട്ടോപ്ലേ ഇല്ലാതെ, ഡോട്ടുകളോടെ) ---
+        // --- സ്ലൈഡർ ആരംഭിക്കുന്നു ---
         const heroSwiper = new Swiper('.hero-slider-new', {
             loop: true,
             effect: 'fade',
             fadeEffect: { crossFade: true },
-            allowTouchMove: true, // സ്വൈപ്പ് ചെയ്യാൻ അനുവദിക്കുന്നു
+            allowTouchMove: true,
             speed: 1000,
-            
-            // ഓട്ടോപ്ലേ നീക്കം ചെയ്തു
-            
             pagination: {
                 el: '.hero-pagination-dots',
                 clickable: true,
             },
         });
         
-        // --- സ്ലൈഡ് മാറുമ്പോൾ വീഡിയോ നിർത്താനുള്ള കോഡ് ---
+        // --- Mute ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ ---
+        muteButton.addEventListener('click', () => {
+            isMuted = !isMuted; // true/false മാറ്റുന്നു
+            
+            // എല്ലാ .mp4 വീഡിയോകളെയും കണ്ടെത്തുന്നു
+            const allVideos = sliderWrapper.querySelectorAll('video');
+            allVideos.forEach(video => {
+                video.muted = isMuted; // Mute/Unmute ചെയ്യുന്നു
+            });
+            
+            // ഐക്കൺ മാറ്റുന്നു
+            iconMute.style.display = isMuted ? 'block' : 'none';
+            iconUnmute.style.display = isMuted ? 'none' : 'block';
+        });
+
+        // --- സ്ലൈഡ് മാറുമ്പോൾ ---
         heroSwiper.on('slideChange', function () {
-            // എല്ലാ iframe-കളും നിർത്തുന്നു
+            // 1. എല്ലാ YouTube വീഡിയോകളും നിർത്തുന്നു
             const allIframes = sliderWrapper.querySelectorAll('iframe');
             allIframes.forEach(iframe => {
-                // src റീസെറ്റ് ചെയ്ത് വീഡിയോ നിർത്തുന്നു
-                const currentSrc = iframe.src;
-                iframe.src = currentSrc; 
+                iframe.src = iframe.src; 
             });
-            // എല്ലാ വീഡിയോ ടാഗുകളും നിർത്തുന്നു
+            
+            // 2. എല്ലാ .mp4 വീഡിയോകളും നിർത്തുന്നു
             const allVideos = sliderWrapper.querySelectorAll('video');
             allVideos.forEach(video => {
                 video.pause();
-                // വീഡിയോ ഓട്ടോപ്ലേ ആയതിനാൽ, ആക്ടീവ് അല്ലാത്തവ നിർത്തുന്നു
+                // 3. പുതിയ സ്ലൈഡിലെ വീഡിയോ *ഓട്ടോപ്ലേ* ആണെങ്കിൽ മാത്രം പ്ലേ ചെയ്യുന്നു
                 if (video.closest('.swiper-slide-active')) {
-                   video.play(); // ആക്ടീവ് സ്ലൈഡിലെ വീഡിയോ മാത്രം പ്ലേ ചെയ്യുന്നു
-                } else {
-                   video.pause();
+                   video.play();
+                   video.muted = isMuted; // Mute ബട്ടണിന്റെ അവസ്ഥ അനുസരിച്ച് ശബ്ദം ക്രമീകരിക്കുന്നു
                 }
             });
         });
-
-        // YouTube-ൽ ക്ലിക്ക് ചെയ്യുമ്പോൾ സ്ലൈഡ് നിർത്താൻ
-        heroSwiper.on('touchStart', function(swiper, event) {
-            const target = event.target;
-            if (target.tagName === 'IFRAME') {
-                swiper.allowTouchMove = false;
-            }
-        });
-        heroSwiper.on('touchEnd', function(swiper) {
-             swiper.allowTouchMove = true;
-        });
-
 
     } catch (error) { console.error("Error loading hero slider: ", error); }
 }
