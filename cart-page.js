@@ -1,8 +1,7 @@
 // ഇതാണ് 'cart-page.js' ഫയൽ.
-// ഷോപ്പിംഗ് കാർട്ട് പേജിനെ (cart.html) മാത്രം പ്രവർത്തിപ്പിക്കുന്നു.
-// (ഉൽപ്പന്നങ്ങൾ കാണിക്കുക, എണ്ണം മാറ്റുക, WhatsApp ഓർഡർ അയക്കുക)
+// *** Vercel-ൽ പ്രവർത്തിക്കാനായി പാതകൾ ശരിയാക്കി ***
 
-import { db } from './firebase-config.js';
+import { db } from './firebase-config.js'; // appId ഇമ്പോർട്ട് ചെയ്യേണ്ട ആവശ്യമില്ല
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadSiteSettings } from './common.js'; // ഹെഡർ, ഫൂട്ടർ ലോഡ് ചെയ്യാൻ
 import { getCartItems, updateQuantity, removeFromCart, getCartTotal, clearCart } from './cart.js'; // കാർട്ട് ഫംഗ്ഷനുകൾ
@@ -15,7 +14,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
 const cartItemsList = document.getElementById('cart-items-list');
 const cartSummary = document.getElementById('cart-summary');
-const cartErrorMessage = document.getElementById('cart-error-message'); // പുതിയതായി ചേർത്തത്
+const cartErrorMessage = document.getElementById('cart-error-message');
 let whatsappNumber = ''; // ഓർഡർ അയക്കാനുള്ള WhatsApp നമ്പർ
 
 /**
@@ -33,7 +32,7 @@ async function renderCartPage() {
             <div class="empty-cart-message">
                 <h2>Your Cart is Empty</h2>
                 <p>Looks like you haven't added anything to your cart yet.</p>
-                <a href="categories.html" class="btn btn-primary">Continue Shopping</a>
+                <a href="categories.html" class="btn btn-primary-new">Continue Shopping</a>
             </div>
         `;
         cartSummary.style.display = 'none'; // ആകെ തുക കാണിക്കുന്ന ഭാഗം മറയ്ക്കുന്നു
@@ -71,6 +70,7 @@ async function renderCartPage() {
     
     // WhatsApp നമ്പർ എടുക്കുന്നു
     try {
+        // *** ഇതാണ് ശരിയായ പാത്ത് ***
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists() && docSnap.data().whatsapp) {
@@ -136,8 +136,6 @@ cartItemsList.addEventListener('change', (e) => {
 const checkoutButton = document.getElementById('whatsapp-checkout-button');
 if (checkoutButton) {
     checkoutButton.addEventListener('click', () => {
-        // --- alert()-ന് പകരം പുതിയ കോഡ് ---
-        // പഴയ സന്ദേശം ക്ലിയർ ചെയ്യുന്നു
         cartErrorMessage.style.display = 'none';
         cartErrorMessage.textContent = '';
         
@@ -155,7 +153,6 @@ if (checkoutButton) {
             cartErrorMessage.style.display = 'block';
             return;
         }
-        // --- ---
 
         // WhatsApp മെസ്സേജ് ഉണ്ടാക്കുന്നു
         let message = "🎉 *New Order from Al Ambar Website* 🎉\n\n";
@@ -176,16 +173,10 @@ if (checkoutButton) {
         message += `*Total Amount: ₹${getCartTotal().toFixed(2)}*`;
         message += "\n\nThank you!";
 
-        // WhatsApp ലിങ്ക് ഉണ്ടാക്കുന്നു
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
 
-        // ഓർഡർ അയച്ച ശേഷം കാർട്ട് ക്ലിയർ ചെയ്യുന്നു
         clearCart();
-        
-        // പുതിയ ടാബിൽ WhatsApp തുറക്കുന്നു
         window.open(whatsappUrl, '_blank');
-        
-        // കാർട്ട് പേജ് അപ്ഡേറ്റ് ചെയ്യുന്നു
         renderCartPage();
     });
 }
