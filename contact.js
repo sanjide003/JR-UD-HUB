@@ -1,12 +1,11 @@
 // ഇതാണ് 'contact.js' ഫയൽ.
-// കോൺടാക്റ്റ് പേജിന് (contact.html) മാത്രം വേണ്ടിയുള്ള കാര്യങ്ങൾ ഈ ഫയൽ ചെയ്യുന്നു.
-// (കോൺടാക്റ്റ് വിവരങ്ങൾ ലോഡ് ചെയ്യുക)
+// *** Vercel-ൽ പ്രവർത്തിക്കാനായി പാതകൾ ശരിയാക്കി ***
 
 import { 
     doc,
     getDoc,
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { db } from './firebase-config.js';
+import { db } from './firebase-config.js'; // appId ഇമ്പോർട്ട് ചെയ്യേണ്ട ആവശ്യമില്ല
 import { loadSiteSettings } from './common.js'; // ഹെഡർ, ഫൂട്ടർ ലോഡ് ചെയ്യാൻ
 
 // പേജ് ലോഡ് ആവുമ്പോൾ
@@ -27,12 +26,12 @@ async function loadContactPageDetails() {
     const contactEmailMain = document.getElementById("contact-email-main");
     const contactAddressMain = document.getElementById("contact-address-main");
 
-    // ഏതെങ്കിലും ഒന്ന് ഇല്ലെങ്കിൽ, പ്രവർത്തനം നിർത്തുന്നു
     if (!contactPhoneMain || !contactEmailMain || !contactAddressMain) {
         return;
     }
 
     try {
+        // *** ഇതാണ് ശരിയായ പാത്ത് ***
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
 
@@ -63,7 +62,7 @@ async function loadContactPageDetails() {
             }
             
         } else {
-            console.log("No site settings found.");
+            console.log("No site settings found at 'settings/global'.");
             contactPhoneMain.textContent = "Error loading";
             contactEmailMain.textContent = "Error loading";
             contactAddressMain.textContent = "Error loading";
