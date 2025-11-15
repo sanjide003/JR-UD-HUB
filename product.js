@@ -1,5 +1,8 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** "Add to Cart", "Buy on WhatsApp" എന്നീ രണ്ട് ബട്ടണുകൾ ചേർത്തു ***
+// *** എല്ലാ പുതിയ മാറ്റങ്ങളും വരുത്തി ***
+// 1. Swiper ഗാലറി (ഓട്ടോപ്ലേ, ഡോട്ടുകൾ സഹിതം)
+// 2. വിവരങ്ങളുടെ ക്രമം മാറ്റി (Name -> Size -> Price)
+// 3. 'Add to Cart' ഐക്കൺ 'ബാഗ്' ആക്കി
 
 import { 
     collection, 
@@ -20,13 +23,11 @@ setLogLevel('Debug');
 const productDetailContent = document.getElementById('product-detail-content');
 const relatedProductsGrid = document.getElementById('related-products-grid');
 let currentProduct = null;
-let whatsappNumber = ''; // WhatsApp നമ്പർ സേവ് ചെയ്യാൻ
+let whatsappNumber = '';
 
 // പേജ് ലോഡ് ആവുമ്പോൾ
 document.addEventListener("DOMContentLoaded", async () => {
-    // പൊതുവായ കാര്യങ്ങൾ ലോഡ് ചെയ്യുന്നു
     await loadSiteSettings();
-    // ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു
     loadProductDetails();
 });
 
@@ -45,7 +46,6 @@ async function loadProductDetails() {
             return;
         }
 
-        // WhatsApp നമ്പർ അഡ്മിൻ പാനലിൽ നിന്ന് എടുക്കുന്നു
         try {
             const settingsDoc = await getDoc(doc(db, "settings", "global"));
             if (settingsDoc.exists() && settingsDoc.data().whatsapp) {
@@ -78,58 +78,65 @@ async function loadProductDetails() {
         let priceHTML = `<span class="price-main">₹${price}</span>`;
         if (mrp > price) {
             const discount = Math.round(((mrp - price) / mrp) * 100);
-            priceHTML += `<span class="price-mrp"><del>₹${mrp}</del></span>`;
+            // *** MRP-ക്ക് പുതിയ ക്ലാസ് നൽകി (ചുവപ്പ് നിറത്തിനായി) ***
+            priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
             priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
         }
 
-        // ഫോട്ടോ ഗാലറി
+        // *** പുതിയ മാറ്റം: Swiper ഗാലറി ***
         let galleryHTML = '';
         if (product.images && product.images.length > 0) {
-            const mainImage = product.images[0];
-            let thumbnailsHTML = '';
-            
-            product.images.forEach((imgUrl, index) => {
-                thumbnailsHTML += `
-                    <img src="${imgUrl}" alt="Thumbnail ${index + 1}" class="thumbnail-image ${index === 0 ? 'active' : ''}" data-image="${imgUrl}">
+            let slidesHTML = '';
+            product.images.forEach((imgUrl) => {
+                slidesHTML += `
+                    <div class="swiper-slide">
+                        <img src="${imgUrl}" alt="${product.name}">
+                    </div>
                 `;
             });
 
             galleryHTML = `
-                <div class="product-gallery">
-                    <div class="main-image-wrapper">
-                        <img src="${mainImage}" alt="${product.name}" id="main-product-image">
+                <div class="product-gallery-swiper">
+                    <div class="swiper-wrapper">
+                        ${slidesHTML}
                     </div>
-                    <div class="thumbnail-wrapper">
-                        ${thumbnailsHTML}
-                    </div>
+                    <!-- ഡോട്ടുകൾ (Pagination) -->
+                    <div class="swiper-pagination"></div>
                 </div>
             `;
         } else {
             galleryHTML = `
-                <div class="product-gallery">
-                    <img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image" alt="${product.name}" id="main-product-image">
+                <div class="product-gallery-swiper">
+                    <div class="swiper-wrapper">
+                         <div class="swiper-slide">
+                            <img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image" alt="${product.name}">
+                        </div>
+                    </div>
                 </div>
             `;
         }
 
-        // *** പ്രധാന മാറ്റം: രണ്ട് ബട്ടണുകൾ ചേർക്കുന്നു ***
+        // *** പുതിയ മാറ്റം: വിവരങ്ങളുടെ ക്രമം മാറ്റി (Name -> Size -> Price) ***
         const infoHTML = `
             <div class="product-info">
                 <h1 class="product-title">${product.name}</h1>
-                <div class="price-container large">
-                    ${priceHTML}
-                </div>
-                <div class="product-description">
-                    <!-- സ്ക്രീൻഷോട്ടിലെ ബഗ് പരിഹരിക്കുന്നു: ഇവിടെ Description ആണ് വരേണ്ടത് -->
-                    ${product.description ? product.description.replace(/\n/g, '<br>') : 'No description available.'}
-                </div>
+                
+                <!-- Size പേരിന് താഴെയാക്കി -->
                 <div class="product-size">
                     <strong>Size:</strong> ${product.size || 'N/A'}
                 </div>
                 
-                <!-- പുതിയ 2-ബട്ടൺ ഗ്രിഡ് -->
+                <!-- വില Size-ന് താഴെയാക്കി -->
+                <div class="price-container large">
+                    ${priceHTML}
+                </div>
+                
+                <div class="product-description">
+                    ${product.description ? product.description.replace(/\n/g, '<br>') : 'No description available.'}
+                </div>
+                
                 <div class="product-actions-grid">
-                    <!-- ബട്ടൺ 1: Add to Cart (ബാഗ് ഐക്കൺ) -->
+                    <!-- ബട്ടൺ 1: Add to Cart (പുതിയ ബാഗ് ഐക്കൺ) -->
                     <button class="btn-secondary-new" id="add-to-cart-btn">
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -139,7 +146,7 @@ async function loadProductDetails() {
                         Add to Cart
                     </button>
                     
-                    <!-- ബട്ടൺ 2: Buy on WhatsApp (WhatsApp ഐക്കൺ) -->
+                    <!-- ബട്ടൺ 2: Buy on WhatsApp -->
                     <a class="btn-primary-new" id="buy-on-whatsapp-btn" href="#">
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg>
                         Buy on WhatsApp
@@ -150,8 +157,23 @@ async function loadProductDetails() {
         `;
 
         productDetailContent.innerHTML = galleryHTML + infoHTML;
+        
+        // *** പുതിയ മാറ്റം: Swiper സ്ലൈഡർ പ്രവർത്തിപ്പിക്കുന്നു ***
+        new Swiper('.product-gallery-swiper', {
+            loop: true,
+            autoplay: {
+                delay: 3000, // 3 സെക്കൻഡ്
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            allowTouchMove: true,
+            speed: 600,
+        });
 
-        setupGalleryEvents();
+        // പഴയ ഗാലറി കോഡ് നീക്കം ചെയ്തു
         
         // ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
         setupProductActionButtons();
@@ -168,18 +190,10 @@ async function loadProductDetails() {
 
 /**
  * ഫോട്ടോ ഗാലറിയിലെ ക്ലിക്കുകൾ പ്രവർത്തിപ്പിക്കുന്നു
+ * (ഈ ഫംഗ്ഷൻ ഇപ്പോൾ ആവശ്യമില്ല, Swiper ഇത് കൈകാര്യം ചെയ്തോളും. എന്നാലും ശൂന്യമായി നിലനിർത്തുന്നു)
  */
 function setupGalleryEvents() {
-    const mainImage = document.getElementById('main-product-image');
-    const thumbnails = document.querySelectorAll('.thumbnail-image');
-    
-    thumbnails.forEach(thumb => {
-        thumb.addEventListener('click', () => {
-            document.querySelector('.thumbnail-image.active')?.classList.remove('active');
-            thumb.classList.add('active');
-            mainImage.src = thumb.dataset.image;
-        });
-    });
+    // Swiper ഇപ്പോൾ ഇത് കൈകാര്യം ചെയ്യുന്നു
 }
 
 /**
@@ -204,6 +218,7 @@ function setupProductActionButtons() {
                 cartButton.disabled = true;
 
                 setTimeout(() => {
+                    // *** പുതിയ മാറ്റം: വെള്ള ബാഗ് ഐക്കൺ തിരികെ കൊണ്ടുവരുന്നു ***
                     cartButton.innerHTML = `
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -222,14 +237,14 @@ function setupProductActionButtons() {
     // 2. "Buy on WhatsApp" ബട്ടൺ
     if (whatsappButton) {
         if (!whatsappNumber) {
-            whatsappButton.style.display = 'none'; // WhatsApp നമ്പർ ഇല്ലെങ്കിൽ ബട്ടൺ മറയ്ക്കുന്നു
+            whatsappButton.style.display = 'none';
             return;
         }
         
         whatsappButton.addEventListener('click', (e) => {
             e.preventDefault();
             if (currentProduct) {
-                const productLink = window.location.href; // ഇപ്പോഴത്തെ പേജിന്റെ ലിങ്ക്
+                const productLink = window.location.href; 
                 let message = `Hi, I'm interested in this product:\n\n`;
                 message += `*${currentProduct.name}*\n`;
                 message += `${productLink}`;
