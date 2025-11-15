@@ -1,6 +1,6 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** ഹീറോ സ്ലൈഡറിൽ നിന്ന് ഓട്ടോപ്ലേ നീക്കം ചെയ്തു ***
-// *** പകരം ഡോട്ടുകൾ (Pagination) ചേർത്തു ***
+// *** YouTube/Shorts ലിങ്കുകൾ ക്ലീൻ ആക്കി (controls=0) ***
+// *** സ്ലൈഡ് മാറുമ്പോൾ വീഡിയോ നിർത്താനുള്ള കോഡ് മെച്ചപ്പെടുത്തി ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -45,35 +45,42 @@ async function loadHeroSlider() {
                 const slideEl = document.createElement('div');
                 slideEl.className = 'swiper-slide';
 
-                // --- YouTube/Shorts/Video/Image തിരിച്ചറിയുന്ന കോഡ് ---
                 let embedUrl = '';
                 let isVideo = slide.type === 'video';
+                let videoId = '';
 
                 if (slide.url.includes('youtube.com/watch?v=')) {
-                    embedUrl = `https://www.youtube.com/embed/${new URL(slide.url).searchParams.get('v')}?autoplay=0&mute=1&loop=1&controls=1&modestbranding=1&playsinline=1`; // autoplay=0 ആക്കി
+                    videoId = new URL(slide.url).searchParams.get('v');
                     isVideo = true;
                 }
                 else if (slide.url.includes('youtube.com/shorts/')) {
-                    const shortId = new URL(slide.url).pathname.split('/shorts/')[1];
-                    embedUrl = `https://www.youtube.com/embed/${shortId}?autoplay=0&mute=1&loop=1&controls=1&modestbranding=1&playsinline=1`; // autoplay=0 ആക്കി
+                    videoId = new URL(slide.url).pathname.split('/shorts/')[1];
                     isVideo = true;
+                }
+
+                // *** YouTube ലിങ്ക് ക്ലീൻ ആക്കി (വീഡിയോ മാത്രം) ***
+                if (videoId) {
+                    // loop=1 പ്രവർത്തിക്കാൻ playlist=${videoId} കൂടി ചേർക്കണം
+                    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&playsinline=1`;
                 }
 
                 if (slide.type === 'image') {
                     slideEl.innerHTML = `<img src="${slide.url}" alt="Hero Image">`;
                 }
                 else if (isVideo && embedUrl) {
-                    slideEl.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="encrypted-media" allowfullscreen></iframe>`;
+                    // YouTube വീഡിയോ
+                    slideEl.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 }
                 else if (isVideo) {
-                    slideEl.innerHTML = `<video src="${slide.url}" controls muted loop playsinline preload="metadata"></video>`; // autoplay നീക്കം ചെയ്തു, controls ചേർത്തു
+                    // നേരിട്ടുള്ള .mp4 വീഡിയോ
+                    slideEl.innerHTML = `<video src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>`;
                 }
                 
                 sliderWrapper.appendChild(slideEl);
             });
         }
 
-        // --- സ്ലൈഡർ ആരംഭിക്കുന്നു (ഓട്ടോപ്ലേ നീക്കം ചെയ്തു) ---
+        // --- സ്ലൈഡർ ആരംഭിക്കുന്നു (ഓട്ടോപ്ലേ ഇല്ലാതെ, ഡോട്ടുകളോടെ) ---
         const heroSwiper = new Swiper('.hero-slider-new', {
             loop: true,
             effect: 'fade',
@@ -81,28 +88,45 @@ async function loadHeroSlider() {
             allowTouchMove: true, // സ്വൈപ്പ് ചെയ്യാൻ അനുവദിക്കുന്നു
             speed: 1000,
             
-            // ഓട്ടോപ്ലേ പൂർണ്ണമായും നീക്കം ചെയ്തു
-            // autoplay: { ... },
+            // ഓട്ടോപ്ലേ നീക്കം ചെയ്തു
             
-            // *** പുതിയതായി ഡോട്ടുകൾ (Pagination) ചേർത്തു ***
             pagination: {
-                el: '.hero-pagination-dots', // index.html-ൽ ചേർത്ത div
+                el: '.hero-pagination-dots',
                 clickable: true,
             },
         });
         
-        // സ്ലൈഡ് മാറുമ്പോൾ വീഡിയോ നിർത്താനുള്ള കോഡ്
+        // --- സ്ലൈഡ് മാറുമ്പോൾ വീഡിയോ നിർത്താനുള്ള കോഡ് ---
         heroSwiper.on('slideChange', function () {
             // എല്ലാ iframe-കളും നിർത്തുന്നു
             const allIframes = sliderWrapper.querySelectorAll('iframe');
             allIframes.forEach(iframe => {
-                iframe.src = iframe.src; // src റീലോഡ് ചെയ്ത് വീഡിയോ നിർത്തുന്നു
+                // src റീസെറ്റ് ചെയ്ത് വീഡിയോ നിർത്തുന്നു
+                const currentSrc = iframe.src;
+                iframe.src = currentSrc; 
             });
             // എല്ലാ വീഡിയോ ടാഗുകളും നിർത്തുന്നു
             const allVideos = sliderWrapper.querySelectorAll('video');
             allVideos.forEach(video => {
                 video.pause();
+                // വീഡിയോ ഓട്ടോപ്ലേ ആയതിനാൽ, ആക്ടീവ് അല്ലാത്തവ നിർത്തുന്നു
+                if (video.closest('.swiper-slide-active')) {
+                   video.play(); // ആക്ടീവ് സ്ലൈഡിലെ വീഡിയോ മാത്രം പ്ലേ ചെയ്യുന്നു
+                } else {
+                   video.pause();
+                }
             });
+        });
+
+        // YouTube-ൽ ക്ലിക്ക് ചെയ്യുമ്പോൾ സ്ലൈഡ് നിർത്താൻ
+        heroSwiper.on('touchStart', function(swiper, event) {
+            const target = event.target;
+            if (target.tagName === 'IFRAME') {
+                swiper.allowTouchMove = false;
+            }
+        });
+        heroSwiper.on('touchEnd', function(swiper) {
+             swiper.allowTouchMove = true;
         });
 
 
