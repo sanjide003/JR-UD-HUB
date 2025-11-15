@@ -1,7 +1,7 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// "Boutique Video" കോഡ് നീക്കം ചെയ്തു.
+// *** Vercel-ൽ പ്രവർത്തിക്കാനായി പാതകൾ ശരിയാക്കി ***
 
-import { db, appId } from './firebase-config.js'; // *** appId ഇമ്പോർട്ട് ചെയ്യുന്നു ***
+import { db } from './firebase-config.js'; // appId ഇമ്പോർട്ട് ചെയ്യേണ്ട ആവശ്യമില്ല
 import { 
     collection, 
     getDocs,
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHeroSlider();
     loadTopSellers();
     loadHomeCategories();
-    // setupBoutiqueVideo(); // <-- ഈ ഫംഗ്ഷൻ നീക്കം ചെയ്തു
+    // setupBoutiqueVideo(); // <-- ഈ ഫംഗ്ഷൻ നമ്മൾ നീക്കം ചെയ്തിരുന്നു
 });
 
 /**
@@ -39,8 +39,8 @@ async function loadHeroSlider() {
     if (!sliderWrapper || !heroSection) return;
 
     try {
-        // *** ഡാറ്റാബേസ് പാത്ത് ശരിയാക്കി ***
-        const q = query(collection(db, `artifacts/${appId}/public/data/heroSlides`), orderBy("order"));
+        // *** ഇതാണ് ശരിയായ പാത്ത് ***
+        const q = query(collection(db, "heroSlides"), orderBy("order"));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
@@ -72,10 +72,10 @@ async function loadHeroSlider() {
             effect: 'fade',
             fadeEffect: { crossFade: true },
             autoplay: {
-                delay: 4000, // 4 സെക്കൻഡ്
+                delay: 4000,
                 disableOnInteraction: false
             },
-            allowTouchMove: true, // മൊബൈലിൽ സ്വൈപ്പ് ചെയ്യാൻ
+            allowTouchMove: true,
             speed: 1000,
         });
 
@@ -86,16 +86,16 @@ async function loadHeroSlider() {
 
 
 /**
- * 2. "Top Sellers" കറൗസൽ ലോഡ് ചെയ്യുന്നു (പുതിയ ഡിസൈൻ)
+ * 2. "Top Sellers" കറൗസൽ ലോഡ് ചെയ്യുന്നു
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
 
     try {
-        // *** ഡാറ്റാബേസ് പാത്ത് ശരിയാക്കി ***
+        // *** ഇതാണ് ശരിയായ പാത്ത് ***
         const q = query(
-            collection(db, `artifacts/${appId}/public/data/products`), 
+            collection(db, "products"), 
             where("featured", "==", true), 
             limit(10)
         );
@@ -115,12 +115,10 @@ async function loadTopSellers() {
             const card = document.createElement('div');
             card.className = 'swiper-slide';
 
-            // വില (MRP ഇല്ലെങ്കിൽ കാണിക്കില്ല)
             let priceHTML = `₹${product.price || 0} /-`;
             
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
-            // പുതിയ HTML ഘടന
             card.innerHTML = `
                 <a href="product.html?id=${productId}">
                     <img src="${imageUrl}" 
@@ -155,14 +153,14 @@ async function loadTopSellers() {
         new Swiper('.top-sellers-swiper-new', {
             slidesPerView: 1,
             spaceBetween: 20,
-            pagination: { // ഡോട്ടുകൾ ചേർക്കുന്നു
+            pagination: {
                 el: '.swiper-pagination',
                 clickable: true,
             },
             breakpoints: {
                 640: { slidesPerView: 2 },
-                900: { slidesPerView: 4 }, // 2 കോളം ആക്കി
-                1200: { slidesPerView: 4 }, // 2 കോളം ആക്കി
+                900: { slidesPerView: 4 },
+                1200: { slidesPerView: 4 },
             }
         });
 
@@ -173,18 +171,18 @@ async function loadTopSellers() {
 }
 
 /**
- * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു (പുതിയ ഡിസൈൻ)
+ * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു
  */
 async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
 
     try {
-        // *** ഡാറ്റാബേസ് പാത്ത് ശരിയാക്കി ***
+        // *** ഇതാണ് ശരിയായ പാത്ത് ***
         const catQuery = query(
-            collection(db, `artifacts/${appId}/public/data/categories`),
+            collection(db, "categories"),
             orderBy("name"),
-            limit(8) // കൂടുതൽ കാറ്റഗറികൾ കാണിക്കാം
+            limit(8)
         );
         const catSnapshot = await getDocs(catQuery);
 
@@ -221,14 +219,6 @@ async function loadHomeCategories() {
     }
 }
 
-/*
- * 4. ബൊട്ടീക് വീഡിയോ മോഡൽ പ്രവർത്തിപ്പിക്കുന്നു - ഈ ഭാഗം നീക്കം ചെയ്തു
- */
-
-/*
- * YouTube URL-ൽ നിന്ന് ID വേർതിരിച്ചെടുക്കുന്നു - ഈ ഭാഗം നീക്കം ചെയ്തു
- */
-
 /**
  * ഹോം പേജിലെ "Add to Cart" ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
  */
@@ -238,7 +228,7 @@ if (topSellersGrid) {
         const button = e.target.closest('.btn-add-to-cart');
         if (!button) return;
 
-        e.preventDefault(); // ലിങ്ക് ആണെങ്കിൽ തടയുന്നു
+        e.preventDefault(); 
 
         const id = button.dataset.id;
         const product = {
@@ -248,10 +238,8 @@ if (topSellersGrid) {
             image: button.dataset.image
         };
 
-        // കാർട്ടിലേക്ക് ചേർക്കുന്നു
         addToCart(id, product);
 
-        // ഉപഭോക്താവിനെ അറിയിക്കുന്നു
         button.innerHTML = 'ADDED!';
         button.disabled = true;
         setTimeout(() => {
