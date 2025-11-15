@@ -12,7 +12,7 @@
     --text-color: #FFFFFF;
     --text-muted: #aaa;
     --card-bg: #111111;
-    --border-color: #333;
+    --border-color: #333; /* ചാരനിറം */
     --error-red: #e74c3c;
     --success-green: #2ecc71;
     --whatsapp-green: #25D366; /* WhatsApp പച്ച */
@@ -498,7 +498,7 @@ img {
 
 /* --- 7. ബട്ടൺ സ്റ്റൈലുകൾ (പുതിയത്, ഐക്കണുകളോട് കൂടിയത്) --- */
 
-/* 7.1. പ്രധാന ബട്ടൺ (സ്വർണ്ണം / പച്ച) */
+/* 7.1. പ്രധാന ബട്ടൺ (സ്വർണ്ണം) */
 .btn-primary-new,
 .btn-primary-icon {
     display: inline-flex;
@@ -699,16 +699,30 @@ img {
     font-size: 0.8rem;
     padding: 0.6rem 0.5rem;
 }
-/* *** 'You May Also Like' - വെള്ള ബാഗ് ഐക്കൺ *** */
+
+/* *** 'You May Also Like' - ചാരനിറം + വെള്ള ബാഗ് ഐക്കൺ *** */
+.cat-product-buttons .btn-secondary-new {
+    background-color: var(--border-color);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+.cat-product-buttons .btn-secondary-new:hover {
+    background-color: #444;
+    border-color: #444;
+}
 .cat-product-buttons .btn-secondary-new svg.icon-btn {
     stroke: var(--text-color);
     fill: none;
 }
-/* *** 'You May Also Like' - പച്ച ബട്ടൺ, വെള്ള ഐക്കൺ *** */
+/* *** 'You May Also Like' - ചാരനിറം + വെള്ള WhatsApp ഐക്കൺ *** */
 .cat-product-buttons .btn-primary-new {
-    background-color: var(--whatsapp-green);
-    border-color: var(--whatsapp-green);
+    background-color: var(--border-color);
+    border-color: var(--border-color);
     color: var(--text-color); /* ടെക്സ്റ്റ് വെള്ള */
+}
+.cat-product-buttons .btn-primary-new:hover {
+    background-color: #444;
+    border-color: #444;
 }
 .cat-product-buttons .btn-primary-new svg.icon-btn {
     fill: var(--text-color);
@@ -798,31 +812,29 @@ img {
     max-width: 400px;
     margin-bottom: 1rem;
 }
-/* *** 'Add to Cart' ബട്ടണിലെ ഐക്കൺ (വെള്ള) *** */
+/* *** 'Add to Cart' ബട്ടൺ (ചാരനിറം + വെള്ള ബാഗ് ഐക്കൺ) *** */
 .product-actions-grid .btn-secondary-new {
-    color: var(--text-color); /* ടെക്സ്റ്റ് വെള്ള */
-    border-color: var(--text-color); /* ബോർഡർ വെള്ള */
+    background-color: var(--border-color);
+    border-color: var(--border-color);
+    color: var(--text-color);
 }
 .product-actions-grid .btn-secondary-new:hover {
-    background-color: var(--text-color);
-    color: var(--bg-color);
+    background-color: #444;
+    border-color: #444;
 }
 .product-actions-grid .btn-secondary-new svg.icon-btn {
     stroke: var(--text-color);
     fill: none;
 }
-.product-actions-grid .btn-secondary-new:hover svg.icon-btn {
-    stroke: var(--bg-color);
-}
-/* *** 'Buy on WhatsApp' ബട്ടൺ (പച്ച ബാക്ക്ഗ്രൗണ്ട്, വെള്ള ഐക്കൺ) *** */
+/* *** 'Buy on WhatsApp' ബട്ടൺ (ചാരനിറം + വെള്ള WhatsApp ഐക്കൺ) *** */
 .product-actions-grid .btn-primary-new {
-    background-color: var(--whatsapp-green);
-    border-color: var(--whatsapp-green);
+    background-color: var(--border-color);
+    border-color: var(--border-color);
     color: var(--text-color); /* ടെക്സ്റ്റ് വെള്ള */
 }
 .product-actions-grid .btn-primary-new:hover {
-    background-color: #1EBE59;
-    border-color: #1EBE59;
+    background-color: #444;
+    border-color: #444;
 }
 .product-actions-grid .btn-primary-new svg.icon-btn {
     fill: var(--text-color);
