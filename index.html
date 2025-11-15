@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് ഹോം പേജ്. 
-  *** "Featured" സെക്ഷനിലെ വിവരണം നീക്കം ചെയ്യുകയും ബട്ടൺ മാറ്റി എഴുതുകയും ചെയ്തു ***
+  *** "Shop by Category" സെക്ഷൻ സ്ലൈഡർ ആക്കി മാറ്റി ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -9,33 +9,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Al Ambar Perfumes - Luxury Arabic Perfumes</title>
     
-    <!-- പൊതുവായ ഡിസൈൻ ഫയൽ -->
     <link rel="stylesheet" href="public.css">
-    
-    <!-- ഹോം പേജിന് മാത്രമുള്ള ചില സ്റ്റൈലുകൾ (കറൗസൽ) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body>
 
-    <!-- 1. ഹെഡർ (common.js ഉപയോഗിച്ച് ഓട്ടോമാറ്റിക്കായി ഇവിടെ വരും) -->
-    <header class="main-header" id="main-header">
-        <!-- ഹെഡർ ലോഡ് ആവുന്നു... -->
-    </header>
+    <!-- 1. ഹെഡർ -->
+    <header class="main-header" id="main-header"></header>
     
-    <!-- 2. വശത്തുള്ള മെനു (common.js ഉപയോഗിച്ച് ഓട്ടോമാറ്റിക്കായി ഇവിടെ വരും) -->
+    <!-- 2. സൈഡ് മെനു -->
     <nav class="side-nav" id="side-nav"></nav>
     <div class="nav-overlay" id="nav-overlay"></div>
 
     <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main>
         
-        <!-- 3.1. ഹീറോ സ്ലൈഡർ (പോർട്രെയ്റ്റ്) -->
+        <!-- 3.1. ഹീറോ സ്ലൈഡർ -->
         <section class="hero-section-new">
             <div class="swiper hero-slider-new" id="hero-slider-container">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <!-- 'index.js' ഉപയോഗിച്ച് സ്ലൈഡുകൾ (വീഡിയോ/ഫോട്ടോ) ഇവിടെ വരും -->
+                    <!-- 'index.js' ഉപയോഗിച്ച് സ്ലൈഡുകൾ ഇവിടെ വരും -->
                 </div>
-                <!-- ഈ സ്ലൈഡറിന് നാവിഗേഷൻ ആവശ്യമില്ല -->
             </div>
         </section>
 
@@ -44,45 +38,45 @@
             <p>We believe that a perfumer is a poet or a storyteller who use intangible ingredients to create emotions. The main idea behind Oud Arabia is to Abstract memories that evoke our cores. We paint pictures without using paint. We are storytellers who do need words.</p>
         </section>
 
-        <!-- 3.3. ടോപ്പ് സെല്ലേഴ്സ് (Top Sellers) - പുതിയ ഡിസൈൻ -->
+        <!-- 3.3. ടോപ്പ് സെല്ലേഴ്സ് -->
         <section class="home-section container">
             <h2 class="section-title-new">TOP SELLERS</h2>
             <div class="swiper top-sellers-swiper-new">
                 <div class="swiper-wrapper" id="top-sellers-grid">
                     <!-- 'index.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
                 </div>
-                <div class="swiper-pagination"></div> <!-- ഡോട്ടുകൾക്ക് വേണ്ടി -->
+                <div class="swiper-pagination"></div>
             </div>
         </section>
 
-        <!-- 3.4. ഷോപ്പ് ബൈ കാറ്റഗറി (Shop by Category) - പുതിയ ഡിസൈൻ -->
+        <!-- 3.4. ഷോപ്പ് ബൈ കാറ്റഗറി (സ്ലൈഡർ ആക്കി മാറ്റി) -->
         <section class="home-section container">
             <h2 class="section-title-new">SHOP BY CATEGORY</h2>
-            <div class="category-grid-home-new" id="category-grid-home">
-                <!-- 'index.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ ഇവിടെ വരും -->
+            <!-- *** 'category-grid-home-new' എന്നതിന് പകരം Swiper കണ്ടെയ്നർ ഉപയോഗിക്കുന്നു *** -->
+            <div class="swiper category-swiper-new">
+                <div class="swiper-wrapper" id="category-grid-home">
+                    <!-- 'index.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ (swiper-slide ആയി) ഇവിടെ വരും -->
+                </div>
             </div>
         </section>
         
-        <!-- 3.5. ഫീച്ചേർഡ് സെക്ഷൻ (മാറ്റം വരുത്തിയത്) -->
+        <!-- 3.5. ഫീച്ചേർഡ് സെക്ഷൻ -->
         <section class="home-section container featured-section">
             <div class="featured-image">
                 <img src="https://placehold.co/600x400/111111/D4AF37?text=Gallery+Image" alt="Featured Gallery">
             </div>
             <div class="featured-content">
                 <h2 class="section-title-new">FEATURED</h2>
-                <!-- <p>Immerse yourself in our meticulously curated image gallery, designed to assist you in finding the perfect product.</p> --> <!-- പാരഗ്രാഫ് നീക്കം ചെയ്തു -->
-                <a href="categories.html" class="btn btn-primary-new">Upgrade Your Aura</a> <!-- ബട്ടൺ ടെക്സ്റ്റ് മാറ്റി -->
+                <a href="categories.html" class="btn btn-primary-new">Upgrade Your Aura</a>
             </div>
         </section>
         
     </main>
 
-    <!-- 4. ഫൂട്ടർ (common.js ഉപയോഗിച്ച് പുതിയ അക്കോർഡിയൻ ഫൂട്ടർ ഇവിടെ വരും) -->
-    <footer class="main-footer-new" id="main-footer">
-        <!-- ഫൂട്ടർ ലോഡ് ആവുന്നു... -->
-    </footer>
+    <!-- 4. ഫൂട്ടർ -->
+    <footer class="main-footer-new" id="main-footer"></footer>
 
-    <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ (common.js വഴി ഇവിടെ വരും) -->
+    <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ -->
     <div id="floating-action-buttons"></div>
 
     <!-- JS ഫയലുകൾ -->
