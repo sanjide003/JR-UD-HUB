@@ -3,6 +3,7 @@
 // 1. Swiper ഗാലറി (ഓട്ടോപ്ലേ, ഡോട്ടുകൾ സഹിതം)
 // 2. വിവരങ്ങളുടെ ക്രമം മാറ്റി (Name -> Size -> Price)
 // 3. 'Add to Cart' ഐക്കൺ 'ബാഗ്' ആക്കി
+// 4. 'You May Also Like' ബട്ടണുകൾ അപ്ഡേറ്റ് ചെയ്തു
 
 import { 
     collection, 
@@ -75,11 +76,10 @@ async function loadProductDetails() {
         // വിലയും ഡിസ്കൗണ്ടും
         const price = product.price || 0;
         const mrp = product.mrp || 0;
-        let priceHTML = `<span class="price-main">₹${price}</span>`;
+        let priceHTML = `<span class="price-main">₹${price}</span>`; // CSS ഇത് വെള്ള നിറമാക്കും
         if (mrp > price) {
             const discount = Math.round(((mrp - price) / mrp) * 100);
-            // *** MRP-ക്ക് പുതിയ ക്ലാസ് നൽകി (ചുവപ്പ് നിറത്തിനായി) ***
-            priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
+            priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`; // CSS ഇത് ചുവപ്പ് നിറമാക്കും
             priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
         }
 
@@ -136,7 +136,7 @@ async function loadProductDetails() {
                 </div>
                 
                 <div class="product-actions-grid">
-                    <!-- ബട്ടൺ 1: Add to Cart (പുതിയ ബാഗ് ഐക്കൺ) -->
+                    <!-- ബട്ടൺ 1: Add to Cart (പുതിയ വെള്ള ബാഗ് ഐക്കൺ) -->
                     <button class="btn-secondary-new" id="add-to-cart-btn">
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -146,7 +146,7 @@ async function loadProductDetails() {
                         Add to Cart
                     </button>
                     
-                    <!-- ബട്ടൺ 2: Buy on WhatsApp -->
+                    <!-- ബട്ടൺ 2: Buy on WhatsApp (പുതിയ വെള്ള ഐക്കൺ) -->
                     <a class="btn-primary-new" id="buy-on-whatsapp-btn" href="#">
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg>
                         Buy on WhatsApp
@@ -172,8 +172,6 @@ async function loadProductDetails() {
             allowTouchMove: true,
             speed: 600,
         });
-
-        // പഴയ ഗാലറി കോഡ് നീക്കം ചെയ്തു
         
         // ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
         setupProductActionButtons();
@@ -188,13 +186,6 @@ async function loadProductDetails() {
     }
 }
 
-/**
- * ഫോട്ടോ ഗാലറിയിലെ ക്ലിക്കുകൾ പ്രവർത്തിപ്പിക്കുന്നു
- * (ഈ ഫംഗ്ഷൻ ഇപ്പോൾ ആവശ്യമില്ല, Swiper ഇത് കൈകാര്യം ചെയ്തോളും)
- */
-function setupGalleryEvents() {
-    // Swiper ഇപ്പോൾ ഇത് കൈകാര്യം ചെയ്യുന്നു
-}
 
 /**
  * "Add to Cart", "Buy on WhatsApp" ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
@@ -281,23 +272,31 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
             const mrp = product.mrp || 0;
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
+            // *** പുതിയ മാറ്റം: 'You May Also Like' ബട്ടണുകൾ അപ്ഡേറ്റ് ചെയ്തു ***
             card.innerHTML = `
                 <a href="product.html?id=${productId}" class="cat-product-image-link">
                     <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
                 </a>
                 <div class="cat-product-content">
                     <h3 class="cat-product-title">${product.name}</h3>
-                    <div class="cat-product-buttons">
-                        <button class="btn btn-secondary-icon btn-add-to-cart"
+                    <!-- 'product.js'-ലെ പ്രധാന ബട്ടണുകൾക്ക് സമാനമായ ഗ്രിഡ് -->
+                    <div class="product-actions-grid related-buttons">
+                        <!-- വെള്ള ബാഗ് ഐക്കൺ -->
+                        <button class="btn btn-secondary-new btn-add-to-cart"
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${price}"
                             data-mrp="${mrp}"
                             data-image="${imageUrl}">
-                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
-                            <span>Add to Cart</span>
+                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <path d="M16 10a4 4 0 0 1-8 0"></path>
+                            </svg>
+                            <span>Cart</span>
                         </button>
-                        <a href="product.html?id=${productId}" class="btn btn-primary-icon">
+                        <!-- വെള്ള WhatsApp ഐക്കൺ -->
+                        <a href="product.html?id=${productId}" class="btn btn-primary-new">
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg>
                             <span>Buy</span>
                         </a>
@@ -328,9 +327,14 @@ relatedProductsGrid.addEventListener('click', (e) => {
     button.innerHTML = 'Added!';
     button.disabled = true;
     setTimeout(() => {
+        // *** പുതിയ മാറ്റം: വെള്ള ബാഗ് ഐക്കൺ തിരികെ കൊണ്ടുവരുന്നു ***
         button.innerHTML = `
-            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
-            <span>Add to Cart</span>
+            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
+            <span>Cart</span>
         `;
         button.disabled = false;
     }, 2000);
