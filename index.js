@@ -1,5 +1,5 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** Mute/Unmute ബട്ടൺ എല്ലാ ബ്രൗസറിലും പ്രവർത്തിക്കാൻ ശരിയാക്കി ***
+// *** Mute/Unmute ബട്ടണും അതിന്റെ പ്രവർത്തനവും പൂർണ്ണമായും നീക്കം ചെയ്തു ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -26,17 +26,13 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ ലോഡ് ചെയ്യുന്നു (Mute ബട്ടണോടെ)
+ * 1. ഹീറോ സ്ലൈഡർ ലോഡ് ചെയ്യുന്നു (Mute ബട്ടൺ ഇല്ലാതെ)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
     if (!sliderWrapper) return;
     
-    const muteButton = document.getElementById('hero-mute-btn');
-    const iconMute = muteButton.querySelector('.icon-mute');
-    const iconUnmute = muteButton.querySelector('.icon-unmute');
-    let isMuted = true;
-    let userHasInteracted = false; // ഉപഭോക്താവ് ബട്ടൺ അമർത്തിയോ എന്നറിയാൻ
+    // Mute ബട്ടൺ കോഡ് പൂർണ്ണമായും നീക്കം ചെയ്തു
 
     try {
         const q = query(collection(db, "heroSlides"), orderBy("order"));
@@ -65,6 +61,7 @@ async function loadHeroSlider() {
                 }
 
                 if (videoId) {
+                    // YouTube വീഡിയോകൾ എപ്പോഴും Mute=1 ആയിരിക്കും
                     embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&playsinline=1`;
                 }
 
@@ -72,17 +69,19 @@ async function loadHeroSlider() {
                     slideEl.innerHTML = `<img src="${slide.url}" alt="Hero Image">`;
                 }
                 else if (isVideo && embedUrl) {
+                    // YouTube വീഡിയോ
                     slideEl.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 }
                 else if (isVideo) {
-                    // *** .mp4 വീഡിയോകൾക്ക് 'hero-video' എന്ന ക്ലാസ് നൽകുന്നു ***
-                    slideEl.innerHTML = `<video class="hero-video" src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>`;
+                    // നേരിട്ടുള്ള .mp4 വീഡിയോ (എപ്പോഴും Muted)
+                    slideEl.innerHTML = `<video src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>`;
                 }
                 
                 sliderWrapper.appendChild(slideEl);
             });
         }
 
+        // --- സ്ലൈഡർ ആരംഭിക്കുന്നു ---
         const heroSwiper = new Swiper('.hero-slider-new', {
             loop: true,
             effect: 'fade',
@@ -95,34 +94,7 @@ async function loadHeroSlider() {
             },
         });
         
-        // --- Mute ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ (ശരിയാക്കിയത്) ---
-        muteButton.addEventListener('click', () => {
-            isMuted = !isMuted; // Mute അവസ്ഥ മാറ്റുന്നു
-            userHasInteracted = true; // ഉപഭോക്താവ് ബട്ടൺ അമർത്തി എന്ന് രേഖപ്പെടുത്തുന്നു
-
-            // *** പ്രധാന മാറ്റം: എല്ലാ .mp4 വീഡിയോകളുടെയും ശബ്ദം മാറ്റുന്നു ***
-            const allVideos = sliderWrapper.querySelectorAll('video.hero-video');
-            allVideos.forEach(video => {
-                video.muted = isMuted;
-            });
-            
-            // ഇപ്പോൾ പ്ലേ ആവുന്ന വീഡിയോയുടെ ശബ്ദം ഉറപ്പുവരുത്തുന്നു
-            const activeSlide = sliderWrapper.querySelector('.swiper-slide-active');
-            if (activeSlide) {
-                const activeVideo = activeSlide.querySelector('video.hero-video');
-                if (activeVideo) {
-                    activeVideo.muted = isMuted;
-                    // ശബ്ദം ഓൺ ആക്കാൻ വേണ്ടി വീണ്ടും പ്ലേ ചെയ്യാൻ ശ്രമിക്കുന്നു
-                    if (!isMuted) {
-                        activeVideo.play(); 
-                    }
-                }
-            }
-            
-            // ഐക്കൺ മാറ്റുന്നു
-            iconMute.style.display = isMuted ? 'block' : 'none';
-            iconUnmute.style.display = isMuted ? 'none' : 'block';
-        });
+        // --- Mute ബട്ടൺ ക്ലിക്ക് ഇവന്റ് നീക്കം ചെയ്തു ---
 
         // --- സ്ലൈഡ് മാറുമ്പോൾ ---
         heroSwiper.on('slideChange', function () {
@@ -133,31 +105,26 @@ async function loadHeroSlider() {
             });
             
             // 2. എല്ലാ .mp4 വീഡിയോകളും നിർത്തുന്നു
-            const allVideos = sliderWrapper.querySelectorAll('video.hero-video');
+            const allVideos = sliderWrapper.querySelectorAll('video');
             allVideos.forEach(video => {
                 video.pause();
-            });
-
-            // 3. പുതിയ സ്ലൈഡിലെ വീഡിയോ പ്ലേ ചെയ്യുന്നു
-            const newActiveSlide = sliderWrapper.querySelector('.swiper-slide-active');
-            if (newActiveSlide) {
-                const newActiveVideo = newActiveSlide.querySelector('video.hero-video');
-                if (newActiveVideo) {
-                    // Mute ബട്ടണിന്റെ ഇപ്പോഴത്തെ അവസ്ഥ അനുസരിച്ച് ശബ്ദം ക്രമീകരിക്കുന്നു
-                    newActiveVideo.muted = isMuted; 
-                    newActiveVideo.play().catch(error => {
-                        // ബ്രൗസർ നിയമം കാരണം പ്ലേ ആയില്ലെങ്കിൽ, ശബ്ദം ഓഫ് ആക്കി വീണ്ടും ശ്രമിക്കുന്നു
-                        if (userHasInteracted) { // ഉപഭോക്താവ് ഒരിക്കലെങ്കിലും ബട്ടൺ അമർത്തിയിട്ടും പരാജയപ്പെട്ടാൽ മാത്രം
-                            console.warn("Unmuted autoplay failed. Retrying as muted.", error);
-                            isMuted = true;
-                            newActiveVideo.muted = true;
-                            newActiveVideo.play();
-                            iconMute.style.display = 'block';
-                            iconUnmute.style.display = 'none';
-                        }
-                    });
+                // 3. പുതിയ സ്ലൈഡിലെ വീഡിയോ പ്ലേ ചെയ്യുന്നു (എപ്പോഴും Muted ആയി)
+                if (video.closest('.swiper-slide-active')) {
+                   video.muted = true; // ശബ്ദം ഇല്ലെന്ന് ഉറപ്പാക്കുന്നു
+                   video.play();
                 }
+            });
+        });
+
+        // YouTube-ൽ ക്ലിക്ക് ചെയ്യുമ്പോൾ സ്ലൈഡ് നിർത്താൻ (സ്വൈപ്പ് ശരിയാക്കാൻ)
+        heroSwiper.on('touchStart', function(swiper, event) {
+            const target = event.target;
+            if (target.tagName === 'IFRAME') {
+                swiper.allowTouchMove = false;
             }
+        });
+        heroSwiper.on('touchEnd', function(swiper) {
+             swiper.allowTouchMove = true;
         });
 
     } catch (error) { console.error("Error loading hero slider: ", error); }
