@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** "View" ബട്ടൺ മാറ്റി "Buy" (WhatsApp ഐക്കൺ) എന്നാക്കി ***
+// *** "Add to Cart", "Buy on WhatsApp" എന്നീ രണ്ട് ബട്ടണുകൾ ചേർത്തു ***
 
 import { 
     collection, 
@@ -20,10 +20,13 @@ setLogLevel('Debug');
 const productDetailContent = document.getElementById('product-detail-content');
 const relatedProductsGrid = document.getElementById('related-products-grid');
 let currentProduct = null;
+let whatsappNumber = ''; // WhatsApp നമ്പർ സേവ് ചെയ്യാൻ
 
 // പേജ് ലോഡ് ആവുമ്പോൾ
-document.addEventListener("DOMContentLoaded", () => {
-    loadSiteSettings();
+document.addEventListener("DOMContentLoaded", async () => {
+    // പൊതുവായ കാര്യങ്ങൾ ലോഡ് ചെയ്യുന്നു
+    await loadSiteSettings();
+    // ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു
     loadProductDetails();
 });
 
@@ -41,6 +44,14 @@ async function loadProductDetails() {
             productDetailContent.innerHTML = '<p class="error-message">Product ID not found. Please go back and try again.</p>';
             return;
         }
+
+        // WhatsApp നമ്പർ അഡ്മിൻ പാനലിൽ നിന്ന് എടുക്കുന്നു
+        try {
+            const settingsDoc = await getDoc(doc(db, "settings", "global"));
+            if (settingsDoc.exists() && settingsDoc.data().whatsapp) {
+                whatsappNumber = settingsDoc.data().whatsapp;
+            }
+        } catch (e) { console.error("Could not load whatsapp number", e); }
 
         const docRef = doc(db, "products", productId);
         const docSnap = await getDoc(docRef);
@@ -101,7 +112,7 @@ async function loadProductDetails() {
             `;
         }
 
-        // ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ
+        // *** പ്രധാന മാറ്റം: രണ്ട് ബട്ടണുകൾ ചേർക്കുന്നു ***
         const infoHTML = `
             <div class="product-info">
                 <h1 class="product-title">${product.name}</h1>
@@ -109,15 +120,31 @@ async function loadProductDetails() {
                     ${priceHTML}
                 </div>
                 <div class="product-description">
+                    <!-- സ്ക്രീൻഷോട്ടിലെ ബഗ് പരിഹരിക്കുന്നു: ഇവിടെ Description ആണ് വരേണ്ടത് -->
                     ${product.description ? product.description.replace(/\n/g, '<br>') : 'No description available.'}
                 </div>
                 <div class="product-size">
                     <strong>Size:</strong> ${product.size || 'N/A'}
                 </div>
-                <button class="btn-primary-new btn-add-to-cart-main" id="add-to-cart-btn">
-                    <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
-                    Add to Cart
-                </button>
+                
+                <!-- പുതിയ 2-ബട്ടൺ ഗ്രിഡ് -->
+                <div class="product-actions-grid">
+                    <!-- ബട്ടൺ 1: Add to Cart (ബാഗ് ഐക്കൺ) -->
+                    <button class="btn-secondary-new" id="add-to-cart-btn">
+                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        Add to Cart
+                    </button>
+                    
+                    <!-- ബട്ടൺ 2: Buy on WhatsApp (WhatsApp ഐക്കൺ) -->
+                    <a class="btn-primary-new" id="buy-on-whatsapp-btn" href="#">
+                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg>
+                        Buy on WhatsApp
+                    </a>
+                </div>
                 <div id="add-to-cart-feedback" style="display: none;"></div>
             </div>
         `;
@@ -125,7 +152,9 @@ async function loadProductDetails() {
         productDetailContent.innerHTML = galleryHTML + infoHTML;
 
         setupGalleryEvents();
-        setupCartButton();
+        
+        // ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
+        setupProductActionButtons();
 
         if (product.categoryId) {
             loadRelatedProducts(product.categoryId, productIdStr);
@@ -154,33 +183,66 @@ function setupGalleryEvents() {
 }
 
 /**
- * "Add to Cart" ബട്ടൺ പ്രവർത്തിപ്പിക്കുന്നു
+ * "Add to Cart", "Buy on WhatsApp" ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
  */
-function setupCartButton() {
-    const button = document.getElementById('add-to-cart-btn');
+function setupProductActionButtons() {
+    const cartButton = document.getElementById('add-to-cart-btn');
+    const whatsappButton = document.getElementById('buy-on-whatsapp-btn');
     const feedback = document.getElementById('add-to-cart-feedback');
     
-    if (!button) return;
+    // 1. "Add to Cart" ബട്ടൺ
+    if (cartButton) {
+        cartButton.addEventListener('click', () => {
+            if (currentProduct) {
+                addToCart(currentProduct.id, currentProduct);
+                
+                feedback.textContent = `${currentProduct.name} has been added to your cart.`;
+                feedback.style.display = 'block';
+                feedback.style.color = 'var(--success-green)';
+                
+                cartButton.innerHTML = 'Added!';
+                cartButton.disabled = true;
 
-    button.addEventListener('click', () => {
-        if (currentProduct) {
-            addToCart(currentProduct.id, currentProduct);
-            
-            button.innerHTML = 'Added!';
-            button.disabled = true;
-            feedback.textContent = `${currentProduct.name} has been added to your cart.`;
-            feedback.style.display = 'block';
-
-            setTimeout(() => {
-                button.innerHTML = `
-                    <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
-                    Add to Cart
-                `;
-                button.disabled = false;
-                feedback.style.display = 'none';
-            }, 2500);
+                setTimeout(() => {
+                    cartButton.innerHTML = `
+                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        Add to Cart
+                    `;
+                    cartButton.disabled = false;
+                    feedback.style.display = 'none';
+                }, 2500);
+            }
+        });
+    }
+    
+    // 2. "Buy on WhatsApp" ബട്ടൺ
+    if (whatsappButton) {
+        if (!whatsappNumber) {
+            whatsappButton.style.display = 'none'; // WhatsApp നമ്പർ ഇല്ലെങ്കിൽ ബട്ടൺ മറയ്ക്കുന്നു
+            return;
         }
-    });
+        
+        whatsappButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (currentProduct) {
+                const productLink = window.location.href; // ഇപ്പോഴത്തെ പേജിന്റെ ലിങ്ക്
+                let message = `Hi, I'm interested in this product:\n\n`;
+                message += `*${currentProduct.name}*\n`;
+                message += `${productLink}`;
+                
+                const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+                window.open(whatsappUrl, '_blank');
+            } else {
+                 feedback.textContent = `Could not get product details.`;
+                 feedback.style.display = 'block';
+                 feedback.style.color = 'var(--error-red)';
+            }
+        });
+    }
 }
 
 /**
@@ -188,28 +250,18 @@ function setupCartButton() {
  */
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
-
     try {
-        const q = query(
-            collection(db, "products"),
-            where("categoryId", "==", categoryId),
-            limit(5) 
-        );
-
+        const q = query(collection(db, "products"), where("categoryId", "==", categoryId), limit(5));
         const querySnapshot = await getDocs(q);
         relatedProductsGrid.innerHTML = '';
         let count = 0;
-
         querySnapshot.forEach((doc) => {
-            if (doc.id === excludeProductId || count >= 4) {
-                return; 
-            }
+            if (doc.id === excludeProductId || count >= 4) return;
             
             const product = doc.data();
             const productId = doc.id;
             const card = document.createElement('div');
             card.className = 'category-product-card';
-
             const price = product.price || 0;
             const mrp = product.mrp || 0;
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
@@ -230,7 +282,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
                             <span>Add to Cart</span>
                         </button>
-                        <!-- *** ഇതാണ് മാറ്റം വരുത്തിയ ബട്ടൺ *** -->
                         <a href="product.html?id=${productId}" class="btn btn-primary-icon">
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg>
                             <span>Buy</span>
@@ -241,21 +292,15 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
             relatedProductsGrid.appendChild(card);
             count++;
         });
-
         if (count === 0) {
             relatedProductsGrid.innerHTML = '<p class="loading-placeholder">No related products found.</p>';
         }
-
-    } catch (error) {
-        console.error("Error loading related products: ", error);
-    }
+    } catch (error) { console.error("Error loading related products: ", error); }
 }
 
-// ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങളുടെ "Add to Cart" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
 relatedProductsGrid.addEventListener('click', (e) => {
     const button = e.target.closest('.btn-add-to-cart');
     if (!button) return;
-
     e.preventDefault();
     const id = button.dataset.id;
     const product = {
@@ -264,9 +309,7 @@ relatedProductsGrid.addEventListener('click', (e) => {
         mrp: parseFloat(button.dataset.mrp),
         image: button.dataset.image
     };
-
     addToCart(id, product);
-
     button.innerHTML = 'Added!';
     button.disabled = true;
     setTimeout(() => {
