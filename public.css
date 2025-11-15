@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   എല്ലാ മാറ്റങ്ങളും ഇതിൽ ഉൾപ്പെടുത്തിയിട്ടുണ്ട്.
+   *** ഫ്ലോട്ടിംഗ് ബട്ടൺ ഐക്കണുകളുടെ നിറം കറുപ്പാക്കി ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -329,10 +329,8 @@ img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* YouTube ഷോർട്ട്സിനായി ആസ്പെക്റ്റ് റേഷ്യോ ഉറപ്പാക്കുന്നു */
     aspect-ratio: 9 / 16; 
 }
-/* സ്വൈപ്പ് ശരിയാക്കാൻ */
 .hero-slider-new .swiper-slide::after {
     content: '';
     position: absolute;
@@ -343,7 +341,6 @@ img {
     background: transparent;
     z-index: 5;
 }
-/* ഡോട്ടുകൾ (Pagination) */
 .hero-slider-new .hero-pagination-dots {
     position: absolute;
     bottom: 20px;
@@ -377,7 +374,7 @@ img {
 
 /* 6.3. പുതിയ ടോപ്പ് സെല്ലേഴ്സ് */
 .top-sellers-swiper-new {
-    padding-bottom: 3rem; /* ഡോട്ടുകൾക്ക് വേണ്ടി */
+    padding-bottom: 3rem; 
 }
 .top-sellers-swiper-new .swiper-slide {
     text-align: center;
@@ -431,7 +428,7 @@ img {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    height: 180px; /* ദീർഘചതുരത്തിലുള്ള ഉയരം */
+    height: 180px; 
 }
 .category-card-home-new:hover {
     color: var(--primary-gold);
@@ -440,7 +437,7 @@ img {
 }
 .cat-card-home-img-wrapper {
     width: 100%;
-    height: 130px; /* ചിത്രത്തിന്റെ ഉയരം */
+    height: 130px; 
     border-radius: 0;
     overflow: hidden;
     border: none;
@@ -576,7 +573,7 @@ img {
 .category-nav-mobile { -ms-overflow-style: none; scrollbar-width: none; }
 
 .category-nav-desktop {
-    display: none; /* മൊബൈലിൽ ഇത് മറയ്ക്കുന്നു */
+    display: none; 
 }
 .category-nav-link {
     display: flex;
@@ -1008,12 +1005,12 @@ img {
     left: 0;
     right: 0;
     width: 100%;
-    padding: 0 15px; /* ഇരുവശത്തും 15px പാഡിംഗ് */
+    padding: 0 15px; 
     z-index: 900;
     display: flex;
-    flex-direction: row; /* നിരയായി */
-    justify-content: space-between; /* ഇരുവശത്തേക്കും */
-    pointer-events: none; /* ബട്ടണുകൾക്കിടയിൽ ക്ലിക്ക് തടയാതിരിക്കാൻ */
+    flex-direction: row; 
+    justify-content: space-between; 
+    pointer-events: none; 
 }
 .float-btn {
     width: 50px;
@@ -1027,21 +1024,22 @@ img {
     text-decoration: none;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     transition: transform 0.3s ease;
-    pointer-events: auto; /* ബട്ടണുകളിൽ ക്ലിക്ക് സാധ്യമാക്കാൻ */
+    pointer-events: auto; 
 }
 .float-btn:hover {
     transform: scale(1.1);
 }
 .float-btn.whatsapp {
-    /* ഒന്നുമില്ല, ഡിഫോൾട്ട് ആയി ഇടതുവശത്ത് വരും */
+    /* ഇടതുവശത്ത് */
 }
 .float-btn.cart {
-    background-color: var(--primary-gold); /* പുതിയ കാർട്ട് ബട്ടണ് നിറം */
+    background-color: var(--primary-gold); 
 }
 .float-btn svg {
     width: 28px;
     height: 28px;
-    fill: currentColor;
+    /* *** ഇതാണ് മാറ്റം: ഐക്കൺ നിറം കറുപ്പാക്കി *** */
+    fill: #000000; 
 }
 
 
@@ -1054,7 +1052,7 @@ img {
         padding: 0 1rem;
     }
     .header-logo-text {
-        display: none; /* മൊബൈലിൽ പേര് കാണിക്കില്ല */
+        display: none; 
     }
     .header-icons {
         gap: 1rem;
@@ -1105,20 +1103,17 @@ img {
         height: 24px;
     }
     
-    /* കാറ്റഗറി പേജ്: മൊബൈൽ */
     .category-nav-desktop {
-        display: none; /* ആവർത്തനം ഒഴിവാക്കാൻ */
+        display: none; 
     }
     .category-page-content {
         flex-grow: 1;
     }
 
-    /* പ്രൊഡക്റ്റ് പേജ് */
     .related-products-section .product-grid {
         grid-template-columns: repeat(2, 1fr);
     }
     
-    /* കാർട്ട് പേജ് */
     .cart-item {
         grid-template-columns: 60px 1fr auto;
         gap: 0.75rem;
@@ -1129,7 +1124,6 @@ img {
         height: 60px;
     }
     
-    /* YouTube വീഡിയോ മൊബൈലിൽ ശരിയാക്കാൻ */
     .hero-slider-new .swiper-slide iframe {
         width: 100%;
         height: 100%;
@@ -1142,7 +1136,7 @@ img {
         gap: 10px;
     }
     .header-logo-text {
-        display: block; /* ഡെസ്ക്ടോപ്പിൽ ലോഗോ ടെക്സ്റ്റ് കാണിക്കുന്നു */
+        display: block; 
     }
     .featured-section {
         grid-template-columns: 1fr 1fr;
@@ -1152,13 +1146,12 @@ img {
         order: 1;
     }
     
-    /* കാറ്റഗറി പേജ്: ഡെസ്ക്ടോപ്പ് */
     .category-page-layout {
         flex-direction: row;
         gap: 2.5rem;
     }
     .category-nav-mobile {
-        display: none; /* ആവർത്തനം ഒഴിവാക്കാൻ */
+        display: none; 
     }
     .category-nav-desktop {
         display: flex;
@@ -1177,7 +1170,6 @@ img {
         grid-template-columns: repeat(3, 1fr);
     }
     
-    /* പ്രൊഡക്റ്റ് പേജ് */
     .product-detail-grid {
         grid-template-columns: 1fr 1fr;
     }
@@ -1185,13 +1177,11 @@ img {
         grid-template-columns: repeat(4, 1fr);
     }
     
-    /* കാർട്ട് പേജ് */
     .cart-page-layout {
         grid-template-columns: 2fr 1fr;
         align-items: flex-start;
     }
     
-    /* ടോപ്പ് സെല്ലേഴ്സ് */
     .top-sellers-swiper-new .swiper-slide {
         text-align: center;
     }
