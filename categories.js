@@ -1,5 +1,6 @@
-// ഇതാണ് 'categories.js' ഫയൽ.
-// *** Vercel-ൽ പ്രവർത്തിക്കാനായി പാതകൾ ശരിയാക്കി ***
+// ============================================
+// categories.js - Updated with fixes
+// ============================================
 
 import {
     collection,
@@ -10,33 +11,33 @@ import {
     where,
     limit,
     startAfter,
-    orderBy, // <-- orderBy ചേർത്തു
+    orderBy,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { db } from './firebase-config.js'; // appId ഇമ്പോർട്ട് ചെയ്യേണ്ട ആവശ്യമില്ല
-import { loadSiteSettings } from './common.js'; // ഹെഡർ, ഫൂട്ടർ ലോഡ് ചെയ്യാൻ
-import { addToCart } from './cart.js'; // കാർട്ട് ഫംഗ്ഷൻ
+import { db } from './firebase-config.js';
+import { loadSiteSettings } from './common.js';
+import { addToCart } from './cart.js';
 
 setLogLevel('Debug');
 
-// --- DOM Elements ---
+// === DOM Elements ===
 const pageTitle = document.getElementById("page-title");
-const productGrid = document.getElementById("category-product-grid");
+const productGrid = document.getElementById("product-grid"); // ✅ صحیح ID
 const categoryNavDesktop = document.getElementById("category-nav-desktop");
 const categoryNavMobile = document.getElementById("category-nav-mobile");
 const loader = document.getElementById("infinite-scroll-loader");
 
-// --- Pagination State ---
-let lastVisible = null; 
-let isLoading = false; 
-let currentCategoryId = 'all'; 
-const productsPerPage = 12; 
-let currentQuery = null; // <-- ഏത് ക്വറിയാണ് ഉപയോഗിക്കുന്നതെന്ന് ഓർമ്മിക്കാൻ
+// === Pagination State ===
+let lastVisible = null;
+let isLoading = false;
+let currentCategoryId = 'all';
+const productsPerPage = 12;
+let currentQuery = null;
 
-// --- പേജ് ലോഡ് ആവുമ്പോൾ ---
+// === Page Load ===
 document.addEventListener("DOMContentLoaded", () => {
-    loadSiteSettings(); 
-    loadCategoryList(); 
+    loadSiteSettings();
+    loadCategoryList();
     
     const urlParams = new URLSearchParams(window.location.search);
     const categoryIdFromUrl = urlParams.get('filter');
@@ -45,31 +46,30 @@ document.addEventListener("DOMContentLoaded", () => {
         currentCategoryId = categoryIdFromUrl;
     }
     
-    startLoadingProducts(currentCategoryId); 
+    startLoadingProducts(currentCategoryId);
 });
 
 /**
- * 1. കാറ്റഗറി ലിസ്റ്റ് (സൈഡ്ബാറിലും മൊബൈൽ ബാറിലും) ലോഡ് ചെയ്യുന്നു
+ * 1. Category List Load کریں
  */
 async function loadCategoryList() {
     if (!categoryNavDesktop || !categoryNavMobile) return;
 
     try {
-        // *** ഇതാണ് ശരിയായ പാത്ത് ***
-        const q = query(collection(db, "categories"), orderBy("name")); // <-- name അനുസരിച്ച് ഓർഡർ ചെയ്യുന്നു
+        const q = query(collection(db, "categories"), orderBy("name"));
         const catSnapshot = await getDocs(q);
 
         let navHtml = '';
         
-        // "All Products" ലിങ്ക്
+        // "All Products" لنک
         navHtml += `
             <a href="#" class="category-nav-link" data-id="all">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11L12 2zm0 11c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 8h12v-2H6v2z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l-5.5 9h11L12 2zm0 11c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 8h12v-2H6v2z"/></svg>
                 <span>All Products</span>
             </a>
         `;
         
-        // മറ്റ് കാറ്റഗറികൾ
+        // دوسری categories
         catSnapshot.forEach((doc) => {
             const category = doc.data();
             navHtml += `
@@ -89,13 +89,13 @@ async function loadCategoryList() {
         updateActiveCategoryUI(currentCategoryId);
 
     } catch (error) {
-        console.error("Error loading categories: ", error);
+        console.error("❌ Error loading categories: ", error);
         categoryNavDesktop.innerHTML = '<p class="loading-placeholder">Error loading categories.</p>';
     }
 }
 
 /**
- * 2. കാറ്റഗറി ലിങ്കുകൾക്ക് ക്ലിക്ക് ഇവന്റുകൾ ചേർക്കുന്നു
+ * 2. Category Link Click Events
  */
 function addNavClickListeners(navElement) {
     navElement.addEventListener('click', (e) => {
@@ -105,7 +105,7 @@ function addNavClickListeners(navElement) {
         e.preventDefault();
         const categoryId = link.dataset.id;
         
-        if (categoryId === currentCategoryId) return; 
+        if (categoryId === currentCategoryId) return;
 
         currentCategoryId = categoryId;
         startLoadingProducts(categoryId);
@@ -113,13 +113,13 @@ function addNavClickListeners(navElement) {
 }
 
 /**
- * 3. പുതിയ കാറ്റഗറി തിരഞ്ഞെടുക്കുമ്പോൾ ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യാൻ തുടങ്ങുന്നു
+ * 3. Start Loading Products
  */
 async function startLoadingProducts(categoryId) {
-    isLoading = false; // ലോഡിംഗ് അനുവദിക്കാൻ
-    productGrid.innerHTML = ''; 
-    lastVisible = null; 
-    window.scrollTo(0, 0); 
+    isLoading = false;
+    productGrid.innerHTML = '';
+    lastVisible = null;
+    window.scrollTo(0, 0);
     
     const url = new URL(window.location);
     if (categoryId === 'all') {
@@ -129,47 +129,42 @@ async function startLoadingProducts(categoryId) {
     }
     window.history.pushState({}, '', url);
 
-    // *** ഇതാണ് ശരിയായ പാത്ത് ***
     const productsRef = collection(db, "products");
 
-    // പുതിയ ക്വറി സെറ്റ് ചെയ്യുന്നു
     if (categoryId === 'all') {
         pageTitle.textContent = "All Products";
-        // 'All Products' ആണെങ്കിൽ, പേര് അനുസരിച്ച് അടുക്കുന്നു
         currentQuery = query(productsRef, orderBy("name"));
     } else {
         try {
-            // *** ഇതാണ് ശരിയായ പാത്ത് ***
             const catDoc = await getDoc(doc(db, "categories", categoryId));
             if (catDoc.exists()) {
                 pageTitle.textContent = catDoc.data().name;
             }
-            // ഒരു പ്രത്യേക കാറ്റഗറി ആണെങ്കിൽ, ചേർത്ത സമയം അനുസരിച്ച് അടുക്കുന്നു
-            currentQuery = query(productsRef, 
+            currentQuery = query(
+                productsRef,
                 where("categoryId", "==", categoryId),
-                orderBy("createdAt", "desc") // <-- ഇൻഫിനിറ്റ് സ്ക്രോളിന് ഇത് നല്ലതാണ്
+                orderBy("createdAt", "desc")
             );
-        } catch (e) { console.error("Error fetching category name", e); }
+        } catch (e) {
+            console.error("❌ Error fetching category name", e);
+        }
     }
     
     updateActiveCategoryUI(categoryId);
-    
-    // ആദ്യത്തെ ബാച്ച് ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
     await loadProducts();
 }
 
 /**
- * 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (ഇൻഫിനിറ്റ് സ്ക്രോൾ)
+ * 4. Load Products (Infinite Scroll)
  */
 async function loadProducts() {
-    if (isLoading || !currentQuery) return; // ക്വറി ഇല്ലെങ്കിലോ ലോഡിംഗ് ആണെങ്കിലോ നിർത്തുന്നു
+    if (isLoading || !currentQuery) return;
     isLoading = true;
     loader.style.display = 'flex';
 
     try {
         let q;
         
-        // നിലവിലെ ക്വറിയുടെ കൂടെ limit ചേർക്കുന്നു
         if (lastVisible) {
             q = query(currentQuery, startAfter(lastVisible), limit(productsPerPage));
         } else {
@@ -183,8 +178,8 @@ async function loadProducts() {
                 productGrid.innerHTML = '<p class="loading-placeholder-full">No products found in this category.</p>';
             }
             loader.style.display = 'none';
-            lastVisible = null; // ഇനി ലോഡ് ചെയ്യേണ്ടതില്ല
-            return; 
+            lastVisible = null;
+            return;
         }
 
         lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
@@ -197,7 +192,9 @@ async function loadProducts() {
 
             const price = product.price || 0;
             const mrp = product.mrp || 0;
-            const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
+            const imageUrl = product.images && product.images[0] 
+                ? product.images[0] 
+                : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
             card.innerHTML = `
                 <a href="product.html?id=${productId}" class="cat-product-image-link">
@@ -212,11 +209,11 @@ async function loadProducts() {
                             data-price="${price}"
                             data-mrp="${mrp}"
                             data-image="${imageUrl}">
-                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
+                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
                             <span>Add to Cart</span>
                         </button>
                         <a href="product.html?id=${productId}" class="btn btn-primary-icon">
-                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12c-2.48 0-4.5-2.02-4.5-4.5S9.52 7.5 12 7.5s4.5 2.02 4.5 4.5-2.02 4.5-4.5 4.5zm0-7c-1.38 0-2.5 1.12-2.5 2.5S10.62 14.5 12 14.5s2.5-1.12 2.5-2.5S13.38 9.5 12 9.5z"></path></svg>
+                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12c-2.48 0-4.5-2.02-4.5-4.5S9.52 7.5 12 7.5s4.5 2.02 4.5 4.5-2.02 4.5-4.5 4.5zm0-7c-1.38 0-2.5 1.12-2.5 2.5S10.62 14.5 12 14.5s2.5-1.12 2.5-2.5S13.38 9.5 12 9.5z"></path></svg>
                             <span>View</span>
                         </a>
                     </div>
@@ -226,7 +223,7 @@ async function loadProducts() {
         });
 
     } catch (error) {
-        console.error("Error loading products: ", error);
+        console.error("❌ Error loading products: ", error);
         productGrid.innerHTML = '<p class="loading-placeholder-full">Error loading products.</p>';
     } finally {
         isLoading = false;
@@ -235,7 +232,7 @@ async function loadProducts() {
 }
 
 /**
- * 5. ആക്ടീവ് കാറ്റഗറി ലിങ്ക് ഹൈലൈറ്റ് ചെയ്യുന്നു
+ * 5. Update Active Category UI
  */
 function updateActiveCategoryUI(categoryId) {
     const allLinks = document.querySelectorAll('.category-nav-link');
@@ -248,7 +245,7 @@ function updateActiveCategoryUI(categoryId) {
 }
 
 /**
- * 6. "Add to Cart" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
+ * 6. "Add to Cart" Button Click
  */
 productGrid.addEventListener('click', (e) => {
     const button = e.target.closest('.btn-add-to-cart');
@@ -265,23 +262,25 @@ productGrid.addEventListener('click', (e) => {
 
     addToCart(id, product);
 
-    button.innerHTML = 'Added!';
+    button.innerHTML = '✓ Added!';
     button.disabled = true;
+    button.style.backgroundColor = '#2ecc71';
+    
     setTimeout(() => {
         button.innerHTML = `
-            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
+            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
             <span>Add to Cart</span>
         `;
         button.disabled = false;
+        button.style.backgroundColor = '';
     }, 2000);
 });
 
 /**
- * 7. ഇൻഫിനിറ്റ് സ്ക്രോൾ നിരീക്ഷകൻ (Observer)
+ * 7. Infinite Scroll Observer
  */
 const observer = new IntersectionObserver((entries) => {
-    // lastVisible ശൂന്യമല്ലെങ്കിൽ (null അല്ലെങ്കിൽ) മാത്രം വീണ്ടും ലോഡ് ചെയ്യുക
-    if (entries[0].isIntersecting && !isLoading && lastVisible) { 
+    if (entries[0].isIntersecting && !isLoading && lastVisible) {
         loadProducts();
     }
 }, {
