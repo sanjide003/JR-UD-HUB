@@ -1,57 +1,59 @@
-/* ============================================
-   AL AMBAR - COMPLETE PUBLIC STYLESHEET
-   Mobile-First, Minimal Animation, Black & Gold
-   ============================================ */
+/* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
+   "Boutique" "Fragrance Story" എന്നീ ഭാഗങ്ങൾ നീക്കം ചെയ്തു.
+*/
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:wght@400;700&display=swap');
+/* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:wght@700&display=swap');
 
-/* === ROOT VARIABLES === */
 :root {
-    --bg-color: #0a0a0a;
+    --bg-color: #000000;
     --primary-gold: #D4AF37;
     --secondary-gold: #B8860B;
-    --tertiary-gold: #E6C200;
     --text-color: #FFFFFF;
-    --text-muted: #b8b8b8;
-    --card-bg: #1a1a1a;
-    --border-color: #2d2d2d;
+    --text-muted: #aaa;
+    --card-bg: #111111;
+    --border-color: #333;
     --error-red: #e74c3c;
-    --success-green: #2ecc71;
+    --success-green: #2ecc71; /* കാർഡ് ഡിസ്കൗണ്ടിനായി നിലനിർത്തി */
     
     --font-main: 'Inter', sans-serif;
-    --font-heading: 'Playfair Display', serif;
+    --font-heading: 'Playfair Display', serif; 
+    --font-new-heading: 'Inter', sans-serif;
     
     --header-height: 70px;
-    --transition: all 0.2s ease;
 }
 
-/* === RESET & BASE === */
+/* --- 2. പൊതുവായ സ്റ്റൈലുകൾ (General Styles) --- */
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    padding-top: var(--header-height);
+}
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-html {
-    scroll-behavior: smooth;
-}
-
-body {
-    font-family: var(--font-main);
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
-    padding-top: var(--header-height);
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
 }
 
 a {
     color: var(--primary-gold);
     text-decoration: none;
-    transition: var(--transition);
+    transition: color 0.3s ease;
 }
 
 a:hover {
-    color: var(--tertiary-gold);
+    color: var(--secondary-gold);
 }
 
 img {
@@ -60,127 +62,111 @@ img {
     display: block;
 }
 
-/* === HEADER === */
+.section-title-new {
+    text-align: center;
+    font-family: var(--font-new-heading);
+    font-size: 1.5rem;
+    font-weight: 500;
+    color: var(--primary-gold);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 2.5rem;
+}
+
+/* --- 3. ഹെഡർ (Main Header) --- */
 .main-header {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: var(--header-height);
     background-color: var(--bg-color);
-    border-bottom: 1px solid var(--border-color);
+    padding: 0 1.5rem;
+    height: var(--header-height);
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
     z-index: 1000;
 }
-
 .header-logo {
     display: flex;
     align-items: center;
-    gap: 10px;
     text-decoration: none;
+    gap: 10px;
 }
-
 .header-logo-img {
     height: 40px;
     width: auto;
-    transition: var(--transition);
 }
-
-.header-logo:hover .header-logo-img {
-    transform: scale(1.05);
-}
-
-.header-logo-content {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-}
-
 .header-logo-text {
     font-family: var(--font-heading);
-    font-size: 1.3rem;
-    font-weight: 700;
+    font-size: 1.5rem;
     color: var(--primary-gold);
-    letter-spacing: 1px;
+    font-weight: 700;
 }
-
+/* ലോഗോ സബ്ടൈറ്റിൽ */
 .header-logo-subtitle {
     font-family: var(--font-main);
-    font-size: 0.7rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    letter-spacing: 1.5px;
-    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-top: -5px;
+    margin-left: 5px;
 }
-
 .header-icons {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 1.5rem;
 }
-
 .header-icon-btn {
     background: none;
     border: none;
     color: var(--text-color);
     cursor: pointer;
-    padding: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: relative;
-    transition: var(--transition);
+    padding: 5px;
 }
-
-.header-icon-btn:hover {
-    color: var(--primary-gold);
-}
-
 .header-icon-btn svg {
-    width: 22px;
-    height: 22px;
+    width: 24px;
+    height: 24px;
     stroke-width: 1.5;
 }
-
+.cart-icon-wrapper {
+    position: relative;
+}
 .cart-item-count {
     position: absolute;
-    top: -8px;
-    right: -8px;
+    top: -5px;
+    right: -10px;
     background-color: var(--primary-gold);
     color: var(--bg-color);
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     font-weight: 700;
     border-radius: 50%;
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
+    line-height: 1;
 }
 
-/* === SIDE NAVIGATION === */
+/* --- 4. വശത്തുള്ള മെനു (Side Nav) --- */
 .side-nav {
     position: fixed;
     top: 0;
     left: -100%;
-    width: 280px;
-    height: 100vh;
+    width: 300px;
+    height: 100%;
     background-color: var(--bg-color);
     border-right: 1px solid var(--border-color);
     z-index: 1002;
-    transition: left 0.3s ease;
+    transition: left 0.4s ease;
     display: flex;
     flex-direction: column;
     padding: 1.5rem;
-    overflow-y: auto;
 }
-
-.side-nav.open {
-    left: 0;
-}
-
+.side-nav.open { left: 0; }
 .nav-overlay {
     position: fixed;
     top: 0;
@@ -191,368 +177,64 @@ img {
     z-index: 1001;
     opacity: 0;
     visibility: hidden;
-    transition: var(--transition);
+    transition: opacity 0.4s ease;
 }
-
-.nav-overlay.open {
-    opacity: 1;
-    visibility: visible;
-}
-
+.nav-overlay.open { opacity: 1; visibility: visible; }
 .side-nav-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1.5rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
 }
-
-.side-nav-header h3 {
-    font-family: var(--font-heading);
-    font-size: 1.3rem;
-    color: var(--primary-gold);
-}
-
 .side-nav-close-btn {
     background: none;
     border: none;
     color: var(--text-color);
     cursor: pointer;
-    padding: 0;
 }
-
-.side-nav-close-btn svg {
-    width: 24px;
-    height: 24px;
-}
-
+.side-nav-close-btn svg { width: 28px; height: 28px; }
 .side-nav-links {
     list-style: none;
+    margin-top: 1.5rem;
     flex-grow: 1;
 }
-
-.side-nav-links li {
-    border-bottom: 1px solid var(--border-color);
-}
-
+.side-nav-links li { border-bottom: 1px solid var(--border-color); }
 .side-nav-links a {
     display: block;
     padding: 1rem 0;
     color: var(--text-color);
     text-decoration: none;
+    font-size: 1.1rem;
     font-weight: 500;
-    font-size: 1rem;
-    transition: var(--transition);
 }
-
-.side-nav-links a:hover {
-    color: var(--primary-gold);
-    padding-left: 0.5rem;
-}
-
+.side-nav-links a:hover { color: var(--primary-gold); }
 .side-nav-social {
     display: flex;
     justify-content: center;
     gap: 1.5rem;
     padding-top: 1rem;
     border-top: 1px solid var(--border-color);
-    margin-top: 1rem;
 }
+.side-nav-social a { color: var(--text-muted); }
+.side-nav-social a svg { width: 24px; height: 24px; }
 
-.side-nav-social a {
-    color: var(--text-muted);
-    transition: var(--transition);
-}
 
-.side-nav-social a:hover {
-    color: var(--primary-gold);
-}
-
-.side-nav-social svg {
-    width: 20px;
-    height: 20px;
-    fill: currentColor;
-}
-
-/* === HERO SECTION === */
-.hero-section-new {
-    width: 100%;
-    height: 70vh;
-    overflow: hidden;
-    margin-bottom: 0;
-}
-
-.hero-slider-new {
-    width: 100%;
-    height: 100%;
-}
-
-.hero-slider-new .swiper-slide {
-    width: 100%;
-    height: 100%;
-    position: relative;
-}
-
-.hero-slider-new img,
-.hero-slider-new video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}
-
-/* === HERO TEXT === */
-.hero-text-section {
-    text-align: center;
-    padding: 3rem 1.5rem;
-    background-color: var(--bg-color);
-    border-bottom: 1px solid var(--border-color);
-}
-
-.hero-text-section p {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    line-height: 1.8;
-    max-width: 700px;
-    margin: 0 auto;
-    font-weight: 300;
-}
-
-/* === SECTION TITLE === */
-.section-title-new {
-    text-align: center;
-    font-family: var(--font-heading);
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--primary-gold);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 2rem;
-}
-
-/* === HOME SECTION === */
-.home-section {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 3rem 1.5rem;
-}
-
-/* === TOP SELLERS === */
-.top-sellers-swiper-new {
-    position: relative;
-    padding-bottom: 2.5rem;
-}
-
-.top-sellers-product-image {
-    width: 100%;
-    height: 280px;
-    object-fit: cover;
-    border-radius: 4px;
-    background-color: var(--card-bg);
-    margin-bottom: 1rem;
-    transition: var(--transition);
-}
-
-.top-sellers-swiper-new .swiper-slide:hover .top-sellers-product-image {
-    opacity: 0.9;
-}
-
-.top-sellers-product-name {
-    font-size: 0.95rem;
-    color: var(--text-color);
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    line-height: 1.3;
-    min-height: 2.6rem;
-}
-
-.top-sellers-product-price {
-    font-size: 1rem;
-    color: var(--primary-gold);
-    font-weight: 600;
-    margin-bottom: 1rem;
-}
-
-.top-sellers-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-}
-
-.top-sellers-swiper-new .swiper-pagination {
-    bottom: 0;
-}
-
-.top-sellers-swiper-new .swiper-pagination-bullet {
-    background-color: var(--border-color);
-    width: 8px;
-    height: 8px;
-}
-
-.top-sellers-swiper-new .swiper-pagination-bullet-active {
-    background-color: var(--primary-gold);
-}
-
-/* === CATEGORY GRID === */
-.category-grid-home-new {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-}
-
-.category-card-home-new {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-    text-decoration: none;
-    color: var(--text-muted);
-    transition: var(--transition);
-}
-
-.category-card-home-new:hover {
-    color: var(--primary-gold);
-}
-
-.cat-card-home-img-wrapper {
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 8px;
-    overflow: hidden;
-    border: 1px solid var(--border-color);
-    background-color: var(--card-bg);
-}
-
-.category-card-home-new img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: var(--transition);
-}
-
-.category-card-home-new:hover img {
-    transform: scale(1.05);
-}
-
-.category-card-home-new h3 {
-    font-family: var(--font-heading);
-    font-size: 1rem;
-    font-weight: 600;
-    text-align: center;
-}
-
-/* === FEATURED SECTION === */
-.featured-section {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-    align-items: center;
-}
-
-.featured-image {
-    width: 100%;
-    border-radius: 8px;
-    overflow: hidden;
-}
-
-.featured-image img {
-    width: 100%;
-    height: auto;
-    display: block;
-}
-
-.featured-content h2 {
-    color: var(--primary-gold);
-    margin-bottom: 1rem;
-}
-
-.featured-content p {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-}
-
-/* === BUTTONS === */
-.btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.2rem;
-    font-weight: 600;
-    border-radius: 4px;
-    border: 2px solid transparent;
-    text-decoration: none;
-    cursor: pointer;
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: var(--transition);
-    white-space: nowrap;
-}
-
-.btn-primary-new,
-.btn-primary-icon {
-    background-color: var(--primary-gold);
-    color: var(--bg-color);
-    border-color: var(--primary-gold);
-}
-
-.btn-primary-new:hover,
-.btn-primary-icon:hover {
-    background-color: var(--tertiary-gold);
-    border-color: var(--tertiary-gold);
-}
-
-.btn-secondary-new,
-.btn-secondary-icon {
-    background-color: transparent;
-    color: var(--primary-gold);
-    border-color: var(--primary-gold);
-}
-
-.btn-secondary-new:hover,
-.btn-secondary-icon:hover {
-    background-color: var(--primary-gold);
-    color: var(--bg-color);
-}
-
-.btn-secondary {
-    background-color: transparent;
-    color: var(--primary-gold);
-    border: 2px solid var(--primary-gold);
-}
-
-.btn-secondary:hover {
-    background-color: var(--primary-gold);
-    color: var(--bg-color);
-}
-
-.btn svg {
-    width: 16px;
-    height: 16px;
-    fill: currentColor;
-}
-
-/* === FOOTER === */
+/* --- 5. ഫൂട്ടർ (Main Footer) - പുതിയ അക്കോർഡിയൻ സ്റ്റൈൽ --- */
 .main-footer-new {
-    background-color: var(--card-bg);
-    border-top: 1px solid var(--border-color);
+    background-color: var(--bg-color);
+    color: var(--text-muted);
     padding: 3rem 1.5rem;
     margin-top: 3rem;
+    border-top: 1px solid var(--border-color);
 }
-
 .footer-container-new {
     max-width: 1200px;
     margin: 0 auto;
 }
-
 .footer-accordion-item {
     border-bottom: 1px solid var(--border-color);
 }
-
 .footer-accordion-toggle {
     display: flex;
     justify-content: space-between;
@@ -562,166 +244,265 @@ img {
     border: none;
     color: var(--text-color);
     padding: 1.5rem 0;
-    font-family: var(--font-heading);
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-family: var(--font-new-heading);
+    font-size: 1rem;
+    font-weight: 500;
     text-transform: uppercase;
     letter-spacing: 1px;
     cursor: pointer;
-    transition: var(--transition);
 }
-
-.footer-accordion-toggle:hover {
-    color: var(--primary-gold);
-}
-
 .footer-accordion-toggle svg {
+    transition: transform 0.3s ease;
     width: 16px;
     height: 16px;
-    transition: transform 0.2s ease;
+    fill: currentColor;
 }
-
 .footer-accordion-toggle.active svg {
     transform: rotate(180deg);
 }
-
 .footer-accordion-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease-out;
+    transition: max-height 0.4s ease-out;
 }
-
 .footer-accordion-content ul {
     list-style: none;
     padding: 0 0 1.5rem 0;
 }
-
 .footer-accordion-content li {
     margin-bottom: 0.75rem;
 }
-
 .footer-accordion-content a {
     color: var(--text-muted);
-    font-size: 0.9rem;
-    transition: var(--transition);
+    font-size: 0.95rem;
 }
-
-.footer-accordion-content a:hover {
-    color: var(--primary-gold);
-}
-
+/* ന്യൂസ് ലെറ്റർ നീക്കം ചെയ്തു */
 .footer-social-new {
     display: flex;
     justify-content: center;
     gap: 2rem;
     padding: 2rem 0;
     border-bottom: 1px solid var(--border-color);
-    margin-bottom: 1.5rem;
 }
-
 .footer-social-new a {
     color: var(--text-color);
-    transition: var(--transition);
 }
-
-.footer-social-new a:hover {
-    color: var(--primary-gold);
-}
-
-.footer-social-new svg {
-    width: 22px;
-    height: 22px;
+.footer-social-new a svg {
+    width: 24px;
+    height: 24px;
     fill: currentColor;
 }
-
 .footer-bottom-new {
     text-align: center;
-    font-size: 0.85rem;
-    color: var(--text-muted);
+    font-size: 0.9rem;
+    padding-top: 1.5rem;
 }
 
-/* === PRODUCT GRID === */
-.product-grid-new {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
-}
 
-.category-product-card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    overflow: hidden;
-    transition: var(--transition);
-}
+/* --- 6. ഹോം പേജ് (Home Page) - പുതിയ സ്റ്റൈലുകൾ --- */
 
-.category-product-card:hover {
-    border-color: var(--primary-gold);
-}
-
-.cat-product-image-link {
-    display: block;
+/* 6.1. പുതിയ ഹീറോ സ്ലൈഡർ */
+.hero-section-new {
     width: 100%;
-    height: 200px;
+    height: 70vh; 
     overflow: hidden;
 }
-
-.cat-product-image {
+.hero-slider-new {
+    width: 100%;
+    height: 100%;
+}
+.hero-slider-new .swiper-slide {
+    width: 100%;
+    height: 100%;
+}
+.hero-slider-new .swiper-slide img,
+.hero-slider-new .swiper-slide video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    background-color: #111;
-    transition: var(--transition);
 }
 
-.category-product-card:hover .cat-product-image {
-    transform: scale(1.05);
+/* 6.2. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ */
+.hero-text-section {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 800px;
 }
 
-.cat-product-content {
-    padding: 1rem;
+/* 6.3. പുതിയ ടോപ്പ് സെല്ലേഴ്സ് */
+.top-sellers-swiper-new {
+    padding-bottom: 3rem; /* ഡോട്ടുകൾക്ക് വേണ്ടി */
 }
-
-.cat-product-title {
-    font-size: 0.95rem;
+.top-sellers-swiper-new .swiper-slide {
+    text-align: center;
+}
+.top-sellers-product-image {
+    width: 100%;
+    height: 350px;
+    object-fit: cover;
+    margin-bottom: 1.5rem;
+}
+.top-sellers-product-name {
+    font-size: 1rem;
     color: var(--text-color);
     font-weight: 500;
-    margin-bottom: 0.75rem;
-    min-height: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+.top-sellers-product-price {
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
+}
+.top-sellers-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0 1rem;
+}
+/* സ്ലൈഡർ ഡോട്ടുകൾ */
+.top-sellers-swiper-new .swiper-pagination {
+    bottom: 0;
+}
+.top-sellers-swiper-new .swiper-pagination-bullet {
+    background-color: var(--border-color);
+    width: 10px;
+    height: 10px;
+}
+.top-sellers-swiper-new .swiper-pagination-bullet-active {
+    background-color: var(--primary-gold);
 }
 
-.cat-product-buttons {
+/* 6.4. പുതിയ കാറ്റഗറി ഗ്രിഡ് (ഹോം പേജ്) */
+.category-grid-home-new {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+    gap: 1.5rem;
+}
+.category-card-home-new {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+}
+.category-card-home-new:hover {
+    color: var(--primary-gold);
+}
+.cat-card-home-img-wrapper {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid var(--border-color);
+    background-color: var(--card-bg);
+}
+.category-card-home-new img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.category-card-home-new h3 {
+    font-family: var(--font-new-heading);
+    font-weight: 500;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+/* 6.5. ഫീച്ചേർഡ് സെക്ഷൻ */
+.featured-section {
     display: grid;
     grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: center;
+}
+.featured-image img {
+    border-radius: 8px;
+    width: 100%;
+    height: auto;
+}
+.featured-content {
+    text-align: center;
+}
+.featured-content p {
+    color: var(--text-muted);
+    margin: 1.5rem 0;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.featured-content .btn-primary-new {
+    display: inline-block;
+    width: auto;
+}
+
+/* 6.6. ബൊട്ടീക് സ്റ്റോർസ് (വീഡിയോ) - നീക്കം ചെയ്തു */
+/* 6.7. ഫ്രാഗ്രൻസ് സ്റ്റോറി - നീക്കം ചെയ്തു */
+
+
+/* --- 7. ബട്ടൺ സ്റ്റൈലുകൾ (പുതിയത്, ഐക്കണുകളോട് കൂടിയത്) --- */
+.btn-primary-new,
+.btn-primary-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: var(--primary-gold);
+    border: 2px solid var(--primary-gold);
+    color: var(--bg-color);
+    transition: all 0.3s ease;
+}
+.btn-primary-new:hover,
+.btn-primary-icon:hover {
+    background-color: var(--secondary-gold);
+    border-color: var(--secondary-gold);
+}
+.btn-secondary-new,
+.btn-secondary-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: transparent;
+    border: 2px solid var(--primary-gold);
+    color: var(--primary-gold);
+    transition: all 0.3s ease;
+}
+.btn-secondary-new:hover,
+.btn-secondary-icon:hover {
+    background-color: var(--primary-gold);
+    color: var(--bg-color);
+}
+.btn-primary-icon svg.icon-btn,
+.btn-secondary-icon svg.icon-btn {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
 }
 
-/* === CONTAINER === */
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1.5rem;
-}
 
-.page-container {
-    padding-top: 2rem;
-}
-
-/* === CATEGORY PAGE LAYOUT === */
+/* --- 8. കാറ്റഗറി പേജ് (Category Page) - പുതിയ ലേഔട്ട് --- */
 .category-page-layout {
     display: flex;
     flex-direction: column;
     gap: 2rem;
 }
-
-.category-sidebar-mobile {
-    display: block;
-}
-
-.category-sidebar-desktop {
-    display: none;
-}
-
 .category-nav-mobile {
     display: flex;
     overflow-x: auto;
@@ -729,16 +510,13 @@ img {
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
 }
+/* സ്ക്രോൾബാർ മറയ്ക്കുന്നു */
+.category-nav-mobile::-webkit-scrollbar { display: none; }
+.category-nav-mobile { -ms-overflow-style: none; scrollbar-width: none; }
 
-.category-nav-mobile::-webkit-scrollbar {
-    display: none;
+.category-nav-desktop {
+    display: none; /* മൊബൈലിൽ ഇത് മറയ്ക്കുന്നു */
 }
-
-.category-nav-mobile {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-
 .category-nav-link {
     display: flex;
     align-items: center;
@@ -750,40 +528,279 @@ img {
     font-weight: 500;
     flex-shrink: 0;
     border: 1px solid transparent;
-    transition: var(--transition);
 }
-
 .category-nav-link:hover {
     color: var(--text-color);
     background-color: var(--card-bg);
 }
-
 .category-nav-link.active {
     color: var(--primary-gold);
     border-color: var(--primary-gold);
     background-color: var(--card-bg);
 }
-
 .category-nav-icon {
     width: 30px;
     height: 30px;
     border-radius: 50%;
     object-fit: cover;
 }
+.category-product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* എപ്പോഴും 2 കോളം */
+    gap: 1.5rem;
+}
+#infinite-scroll-loader {
+    display: none;
+    justify-content: center;
+    padding: 2rem;
+    grid-column: 1 / -1; /* ഗ്രിഡിന്റെ മുഴുവൻ വീതി */
+}
+/* ലോഡർ ആനിമേഷൻ */
+.loader-small {
+    border: 4px solid var(--border-color);
+    border-top: 4px solid var(--primary-gold);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
 
-/* === CART PAGE === */
+/* 8.1 കാറ്റഗറി പേജിലെ പുതിയ പ്രൊഡക്റ്റ് കാർഡ് */
+.category-product-card {
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+.category-product-card:hover {
+    border-color: var(--secondary-gold);
+    transform: translateY(-5px);
+}
+.cat-product-image-link {
+    display: block;
+    width: 100%;
+    height: 180px; /* ചെറിയ ഉയരം */
+    overflow: hidden;
+}
+.cat-product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-color: #333;
+    transition: transform 0.4s ease;
+}
+.category-product-card:hover .cat-product-image {
+    transform: scale(1.1);
+}
+.cat-product-content {
+    padding: 1rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.cat-product-title {
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 500;
+    margin-bottom: 1rem;
+    min-height: 40px;
+}
+.cat-product-buttons {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    margin-top: auto;
+}
+
+
+/* --- 9. ഉൽപ്പന്നം വിശദമായി കാണിക്കുന്ന പേജ് (Product Detail) --- */
+.product-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+.product-gallery { width: 100%; }
+.main-image-wrapper {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+}
+#main-product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.thumbnail-wrapper {
+    display: flex;
+    gap: 0.5rem;
+    overflow-x: auto;
+}
+.thumbnail-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 2px solid var(--border-color);
+    cursor: pointer;
+    opacity: 0.7;
+    transition: opacity 0.3s, border-color 0.3s;
+}
+.thumbnail-image.active, .thumbnail-image:hover {
+    opacity: 1;
+    border-color: var(--primary-gold);
+}
+.product-info { padding-top: 1rem; }
+.product-title {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    color: var(--primary-gold);
+    margin-bottom: 1rem;
+}
+.product-info .price-container.large { margin-bottom: 1.5rem; }
+.product-info .price-container.large .price-main { font-size: 2rem; }
+.product-info .price-container.large .price-mrp { font-size: 1.25rem; }
+.product-description {
+    margin-bottom: 1.5rem;
+    color: var(--text-muted);
+    /* പുതിയ ബോർഡർ */
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    padding: 1rem;
+    border-radius: 8px;
+}
+.product-size {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+.btn-add-to-cart-main {
+    width: 100%;
+    max-width: 300px;
+    padding: 1rem;
+    font-size: 1.1rem;
+    /* പുതിയ ഐക്കൺ സ്റ്റൈൽ ഉപയോഗിക്കുന്നു */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+.btn-add-to-cart-main svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+#add-to-cart-feedback {
+    margin-top: 1rem;
+    color: var(--success-green);
+    font-weight: 500;
+}
+.related-products-section {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+.related-products-section .section-title {
+    font-family: var(--font-heading);
+    font-size: 2rem;
+    color: var(--primary-gold);
+    text-align: center;
+    margin-bottom: 2rem;
+}
+/* ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾക്ക് 2 കോളം */
+.related-products-section .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+
+/* --- 10. കോൺടാക്റ്റ് പേജ് (Contact Page) --- */
+.page-container { margin-top: 3rem; }
+.page-header-bar {
+    text-align: center;
+    margin-bottom: 3rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.page-header-bar h1 {
+    font-family: var(--font-heading);
+    font-size: 2.5rem;
+    color: var(--primary-gold);
+    padding-bottom: 1rem;
+}
+.contact-page-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+.contact-page-info {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 8px;
+}
+.contact-page-info h2 {
+    font-family: var(--font-heading);
+    color: var(--primary-gold);
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+.contact-page-subtitle {
+    color: var(--text-muted);
+    margin-bottom: 2.5rem;
+}
+.contact-item-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+.contact-icon {
+    width: 24px;
+    height: 24px;
+    flex-shrink: 0;
+    margin-top: 5px;
+    color: var(--primary-gold);
+}
+.contact-item-main div {
+    display: flex;
+    flex-direction: column;
+}
+.contact-item-main strong {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+}
+.contact-item-main a, .contact-item-main span {
+    color: var(--text-muted);
+    font-size: 1rem;
+}
+.contact-page-map {
+    border-radius: 8px;
+    overflow: hidden;
+    min-height: 400px;
+    background-color: var(--card-bg);
+}
+
+/* --- 11. ഷോപ്പിംഗ് കാർട്ട് പേജ് (Cart Page) --- */
 .cart-page-layout {
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
 }
-
 .cart-items-list {
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 8px;
     overflow: hidden;
 }
-
 .cart-item {
     display: grid;
     grid-template-columns: 80px 1fr auto;
@@ -792,52 +809,42 @@ img {
     align-items: center;
     border-bottom: 1px solid var(--border-color);
 }
-
-.cart-item:last-child {
-    border-bottom: none;
-}
-
+.cart-item:last-child { border-bottom: none; }
 .cart-item-image {
     width: 80px;
     height: 80px;
     object-fit: cover;
     border-radius: 4px;
 }
-
 .cart-item-info h3 {
-    font-size: 0.95rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    font-weight: 500;
     margin-bottom: 0.25rem;
 }
-
-.cart-item-price {
+.cart-item-info .cart-item-price {
+    font-size: 1rem;
     color: var(--primary-gold);
-    font-weight: 600;
 }
-
 .cart-item-controls {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     gap: 0.5rem;
 }
-
 .quantity-control {
     display: flex;
     align-items: center;
     border: 1px solid var(--border-color);
     border-radius: 4px;
 }
-
 .quantity-btn {
     background: none;
     border: none;
     color: var(--text-color);
+    font-size: 1.2rem;
     cursor: pointer;
     padding: 0.25rem 0.75rem;
-    font-size: 1.1rem;
 }
-
 .quantity-input {
     width: 40px;
     text-align: center;
@@ -848,309 +855,110 @@ img {
     border-right: 1px solid var(--border-color);
     padding: 0.5rem 0;
 }
-
-.quantity-input::-webkit-outer-spin-button,
-.quantity-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
 .cart-remove-btn {
     background: none;
     border: none;
     color: var(--text-muted);
+    font-size: 0.9rem;
     cursor: pointer;
-    font-size: 0.85rem;
-    transition: var(--transition);
 }
-
-.cart-remove-btn:hover {
-    color: var(--error-red);
-}
-
+.cart-remove-btn:hover { color: var(--error-red); }
 .cart-summary {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 4px;
+    border-radius: 8px;
     padding: 1.5rem;
+    position: sticky;
+    top: 100px;
 }
-
 .cart-summary h2 {
     font-family: var(--font-heading);
     color: var(--primary-gold);
-    font-size: 1.2rem;
     margin-bottom: 1.5rem;
     border-bottom: 1px solid var(--border-color);
     padding-bottom: 1rem;
 }
-
 .summary-row {
     display: flex;
     justify-content: space-between;
     margin-bottom: 1rem;
-    font-size: 0.95rem;
-}
-
-.summary-row.total {
     font-size: 1.1rem;
+}
+.summary-row.total {
+    font-size: 1.25rem;
     font-weight: 700;
+    color: var(--text-color);
     border-top: 1px solid var(--border-color);
     padding-top: 1rem;
 }
-
 .btn-checkout {
     width: 100%;
     padding: 1rem;
+    font-size: 1.1rem;
     margin-top: 1rem;
-    font-size: 1rem;
+    /* പുതിയ ഐക്കൺ സ്റ്റൈൽ ഉപയോഗിക്കുന്നു */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
 }
-
+.btn-checkout svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
+}
 .empty-cart-message {
     text-align: center;
     padding: 3rem 1rem;
     background-color: var(--card-bg);
+    border-radius: 8px;
     border: 1px solid var(--border-color);
-    border-radius: 4px;
 }
-
 .empty-cart-message h2 {
+    font-family: var(--font-heading);
     color: var(--primary-gold);
     margin-bottom: 1rem;
 }
-
 .cart-error {
     color: var(--error-red);
     background-color: rgba(231, 76, 60, 0.1);
     border: 1px solid var(--error-red);
     padding: 0.75rem;
-    border-radius: 4px;
+    border-radius: 5px;
     text-align: center;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     margin-top: 1rem;
 }
-
-/* === PRODUCT DETAIL PAGE === */
-.product-detail-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-}
-
-.product-gallery {
-    width: 100%;
-}
-
-.main-image-wrapper {
-    width: 100%;
-    aspect-ratio: 1;
-    border: 1px solid var(--border-color);
-    border-radius: 4px;
-    overflow: hidden;
-    margin-bottom: 1rem;
-}
-
-#main-product-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    background-color: #111;
-}
-
-.thumbnail-wrapper {
-    display: flex;
-    gap: 0.5rem;
-    overflow-x: auto;
-}
-
-.thumbnail-image {
-    width: 70px;
-    height: 70px;
-    object-fit: cover;
-    border-radius: 4px;
-    border: 2px solid var(--border-color);
-    cursor: pointer;
-    opacity: 0.7;
-    transition: var(--transition);
-    flex-shrink: 0;
-}
-
-.thumbnail-image:hover,
-.thumbnail-image.active {
-    opacity: 1;
-    border-color: var(--primary-gold);
-}
-
-.product-info {
-    padding-top: 1rem;
-}
-
-.product-title {
-    font-family: var(--font-heading);
-    font-size: 2rem;
-    font-weight: 700;
-    color: var(--primary-gold);
-    margin-bottom: 1rem;
-}
-
+/* വില വിവരങ്ങൾ */
 .price-container {
     display: flex;
     align-items: center;
-    gap: 1rem;
     flex-wrap: wrap;
-    margin-bottom: 1.5rem;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    min-height: 24px;
 }
-
 .price-main {
-    font-size: 1.5rem;
+    font-size: 1.3rem;
     font-weight: 700;
     color: var(--primary-gold);
 }
-
 .price-mrp {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: var(--text-muted);
-    text-decoration: line-through;
 }
-
 .price-discount {
     font-size: 0.8rem;
+    font-weight: 700;
     color: var(--success-green);
     background-color: rgba(46, 204, 113, 0.1);
     padding: 2px 6px;
-    border-radius: 3px;
-    font-weight: 600;
-}
-
-.product-description {
-    color: var(--text-muted);
-    font-size: 0.95rem;
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-    background-color: var(--card-bg);
-    padding: 1rem;
     border-radius: 4px;
-    border: 1px solid var(--border-color);
 }
 
-.product-size {
-    font-size: 0.95rem;
-    margin-bottom: 1.5rem;
-}
+/* --- 12. വീഡിയോ മോഡൽ - നീക്കം ചെയ്തു --- */
 
-.product-size strong {
-    color: var(--text-color);
-}
-
-.btn-add-to-cart-main {
-    width: 100%;
-    max-width: 300px;
-    padding: 1rem 1.5rem;
-    font-size: 1rem;
-}
-
-#add-to-cart-feedback {
-    margin-top: 1rem;
-    color: var(--success-green);
-    font-weight: 600;
-    font-size: 0.9rem;
-}
-
-.related-products-section {
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
-}
-
-.related-products-section .section-title-new {
-    margin-bottom: 2rem;
-}
-
-/* === PAGE HEADER === */
-.page-header-bar {
-    text-align: center;
-    margin-bottom: 2.5rem;
-    padding-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-}
-
-.page-header-bar h1 {
-    font-family: var(--font-heading);
-    font-size: 2rem;
-    color: var(--primary-gold);
-}
-
-/* === CONTACT PAGE === */
-.contact-page-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
-}
-
-.contact-page-info {
-    background-color: var(--card-bg);
-    padding: 2rem;
-    border-radius: 4px;
-    border: 1px solid var(--border-color);
-}
-
-.contact-page-info h2 {
-    font-family: var(--font-heading);
-    color: var(--primary-gold);
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-}
-
-.contact-page-subtitle {
-    color: var(--text-muted);
-    margin-bottom: 2.5rem;
-    font-size: 0.95rem;
-}
-
-.contact-item-main {
-    display: flex;
-    align-items: flex-start;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.contact-icon {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-    margin-top: 5px;
-    color: var(--primary-gold);
-}
-
-.contact-item-main div {
-    display: flex;
-    flex-direction: column;
-}
-
-.contact-item-main strong {
-    font-size: 1.1rem;
-    color: var(--text-color);
-    margin-bottom: 0.25rem;
-}
-
-.contact-item-main a,
-.contact-item-main span {
-    color: var(--text-muted);
-    font-size: 1rem;
-    transition: var(--transition);
-}
-
-.contact-item-main a:hover {
-    color: var(--primary-gold);
-}
-
-.contact-page-map {
-    border-radius: 4px;
-    overflow: hidden;
-    min-height: 400px;
-    background-color: var(--card-bg);
-}
-
-/* === FLOATING BUTTONS === */
+/* --- 13. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ --- */
 #floating-action-buttons {
     position: fixed;
     bottom: 20px;
@@ -1160,445 +968,174 @@ img {
     flex-direction: column;
     gap: 10px;
 }
-
 .float-btn {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-color: #25D366;
+    background-color: #25D366; /* WhatsApp Green */
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
-    transition: var(--transition);
-    border: none;
-    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease;
 }
-
 .float-btn:hover {
     transform: scale(1.1);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
 }
-
 .float-btn.phone {
     background-color: var(--primary-gold);
-    color: var(--bg-color);
 }
-
 .float-btn svg {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     fill: currentColor;
 }
 
-/* === LOADING STATES === */
-.loading-placeholder {
-    text-align: center;
-    padding: 2rem;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
 
-.loading-placeholder-full {
-    grid-column: 1 / -1;
-    text-align: center;
-    padding: 3rem;
-    color: var(--text-muted);
-}
-
-.loader-spinner {
-    border: 3px solid var(--border-color);
-    border-top: 3px solid var(--primary-gold);
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin {
-    0% {
-        transform: rotate(0deg);
+/* --- 14. മൊബൈൽ റെസ്പോൺസീവ് (Responsive) --- */
+@media (max-width: 768px) {
+    .container {
+        padding: 2rem 1rem;
     }
-    100% {
-        transform: rotate(360deg);
+    .main-header {
+        padding: 0 1rem;
+    }
+    .header-logo-text {
+        display: none; /* മൊബൈലിൽ പേര് കാണിക്കില്ല */
+    }
+    .header-icons {
+        gap: 1rem;
+    }
+    .section-title-new {
+        font-size: 1.2rem;
+    }
+    .related-products-section .section-title {
+        font-size: 1.5rem;
+    }
+    .product-title {
+        font-size: 2rem;
+    }
+    .hero-section-new {
+        height: 60vh;
+    }
+    .hero-text-section {
+        padding: 2rem 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .top-sellers-buttons {
+        padding: 0;
+    }
+    .btn-primary-new, .btn-secondary-new,
+    .btn-primary-icon, .btn-secondary-icon {
+        font-size: 0.75rem;
+        padding: 0.6rem 0.5rem;
+    }
+
+    .featured-section {
+        text-align: center;
+    }
+    .featured-section .featured-content {
+        order: 0;
+    }
+    
+    #floating-action-buttons {
+        bottom: 15px;
+        left: 15px;
+    }
+    .float-btn {
+        width: 45px;
+        height: 45px;
+    }
+    .float-btn svg {
+        width: 24px;
+        height: 24px;
+    }
+    
+    /* കാറ്റഗറി പേജ്: മൊബൈൽ */
+    .category-page-layout {
+        flex-direction: column;
+    }
+    .category-nav-desktop {
+        display: none;
+    }
+    .category-page-content {
+        flex-grow: 1;
+    }
+
+    /* പ്രൊഡക്റ്റ് പേജ് */
+    .related-products-section .product-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    /* കാർട്ട് പേജ് */
+    .cart-item {
+        grid-template-columns: 60px 1fr auto; /* ചെറിയ ഇമേജ് */
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    .cart-item-image {
+        width: 60px;
+        height: 60px;
     }
 }
 
-/* === INFINITE SCROLL LOADER === */
-#infinite-scroll-loader {
-    display: none;
-    justify-content: center;
-    padding: 2rem;
-    grid-column: 1 / -1;
-}
-
-#infinite-scroll-loader.visible {
-    display: flex;
-}
-
-/* === RESPONSIVE DESIGN === */
-
-/* Tablet & Desktop */
+/* ടാബ്ലെറ്റ് & ചെറിയ ഡെസ്ക്ടോപ്പ് */
 @media (min-width: 769px) {
     .header-logo {
-        gap: 15px;
+        gap: 15px; /* ലോഗോയും ടെക്സ്റ്റും തമ്മിൽ അകലം */
     }
-
     .featured-section {
         grid-template-columns: 1fr 1fr;
         gap: 3rem;
     }
-
     .featured-section .featured-content {
         order: 1;
     }
-
-    /* Category Page Desktop */
+    
+    /* കാറ്റഗറി പേജ്: ഡെസ്ക്ടോപ്പ് */
     .category-page-layout {
         flex-direction: row;
         gap: 2.5rem;
     }
-
-    .category-sidebar-mobile {
+    .category-nav-mobile {
         display: none;
     }
-
-    .category-sidebar-desktop {
+    .category-nav-desktop {
         display: flex;
         flex-direction: column;
         width: 280px;
         flex-shrink: 0;
         gap: 0.5rem;
     }
-
-    .category-sidebar-nav {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-
     .category-nav-link {
         border: 1px solid var(--border-color);
     }
-
-    .category-product-grid-wrapper {
+    .category-page-content {
         flex-grow: 1;
     }
-
-    .category-product-grid,
-    .product-grid-new {
-        grid-template-columns: repeat(3, 1fr);
+    .category-product-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 കോളം */
     }
-
-    /* Product Detail Page */
+    
+    /* പ്രൊഡക്റ്റ് പേജ് */
     .product-detail-grid {
         grid-template-columns: 1fr 1fr;
     }
-
-    .related-products-section .product-grid-new {
-        grid-template-columns: repeat(4, 1fr);
+    .related-products-section .product-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 കോളം */
     }
-
-    /* Cart Page */
+    
+    /* കാർട്ട് പേജ് */
     .cart-page-layout {
         grid-template-columns: 2fr 1fr;
         align-items: flex-start;
     }
-
-    .cart-summary {
-        position: sticky;
-        top: 100px;
-    }
-
-    /* Top Sellers */
+    
+    /* ടോപ്പ് സെല്ലേഴ്സ് */
     .top-sellers-swiper-new .swiper-slide {
         text-align: center;
-    }
-}
-
-/* Large Desktop */
-@media (min-width: 1025px) {
-    .category-product-grid,
-    .product-grid-new {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    .category-grid-home-new {
-        grid-template-columns: repeat(4, 1fr);
-    }
-
-    .top-sellers-buttons {
-        grid-template-columns: 1fr 1fr;
-    }
-}
-
-/* Mobile Optimizations */
-@media (max-width: 768px) {
-    .container {
-        padding: 0 1rem;
-    }
-
-    .main-header {
-        padding: 0 1rem;
-    }
-
-    .home-section {
-        padding: 2rem 1rem;
-    }
-
-    .page-container {
-        padding-top: 1rem;
-    }
-
-    .section-title-new {
-        font-size: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
-
-    .hero-section-new {
-        height: 60vh;
-    }
-
-    .hero-text-section {
-        padding: 2rem 1rem;
-        font-size: 0.9rem;
-    }
-
-    .top-sellers-product-image {
-        height: 240px;
-    }
-
-    .top-sellers-buttons {
-        grid-template-columns: 1fr 1fr;
-    }
-
-    .category-grid-home-new {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
-    }
-
-    .product-title {
-        font-size: 1.5rem;
-    }
-
-    .price-main {
-        font-size: 1.3rem;
-    }
-
-    .page-header-bar h1 {
-        font-size: 1.5rem;
-    }
-
-    .cart-item {
-        grid-template-columns: 60px 1fr auto;
-        gap: 0.75rem;
-        padding: 0.75rem;
-    }
-
-    .cart-item-image {
-        width: 60px;
-        height: 60px;
-    }
-
-    .side-nav {
-        width: 250px;
-    }
-
-    #floating-action-buttons {
-        bottom: 15px;
-        left: 15px;
-    }
-
-    .float-btn {
-        width: 45px;
-        height: 45px;
-    }
-
-    .float-btn svg {
-        width: 20px;
-        height: 20px;
-    }
-
-    .footer-accordion-toggle {
-        font-size: 0.85rem;
-        padding: 1rem 0;
-    }
-
-    .footer-social-new {
-        gap: 1.5rem;
-        padding: 1.5rem 0;
-    }
-
-    .contact-page-info {
-        padding: 1.5rem;
-    }
-
-    .contact-page-info h2 {
-        font-size: 1.5rem;
-    }
-
-    .contact-item-main {
-        gap: 1rem;
-        margin-bottom: 1.5rem;
-    }
-}
-
-/* Small Mobile */
-@media (max-width: 480px) {
-    .section-title-new {
-        font-size: 1.3rem;
-    }
-
-    .header-logo-text {
-        font-size: 1.1rem;
-    }
-
-    .header-logo-subtitle {
-        font-size: 0.6rem;
-    }
-
-    .category-grid-home-new {
-        grid-template-columns: 1fr;
-    }
-
-    .cart-item {
-        grid-template-columns: 50px 1fr;
-    }
-
-    .cart-item-image {
-        width: 50px;
-        height: 50px;
-    }
-
-    .cart-item-controls {
-        grid-column: 1 / -1;
-        margin-top: 0.5rem;
-        flex-direction: row;
-        justify-content: space-between;
-    }
-
-    .quantity-control {
-        order: 2;
-    }
-
-    .cart-remove-btn {
-        order: 1;
-    }
-
-    .product-detail-grid {
-        gap: 1rem;
-    }
-
-    .main-image-wrapper {
-        aspect-ratio: 1;
-    }
-
-    .thumbnail-image {
-        width: 60px;
-        height: 60px;
-    }
-
-    .top-sellers-buttons {
-        grid-template-columns: 1fr;
-    }
-
-    .btn {
-        padding: 0.65rem 1rem;
-        font-size: 0.85rem;
-    }
-}
-
-/* Text Utilities */
-.text-center {
-    text-align: center;
-}
-
-.text-muted {
-    color: var(--text-muted);
-}
-
-.text-primary {
-    color: var(--primary-gold);
-}
-
-/* Spacing Utilities */
-.mt-1 {
-    margin-top: 1rem;
-}
-
-.mt-2 {
-    margin-top: 2rem;
-}
-
-.mb-1 {
-    margin-bottom: 1rem;
-}
-
-.mb-2 {
-    margin-bottom: 2rem;
-}
-
-.p-1 {
-    padding: 1rem;
-}
-
-.p-2 {
-    padding: 2rem;
-}
-
-/* Display Utilities */
-.hidden {
-    display: none !important;
-}
-
-.visible {
-    display: block !important;
-}
-
-/* Flexbox Utilities */
-.flex {
-    display: flex;
-}
-
-.flex-center {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.flex-between {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-/* Animation Classes */
-.fade-in {
-    animation: fadeIn 0.3s ease-in;
-}
-
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-.slide-up {
-    animation: slideUp 0.3s ease-out;
-}
-
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
     }
 }

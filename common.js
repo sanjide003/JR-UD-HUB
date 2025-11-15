@@ -1,31 +1,32 @@
-// ============================================
-// AL AMBAR - COMPLETE JAVASCRIPT
-// Updated common.js with all fixes
-// ============================================
+// ഇതാണ് 'common.js' ഫയൽ.
+// *** Vercel-ൽ പ്രവർത്തിക്കാനായി പാതകൾ ശരിയാക്കി ***
 
-// ========== common.js (പരിഷ്കരിത) ==========
-
-import { db, auth } from './firebase-config.js';
+import { db, auth } from './firebase-config.js'; // appId ഇമ്പോർട്ട് ചെയ്യേണ്ട ആവശ്യമില്ല
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getCartItemCount } from './cart.js';
+import { 
+    signInAnonymously 
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+import { getCartItemCount } from './cart.js'; // കാർട്ടിലെ എണ്ണം അറിയാൻ
 
+// സൈറ്റ് സെറ്റിംഗ്സ് ഡാറ്റ ഒരിക്കൽ മാത്രം ലോഡ് ചെയ്യാൻ
 let siteSettings = null;
 let authPromise = null;
 
 /**
- * یوزر کو authenticate کریں
+ * യൂസറെ സൈൻ ഇൻ ചെയ്യിക്കുന്നു
+ * (Vercel/GitHub-ന് വേണ്ടി ലളിതമാക്കി)
  */
 function authenticateUser() {
     if (authPromise) return authPromise;
 
     authPromise = new Promise(async (resolve, reject) => {
         try {
+            // Vercel/GitHub-ൽ signInAnonymously() മാത്രം മതി
             await signInAnonymously(auth);
-            console.log("✅ Authenticated anonymously.");
+            console.log("Authenticated anonymously.");
             resolve(auth.currentUser);
         } catch (error) {
-            console.error("❌ Authentication Error:", error);
+            console.error("Authentication Error:", error);
             reject(error);
         }
     });
@@ -33,34 +34,34 @@ function authenticateUser() {
 }
 
 /**
- * Firebase سے site settings حاصل کریں
+ * ഫയർബേസിൽ നിന്ന് സൈറ്റ് സെറ്റിംഗ്സ് (ലോഗോ, ഫോൺ, സോഷ്യൽ ലിങ്കുകൾ) എടുക്കുന്നു
+ * *** ഡാറ്റാബേസ് പാത്ത് ശരിയാക്കി ***
  */
 async function fetchSiteSettings() {
     if (siteSettings) {
-        return siteSettings;
+        return siteSettings; // നേരത്തെ ലോഡ് ചെയ്തെങ്കിൽ അത് തിരികെ നൽകുന്നു
     }
     try {
-        await authenticateUser();
+        await authenticateUser(); 
         
+        // *** ഇതാണ് ശരിയായ പാത്ത് (admin.js സേവ് ചെയ്യുന്ന സ്ഥലം) ***
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
-        
         if (docSnap.exists()) {
             siteSettings = docSnap.data();
-            console.log("✅ Site settings loaded:", siteSettings);
             return siteSettings;
         } else {
-            console.log("⚠️ No site settings found at 'settings/global'.");
+            console.log("No site settings found at 'settings/global'.");
             return {};
         }
     } catch (error) {
-        console.error("❌ Error fetching site settings: ", error);
+        console.error("Error fetching site settings: ", error);
         return {};
     }
 }
 
 /**
- * 1. پرائمری ہیڈر بنائیں
+ * 1. പ്രധാന ഹെഡർ നിർമ്മിക്കുന്നു (സബ്ടൈറ്റിൽ ചേർത്തു)
  */
 async function buildHeader() {
     const settings = await fetchSiteSettings();
@@ -69,23 +70,20 @@ async function buildHeader() {
 
     const logoImg = settings.logoImageUrl ? `<img src="${settings.logoImageUrl}" alt="Logo" class="header-logo-img">` : '';
     const logoText = settings.logoText ? `<span class="header-logo-text">${settings.logoText}</span>` : '';
+    // പുതിയ സബ്ടൈറ്റിൽ
     const logoSubtitle = settings.logoSubtitle ? `<span class="header-logo-subtitle">${settings.logoSubtitle}</span>` : '';
 
     headerElement.innerHTML = `
         <a href="index.html" class="header-logo">
             ${logoImg}
-            <div class="header-logo-content">
+            <div class="header-logo-content"> <!-- സബ്ടൈറ്റിലിന് വേണ്ടി റാപ്പർ ചേർത്തു -->
                 ${logoText}
                 ${logoSubtitle}
             </div>
         </a>
         <div class="header-icons">
             <a href="cart.html" class="header-icon-btn cart-icon-wrapper" aria-label="Shopping Cart">
-                <svg class="icon-cart" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <circle cx="9" cy="21" r="1"></circle>
-                    <circle cx="20" cy="21" r="1"></circle>
-                    <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                </svg>
+                <svg class="icon-cart" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                 <span class="cart-item-count" id="cart-item-count">0</span>
             </a>
             <button class="header-icon-btn" id="nav-open-btn" aria-label="Open Menu">
@@ -101,7 +99,7 @@ async function buildHeader() {
 }
 
 /**
- * 2. سائیڈ نیویگیشن بنائیں
+ * 2. വശത്തുള്ള മെനു (Side Nav) നിർമ്മിക്കുന്നു
  */
 async function buildSideNav() {
     const settings = await fetchSiteSettings();
@@ -110,7 +108,7 @@ async function buildSideNav() {
 
     navElement.innerHTML = `
         <div class="side-nav-header">
-            <h3>MENU</h3>
+            <h3>Menu</h3>
             <button class="side-nav-close-btn" id="nav-close-btn" aria-label="Close Menu">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="18" y1="6" x2="6" y2="18"></line>
@@ -125,10 +123,12 @@ async function buildSideNav() {
         </ul>
         <div class="side-nav-social">
             <a href="${settings.instagramUrl || '#'}" target="_blank" aria-label="Instagram">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.741 0 8.333.014 7.053.072 2.748.27 0 3.018 0 7.053c-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.202 4.305 2.949 7.053 7.053 7.053 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c4.305-.202 7.053-2.949 7.053-7.053.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947C21.725 2.748 19.227 0 15.028.072 13.748.014 13.34 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                <!-- ഇൻസ്റ്റാഗ്രാം ഐക്കൺ -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.333 2.175 8.741 2.163 12 2.163m0-2.163C8.741 0 8.333.014 7.053.072 2.748.27 0 3.018 0 7.053c-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.202 4.305 2.949 7.053 7.053 7.053 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c4.305-.202 7.053-2.949 7.053-7.053.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947C21.725 2.748 19.227 0 15.028.072 13.748.014 13.34 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
             </a>
             <a href="${settings.facebookUrl || '#'}" target="_blank" aria-label="Facebook">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.9V12h2.538v-2.245c0-2.508 1.493-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.465l-1.26.001c-1.243 0-1.63.771-1.63 1.562V12h2.771l-.443 2.89H13.63v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                <!-- ഫേസ്ബുക്ക് ഐക്കൺ -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.9V12h2.538v-2.245c0-2.508 1.493-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.465l-1.26.001c-1.243 0-1.63.771-1.63 1.562V12h2.771l-.443 2.89H13.63v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
             </a>
         </div>
     `;
@@ -136,7 +136,7 @@ async function buildSideNav() {
 }
 
 /**
- * 3. نیا Footer بنائیں (Accordion)
+ * 3. പുതിയ അക്കോർഡിയൻ ഫൂട്ടർ നിർമ്മിക്കുന്നു (ന്യൂസ്‌ലെറ്റർ ഇല്ലാതെ)
  */
 async function buildFooter() {
     const settings = await fetchSiteSettings();
@@ -147,20 +147,22 @@ async function buildFooter() {
 
     footerElement.innerHTML = `
         <div class="footer-container-new">
+            <!-- ഐറ്റം 1: About -->
             <div class="footer-accordion-item">
                 <button class="footer-accordion-toggle" data-target="footer-content-1">
-                    <span>ABOUT US</span>
+                    <span>ABOUT OUDARABIA</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 11.293l-4.646-4.647a.5.5 0 0 1 .708-.708L8 9.879l4.939-4.939a.5.5 0 0 1 .708.708L8 11.293z"></path></svg>
                 </button>
                 <div class="footer-accordion-content" id="footer-content-1">
                     <ul>
-                        <li><a href="index.html">Home</a></li>
+                        <li><a href="#">Our Story</a></li>
                         <li><a href="contact.html">Contact Us</a></li>
                         <li><a href="#">Store Locator</a></li>
                     </ul>
                 </div>
             </div>
             
+            <!-- ഐറ്റം 2: Customer Care -->
             <div class="footer-accordion-item">
                 <button class="footer-accordion-toggle" data-target="footer-content-2">
                     <span>CUSTOMER CARE</span>
@@ -175,6 +177,7 @@ async function buildFooter() {
                 </div>
             </div>
             
+            <!-- ഐറ്റം 3: Quick Links -->
             <div class="footer-accordion-item">
                 <button class="footer-accordion-toggle" data-target="footer-content-3">
                     <span>QUICK LINKS</span>
@@ -189,15 +192,17 @@ async function buildFooter() {
                 </div>
             </div>
 
+            <!-- സോഷ്യൽ ഐക്കണുകൾ -->
             <div class="footer-social-new">
                 <a href="${settings.instagramUrl || '#'}" target="_blank" aria-label="Instagram">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.741 0 8.333.014 7.053.072 2.748.27 0 3.018 0 7.053c-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.202 4.305 2.949 7.053 7.053 7.053 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c4.305-.202 7.053-2.949 7.053-7.053.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947C21.725 2.748 19.227 0 15.028.072 13.748.014 13.34 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.741 0 8.333.014 7.053.072 2.748.27 0 3.018 0 7.053c-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.202 4.305 2.949 7.053 7.053 7.053 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c4.305-.202 7.053-2.949 7.053-7.053.058-1.28.072-1.688.072-4.947s-.014-3.667-.072-4.947C21.725 2.748 19.227 0 15.028.072 13.748.014 13.34 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"></path></svg>
                 </a>
                 <a href="${settings.facebookUrl || '#'}" target="_blank" aria-label="Facebook">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.9V12h2.538v-2.245c0-2.508 1.493-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.465l-1.26.001c-1.243 0-1.63.771-1.63 1.562V12h2.771l-.443 2.89H13.63v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.9V12h2.538v-2.245c0-2.508 1.493-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.465l-1.26.001c-1.243 0-1.63.771-1.63 1.562V12h2.771l-.443 2.89H13.63v6.988C18.343 21.128 22 16.991 22 12z"></path></svg>
                 </a>
             </div>
 
+            <!-- കോപ്പിറൈറ്റ് -->
             <div class="footer-bottom-new">
                 <p>&copy; ${new Date().getFullYear()} ${settings.logoText || 'Al Ambar'}. All Rights Reserved.</p>
             </div>
@@ -208,27 +213,19 @@ async function buildFooter() {
 }
 
 /**
- * Footer Accordion Functionality
+ * ഫൂട്ടർ അക്കോർഡിയൻ പ്രവർത്തിപ്പിക്കുന്നു (ന്യൂസ്‌ലെറ്റർ ഇല്ലാതെ)
  */
 function setupFooterAccordion() {
     const toggles = document.querySelectorAll('.footer-accordion-toggle');
-    
     toggles.forEach(toggle => {
         toggle.addEventListener('click', () => {
             const targetId = toggle.dataset.target;
             const content = document.getElementById(targetId);
-            const isActive = toggle.classList.contains('active');
             
-            // Close all other accordions
-            document.querySelectorAll('.footer-accordion-content').forEach(el => {
-                el.style.maxHeight = null;
-            });
-            document.querySelectorAll('.footer-accordion-toggle').forEach(el => {
-                el.classList.remove('active');
-            });
-            
-            // Open current accordion
-            if (!isActive) {
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                toggle.classList.remove('active');
+            } else {
                 content.style.maxHeight = content.scrollHeight + "px";
                 toggle.classList.add('active');
             }
@@ -236,8 +233,9 @@ function setupFooterAccordion() {
     });
 }
 
+
 /**
- * Floating Action Buttons
+ * 4. പുതിയ ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ നിർമ്മിക്കുന്നു
  */
 async function buildFloatingButtons() {
     const settings = await fetchSiteSettings();
@@ -266,7 +264,7 @@ async function buildFloatingButtons() {
 }
 
 /**
- * Menu Events
+ * മെനു തുറക്കാനും അടക്കാനുമുള്ള ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
  */
 function setupNavEvents() {
     const navOpenBtn = document.getElementById('nav-open-btn');
@@ -289,19 +287,11 @@ function setupNavEvents() {
             sideNav.classList.remove('open');
             navOverlay.classList.remove('open');
         });
-
-        // Side nav links بند کریں جب کلک ہو
-        document.querySelectorAll('.side-nav-links a').forEach(link => {
-            link.addEventListener('click', () => {
-                sideNav.classList.remove('open');
-                navOverlay.classList.remove('open');
-            });
-        });
     }
 }
 
 /**
- * Cart Icon Update
+ * കാർട്ടിലെ എണ്ണം ഹെഡർ ഐക്കണിൽ അപ്ഡേറ്റ് ചെയ്യുന്നു
  */
 function updateCartIcon() {
     const cartCountElement = document.getElementById('cart-item-count');
@@ -312,28 +302,18 @@ function updateCartIcon() {
     }
 }
 
-// Listen to cart updates
+// 'cartUpdated' എന്ന ഇവന്റ് കേൾക്കാൻ
 window.addEventListener('cartUpdated', updateCartIcon);
 
 /**
- * Main Load Function
+ * എല്ലാ പൊതുവായ കാര്യങ്ങളും ലോഡ് ചെയ്യാനുള്ള പ്രധാന ഫംഗ്ഷൻ
  */
 export async function loadSiteSettings() {
-    try {
-        await authenticateUser();
-        await buildHeader();
-        await buildSideNav();
-        await buildFooter();
-        await buildFloatingButtons();
-        console.log("✅ All site settings loaded successfully!");
-    } catch (error) {
-        console.error("❌ Error loading site settings:", error);
-    }
-}
-
-// Auto-load on DOM ready
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadSiteSettings);
-} else {
-    loadSiteSettings();
+    // ആദ്യം ഓതന്റിക്കേഷൻ നടപ്പിലാക്കുന്നു
+    await authenticateUser();
+    // അതിനുശേഷം ഹെഡറും ഫൂട്ടറും ലോഡ് ചെയ്യുന്നു
+    await buildHeader();
+    await buildSideNav();
+    await buildFooter();
+    await buildFloatingButtons();
 }
