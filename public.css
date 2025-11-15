@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** ഫ്ലോട്ടിംഗ് ബട്ടൺ ഐക്കണുകളുടെ നിറം കറുപ്പാക്കി ***
+   *** ഫ്ലോട്ടിംഗ് ബട്ടണുകൾ പുതിയ ഡിസൈനിലേക്ക് മാറ്റി ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -998,7 +998,7 @@ img {
     border-radius: 4px;
 }
 
-/* --- 13. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ (മാറ്റം വരുത്തിയത്) --- */
+/* --- 13. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ (പുതിയ ഡിസൈൻ) --- */
 #floating-action-buttons {
     position: fixed;
     bottom: 15px;
@@ -1016,30 +1016,41 @@ img {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-color: #25D366; /* WhatsApp Green */
-    color: #fff;
+    /* *** മാറ്റം: ബാക്ക്ഗ്രൗണ്ട് കറുപ്പാക്കി *** */
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: center;
     text-decoration: none;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    transition: transform 0.3s ease;
+    transition: all 0.3s ease;
     pointer-events: auto; 
 }
 .float-btn:hover {
     transform: scale(1.1);
+    border-color: var(--primary-gold);
 }
 .float-btn.whatsapp {
-    /* ഇടതുവശത്ത് */
+    /* ഒന്നുമില്ല */
 }
 .float-btn.cart {
-    background-color: var(--primary-gold); 
+    /* പ്രത്യേക ബാക്ക്ഗ്രൗണ്ട് നീക്കം ചെയ്തു */
 }
 .float-btn svg {
     width: 28px;
     height: 28px;
-    /* *** ഇതാണ് മാറ്റം: ഐക്കൺ നിറം കറുപ്പാക്കി *** */
-    fill: #000000; 
+}
+/* *** മാറ്റം: WhatsApp ഐക്കണിന് പച്ച നിറം *** */
+.float-btn.whatsapp svg {
+    fill: #25D366;
+}
+/* *** മാറ്റം: കാർട്ട് ഐക്കണിന് സ്വർണ്ണ നിറം *** */
+.float-btn.cart svg {
+    fill: var(--primary-gold);
+    /* Shopping bag ഐക്കൺ ആയതുകൊണ്ട് stroke ആണ് വേണ്ടത് */
+    stroke: var(--primary-gold);
+    fill: none;
 }
 
 
