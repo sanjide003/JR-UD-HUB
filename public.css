@@ -15,6 +15,7 @@
     --border-color: #333;
     --error-red: #e74c3c;
     --success-green: #2ecc71;
+    --whatsapp-green: #25D366; /* WhatsApp പച്ച */
     
     --font-main: 'Inter', sans-serif;
     --font-heading: 'Playfair Display', serif; 
@@ -496,6 +497,8 @@ img {
 }
 
 /* --- 7. ബട്ടൺ സ്റ്റൈലുകൾ (പുതിയത്, ഐക്കണുകളോട് കൂടിയത്) --- */
+
+/* 7.1. പ്രധാന ബട്ടൺ (സ്വർണ്ണം / പച്ച) */
 .btn-primary-new,
 .btn-primary-icon {
     display: inline-flex;
@@ -518,6 +521,8 @@ img {
     background-color: var(--secondary-gold);
     border-color: var(--secondary-gold);
 }
+
+/* 7.2. രണ്ടാംതരം ബട്ടൺ (ചാരനിറം) */
 .btn-secondary-new,
 .btn-secondary-icon {
     display: inline-flex;
@@ -540,6 +545,8 @@ img {
     background-color: var(--primary-gold);
     color: var(--bg-color);
 }
+
+/* 7.3. ബട്ടൺ ഐക്കൺ (പൊതുവായത്) */
 .btn-primary-icon svg.icon-btn,
 .btn-secondary-icon svg.icon-btn,
 .btn-primary-new svg.icon-btn,
@@ -679,28 +686,33 @@ img {
     margin-bottom: 1rem;
     min-height: 40px;
 }
-/* *** 'You May Also Like' ബട്ടണുകൾ *** */
+/* *** 'You May Also Like' ബട്ടണുകൾ (2 കോളം) *** */
 .cat-product-buttons {
     display: grid;
-    /* *** 1fr 1fr ആക്കി (2 ബട്ടണുകൾ) *** */
     grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
     margin-top: auto;
-}
-/* *** 'You May Also Like' ബട്ടണുകളിലെ ഐക്കൺ നിറം വെള്ളയാക്കുന്നു *** */
-.cat-product-buttons .btn-secondary-new svg.icon-btn {
-    stroke: var(--text-color);
-    fill: none;
-}
-.cat-product-buttons .btn-primary-new svg.icon-btn {
-    fill: var(--text-color);
-    stroke: var(--text-color);
 }
 /* *** 'You May Also Like' ബട്ടണുകളിലെ ടെക്സ്റ്റ് ചെറുതാക്കുന്നു *** */
 .cat-product-buttons .btn-secondary-new,
 .cat-product-buttons .btn-primary-new {
     font-size: 0.8rem;
     padding: 0.6rem 0.5rem;
+}
+/* *** 'You May Also Like' - വെള്ള ബാഗ് ഐക്കൺ *** */
+.cat-product-buttons .btn-secondary-new svg.icon-btn {
+    stroke: var(--text-color);
+    fill: none;
+}
+/* *** 'You May Also Like' - പച്ച ബട്ടൺ, വെള്ള ഐക്കൺ *** */
+.cat-product-buttons .btn-primary-new {
+    background-color: var(--whatsapp-green);
+    border-color: var(--whatsapp-green);
+    color: var(--text-color); /* ടെക്സ്റ്റ് വെള്ള */
+}
+.cat-product-buttons .btn-primary-new svg.icon-btn {
+    fill: var(--text-color);
+    stroke: var(--text-color);
 }
 
 
@@ -718,19 +730,20 @@ img {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem; /* ഡോട്ടുകൾക്ക് വേണ്ടി സ്ഥലം */
 }
 .product-gallery-swiper .swiper-slide img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
+/* *** ഡോട്ടുകൾ ബോർഡറിന് താഴെയാക്കി *** */
 .product-gallery-swiper .swiper-pagination {
-    position: absolute;
-    bottom: 10px;
+    position: static; /* absolute മാറ്റി */
+    margin-top: 10px; /* ബോർഡറിന് താഴെ */
 }
 .product-gallery-swiper .swiper-pagination-bullet {
-    background-color: rgba(255, 255, 255, 0.7);
+    background-color: var(--border-color);
     opacity: 0.8;
 }
 .product-gallery-swiper .swiper-pagination-bullet-active {
@@ -786,11 +799,31 @@ img {
     margin-bottom: 1rem;
 }
 /* *** 'Add to Cart' ബട്ടണിലെ ഐക്കൺ (വെള്ള) *** */
+.product-actions-grid .btn-secondary-new {
+    color: var(--text-color); /* ടെക്സ്റ്റ് വെള്ള */
+    border-color: var(--text-color); /* ബോർഡർ വെള്ള */
+}
+.product-actions-grid .btn-secondary-new:hover {
+    background-color: var(--text-color);
+    color: var(--bg-color);
+}
 .product-actions-grid .btn-secondary-new svg.icon-btn {
     stroke: var(--text-color);
     fill: none;
 }
-/* *** 'Buy on WhatsApp' ബട്ടണിലെ ഐക്കൺ (വെള്ള) *** */
+.product-actions-grid .btn-secondary-new:hover svg.icon-btn {
+    stroke: var(--bg-color);
+}
+/* *** 'Buy on WhatsApp' ബട്ടൺ (പച്ച ബാക്ക്ഗ്രൗണ്ട്, വെള്ള ഐക്കൺ) *** */
+.product-actions-grid .btn-primary-new {
+    background-color: var(--whatsapp-green);
+    border-color: var(--whatsapp-green);
+    color: var(--text-color); /* ടെക്സ്റ്റ് വെള്ള */
+}
+.product-actions-grid .btn-primary-new:hover {
+    background-color: #1EBE59;
+    border-color: #1EBE59;
+}
 .product-actions-grid .btn-primary-new svg.icon-btn {
     fill: var(--text-color);
     stroke: var(--text-color);
