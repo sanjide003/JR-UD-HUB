@@ -1,5 +1,5 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** Mute/Unmute ബട്ടൺ ഉടനടി പ്രവർത്തിക്കാൻ ശരിയാക്കി ***
+// *** Mute/Unmute ബട്ടൺ എല്ലാ ബ്രൗസറിലും പ്രവർത്തിക്കാൻ ശരിയാക്കി ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -36,6 +36,7 @@ async function loadHeroSlider() {
     const iconMute = muteButton.querySelector('.icon-mute');
     const iconUnmute = muteButton.querySelector('.icon-unmute');
     let isMuted = true;
+    let userHasInteracted = false; // ഉപഭോക്താവ് ബട്ടൺ അമർത്തിയോ എന്നറിയാൻ
 
     try {
         const q = query(collection(db, "heroSlides"), orderBy("order"));
@@ -74,7 +75,8 @@ async function loadHeroSlider() {
                     slideEl.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 }
                 else if (isVideo) {
-                    slideEl.innerHTML = `<video src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>`;
+                    // *** .mp4 വീഡിയോകൾക്ക് 'hero-video' എന്ന ക്ലാസ് നൽകുന്നു ***
+                    slideEl.innerHTML = `<video class="hero-video" src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>`;
                 }
                 
                 sliderWrapper.appendChild(slideEl);
@@ -96,14 +98,24 @@ async function loadHeroSlider() {
         // --- Mute ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ (ശരിയാക്കിയത്) ---
         muteButton.addEventListener('click', () => {
             isMuted = !isMuted; // Mute അവസ്ഥ മാറ്റുന്നു
+            userHasInteracted = true; // ഉപഭോക്താവ് ബട്ടൺ അമർത്തി എന്ന് രേഖപ്പെടുത്തുന്നു
+
+            // *** പ്രധാന മാറ്റം: എല്ലാ .mp4 വീഡിയോകളുടെയും ശബ്ദം മാറ്റുന്നു ***
+            const allVideos = sliderWrapper.querySelectorAll('video.hero-video');
+            allVideos.forEach(video => {
+                video.muted = isMuted;
+            });
             
-            // *** പ്രധാന മാറ്റം: ഇപ്പോൾ ആക്ടീവ് ആയ സ്ലൈഡിലെ വീഡിയോ കണ്ടെത്തുന്നു ***
+            // ഇപ്പോൾ പ്ലേ ആവുന്ന വീഡിയോയുടെ ശബ്ദം ഉറപ്പുവരുത്തുന്നു
             const activeSlide = sliderWrapper.querySelector('.swiper-slide-active');
             if (activeSlide) {
-                const activeVideo = activeSlide.querySelector('video');
+                const activeVideo = activeSlide.querySelector('video.hero-video');
                 if (activeVideo) {
-                    // ഉടനടി ആ വീഡിയോയുടെ ശബ്ദം മാറ്റുന്നു
-                    activeVideo.muted = isMuted; 
+                    activeVideo.muted = isMuted;
+                    // ശബ്ദം ഓൺ ആക്കാൻ വേണ്ടി വീണ്ടും പ്ലേ ചെയ്യാൻ ശ്രമിക്കുന്നു
+                    if (!isMuted) {
+                        activeVideo.play(); 
+                    }
                 }
             }
             
@@ -121,7 +133,7 @@ async function loadHeroSlider() {
             });
             
             // 2. എല്ലാ .mp4 വീഡിയോകളും നിർത്തുന്നു
-            const allVideos = sliderWrapper.querySelectorAll('video');
+            const allVideos = sliderWrapper.querySelectorAll('video.hero-video');
             allVideos.forEach(video => {
                 video.pause();
             });
@@ -129,21 +141,20 @@ async function loadHeroSlider() {
             // 3. പുതിയ സ്ലൈഡിലെ വീഡിയോ പ്ലേ ചെയ്യുന്നു
             const newActiveSlide = sliderWrapper.querySelector('.swiper-slide-active');
             if (newActiveSlide) {
-                const newActiveVideo = newActiveSlide.querySelector('video');
+                const newActiveVideo = newActiveSlide.querySelector('video.hero-video');
                 if (newActiveVideo) {
                     // Mute ബട്ടണിന്റെ ഇപ്പോഴത്തെ അവസ്ഥ അനുസരിച്ച് ശബ്ദം ക്രമീകരിക്കുന്നു
                     newActiveVideo.muted = isMuted; 
-                    
-                    // പ്ലേ ചെയ്യാൻ ശ്രമിക്കുന്നു
                     newActiveVideo.play().catch(error => {
-                        // ശബ്ദത്തോടെ ഓട്ടോപ്ലേ പരാജയപ്പെട്ടാൽ (ബ്രൗസർ നിയമം)
-                        console.warn("Unmuted autoplay failed. Retrying as muted.", error);
-                        isMuted = true;
-                        newActiveVideo.muted = true;
-                        newActiveVideo.play();
-                        // ഐക്കൺ തിരികെ Mute ആക്കുന്നു
-                        iconMute.style.display = 'block';
-                        iconUnmute.style.display = 'none';
+                        // ബ്രൗസർ നിയമം കാരണം പ്ലേ ആയില്ലെങ്കിൽ, ശബ്ദം ഓഫ് ആക്കി വീണ്ടും ശ്രമിക്കുന്നു
+                        if (userHasInteracted) { // ഉപഭോക്താവ് ഒരിക്കലെങ്കിലും ബട്ടൺ അമർത്തിയിട്ടും പരാജയപ്പെട്ടാൽ മാത്രം
+                            console.warn("Unmuted autoplay failed. Retrying as muted.", error);
+                            isMuted = true;
+                            newActiveVideo.muted = true;
+                            newActiveVideo.play();
+                            iconMute.style.display = 'block';
+                            iconUnmute.style.display = 'none';
+                        }
                     });
                 }
             }
