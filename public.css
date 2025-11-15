@@ -17,7 +17,7 @@
     --success-green: #2ecc71;
     
     --font-main: 'Inter', sans-serif;
-    --font-heading: 'Playfair+Display', serif; 
+    --font-heading: 'Playfair Display', serif; 
     --font-new-heading: 'Inter', sans-serif;
     
     --header-height: 70px;
@@ -679,11 +679,28 @@ img {
     margin-bottom: 1rem;
     min-height: 40px;
 }
+/* *** 'You May Also Like' ബട്ടണുകൾ *** */
 .cat-product-buttons {
     display: grid;
-    grid-template-columns: 1fr;
+    /* *** 1fr 1fr ആക്കി (2 ബട്ടണുകൾ) *** */
+    grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
     margin-top: auto;
+}
+/* *** 'You May Also Like' ബട്ടണുകളിലെ ഐക്കൺ നിറം വെള്ളയാക്കുന്നു *** */
+.cat-product-buttons .btn-secondary-new svg.icon-btn {
+    stroke: var(--text-color);
+    fill: none;
+}
+.cat-product-buttons .btn-primary-new svg.icon-btn {
+    fill: var(--text-color);
+    stroke: var(--text-color);
+}
+/* *** 'You May Also Like' ബട്ടണുകളിലെ ടെക്സ്റ്റ് ചെറുതാക്കുന്നു *** */
+.cat-product-buttons .btn-secondary-new,
+.cat-product-buttons .btn-primary-new {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.5rem;
 }
 
 
@@ -773,10 +790,10 @@ img {
     stroke: var(--text-color);
     fill: none;
 }
-/* 'Buy on WhatsApp' ബട്ടണിലെ ഐക്കൺ (കറുപ്പ്) */
+/* *** 'Buy on WhatsApp' ബട്ടണിലെ ഐക്കൺ (വെള്ള) *** */
 .product-actions-grid .btn-primary-new svg.icon-btn {
-    fill: var(--bg-color);
-    stroke: var(--bg-color);
+    fill: var(--text-color);
+    stroke: var(--text-color);
 }
 
 
@@ -797,7 +814,8 @@ img {
     text-align: center;
     margin-bottom: 2rem;
 }
-.related-products-section .product-grid {
+/* *** 'You May Also Like' ഗ്രിഡ് ക്ലാസ് മാറ്റി *** */
+.related-products-section .product-grid-new {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1.5rem;
@@ -1142,7 +1160,7 @@ img {
         flex-grow: 1;
     }
 
-    .related-products-section .product-grid {
+    .related-products-section .product-grid-new {
         grid-template-columns: repeat(2, 1fr);
     }
     
@@ -1210,7 +1228,7 @@ img {
     .product-detail-grid {
         grid-template-columns: 1fr 1fr;
     }
-    .related-products-section .product-grid {
+    .related-products-section .product-grid-new {
         grid-template-columns: repeat(4, 1fr);
     }
     
