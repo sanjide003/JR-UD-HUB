@@ -96,7 +96,7 @@ async function loadProductDetails() {
             });
 
             galleryHTML = `
-                <div class="product-gallery-swiper">
+                <div class="product-gallery-swiper swiper-container">
                     <div class="swiper-wrapper">
                         ${slidesHTML}
                     </div>
@@ -106,7 +106,7 @@ async function loadProductDetails() {
             `;
         } else {
             galleryHTML = `
-                <div class="product-gallery-swiper">
+                <div class="product-gallery-swiper swiper-container">
                     <div class="swiper-wrapper">
                          <div class="swiper-slide">
                             <img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image" alt="${product.name}">
@@ -190,7 +190,7 @@ async function loadProductDetails() {
 
 /**
  * ഫോട്ടോ ഗാലറിയിലെ ക്ലിക്കുകൾ പ്രവർത്തിപ്പിക്കുന്നു
- * (ഈ ഫംഗ്ഷൻ ഇപ്പോൾ ആവശ്യമില്ല, Swiper ഇത് കൈകാര്യം ചെയ്തോളും. എന്നാലും ശൂന്യമായി നിലനിർത്തുന്നു)
+ * (ഈ ഫംഗ്ഷൻ ഇപ്പോൾ ആവശ്യമില്ല, Swiper ഇത് കൈകാര്യം ചെയ്തോളും)
  */
 function setupGalleryEvents() {
     // Swiper ഇപ്പോൾ ഇത് കൈകാര്യം ചെയ്യുന്നു
