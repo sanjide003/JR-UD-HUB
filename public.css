@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** YouTube/Shorts വീഡിയോകൾ ശരിയാക്കാൻ പുതിയ സ്റ്റൈൽ ചേർത്തു ***
+   *** ഹീറോ സ്ലൈഡർ ഡോട്ടുകൾക്ക് സ്റ്റൈൽ ചേർത്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -124,28 +124,35 @@ img { max-width: 100%; height: auto; display: block; }
 /* --- 6. ഹോം പേജ് (Home Page) --- */
 
 /* 6.1. ഹീറോ സ്ലൈഡർ */
-.hero-section-new { width: 100%; height: 70vh; overflow: hidden; }
+.hero-section-new { width: 100%; height: 70vh; overflow: hidden; position: relative; } /* *** position: relative ചേർത്തു *** */
 .hero-slider-new { width: 100%; height: 100%; }
 .hero-slider-new .swiper-slide { width: 100%; height: 100%; }
 .hero-slider-new .swiper-slide img,
 .hero-slider-new .swiper-slide video { width: 100%; height: 100%; object-fit: cover; }
-
-/* *** YouTube iframe-ന് വേണ്ടിയുള്ള പുതിയ സ്റ്റൈൽ *** */
 .hero-slider-new .swiper-slide iframe {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    /* ഷോട്ട്സ് വീഡിയോകൾ ശരിയാക്കാൻ aspect-ratio */
-    aspect-ratio: 9 / 16; 
+    width: 100%; height: 100%; object-fit: cover; aspect-ratio: 9 / 16; 
 }
-/* ഡെസ്ക്ടോപ്പിൽ ഷോട്ട്സ് വീഡിയോകൾ ശരിയാക്കാൻ */
-@media (min-width: 769px) {
-    .hero-slider-new .swiper-slide iframe {
-        width: 100%;
-        /* ഉയരം 100% ആക്കുന്നു, വീതി ഓട്ടോമാറ്റിക് ആക്കുന്നു (object-fit പോലെ) */
-        height: 100%;
-        /* aspect-ratio: auto; */ /* ഇത് ചിലപ്പോൾ പ്രശ്നമുണ്ടാക്കാം, അതിനാൽ വീതിയും ഉയരവും 100% ആക്കുന്നു */
-    }
+
+/* *** ഹീറോ സ്ലൈഡറിന്റെ ഡോട്ടുകൾ (പുതിയത്) *** */
+.hero-slider-new .hero-pagination-dots {
+    position: absolute;
+    bottom: 20px; /* താഴെ നിന്ന് 20px മുകളിൽ */
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+}
+.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet {
+    background-color: rgba(255, 255, 255, 0.7); /* അർദ്ധസുതാര്യമായ വെള്ള */
+    width: 10px;
+    height: 10px;
+    opacity: 0.8;
+    margin: 0 5px;
+    transition: background-color 0.3s ease;
+}
+.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active {
+    background-color: var(--primary-gold); /* ആക്ടീവ് ഡോട്ട് ഗോൾഡ് നിറത്തിൽ */
+    opacity: 1;
 }
 
 
@@ -343,6 +350,11 @@ img { max-width: 100%; height: auto; display: block; }
     .related-products-section .product-grid { grid-template-columns: repeat(2, 1fr); }
     .cart-item { grid-template-columns: 60px 1fr auto; gap: 0.75rem; padding: 0.75rem; }
     .cart-item-image { width: 60px; height: 60px; }
+    /* YouTube iframe മൊബൈലിൽ ശരിയാക്കാൻ */
+    .hero-slider-new .swiper-slide iframe {
+        width: 100%;
+        height: 100%;
+    }
 }
 @media (min-width: 769px) {
     .header-logo { gap: 10px; }
