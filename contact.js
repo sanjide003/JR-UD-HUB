@@ -1,76 +1,99 @@
-// ഇതാണ് 'contact.js' ഫയൽ.
-// *** Vercel-ൽ പ്രവർത്തിക്കാനായി പാതകൾ ശരിയാക്കി ***
+<!-- 
+  ഇതാണ് കോൺടാക്റ്റ് പേജ്.
+  *** തെറ്റായ കോഡ് മാറ്റി, 'contact.js'-ന് വേണ്ടിയുള്ള ശരിയായ HTML ചേർത്തു ***
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Al Ambar Perfumes</title>
+    <!-- പൊതുവായ ഡിസൈൻ ഫയൽ -->
+    <link rel="stylesheet" href="public.css">
+</head>
+<body>
 
-import { 
-    doc,
-    getDoc,
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { db } from './firebase-config.js'; // appId ഇമ്പോർട്ട് ചെയ്യേണ്ട ആവശ്യമില്ല
-import { loadSiteSettings } from './common.js'; // ഹെഡർ, ഫൂട്ടർ ലോഡ് ചെയ്യാൻ
-
-// പേജ് ലോഡ് ആവുമ്പോൾ
-document.addEventListener("DOMContentLoaded", () => {
-    // 1. പൊതുവായ കാര്യങ്ങൾ (ഹെഡർ, ഫൂട്ടർ, മെനു, കാർട്ട്) ലോഡ് ചെയ്യുന്നു
-    loadSiteSettings();
+    <!-- 1. ഹെഡർ (common.js വഴി ലോഡ് ആവും) -->
+    <header class="main-header" id="main-header"></header>
     
-    // 2. ഈ പേജിന് മാത്രമുള്ള കോൺടാക്റ്റ് വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു
-    loadContactPageDetails();
-});
+    <!-- 2. വശത്തുള്ള മെനു (common.js വഴി ലോഡ് ആവും) -->
+    <nav class="side-nav" id="side-nav"></nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
 
-/**
- * കോൺടാക്റ്റ് പേജിലെ പ്രധാന വിവരങ്ങൾ (മാപ്പിന് അടുത്തുള്ള) ലോഡ് ചെയ്യുന്നു
- */
-async function loadContactPageDetails() {
-    // DOM എലമെന്റുകൾ
-    const contactPhoneMain = document.getElementById("contact-phone-main");
-    const contactEmailMain = document.getElementById("contact-email-main");
-    const contactAddressMain = document.getElementById("contact-address-main");
+    <!-- 3. പ്രധാന ഉള്ളടക്കം -->
+    <main class="container page-container">
+        <!-- പേജിന്റെ തലക്കെട്ട് -->
+        <div class="page-header-bar">
+            <h1>Contact Us</h1>
+        </div>
 
-    if (!contactPhoneMain || !contactEmailMain || !contactAddressMain) {
-        return;
-    }
-
-    try {
-        // *** ഇതാണ് ശരിയായ പാത്ത് ***
-        const docRef = doc(db, "settings", "global");
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            const settings = docSnap.data();
-
-            // ഫോൺ
-            if (settings.phone) {
-                contactPhoneMain.textContent = settings.phone;
-                contactPhoneMain.href = `tel:${settings.phone}`;
-            } else {
-                contactPhoneMain.textContent = "Not available";
-            }
+        <!-- കോൺടാക്റ്റ് പേജ് ഗ്രിഡ് -->
+        <div class="contact-page-grid">
             
-            // ഇമെയിൽ
-            if (settings.email) {
-                contactEmailMain.textContent = settings.email;
-                contactEmailMain.href = `mailto:${settings.email}`;
-            } else {
-                contactEmailMain.textContent = "Not available";
-            }
-            
-            // വിലാസം
-            if (settings.address) {
-                contactAddressMain.textContent = settings.address;
-            } else {
-                contactAddressMain.textContent = "Not available";
-            }
-            
-        } else {
-            console.log("No site settings found at 'settings/global'.");
-            contactPhoneMain.textContent = "Error loading";
-            contactEmailMain.textContent = "Error loading";
-            contactAddressMain.textContent = "Error loading";
-        }
-    } catch (error) {
-        console.error("Error loading contact page settings: ", error);
-        contactPhoneMain.textContent = "Error loading";
-        contactEmailMain.textContent = "Error loading";
-        contactAddressMain.textContent = "Error loading";
-    }
-}
+            <!-- 3.1 ഇടതുവശം: വിവരങ്ങൾ -->
+            <div class="contact-page-info">
+                <h2>Get in Touch</h2>
+                <p class="contact-page-subtitle">We are here to help. Reach out to us anytime.</p>
+                
+                <!-- ഫോൺ -->
+                <div class="contact-item-main">
+                    <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79C8.06 13.62 10.38 15.94 13.21 17.38L15.41 15.18C15.69 14.9 16.08 14.82 16.43 14.93C17.55 15.3 18.77 15.5 20 15.5C20.55 15.5 21 15.95 21 16.5V20C21 20.55 20.55 21 20 21C10.61 21 3 13.39 3 4C3 3.45 3.45 3 4 3H7.5C8.05 3 8.5 3.45 8.5 4C8.5 5.23 8.7 6.45 9.07 7.57C9.18 7.92 9.1 8.31 8.82 8.59L6.62 10.79Z"></path></svg>
+                    <div>
+                        <strong>Phone</strong>
+                        <!-- 'contact.js' ഈ ID ഉപയോഗിക്കുന്നു -->
+                        <a href="tel:..." id="contact-phone-main">Loading...</a>
+                    </div>
+                </div>
+                
+                <!-- ഇമെയിൽ -->
+                <div class="contact-item-main">
+                    <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"></path></svg>
+                    <div>
+                        <strong>Email</strong>
+                        <!-- 'contact.js' ഈ ID ഉപയോഗിക്കുന്നു -->
+                        <a href="mailto:..." id="contact-email-main">Loading...</a>
+                    </div>
+                </div>
+                
+                <!-- വിലാസം -->
+                <div class="contact-item-main">
+                    <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
+                    <div>
+                        <strong>Address</strong>
+                        <!-- 'contact.js' ഈ ID ഉപയോഗിക്കുന്നു -->
+                        <span id="contact-address-main">Loading...</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3.2 വലതുവശം: മാപ്പ് -->
+            <div class="contact-page-map">
+                <!-- Google Maps iFrame -->
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3928.790514127503!2d76.3134371147944!3d10.034304892827727!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b080c98f51a441b%3A0x62533b3b4f6b648!2sAl%20Ambar%20Perfumes!5e0!3m2!1sen!2sin!4v1679038596701!5m2!1sen!2sin" 
+                    width="100%" 
+                    height="100%" 
+                    style="border:0; min-height: 450px;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- 4. ഫൂട്ടർ (common.js വഴി ലോഡ് ആവും) -->
+    <footer class="main-footer-new" id="main-footer"></footer>
+
+    <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ (common.js വഴി ഇവിടെ വരും) -->
+    <div id="floating-action-buttons"></div>
+
+    <!-- JS ഫയലുകൾ -->
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="cart.js"></script>
+    <script type="module" src="common.js"></script>
+    <!-- *** തെറ്റായ JS ഫയൽ മാറ്റി 'contact.js' എന്നാക്കി *** -->
+    <script type="module" src="contact.js"></script>
+</body>
+</html>
