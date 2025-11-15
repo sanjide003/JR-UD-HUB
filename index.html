@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് ഹോം പേജ്. 
-  *** "Shop by Category" സെക്ഷൻ സ്ലൈഡർ ആക്കി മാറ്റി ***
+  *** ഹീറോ സ്ലൈഡറിൽ ഡോട്ടുകൾ (Pagination) ചേർത്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -24,12 +24,14 @@
     <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main>
         
-        <!-- 3.1. ഹീറോ സ്ലൈഡർ -->
+        <!-- 3.1. ഹീറോ സ്ലൈഡർ (പോർട്രെയ്റ്റ്) -->
         <section class="hero-section-new">
             <div class="swiper hero-slider-new" id="hero-slider-container">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <!-- 'index.js' ഉപയോഗിച്ച് സ്ലൈഡുകൾ ഇവിടെ വരും -->
+                    <!-- 'index.js' ഉപയോഗിച്ച് സ്ലൈഡുകൾ (വീഡിയോ/ഫോട്ടോ) ഇവിടെ വരും -->
                 </div>
+                <!-- *** പുതിയതായി ചേർത്തത്: ഡോട്ടുകൾ (Pagination) *** -->
+                <div class="swiper-pagination hero-pagination-dots"></div>
             </div>
         </section>
 
@@ -49,10 +51,9 @@
             </div>
         </section>
 
-        <!-- 3.4. ഷോപ്പ് ബൈ കാറ്റഗറി (സ്ലൈഡർ ആക്കി മാറ്റി) -->
+        <!-- 3.4. ഷോപ്പ് ബൈ കാറ്റഗറി -->
         <section class="home-section container">
             <h2 class="section-title-new">SHOP BY CATEGORY</h2>
-            <!-- *** 'category-grid-home-new' എന്നതിന് പകരം Swiper കണ്ടെയ്നർ ഉപയോഗിക്കുന്നു *** -->
             <div class="swiper category-swiper-new">
                 <div class="swiper-wrapper" id="category-grid-home">
                     <!-- 'index.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ (swiper-slide ആയി) ഇവിടെ വരും -->
