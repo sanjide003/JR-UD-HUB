@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** "Shop by Category" കാർഡുകളുടെ ഡിസൈൻ മാറ്റി ***
+   *** YouTube/Shorts വീഡിയോകൾ ശരിയാക്കാൻ പുതിയ സ്റ്റൈൽ ചേർത്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -50,14 +50,14 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .header-logo { display: flex; align-items: center; text-decoration: none; gap: 10px; }
 .header-logo-img { height: 40px; width: auto; }
-.header-logo-content { display: flex; flex-direction: column; } /* ലോഗോ ടെക്സ്റ്റും സബ്ടൈറ്റിലും അടുപ്പിക്കാൻ */
+.header-logo-content { display: flex; flex-direction: column; }
 .header-logo-text {
     font-family: var(--font-heading); font-size: 1.5rem; color: var(--primary-gold);
-    font-weight: 700; line-height: 1; /* ലൈൻ ഉയരം കുറച്ചു */
+    font-weight: 700; line-height: 1;
 }
 .header-logo-subtitle {
     font-family: var(--font-main); font-size: 0.8rem; color: var(--text-muted);
-    letter-spacing: 1px; margin-left: 2px; /* ചെറിയ മാറ്റം */
+    letter-spacing: 1px; margin-left: 2px;
 }
 .header-icons { display: flex; align-items: center; gap: 1.5rem; }
 .header-icon-btn { background: none; border: none; color: var(--text-color); cursor: pointer; position: relative; padding: 5px; }
@@ -130,6 +130,25 @@ img { max-width: 100%; height: auto; display: block; }
 .hero-slider-new .swiper-slide img,
 .hero-slider-new .swiper-slide video { width: 100%; height: 100%; object-fit: cover; }
 
+/* *** YouTube iframe-ന് വേണ്ടിയുള്ള പുതിയ സ്റ്റൈൽ *** */
+.hero-slider-new .swiper-slide iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* ഷോട്ട്സ് വീഡിയോകൾ ശരിയാക്കാൻ aspect-ratio */
+    aspect-ratio: 9 / 16; 
+}
+/* ഡെസ്ക്ടോപ്പിൽ ഷോട്ട്സ് വീഡിയോകൾ ശരിയാക്കാൻ */
+@media (min-width: 769px) {
+    .hero-slider-new .swiper-slide iframe {
+        width: 100%;
+        /* ഉയരം 100% ആക്കുന്നു, വീതി ഓട്ടോമാറ്റിക് ആക്കുന്നു (object-fit പോലെ) */
+        height: 100%;
+        /* aspect-ratio: auto; */ /* ഇത് ചിലപ്പോൾ പ്രശ്നമുണ്ടാക്കാം, അതിനാൽ വീതിയും ഉയരവും 100% ആക്കുന്നു */
+    }
+}
+
+
 /* 6.2. ഹീറോ ടെക്സ്റ്റ് */
 .hero-text-section { text-align: center; padding: 2.5rem 1.5rem; color: var(--text-muted); font-size: 1rem; line-height: 1.7; max-width: 800px; }
 
@@ -144,63 +163,23 @@ img { max-width: 100%; height: auto; display: block; }
 .top-sellers-swiper-new .swiper-pagination-bullet { background-color: var(--border-color); width: 10px; height: 10px; }
 .top-sellers-swiper-new .swiper-pagination-bullet-active { background-color: var(--primary-gold); }
 
-/* * 6.4. കാറ്റഗറി ഗ്രിഡ് (Home Page) - *** പുതിയ ഡിസൈൻ (ദീർഘചതുരം) ***
- */
-.category-swiper-new {
-    width: 100%;
-    overflow: hidden; /* സ്ലൈഡർ ശരിയായി പ്രവർത്തിക്കാൻ */
-}
-
-/* കാർഡിന്റെ മൊത്തത്തിലുള്ള ഡിസൈൻ (ദീർഘചതുരം) */
+/* 6.4. കാറ്റഗറി ഗ്രിഡ് (Home Page) */
+.category-swiper-new { width: 100%; overflow: hidden; }
 .category-card-home-new {
-    display: block;
-    text-decoration: none;
-    color: var(--text-muted);
-    transition: all 0.3s ease;
-    
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px; /* ചെറിയ റൗണ്ട് */
-    overflow: hidden; /* ചിത്രം പുറത്തുപോവാതിരിക്കാൻ */
-    height: 180px; /* കാർഡിന് ഒരു സ്ഥിരമായ ഉയരം */
+    display: block; text-decoration: none; color: var(--text-muted);
+    transition: all 0.3s ease; background-color: var(--card-bg);
+    border: 1px solid var(--border-color); border-radius: 8px;
+    overflow: hidden; height: 180px;
 }
-.category-card-home-new:hover {
-    color: var(--primary-gold);
-    border-color: var(--primary-gold);
-    transform: translateY(-3px); /* ചെറിയ ഹോവർ എഫക്റ്റ് */
-}
-
-/* ചിത്രത്തിന്റെ ഭാഗം (വൃത്തം ഒഴിവാക്കി) */
-.cat-card-home-img-wrapper {
-    width: 100%;
-    height: 130px; /* ഉയരത്തിന്റെ ഭൂരിഭാഗവും ചിത്രത്തിന് */
-    border-radius: 0; /* വൃത്തം ഒഴിവാക്കി */
-    overflow: hidden;
-    border: none;
-    background-color: #333;
-}
-.category-card-home-new img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-.category-card-home-new:hover img {
-    transform: scale(1.05); /* ഹോവർ ചെയ്യുമ്പോൾ ചിത്രം വലുതാവുന്നു */
-}
-
-/* പേര് (കാർഡിന് താഴെ) */
+.category-card-home-new:hover { color: var(--primary-gold); border-color: var(--primary-gold); transform: translateY(-3px); }
+.cat-card-home-img-wrapper { width: 100%; height: 130px; border-radius: 0; overflow: hidden; border: none; background-color: #333; }
+.category-card-home-new img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+.category-card-home-new:hover img { transform: scale(1.05); }
 .category-card-home-new h3 {
-    font-family: var(--font-new-heading);
-    font-weight: 500;
-    font-size: 0.85rem; /* ചെറിയ അക്ഷരങ്ങൾ */
-    text-align: center;
-    padding: 0.75rem 0.5rem; /* ടെക്സ്റ്റിന് പാഡിംഗ് */
-    white-space: nowrap; /* പേര് ഒരു വരിയിൽ നിർത്താൻ */
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-family: var(--font-new-heading); font-weight: 500;
+    font-size: 0.85rem; text-align: center; padding: 0.75rem 0.5rem;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-
 
 /* 6.5. ഫീച്ചേർഡ് സെക്ഷൻ */
 .featured-section { display: grid; grid-template-columns: 1fr; gap: 1.5rem; align-items: center; }
@@ -227,7 +206,7 @@ img { max-width: 100%; height: auto; display: block; }
 .btn-primary-icon svg.icon-btn, .btn-secondary-icon svg.icon-btn { width: 16px; height: 16px; fill: currentColor; }
 
 /* --- 8. കാറ്റഗറി പേജ് (Category Page) --- */
-.page-container { margin-top: 1rem; } /* ചെറിയ മുകളിൽ സ്പേസ് */
+.page-container { margin-top: 1rem; }
 .page-header-bar {
     text-align: center; margin-bottom: 2rem; border-bottom: 1px solid var(--border-color);
 }
@@ -242,7 +221,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .category-nav-mobile::-webkit-scrollbar { display: none; }
 .category-nav-mobile { -ms-overflow-style: none; scrollbar-width: none; }
-.category-nav-desktop { display: none; } /* മൊബൈലിൽ ഇത് മറയ്ക്കുന്നു */
+.category-nav-desktop { display: none; }
 .category-nav-link {
     display: flex; align-items: center; gap: 0.75rem; padding: 0.5rem 1rem;
     border-radius: 8px; text-decoration: none; color: var(--text-muted);
@@ -259,7 +238,6 @@ img { max-width: 100%; height: auto; display: block; }
     border-radius: 50%; width: 30px; height: 30px; animation: spin 1s linear infinite;
 }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
 .category-product-card {
     background-color: var(--card-bg); border-radius: 8px; overflow: hidden;
     border: 1px solid var(--border-color); transition: all 0.3s ease;
@@ -367,8 +345,8 @@ img { max-width: 100%; height: auto; display: block; }
     .cart-item-image { width: 60px; height: 60px; }
 }
 @media (min-width: 769px) {
-    .header-logo { gap: 10px; } /* ലോഗോയും ടെക്സ്റ്റും തമ്മിൽ അകലം */
-    .header-logo-text { display: block; } /* ഡെസ്ക്ടോപ്പിൽ പേര് കാണിക്കും */
+    .header-logo { gap: 10px; }
+    .header-logo-text { display: block; }
     .featured-section { grid-template-columns: 1fr 1fr; gap: 3rem; }
     .featured-section .featured-content { order: 1; }
     .category-page-layout { flex-direction: row; gap: 2.5rem; }
@@ -376,7 +354,7 @@ img { max-width: 100%; height: auto; display: block; }
     .category-nav-desktop { display: flex; flex-direction: column; width: 280px; flex-shrink: 0; gap: 0.5rem; }
     .category-nav-link { border: 1px solid var(--border-color); }
     .category-page-content { flex-grow: 1; }
-    .category-product-grid { grid-template-columns: repeat(3, 1fr); } /* 3 കോളം */
+    .category-product-grid { grid-template-columns: repeat(3, 1fr); }
     .product-detail-grid { grid-template-columns: 1fr 1fr; }
     .related-products-section .product-grid { grid-template-columns: repeat(4, 1fr); }
     .cart-page-layout { grid-template-columns: 2fr 1fr; align-items: flex-start; }
