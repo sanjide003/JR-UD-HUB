@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** Mute/Unmute ബട്ടണ് സ്റ്റൈൽ ചേർത്തു ***
+   *** Mute/Unmute ബട്ടന്റെ സ്റ്റൈൽ നീക്കം ചെയ്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -149,32 +149,7 @@ img { max-width: 100%; height: auto; display: block; }
     background-color: var(--primary-gold); opacity: 1;
 }
 
-/* *** Mute/Unmute ബട്ടൺ (പുതിയത്) *** */
-.hero-mute-button {
-    position: absolute;
-    bottom: 15px; /* ഡോട്ടുകളുമായി ഒരേ നിരയിൽ */
-    right: 15px;
-    z-index: 10; /* ഡോട്ടുകൾക്ക് മുകളിൽ */
-    background-color: rgba(0, 0, 0, 0.5);
-    border: 1px solid var(--text-muted);
-    color: var(--text-color);
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background-color 0.3s ease;
-}
-.hero-mute-button:hover {
-    background-color: rgba(0, 0, 0, 0.8);
-}
-.hero-mute-button svg {
-    width: 20px;
-    height: 20px;
-    fill: currentColor;
-}
+/* *** Mute/Unmute ബട്ടൺ സ്റ്റൈൽ നീക്കം ചെയ്തു *** */
 
 
 /* 6.2. ഹീറോ ടെക്സ്റ്റ് */
