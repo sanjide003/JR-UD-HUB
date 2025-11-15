@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** സ്വൈപ്പ് ശരിയാക്കാൻ സുതാര്യമായ ലെയർ ചേർത്തു ***
+   *** Mute/Unmute ബട്ടണ് സ്റ്റൈൽ ചേർത്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -126,29 +126,19 @@ img { max-width: 100%; height: auto; display: block; }
 /* 6.1. ഹീറോ സ്ലൈഡർ */
 .hero-section-new { width: 100%; height: 70vh; overflow: hidden; position: relative; }
 .hero-slider-new { width: 100%; height: 100%; }
-.hero-slider-new .swiper-slide { width: 100%; height: 100%; position: relative; } /* *** position: relative ചേർത്തു *** */
+.hero-slider-new .swiper-slide { width: 100%; height: 100%; position: relative; }
 .hero-slider-new .swiper-slide img,
 .hero-slider-new .swiper-slide video { width: 100%; height: 100%; object-fit: cover; }
 .hero-slider-new .swiper-slide iframe {
     width: 100%; height: 100%; object-fit: cover; aspect-ratio: 9 / 16; 
 }
-
-/* *** സ്വൈപ്പ് ശരിയാക്കാനുള്ള സുതാര്യമായ ലെയർ (പുതിയത്) *** */
 .hero-slider-new .swiper-slide::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: transparent;
-    z-index: 5; /* iframe-ന് മുകളിൽ വരാൻ */
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    background: transparent; z-index: 5;
 }
-
-/* ഹീറോ സ്ലൈഡറിന്റെ ഡോട്ടുകൾ */
 .hero-slider-new .hero-pagination-dots {
     position: absolute; bottom: 20px; left: 0;
-    width: 100%; text-align: center; z-index: 10; /* ലെയറിന് മുകളിൽ വരാൻ */
+    width: 100%; text-align: center; z-index: 10;
 }
 .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet {
     background-color: rgba(255, 255, 255, 0.7);
@@ -157,6 +147,33 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active {
     background-color: var(--primary-gold); opacity: 1;
+}
+
+/* *** Mute/Unmute ബട്ടൺ (പുതിയത്) *** */
+.hero-mute-button {
+    position: absolute;
+    bottom: 15px; /* ഡോട്ടുകളുമായി ഒരേ നിരയിൽ */
+    right: 15px;
+    z-index: 10; /* ഡോട്ടുകൾക്ക് മുകളിൽ */
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--text-muted);
+    color: var(--text-color);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease;
+}
+.hero-mute-button:hover {
+    background-color: rgba(0, 0, 0, 0.8);
+}
+.hero-mute-button svg {
+    width: 20px;
+    height: 20px;
+    fill: currentColor;
 }
 
 
@@ -354,7 +371,6 @@ img { max-width: 100%; height: auto; display: block; }
     .related-products-section .product-grid { grid-template-columns: repeat(2, 1fr); }
     .cart-item { grid-template-columns: 60px 1fr auto; gap: 0.75rem; padding: 0.75rem; }
     .cart-item-image { width: 60px; height: 60px; }
-    /* YouTube iframe മൊബൈലിൽ ശരിയാക്കാൻ */
     .hero-slider-new .swiper-slide iframe {
         width: 100%;
         height: 100%;
