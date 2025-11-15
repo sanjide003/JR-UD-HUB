@@ -1,5 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// *** Vercel-ൽ പ്രവർത്തിക്കാനായി പാതകൾ ശരിയാക്കി ***
+// *** കാറ്റഗറി ഫിൽറ്റർ ശരിയാക്കി ***
 
 import {
     collection,
@@ -10,12 +10,12 @@ import {
     where,
     limit,
     startAfter,
-    orderBy, // <-- orderBy ചേർത്തു
+    orderBy,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { db } from './firebase-config.js'; // appId ഇമ്പോർട്ട് ചെയ്യേണ്ട ആവശ്യമില്ല
-import { loadSiteSettings } from './common.js'; // ഹെഡർ, ഫൂട്ടർ ലോഡ് ചെയ്യാൻ
-import { addToCart } from './cart.js'; // കാർട്ട് ഫംഗ്ഷൻ
+import { db } from './firebase-config.js';
+import { loadSiteSettings } from './common.js';
+import { addToCart } from './cart.js';
 
 setLogLevel('Debug');
 
@@ -31,7 +31,7 @@ let lastVisible = null;
 let isLoading = false; 
 let currentCategoryId = 'all'; 
 const productsPerPage = 12; 
-let currentQuery = null; // <-- ഏത് ക്വറിയാണ് ഉപയോഗിക്കുന്നതെന്ന് ഓർമ്മിക്കാൻ
+let currentQuery = null;
 
 // --- പേജ് ലോഡ് ആവുമ്പോൾ ---
 document.addEventListener("DOMContentLoaded", () => {
@@ -55,8 +55,7 @@ async function loadCategoryList() {
     if (!categoryNavDesktop || !categoryNavMobile) return;
 
     try {
-        // *** ഇതാണ് ശരിയായ പാത്ത് ***
-        const q = query(collection(db, "categories"), orderBy("name")); // <-- name അനുസരിച്ച് ഓർഡർ ചെയ്യുന്നു
+        const q = query(collection(db, "categories"), orderBy("name"));
         const catSnapshot = await getDocs(q);
 
         let navHtml = '';
@@ -64,7 +63,7 @@ async function loadCategoryList() {
         // "All Products" ലിങ്ക്
         navHtml += `
             <a href="#" class="category-nav-link" data-id="all">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2l-5.5 9h11L12 2zm0 11c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm-6 8h12v-2H6v2z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5.5c0 .28-.22.5-.5.5h-4.3c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm-15 0c0 .28-.22.5-.5.5H3.2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm10 9c0 .28-.22.5-.5.5h-4.3c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm-10 0c0 .28-.22.5-.5.5H3.2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm10-4.5c0 .28-.22.5-.5.5h-4.3c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm-10 0c0 .28-.22.5-.5.5H3.2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5z"/></svg>
                 <span>All Products</span>
             </a>
         `;
@@ -109,6 +108,14 @@ function addNavClickListeners(navElement) {
 
         currentCategoryId = categoryId;
         startLoadingProducts(categoryId);
+        
+        // മൊബൈലിൽ മെനു ഓപ്പൺ ആണെങ്കിൽ അടയ്ക്കാൻ
+        const sideNav = document.getElementById('side-nav');
+        const navOverlay = document.getElementById('nav-overlay');
+        if (sideNav && sideNav.classList.contains('open')) {
+            sideNav.classList.remove('open');
+            navOverlay.classList.remove('open');
+        }
     });
 }
 
@@ -116,7 +123,9 @@ function addNavClickListeners(navElement) {
  * 3. പുതിയ കാറ്റഗറി തിരഞ്ഞെടുക്കുമ്പോൾ ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യാൻ തുടങ്ങുന്നു
  */
 async function startLoadingProducts(categoryId) {
-    isLoading = false; // ലോഡിംഗ് അനുവദിക്കാൻ
+    if (!productGrid || !pageTitle) return;
+
+    isLoading = false;
     productGrid.innerHTML = ''; 
     lastVisible = null; 
     window.scrollTo(0, 0); 
@@ -129,7 +138,6 @@ async function startLoadingProducts(categoryId) {
     }
     window.history.pushState({}, '', url);
 
-    // *** ഇതാണ് ശരിയായ പാത്ത് ***
     const productsRef = collection(db, "products");
 
     // പുതിയ ക്വറി സെറ്റ് ചെയ്യുന്നു
@@ -139,16 +147,18 @@ async function startLoadingProducts(categoryId) {
         currentQuery = query(productsRef, orderBy("name"));
     } else {
         try {
-            // *** ഇതാണ് ശരിയായ പാത്ത് ***
             const catDoc = await getDoc(doc(db, "categories", categoryId));
             if (catDoc.exists()) {
                 pageTitle.textContent = catDoc.data().name;
             }
-            // ഒരു പ്രത്യേക കാറ്റഗറി ആണെങ്കിൽ, ചേർത്ത സമയം അനുസരിച്ച് അടുക്കുന്നു
+            
+            // *** ഇതാണ് മാറ്റം വരുത്തിയ ഭാഗം ***
+            // ഒരു പ്രത്യേക കാറ്റഗറി ആണെങ്കിൽ
             currentQuery = query(productsRef, 
-                where("categoryId", "==", categoryId),
-                orderBy("createdAt", "desc") // <-- ഇൻഫിനിറ്റ് സ്ക്രോളിന് ഇത് നല്ലതാണ്
+                where("categoryId", "==", categoryId)
+                // orderBy("createdAt", "desc") // <-- ഫയർബേസ് ഇൻഡെക്സ് ഇല്ലാതെ where-നോടൊപ്പം ഇത് ഉപയോഗിക്കുന്നത് പ്രശ്നമാണ്. തൽക്കാലം നീക്കം ചെയ്യുന്നു.
             );
+
         } catch (e) { console.error("Error fetching category name", e); }
     }
     
@@ -162,14 +172,13 @@ async function startLoadingProducts(categoryId) {
  * 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (ഇൻഫിനിറ്റ് സ്ക്രോൾ)
  */
 async function loadProducts() {
-    if (isLoading || !currentQuery) return; // ക്വറി ഇല്ലെങ്കിലോ ലോഡിംഗ് ആണെങ്കിലോ നിർത്തുന്നു
+    if (isLoading || !currentQuery) return;
     isLoading = true;
-    loader.style.display = 'flex';
+    if (loader) loader.style.display = 'flex';
 
     try {
         let q;
         
-        // നിലവിലെ ക്വറിയുടെ കൂടെ limit ചേർക്കുന്നു
         if (lastVisible) {
             q = query(currentQuery, startAfter(lastVisible), limit(productsPerPage));
         } else {
@@ -182,8 +191,8 @@ async function loadProducts() {
             if (productGrid.innerHTML === '') {
                 productGrid.innerHTML = '<p class="loading-placeholder-full">No products found in this category.</p>';
             }
-            loader.style.display = 'none';
-            lastVisible = null; // ഇനി ലോഡ് ചെയ്യേണ്ടതില്ല
+            if (loader) loader.style.display = 'none';
+            lastVisible = null; 
             return; 
         }
 
@@ -230,7 +239,7 @@ async function loadProducts() {
         productGrid.innerHTML = '<p class="loading-placeholder-full">Error loading products.</p>';
     } finally {
         isLoading = false;
-        loader.style.display = 'none';
+        if (loader) loader.style.display = 'none';
     }
 }
 
@@ -280,7 +289,6 @@ productGrid.addEventListener('click', (e) => {
  * 7. ഇൻഫിനിറ്റ് സ്ക്രോൾ നിരീക്ഷകൻ (Observer)
  */
 const observer = new IntersectionObserver((entries) => {
-    // lastVisible ശൂന്യമല്ലെങ്കിൽ (null അല്ലെങ്കിൽ) മാത്രം വീണ്ടും ലോഡ് ചെയ്യുക
     if (entries[0].isIntersecting && !isLoading && lastVisible) { 
         loadProducts();
     }
