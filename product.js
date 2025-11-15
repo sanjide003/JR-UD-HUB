@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** Vercel-ൽ പ്രവർത്തിക്കാനായി പാതകൾ ശരിയാക്കി ***
+// *** "View" ബട്ടൺ മാറ്റി "Buy" (WhatsApp ഐക്കൺ) എന്നാക്കി ***
 
 import { 
     collection, 
@@ -11,20 +11,20 @@ import {
     limit,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { db } from './firebase-config.js'; // appId ഇമ്പോർട്ട് ചെയ്യേണ്ട ആവശ്യമില്ല
-import { loadSiteSettings } from './common.js'; // ഹെഡർ, ഫൂട്ടർ ലോഡ് ചെയ്യാൻ
-import { addToCart } from './cart.js'; // കാർട്ട് ഫംഗ്ഷൻ ഇമ്പോർട്ട് ചെയ്യുന്നു
+import { db } from './firebase-config.js';
+import { loadSiteSettings } from './common.js';
+import { addToCart } from './cart.js';
 
 setLogLevel('Debug');
 
 const productDetailContent = document.getElementById('product-detail-content');
 const relatedProductsGrid = document.getElementById('related-products-grid');
-let currentProduct = null; // നിലവിലെ ഉൽപ്പന്നത്തിന്റെ ഡാറ്റ സേവ് ചെയ്യാൻ
+let currentProduct = null;
 
 // പേജ് ലോഡ് ആവുമ്പോൾ
 document.addEventListener("DOMContentLoaded", () => {
-    loadSiteSettings(); // പൊതുവായ കാര്യങ്ങൾ (പുതിയ ഹെഡർ, ഫൂട്ടർ, മെനു)
-    loadProductDetails(); // ഈ പേജിലെ ഉൽപ്പന്നം
+    loadSiteSettings();
+    loadProductDetails();
 });
 
 /**
@@ -42,7 +42,6 @@ async function loadProductDetails() {
             return;
         }
 
-        // *** ഇതാണ് ശരിയായ പാത്ത് ***
         const docRef = doc(db, "products", productId);
         const docSnap = await getDoc(docRef);
 
@@ -54,7 +53,6 @@ async function loadProductDetails() {
         const product = docSnap.data();
         const productIdStr = docSnap.id;
         
-        // കാർട്ടിൽ ചേർക്കാൻ വേണ്ടി ഉൽപ്പന്നത്തിന്റെ ഡാറ്റ സേവ് ചെയ്യുന്നു
         currentProduct = {
             id: productIdStr,
             name: product.name,
@@ -126,13 +124,9 @@ async function loadProductDetails() {
 
         productDetailContent.innerHTML = galleryHTML + infoHTML;
 
-        // ഗാലറി ക്ലിക്കുകൾ കൈകാര്യം ചെയ്യുന്നു
         setupGalleryEvents();
-        
-        // "Add to Cart" ബട്ടൺ കൈകാര്യം ചെയ്യുന്നു
         setupCartButton();
 
-        // ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
         if (product.categoryId) {
             loadRelatedProducts(product.categoryId, productIdStr);
         }
@@ -196,7 +190,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
 
     try {
-        // *** ഇതാണ് ശരിയായ പാത്ത് ***
         const q = query(
             collection(db, "products"),
             where("categoryId", "==", categoryId),
@@ -215,7 +208,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
             const product = doc.data();
             const productId = doc.id;
             const card = document.createElement('div');
-            card.className = 'category-product-card'; // കാറ്റഗറി പേജിലെ അതേ സ്റ്റൈൽ
+            card.className = 'category-product-card';
 
             const price = product.price || 0;
             const mrp = product.mrp || 0;
@@ -237,9 +230,10 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
                             <span>Add to Cart</span>
                         </button>
+                        <!-- *** ഇതാണ് മാറ്റം വരുത്തിയ ബട്ടൺ *** -->
                         <a href="product.html?id=${productId}" class="btn btn-primary-icon">
-                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5C21.27 7.61 17 4.5 12 4.5zm0 12c-2.48 0-4.5-2.02-4.5-4.5S9.52 7.5 12 7.5s4.5 2.02 4.5 4.5-2.02 4.5-4.5 4.5zm0-7c-1.38 0-2.5 1.12-2.5 2.5S10.62 14.5 12 14.5s2.5-1.12 2.5-2.5S13.38 9.5 12 9.5z"></path></svg>
-                            <span>View</span>
+                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg>
+                            <span>Buy</span>
                         </a>
                     </div>
                 </div>
