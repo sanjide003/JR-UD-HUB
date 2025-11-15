@@ -1,6 +1,6 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** YouTube, YouTube Shorts എന്നിവ സപ്പോർട്ട് ചെയ്യാൻ കോഡ് ചേർത്തു ***
-// *** ഫോട്ടോയ്ക്ക് 3 സെക്കൻഡും വീഡിയോയ്ക്ക് 30 സെക്കൻഡും ഓട്ടോപ്ലേ ആക്കി ***
+// *** ഹീറോ സ്ലൈഡറിൽ നിന്ന് ഓട്ടോപ്ലേ നീക്കം ചെയ്തു ***
+// *** പകരം ഡോട്ടുകൾ (Pagination) ചേർത്തു ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -37,7 +37,7 @@ async function loadHeroSlider() {
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-            sliderWrapper.innerHTML = `<div class="swiper-slide" data-duration="3000"><img src="https://placehold.co/600x800/000000/D4AF37?text=Al+Ambar" alt="Placeholder"></div>`;
+            sliderWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/600x800/000000/D4AF37?text=Al+Ambar" alt="Placeholder"></div>`;
         } else {
             sliderWrapper.innerHTML = '';
             querySnapshot.forEach((doc) => {
@@ -49,39 +49,31 @@ async function loadHeroSlider() {
                 let embedUrl = '';
                 let isVideo = slide.type === 'video';
 
-                // 1. YouTube 'watch' ലിങ്ക് ആണോ?
                 if (slide.url.includes('youtube.com/watch?v=')) {
-                    embedUrl = `https://www.youtube.com/embed/${new URL(slide.url).searchParams.get('v')}?autoplay=1&mute=1&loop=1&controls=0&modestbranding=1&playsinline=1`;
+                    embedUrl = `https://www.youtube.com/embed/${new URL(slide.url).searchParams.get('v')}?autoplay=0&mute=1&loop=1&controls=1&modestbranding=1&playsinline=1`; // autoplay=0 ആക്കി
                     isVideo = true;
                 }
-                // 2. YouTube 'Shorts' ലിങ്ക് ആണോ?
                 else if (slide.url.includes('youtube.com/shorts/')) {
                     const shortId = new URL(slide.url).pathname.split('/shorts/')[1];
-                    embedUrl = `https://www.youtube.com/embed/${shortId}?autoplay=1&mute=1&loop=1&controls=0&modestbranding=1&playsinline=1`;
+                    embedUrl = `https://www.youtube.com/embed/${shortId}?autoplay=0&mute=1&loop=1&controls=1&modestbranding=1&playsinline=1`; // autoplay=0 ആക്കി
                     isVideo = true;
                 }
 
-                // 3. ഫോട്ടോ ആണെങ്കിൽ
                 if (slide.type === 'image') {
                     slideEl.innerHTML = `<img src="${slide.url}" alt="Hero Image">`;
-                    slideEl.dataset.duration = "3000"; // 3 സെക്കൻഡ്
                 }
-                // 4. YouTube ലിങ്ക് ആണെങ്കിൽ (iframe)
                 else if (isVideo && embedUrl) {
-                    slideEl.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-                    slideEl.dataset.duration = "30000"; // 30 സെക്കൻഡ്
+                    slideEl.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="encrypted-media" allowfullscreen></iframe>`;
                 }
-                // 5. നേരിട്ടുള്ള .mp4 വീഡിയോ ആണെങ്കിൽ (Blogspot)
                 else if (isVideo) {
-                    slideEl.innerHTML = `<video src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>`;
-                    slideEl.dataset.duration = "30000"; // 30 സെക്കൻഡ്
+                    slideEl.innerHTML = `<video src="${slide.url}" controls muted loop playsinline preload="metadata"></video>`; // autoplay നീക്കം ചെയ്തു, controls ചേർത്തു
                 }
                 
                 sliderWrapper.appendChild(slideEl);
             });
         }
 
-        // --- സ്ലൈഡർ ആരംഭിക്കുന്നു (പുതിയ ഓട്ടോപ്ലേ ലോജിക്) ---
+        // --- സ്ലൈഡർ ആരംഭിക്കുന്നു (ഓട്ടോപ്ലേ നീക്കം ചെയ്തു) ---
         const heroSwiper = new Swiper('.hero-slider-new', {
             loop: true,
             effect: 'fade',
@@ -89,55 +81,29 @@ async function loadHeroSlider() {
             allowTouchMove: true, // സ്വൈപ്പ് ചെയ്യാൻ അനുവദിക്കുന്നു
             speed: 1000,
             
-            // തുടക്കത്തിൽ 3 സെക്കൻഡ് വെക്കുന്നു (ആദ്യത്തെ സ്ലൈഡ് ഫോട്ടോ ആയിരിക്കാം)
-            autoplay: {
-                delay: 3000,
-                disableOnInteraction: false
+            // ഓട്ടോപ്ലേ പൂർണ്ണമായും നീക്കം ചെയ്തു
+            // autoplay: { ... },
+            
+            // *** പുതിയതായി ഡോട്ടുകൾ (Pagination) ചേർത്തു ***
+            pagination: {
+                el: '.hero-pagination-dots', // index.html-ൽ ചേർത്ത div
+                clickable: true,
             },
-
-            // നാവിഗേഷൻ ബട്ടണുകൾ നീക്കം ചെയ്തു
         });
         
-        // --- സ്ലൈഡ് മാറുമ്പോൾ സമയം മാറ്റാനുള്ള കോഡ് ---
-        heroSwiper.on('slideChangeTransitionStart', function () {
-            // അടുത്ത സ്ലൈഡ് ഏതാണോ അത് എടുക്കുന്നു
-            const activeSlide = heroSwiper.slides[heroSwiper.activeIndex];
-            // അതിൽ നമ്മൾ സെറ്റ് ചെയ്ത 'data-duration' എടുക്കുന്നു
-            const newDuration = activeSlide.dataset.duration || 3000;
-            
-            // സ്ലൈഡറിന്റെ ഓട്ടോപ്ലേ സമയം ആ പുതിയ സമയമാക്കി മാറ്റുന്നു
-            heroSwiper.params.autoplay.delay = parseInt(newDuration, 10);
-            
-            // ഓട്ടോപ്ലേ നിർത്തുന്നു (YouTube വീഡിയോ പ്ലേ ആവാൻ)
-            heroSwiper.autoplay.stop();
-            // പുതിയ സമയം സെറ്റ് ചെയ്ത ശേഷം ഓട്ടോപ്ലേ വീണ്ടും തുടങ്ങുന്നു
-            // (ഈ കോഡ് YouTube-നെ ഓവർറൈഡ് ചെയ്യാതിരിക്കാൻ കമന്റ് ചെയ്യുന്നു)
-            // heroSwiper.autoplay.start();
-            
-            // Update: വീഡിയോകൾ ഓട്ടോപ്ലേ ആവുന്നത് കൊണ്ട്, മൊത്തത്തിലുള്ള ഓട്ടോപ്ലേ നമുക്ക് നിർത്താം
-            // പകരം, ഓരോ സ്ലൈഡിനും ശേഷം ടൈമർ സെറ്റ് ചെയ്യാം
-        });
-        
-        // *** മെച്ചപ്പെടുത്തിയ ഓട്ടോപ്ലേ ലോജിക് ***
+        // സ്ലൈഡ് മാറുമ്പോൾ വീഡിയോ നിർത്താനുള്ള കോഡ്
         heroSwiper.on('slideChange', function () {
-             // എല്ലാ ഓട്ടോപ്ലേയും നിർത്തുന്നു
-            heroSwiper.autoplay.stop();
-            
-            const activeSlide = heroSwiper.slides[heroSwiper.realIndex];
-            const newDuration = parseInt(activeSlide.dataset.duration || 3000, 10);
-            
-            // പുതിയ സ്ലൈഡ് കാണിക്കാൻ തുടങ്ങുമ്പോൾ, ആ സ്ലൈഡിന്റെ സമയം അനുസരിച്ച് അടുത്തതിലേക്ക് പോകാൻ ഒരു ടൈമർ സെറ്റ് ചെയ്യുന്നു
-            setTimeout(() => {
-                heroSwiper.slideNext();
-            }, newDuration);
+            // എല്ലാ iframe-കളും നിർത്തുന്നു
+            const allIframes = sliderWrapper.querySelectorAll('iframe');
+            allIframes.forEach(iframe => {
+                iframe.src = iframe.src; // src റീലോഡ് ചെയ്ത് വീഡിയോ നിർത്തുന്നു
+            });
+            // എല്ലാ വീഡിയോ ടാഗുകളും നിർത്തുന്നു
+            const allVideos = sliderWrapper.querySelectorAll('video');
+            allVideos.forEach(video => {
+                video.pause();
+            });
         });
-        
-        // ആദ്യത്തെ സ്ലൈഡിന് വേണ്ടി ഇത് പ്രത്യേകം പ്രവർത്തിപ്പിക്കുന്നു
-        const firstSlide = heroSwiper.slides[heroSwiper.realIndex];
-        const firstDuration = parseInt(firstSlide.dataset.duration || 3000, 10);
-        setTimeout(() => {
-            heroSwiper.slideNext();
-        }, firstDuration);
 
 
     } catch (error) { console.error("Error loading hero slider: ", error); }
