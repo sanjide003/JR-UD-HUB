@@ -1,5 +1,5 @@
 // ഇതാണ് 'common.js' ഫയൽ.
-// *** സൈഡ് മെനു വലതുവശത്തേക്ക് മാറ്റി, കാറ്റഗറി ഡ്രോപ്പ്ഡൗൺ ചേർത്തു ***
+// *** പുതിയ പേജ് ലോഡർ, വലതുവശത്തെ മെനു, കാറ്റഗറി ഡ്രോപ്പ്ഡൗൺ എന്നിവ ചേർത്തു ***
 
 import { db, auth } from './firebase-config.js';
 import { 
@@ -84,7 +84,6 @@ async function buildHeader() {
         </a>
         <div class="header-icons">
             <a href="cart.html" class="header-icon-btn cart-icon-wrapper" aria-label="Shopping Cart">
-                <!-- *** ഐക്കൺ മാറ്റി: Shopping Bag *** -->
                 <svg class="icon-cart" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                     <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -229,7 +228,7 @@ async function buildFooter() {
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.741 0 8.333.014 7.053.072 2.748.27 0 3.018 0 7.053c-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.202 4.305 2.949 7.053 7.053 7.053 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c4.305-.202 7.053-2.949 7.053-7.053.058-1.28.072 1.688.072-4.947s-.014-3.667-.072-4.947C21.725 2.748 19.227 0 15.028.072 13.748.014 13.34 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"></path></svg>
                 </a>
                 <a href="${settings.facebookUrl || '#'}" target="_blank" aria-label="Facebook">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.9V12h2.538v-2.245c0-2.508 1.493-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.465l-1.26.001c-1.243 0-1.63.771-1.63 1.562V12h2.771l-.443 2.89H13.63v6.988C18.343 21.128 22 16.991 22 12z"></path></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.9V12h2.538v-2.245c0-2.508 1.493-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.465l-1.26.001c-1.243 0-1.63.771-1.63 1.562V12h2.771l-.443 2.89H13.63v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
                 </a>
             </div>
 
@@ -362,11 +361,39 @@ window.addEventListener('cartUpdated', updateCartIcon);
 
 /**
  * എല്ലാ പൊതുവായ കാര്യങ്ങളും ലോഡ് ചെയ്യാനുള്ള പ്രധാന ഫംഗ്ഷൻ
+ * *** പുതിയ പേജ് ലോഡർ ലോജിക് ചേർത്തു ***
  */
 export async function loadSiteSettings() {
-    await authenticateUser();
-    await buildHeader();
-    await buildSideNav();
-    await buildFooter();
-    await buildFloatingButtons();
+    const preloader = document.getElementById('preloader');
+    const preloaderLogo = document.getElementById('preloader-logo');
+    
+    try {
+        await authenticateUser();
+        const settings = await fetchSiteSettings(); // സെറ്റിംഗ്സ് ആദ്യം ലോഡ് ചെയ്യുന്നു
+        
+        // ലോഡറിലേക്ക് ലോഗോ സെറ്റ് ചെയ്യുന്നു
+        if (preloaderLogo && settings.logoImageUrl) {
+            preloaderLogo.src = settings.logoImageUrl;
+            preloaderLogo.style.display = 'block';
+        }
+
+        // ബാക്കി ഭാഗങ്ങൾ നിർമ്മിക്കുന്നു
+        await Promise.all([
+            buildHeader(),
+            buildSideNav(),
+            buildFooter(),
+            buildFloatingButtons()
+        ]);
+        
+    } catch (error) {
+        console.error("Error during site initialization: ", error);
+    } finally {
+        // എല്ലാം കഴിഞ്ഞ ശേഷം ലോഡർ മറയ്ക്കുന്നു
+        if (preloader) {
+            preloader.style.opacity = '0';
+            setTimeout(() => {
+                preloader.style.display = 'none';
+            }, 500); // 0.5 സെക്കൻഡ് ഫേഡ്-ഔട്ടിന് വേണ്ടി
+        }
+    }
 }
