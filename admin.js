@@ -1,6 +1,5 @@
 // ഇതാണ് 'admin.js' ഫയൽ.
-// *** പുതിയ ഹാംബർഗർ മെനു ലോജിക് ചേർത്തു ***
-// *** "Follow Us" ലിങ്കുകൾ "Site Settings"-ലേക്ക് മാറ്റി ***
+// *** പുതിയ ഹാംബർഗർ മെനു, പേജ് സിസ്റ്റം, പ്രൊഡക്റ്റ് ഫിൽട്ടർ എന്നിവ ചേർത്തു ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -20,6 +19,7 @@ import {
     deleteDoc,
     onSnapshot, 
     query,
+    where, // ഫിൽട്ടറിംഗിനായി where ചേർത്തു
     serverTimestamp,
     orderBy,
     setLogLevel
@@ -42,8 +42,9 @@ const adminSideNav = document.getElementById("admin-side-nav");
 const adminNavOverlay = document.getElementById("admin-nav-overlay");
 const adminNavLinks = document.querySelector(".admin-nav-links");
 
-const tabLinks = document.querySelectorAll(".tab-link");
-const tabContents = document.querySelectorAll(".tab-content");
+// *** പുതിയത്: Page Content Elements ***
+const pageContents = document.querySelectorAll(".page-content");
+const navLinks = document.querySelectorAll(".nav-link");
 
 // Category elements
 const addCategoryForm = document.getElementById("add-category-form");
@@ -57,15 +58,21 @@ const productCategorySelect = document.getElementById("product-category");
 const productLoader = document.getElementById("product-loader");
 const productsListBody = document.getElementById("products-list-body");
 const productImagePreview = document.getElementById("product-image-preview");
+const productFilterCategory = document.getElementById("product-filter-category"); // *** പുതിയത്: ഫിൽട്ടർ ഡ്രോപ്പ്ഡൗൺ ***
 
 // Hero Slide Elements
 const addHeroSlideForm = document.getElementById("add-hero-slide-form");
 const heroSlideLoader = document.getElementById("hero-slide-loader");
 const heroSlidesListBody = document.getElementById("hero-slides-list-body");
 
-// Settings elements
-const siteSettingsForm = document.getElementById("site-settings-form");
-const settingsLoader = document.getElementById("settings-loader");
+// *** പുതിയത്: Settings Form Elements ***
+const generalSettingsForm = document.getElementById("general-settings-form");
+const generalSettingsLoader = document.getElementById("general-settings-loader");
+const contactSettingsForm = document.getElementById("contact-settings-form");
+const contactSettingsLoader = document.getElementById("contact-settings-loader");
+const followSettingsForm = document.getElementById("follow-settings-form");
+const followSettingsLoader = document.getElementById("follow-settings-loader");
+
 
 // Modal elements
 const editModal = document.getElementById("edit-modal");
@@ -73,6 +80,8 @@ const modalCloseButton = document.getElementById("modal-close-button");
 const modalTitle = document.getElementById("modal-title");
 const modalForm = document.getElementById("modal-form");
 const modalLoader = document.getElementById("modal-loader");
+
+let currentProductsQuery = null; // നിലവിലെ പ്രൊഡക്റ്റ് ക്വറി സേവ് ചെയ്യാൻ
 
 // --- Helper Functions ---
 function showStatus(element, message, isError = true) {
@@ -84,8 +93,8 @@ function clearStatus(element) {
     element.textContent = '';
     element.className = 'status-message';
 }
-function showLoader(loader) { loader.style.display = 'block'; }
-function hideLoader(loader) { loader.style.display = 'none'; }
+function showLoader(loader) { if(loader) loader.style.display = 'block'; }
+function hideLoader(loader) { if(loader) loader.style.display = 'none'; }
 
 // --- 1. Authentication Logic ---
 loginForm.addEventListener("submit", async (e) => {
@@ -114,9 +123,9 @@ onAuthStateChanged(auth, (user) => {
         loginSection.style.display = "none";
         adminPanel.style.display = "block";
         loadCategories();
-        loadProducts();
+        loadProducts("all"); // തുടക്കത്തിൽ എല്ലാ പ്രൊഡക്ടുകളും ലോഡ് ചെയ്യുന്നു
         loadHeroSlides(); 
-        loadSiteSettings();
+        loadAllSettings();
     } else {
         loginSection.style.display = "block";
         adminPanel.style.display = "none";
@@ -125,7 +134,7 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// --- 2. Tab Switching & New Admin Nav Logic ---
+// --- 2. പുതിയത്: Admin Nav Logic ---
 function closeAdminNav() {
     adminSideNav.classList.remove("open");
     adminNavOverlay.classList.remove("open");
@@ -139,16 +148,20 @@ adminNavCloseBtn.addEventListener("click", closeAdminNav);
 adminNavOverlay.addEventListener("click", closeAdminNav);
 
 adminNavLinks.addEventListener("click", (e) => {
-    if (e.target.classList.contains("tab-link")) {
-        const tabId = e.target.getAttribute("data-tab");
+    if (e.target.classList.contains("nav-link")) {
+        const pageId = e.target.getAttribute("data-page");
         
-        tabLinks.forEach(item => item.classList.remove("active"));
-        tabContents.forEach(item => item.classList.remove("active"));
+        // എല്ലാ പേജുകളും മറയ്ക്കുന്നു
+        pageContents.forEach(item => item.classList.remove("active"));
+        // എല്ലാ ലിങ്കുകളും അൺ-ആക്ടീവ് ആക്കുന്നു
+        navLinks.forEach(item => item.classList.remove("active"));
         
+        // ക്ലിക്ക് ചെയ്ത പേജ് കാണിക്കുന്നു
+        document.getElementById(pageId).classList.add("active");
+        // ക്ലിക്ക് ചെയ്ത ലിങ്ക് ആക്ടീവ് ആക്കുന്നു
         e.target.classList.add("active");
-        document.getElementById(tabId).classList.add("active");
         
-        closeAdminNav(); // ടാബ് തിരഞ്ഞെടുത്ത ശേഷം മെനു അടയ്ക്കുന്നു
+        closeAdminNav(); // മെനു അടയ്ക്കുന്നു
     }
 });
 
@@ -178,8 +191,8 @@ setupImagePreview('category-image-url', 'category-image-preview');
 setupImagePreview('product-image-urls', 'product-image-preview');
 
 
-// --- 4. Site Settings Logic (Follow Us ലിങ്കുകൾ ചേർത്തു) ---
-async function loadSiteSettings() {
+// --- 4. Settings Logic (3 ഫോമുകൾക്കായി വിഭജിച്ചു) ---
+async function loadAllSettings() {
     try {
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
@@ -207,46 +220,72 @@ async function loadSiteSettings() {
     }
 }
         
-siteSettingsForm.addEventListener("submit", async (e) => {
+// ഫോം 1: General Settings
+generalSettingsForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    showLoader(settingsLoader);
+    showLoader(generalSettingsLoader);
     try {
         const settings = {
-            // General
             logoImageUrl: document.getElementById("setting-logo-image-url").value,
             logoText: document.getElementById("setting-logo-text").value,
             logoSubtitle: document.getElementById("setting-logo-subtitle").value,
             videoUrl: document.getElementById("setting-video-url").value,
-            // Contact
+        };
+        const docRef = doc(db, "settings", "global");
+        await setDoc(docRef, settings, { merge: true });
+        showStatus(adminStatus, "General settings saved!", false);
+    } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
+    finally { hideLoader(generalSettingsLoader); }
+});
+
+// ഫോം 2: Contact Details
+contactSettingsForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showLoader(contactSettingsLoader);
+    try {
+        const settings = {
             phone: document.getElementById("setting-phone").value,
             email: document.getElementById("setting-email").value,
             address: document.getElementById("setting-address").value,
             whatsapp: document.getElementById("setting-whatsapp").value, // Order WA
-            // Follow Us
+        };
+        const docRef = doc(db, "settings", "global");
+        await setDoc(docRef, settings, { merge: true });
+        showStatus(adminStatus, "Contact details saved!", false);
+    } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
+    finally { hideLoader(contactSettingsLoader); }
+});
+
+// ഫോം 3: Follow Us Links
+followSettingsForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showLoader(followSettingsLoader);
+    try {
+        const settings = {
             followWhatsapp: document.getElementById("setting-follow-whatsapp").value, // Follow WA
             facebookUrl: document.getElementById("setting-facebook-url").value,
             instagramUrl: document.getElementById("setting-instagram-url").value,
             youtubeUrl: document.getElementById("setting-youtube-url").value,
         };
-        
         const docRef = doc(db, "settings", "global");
         await setDoc(docRef, settings, { merge: true });
-        
-        showStatus(adminStatus, "Settings saved successfully!", false);
-    } catch (error) {
-        console.error("Error saving settings: ", error);
-        showStatus(adminStatus, `Error: ${error.message}`);
-    } finally {
-        hideLoader(settingsLoader);
-    }
+        showStatus(adminStatus, '"Follow Us" links saved!', false);
+    } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
+    finally { hideLoader(followSettingsLoader); }
 });
+
 
 // --- 5. Category Logic ---
 function loadCategories() {
     const q = query(collection(db, "categories"), orderBy("name"));
+    
+    // ഫിൽട്ടർ ഡ്രോപ്പ്ഡൗൺ ക്ലിയർ ചെയ്യുന്നു
+    productFilterCategory.innerHTML = '<option value="all">All Categories</option>';
+    // ആഡ് പ്രൊഡക്റ്റ് ഡ്രോപ്പ്ഡൗൺ ക്ലിയർ ചെയ്യുന്നു
+    productCategorySelect.innerHTML = '<option value="">Select a category...</option>';
+
     onSnapshot(q, (querySnapshot) => {
         categoriesListBody.innerHTML = '';
-        productCategorySelect.innerHTML = '<option value="">Select a category...</option>';
         
         if (querySnapshot.empty) {
             categoriesListBody.innerHTML = '<tr><td colspan="3">No categories found.</td></tr>';
@@ -257,6 +296,7 @@ function loadCategories() {
             const category = doc.data();
             const id = doc.id;
             
+            // കാറ്റഗറി ലിസ്റ്റിൽ (പേജ് 4) ചേർക്കുന്നു
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><img src="${category.imageUrl || ''}" alt="${category.name}"></td>
@@ -268,10 +308,14 @@ function loadCategories() {
             `;
             categoriesListBody.appendChild(row);
             
+            // ആഡ് പ്രൊഡക്റ്റ് ഫോമിൽ (പേജ് 1) ചേർക്കുന്നു
             const option = document.createElement('option');
             option.value = id;
             option.textContent = category.name;
-            productCategorySelect.appendChild(option);
+            productCategorySelect.appendChild(option.cloneNode(true));
+            
+            // ഫിൽട്ടർ ഡ്രോപ്പ്ഡൗണിൽ (പേജ് 2) ചേർക്കുന്നു
+            productFilterCategory.appendChild(option.cloneNode(true));
         });
     }, (error) => {
         console.error("Error loading categories: ", error);
@@ -303,10 +347,21 @@ addCategoryForm.addEventListener("submit", async (e) => {
     }
 });
 
-// --- 6. Product Logic ---
-function loadProducts() {
-     const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-     onSnapshot(q, (querySnapshot) => {
+// --- 6. Product Logic (പുതിയ ഫിൽട്ടറിംഗ് സഹിതം) ---
+function loadProducts(categoryId = "all") {
+     let q;
+     if (categoryId === "all") {
+        q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+     } else {
+        q = query(collection(db, "products"), 
+            where("categoryId", "==", categoryId),
+            orderBy("createdAt", "desc"));
+     }
+     
+     // പഴയ onSnapshot നിർത്തുന്നു (ഒന്നിലധികം listener ഒഴിവാക്കാൻ)
+     if (currentProductsQuery) currentProductsQuery(); 
+
+     currentProductsQuery = onSnapshot(q, (querySnapshot) => {
         productsListBody.innerHTML = '';
         if (querySnapshot.empty) {
             productsListBody.innerHTML = '<tr><td colspan="4">No products found.</td></tr>';
@@ -340,6 +395,12 @@ function loadProducts() {
         showStatus(adminStatus, "Error loading products.");
     });
 }
+
+// *** പുതിയത്: ഫിൽട്ടർ ഡ്രോപ്പ്ഡൗൺ പ്രവർത്തിപ്പിക്കുന്നു ***
+productFilterCategory.addEventListener("change", (e) => {
+    const categoryId = e.target.value;
+    loadProducts(categoryId);
+});
 
 addProductForm.addEventListener("submit", async (e) => {
     e.preventDefault();
