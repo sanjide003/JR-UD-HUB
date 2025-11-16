@@ -1,9 +1,10 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** പുതിയ പേജ് ലോഡർ, വലതുവശത്തെ മെനു, കാറ്റഗറി ഡ്രോപ്പ്ഡൗൺ, മൊബൈൽ ലോഗോ എന്നിവ ചേർത്തു ***
+   *** പുതിയ ഫോണ്ട്, വെള്ള മെനു ഐക്കൺ, കോൺടാക്റ്റ് പേജ് മാറ്റങ്ങൾ എന്നിവ ചേർത്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&family=Playfair+Display:wght@700&display=swap');
+/* *** 'Playfair Display' നീക്കം ചെയ്തു, 'Inter' മാത്രം ഉപയോഗിക്കുന്നു *** */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
     --bg-color: #000000;
@@ -17,8 +18,8 @@
     --success-green: #2ecc71;
     
     --font-main: 'Inter', sans-serif;
-    --font-heading: 'Playfair Display', serif; 
-    --font-new-heading: 'Inter', sans-serif;
+    /* *** ഹെഡിംഗ് ഫോണ്ടും 'Inter' ആക്കി *** */
+    --font-heading: 'Inter', sans-serif; 
     
     --header-height: 70px;
 }
@@ -81,6 +82,24 @@ body {
     box-sizing: border-box;
 }
 
+/* *** തലക്കെട്ടുകൾക്ക് പുതിയ ഫോണ്ട് ഭാരം *** */
+h1, h2, h3, h4, h5, h6, .section-title-new, .product-title, .page-header-bar h1, .cart-summary-card h2, .header-logo-text {
+    font-family: var(--font-heading);
+    font-weight: 600; /* ചിത്രത്തിലേതുപോലെയുള്ള ബോൾഡ് */
+    color: var(--primary-gold); /* മിക്ക തലക്കെട്ടുകൾക്കും സ്വർണ്ണ നിറം */
+}
+.section-title-new {
+    font-weight: 600;
+    letter-spacing: 1px; /* അക്ഷരങ്ങൾ തമ്മിലുള്ള അകലം കുറച്ചു */
+}
+.page-header-bar h1, .product-title {
+    font-weight: 700;
+}
+.header-logo-text {
+     font-weight: 700;
+}
+
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -101,17 +120,6 @@ img {
     max-width: 100%;
     height: auto;
     display: block;
-}
-
-.section-title-new {
-    text-align: center;
-    font-family: var(--font-new-heading);
-    font-size: 1.5rem;
-    font-weight: 500;
-    color: var(--primary-gold);
-    letter-spacing: 2px;
-    text-transform: uppercase;
-    margin-bottom: 2.5rem;
 }
 
 /* --- 3. ഹെഡർ (Main Header) --- */
@@ -143,13 +151,7 @@ img {
     display: flex;
     flex-direction: column;
 }
-.header-logo-text {
-    font-family: var(--font-heading);
-    font-size: 1.5rem;
-    color: var(--primary-gold);
-    font-weight: 700;
-    line-height: 1;
-}
+
 .header-logo-subtitle {
     font-family: var(--font-main);
     font-size: 0.8rem;
@@ -165,13 +167,14 @@ img {
 .header-icon-btn {
     background: none;
     border: none;
-    color: var(--text-color); /* *** മെനു ഐക്കൺ വെള്ള നിറമാക്കി *** */
+    color: var(--text-color) !important; /* *** മെനു ഐക്കൺ വെള്ള നിറമാക്കി *** */
     cursor: pointer;
     position: relative;
     padding: 5px;
 }
 .header-icon-btn svg {
-    stroke: var(--text-color); /* *** SVG യുടെ വരകൾ വെള്ളയാക്കി *** */
+    stroke: var(--text-color) !important; /* *** SVG യുടെ വരകൾ വെള്ളയാക്കി *** */
+    fill: none;
 }
 .header-icon-btn svg.icon-cart {
     width: 24px;
@@ -181,6 +184,9 @@ img {
 .cart-icon-wrapper {
     position: relative;
     color: var(--text-color); /* കാർട്ട് ഐക്കൺ വെള്ള */
+}
+.cart-icon-wrapper svg {
+    stroke: var(--text-color) !important;
 }
 .cart-item-count {
     position: absolute;
@@ -243,7 +249,7 @@ img {
     color: var(--text-color);
     cursor: pointer;
 }
-.side-nav-close-btn svg { width: 28px; height: 28px; }
+.side-nav-close-btn svg { width: 28px; height: 28px; stroke: var(--text-color) !important; }
 .side-nav-links {
     list-style: none;
     margin-top: 1.5rem;
@@ -353,7 +359,7 @@ img {
     border: none;
     color: var(--text-color);
     padding: 1.5rem 0;
-    font-family: var(--font-new-heading);
+    font-family: var(--font-main);
     font-size: 1rem;
     font-weight: 500;
     text-transform: uppercase;
@@ -563,7 +569,7 @@ img {
     transform: scale(1.05);
 }
 .category-card-home-new h3 {
-    font-family: var(--font-new-heading);
+    font-family: var(--font-main);
     font-weight: 500;
     font-size: 0.85rem;
     text-align: center;
@@ -571,6 +577,7 @@ img {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: var(--text-color); /* തലക്കെട്ടിന്റെ നിറം */
 }
 
 
@@ -669,12 +676,7 @@ img {
     margin-bottom: 2rem;
     border-bottom: 1px solid var(--border-color);
 }
-.page-header-bar h1 {
-    font-family: var(--font-heading);
-    font-size: 2.5rem;
-    color: var(--primary-gold);
-    padding-bottom: 1rem;
-}
+
 .category-page-layout {
     display: flex;
     flex-direction: column;
@@ -733,18 +735,7 @@ img {
     justify-content: center;
     padding: 2rem;
 }
-.loader-small {
-    border: 4px solid var(--border-color);
-    border-top: 4px solid var(--primary-gold);
-    border-radius: 50%;
-    width: 30px;
-    height: 30px;
-    animation: spin 1s linear infinite;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+
 
 /* 8.1 കാറ്റഗറി പേജിലെ പുതിയ പ്രൊഡക്റ്റ് കാർഡ് */
 .category-product-card {
@@ -784,7 +775,7 @@ img {
 }
 .cat-product-title {
     font-size: 1rem;
-    color: var(--text-color);
+    color: var(--text-color); /* *** തലക്കെട്ട് അല്ലാത്തതുകൊണ്ട് വെള്ള നിറം *** */
     font-weight: 500;
     margin-bottom: 1rem;
     min-height: 40px;
@@ -836,12 +827,7 @@ img {
 }
 
 .product-info { padding-top: 1rem; }
-.product-title {
-    font-family: var(--font-heading);
-    font-size: 2.5rem;
-    color: var(--primary-gold);
-    margin-bottom: 1rem;
-}
+
 .product-info .price-container.large { margin-bottom: 1.5rem; }
 .product-info .price-container.large .price-main { 
     font-size: 2rem;
@@ -893,13 +879,7 @@ img {
     padding-top: 2rem;
     border-top: 1px solid var(--border-color);
 }
-.related-products-section .section-title {
-    font-family: var(--font-heading);
-    font-size: 2rem;
-    color: var(--primary-gold);
-    text-align: center;
-    margin-bottom: 2rem;
-}
+
 /* 'You May Also Like' ഗ്രിഡ് മാറ്റി */
 .related-products-section .product-grid-new {
     width: 100%;
@@ -908,22 +888,17 @@ img {
 
 
 /* --- 10. കോൺടാക്റ്റ് പേജ് (Contact Page) --- */
-.contact-page-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 2rem;
+/* *** ഗ്രിഡ് മാറ്റി, മാപ്പ് നീക്കം ചെയ്തു *** */
+.contact-page-grid-single {
+    max-width: 700px; /* വീതി കുറച്ചു */
+    margin: 0 auto; /* നടുവിലേക്ക് ആക്കി */
 }
 .contact-page-info {
     background-color: var(--card-bg);
     padding: 2rem;
     border-radius: 8px;
 }
-.contact-page-info h2 {
-    font-family: var(--font-heading);
-    color: var(--primary-gold);
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-}
+
 .contact-page-subtitle {
     color: var(--text-muted);
     margin-bottom: 2.5rem;
@@ -954,12 +929,35 @@ img {
     color: var(--text-muted);
     font-size: 1rem;
 }
-.contact-page-map {
-    border-radius: 8px;
-    overflow: hidden;
-    min-height: 400px;
-    background-color: var(--card-bg);
+/* *** പുതിയ സോഷ്യൽ സെക്ഷൻ *** */
+.contact-social-section {
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
 }
+.contact-social-section h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+.contact-social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+}
+.contact-social-icon {
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+}
+.contact-social-icon:hover {
+    color: var(--primary-gold);
+}
+.contact-social-icon svg {
+    width: 30px;
+    height: 30px;
+    fill: currentColor;
+}
+
 
 /* --- 11. ഷോപ്പിംഗ് കാർട്ട് പേജ് (Cart Page) --- */
 .cart-page-layout-new {
@@ -1007,6 +1005,7 @@ img {
     font-size: 1.1rem;
     font-weight: 500;
     margin-bottom: 0.25rem;
+    color: var(--text-color); /* തലക്കെട്ടല്ല, വെള്ള നിറം */
 }
 .cart-item-info .cart-item-price {
     font-size: 1rem;
@@ -1088,13 +1087,7 @@ img {
     border-radius: 8px;
     padding: 1.5rem;
 }
-.cart-summary-card h2 {
-    font-family: var(--font-heading);
-    color: var(--primary-gold);
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 1rem;
-}
+
 .summary-row {
     display: flex;
     justify-content: space-between;
@@ -1135,11 +1128,7 @@ img {
     border-radius: 8px;
     border: 1px solid var(--border-color);
 }
-.empty-cart-message h2 {
-    font-family: var(--font-heading);
-    color: var(--primary-gold);
-    margin-bottom: 1rem;
-}
+
 .cart-error {
     color: var(--error-red);
     background-color: rgba(231, 76, 60, 0.1);
