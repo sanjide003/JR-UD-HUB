@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** തലക്കെട്ടുകൾ സെന്ററാക്കി, ടോപ്പ് സെല്ലർ ഡോട്ടുകൾ മാറ്റി (ആനിമേഷനോടെ) ***
+   *** 'SHOP BY CATEGORY' കാർഡ് ഡിസൈൻ മാറ്റി (ചിത്രത്തിന് മുകളിൽ ബ്ലർ ടെക്സ്റ്റ്) ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -536,7 +536,7 @@ img {
     margin-bottom: 0; 
 }
 .top-sellers-product-info {
-    padding: 1rem; /* *** പാഡിംഗ് തിരികെ ചേർത്തു *** */
+    padding: 1rem; 
 }
 
 /* *** പുതിയത്: ആനിമേറ്റഡ് ഡോട്ടുകൾ (പ്രോഗ്രസ് ബാർ) *** */
@@ -602,49 +602,53 @@ img {
     width: 100%;
     overflow: hidden;
 }
+/* *** പുതിയ കാർഡ് സ്റ്റൈൽ (ചിത്രത്തിന് മുകളിൽ ടെക്സ്റ്റ്) *** */
 .category-card-home-new {
     display: block;
     text-decoration: none;
     color: var(--text-muted);
     transition: all 0.3s ease;
-    background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    height: 180px; 
+    height: 220px; /* *** ഉയരം കൂട്ടി *** */
+    position: relative; /* *** ടെക്സ്റ്റ് മുകളിൽ വെക്കാൻ *** */
 }
 .category-card-home-new:hover {
     color: var(--primary-gold);
     border-color: var(--primary-gold);
     transform: translateY(-3px);
 }
-.cat-card-home-img-wrapper {
-    width: 100%;
-    height: 130px; 
-    border-radius: 0;
-    overflow: hidden;
-    border: none;
-    background-color: #333;
-}
 .category-card-home-new img {
     width: 100%;
-    height: 100%;
+    height: 100%; /* *** മുഴുവൻ ഉയരം *** */
     object-fit: cover;
     transition: transform 0.3s ease;
 }
 .category-card-home-new:hover img {
     transform: scale(1.05);
 }
+/* *** 'img-wrapper' നീക്കം ചെയ്തു *** */
 .category-card-home-new h3 {
     font-family: var(--font-main);
     font-weight: 500;
-    font-size: 0.85rem;
+    font-size: 1rem; /* *** അല്പം വലുതാക്കി *** */
     text-align: center;
-    padding: 0.75rem 0.5rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--text-color); 
+    color: var(--text-color); /* *** നിറം വെള്ളയാക്കി *** */
+    
+    /* *** പൊസിഷനും ബ്ലർ ബാക്ക്ഗ്രൗണ്ടും *** */
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.5); /* 50% കറുത്ത ബാക്ക്ഗ്രൗണ്ട് */
+    -webkit-backdrop-filter: blur(5px); /* ബ്ലർ എഫക്റ്റ് */
+    backdrop-filter: blur(5px);
 }
 
 
