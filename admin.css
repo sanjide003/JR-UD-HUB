@@ -1,7 +1,7 @@
 /* * =========================================
  * AL AMBAR - ADMIN STYLESHEET (admin.css)
  * =========================================
- * *** പുതിയ ഹെഡർ, സൈഡ് മെനു ഡിസൈൻ ചേർത്തു ***
+ * *** പുതിയ ഹെഡർ, സൈഡ് മെനു, പേജ് സിസ്റ്റം എന്നിവ ഉപയോഗിക്കുന്നു ***
  */
 
 /* --- 1. Root Variables (നിറങ്ങൾ) --- */
@@ -101,6 +101,7 @@ body {
     color: #fff;
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
+    width: auto; /* ഫുൾ വിഡ്ത് അല്ലാതിരിക്കാൻ */
 }
 
 /* *** പുതിയത്: Admin Side Nav *** */
@@ -110,7 +111,7 @@ body {
     right: -100vw;
     width: 280px;
     height: 100%;
-    background-color: var(--card-bg);
+    background-color: #1f1f1f; /* അല്പം വ്യത്യസ്തമായ നിറം */
     border-left: 1px solid var(--border-color);
     z-index: 1002;
     transition: right 0.4s ease;
@@ -148,6 +149,7 @@ body {
     color: var(--primary-gold);
     font-family: var(--font-main);
     font-weight: 600;
+    margin: 0;
 }
 #admin-nav-close-btn {
     background: none;
@@ -160,7 +162,7 @@ body {
     flex-grow: 1;
     overflow-y: auto;
 }
-.tab-link {
+.nav-link {
     display: block;
     width: 100%;
     padding: 1.25rem 1.5rem;
@@ -175,17 +177,25 @@ body {
     text-align: left;
     font-family: var(--font-main);
 }
-.tab-link:hover {
+.nav-link:hover {
     background-color: #2a2a2a;
     color: var(--text-color);
 }
-.tab-link.active {
+.nav-link.active {
     color: var(--primary-gold);
     background-color: #252525;
 }
+.admin-nav-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+.admin-nav-footer .btn-logout {
+    width: 100%;
+}
 
-/* *** ടാബ് ഉള്ളടക്കം *** */
-.tab-content {
+
+/* *** പുതിയത്: Page Content (പഴയ tab-content) *** */
+.page-content {
     display: none;
     background-color: var(--card-bg);
     padding: 2rem;
@@ -194,7 +204,7 @@ body {
     animation: fadeIn 0.5s;
     margin-top: 1.5rem;
 }
-.tab-content.active {
+.page-content.active {
     display: block;
 }
 @keyframes fadeIn {
@@ -443,7 +453,7 @@ textarea {
         padding: 1.5rem;
         margin-top: 2rem;
     }
-    .tab-content {
+    .page-content {
         padding: 1.5rem;
     }
     .data-table th,
@@ -460,7 +470,8 @@ textarea {
         width: 100%;
     }
     .btn-edit,
-    .btn-delete {
+    .btn-delete,
+    .btn-logout {
         width: auto;
     }
 }
