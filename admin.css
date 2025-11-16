@@ -1,8 +1,8 @@
 /* * =========================================
  * AL AMBAR - ADMIN STYLESHEET (admin.css)
  * =========================================
- * *** ഹെഡർ ഐക്കൺ ബഗ് പരിഹരിച്ചു ***
- * *** മെനു വീതി ശരിയാക്കി ***
+ * *** മെനു ഇടതുവശത്തേക്ക് മാറ്റി ***
+ * *** "Featured Products" പേജ് ചേർത്തു ***
  */
 
 /* --- 1. Root Variables (നിറങ്ങൾ) --- */
@@ -58,10 +58,10 @@ body {
     display: none; /* ലോഗിൻ ചെയ്ത ശേഷം മാത്രം കാണിക്കും */
 }
 
-/* *** പുതിയത്: Admin Header *** */
+/* *** പുതിയത്: Admin Header (മെനു ഇടതുവശത്ത്) *** */
 .admin-main-header {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-between; /* ഐക്കണും ലോഗൗട്ടും രണ്ടറ്റത്തേക്ക് മാറ്റുന്നു */
     align-items: center;
     padding: 0 1.5rem;
     height: 70px;
@@ -73,24 +73,27 @@ body {
     width: 100%;
     z-index: 1000;
 }
+.admin-header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0; /* തലക്കെട്ട് ചുരുങ്ങാൻ */
+}
 .admin-main-header h1 {
     color: var(--primary-gold);
     font-size: 1.5rem;
     font-family: var(--font-main);
     font-weight: 600;
     margin: 0;
-    /* *** ഐക്കൺ ബഗ് പരിഹരിക്കാൻ ഈ വരികൾ ചേർത്തു *** */
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    flex-shrink: 1; /* തലക്കെട്ട് ചുരുങ്ങാൻ അനുവദിക്കുന്നു */
-    min-width: 0; 
 }
 .admin-header-right {
     display: flex;
     align-items: center;
     gap: 1rem;
-    flex-shrink: 0; /* ഐക്കണുകൾ ചുരുങ്ങാതിരിക്കാൻ */
+    flex-shrink: 0; /* ലോഗൗട്ട് ബട്ടൺ ചുരുങ്ങാതിരിക്കാൻ */
 }
 #admin-nav-open-btn {
     background: none;
@@ -112,22 +115,22 @@ body {
     width: auto; /* ഫുൾ വിഡ്ത് അല്ലാതിരിക്കാൻ */
 }
 
-/* *** പുതിയത്: Admin Side Nav *** */
+/* *** പുതിയത്: Admin Side Nav (ഇടതുവശത്ത്) *** */
 .admin-side-nav {
     position: fixed;
     top: 0;
-    right: -280px; /* *** വീതി (280px) അനുസരിച്ച് കൃത്യമായി പുറത്തേക്ക് മാറ്റി *** */
+    left: -280px; /* *** ഇടതുവശത്തേക്ക് മാറ്റി *** */
     width: 280px;
     height: 100%;
-    background-color: #1f1f1f; /* അല്പം വ്യത്യസ്തമായ നിറം */
-    border-left: 1px solid var(--border-color);
+    background-color: #1f1f1f;
+    border-right: 1px solid var(--border-color); /* *** ബോർഡർ വലതുവശത്തേക്ക് മാറ്റി *** */
     z-index: 1002;
-    transition: right 0.4s ease;
+    transition: left 0.4s ease; /* *** 'right' എന്നതിന് പകരം 'left' *** */
     display: flex;
     flex-direction: column;
 }
 .admin-side-nav.open {
-    right: 0;
+    left: 0;
 }
 .admin-nav-overlay {
     position: fixed;
