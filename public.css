@@ -1,6 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** ബട്ടണുകൾ പഴയ ഗോൾഡ് ഡിസൈനിലേക്ക് മാറ്റി ***
-   *** മെനു ഐക്കൺ ശരിയാക്കി ***
+   *** പ്രൊഡക്റ്റ് പേജ് പൂർണ്ണമായും അപ്ഡേറ്റ് ചെയ്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -13,13 +12,12 @@
     --text-color: #FFFFFF;
     --text-muted: #aaa;
     --card-bg: #111111;
-    --border-color: #333; /* ചാരനിറം */
+    --border-color: #333;
     --error-red: #e74c3c;
     --success-green: #2ecc71;
-    --whatsapp-green: #25D366;
     
     --font-main: 'Inter', sans-serif;
-    --font-heading: 'Playfair Display', serif; 
+    --font-heading: 'Playfair+Display', serif; 
     --font-new-heading: 'Inter', sans-serif;
     
     --header-height: 70px;
@@ -131,15 +129,10 @@ img {
     position: relative;
     padding: 5px;
 }
-/* *** മെനു ഐക്കൺ ശരിയാക്കി *** */
-.header-icon-btn svg {
+.header-icon-btn svg.icon-cart {
     width: 24px;
     height: 24px;
-    stroke: currentColor; /* മെനു ഐക്കണിന് വേണ്ടി */
     stroke-width: 2;
-}
-.header-icon-btn svg.icon-cart {
-    fill: none; /* ബാഗ് ഐക്കൺ */
 }
 .cart-icon-wrapper {
     position: relative;
@@ -227,10 +220,10 @@ img {
     border-top: 1px solid var(--border-color);
 }
 .side-nav-social a { color: var(--text-muted); }
-.side-nav-social a svg { width: 24px; height: 24px; fill: currentColor; }
+.side-nav-social a svg { width: 24px; height: 24px; }
 
 
-/* --- 5. ഫൂട്ടർ (Main Footer) --- */
+/* --- 5. ഫൂട്ടർ (Main Footer) - പുതിയ അക്കോർഡിയൻ സ്റ്റൈൽ --- */
 .main-footer-new {
     background-color: var(--bg-color);
     color: var(--text-muted);
@@ -308,9 +301,9 @@ img {
 }
 
 
-/* --- 6. ഹോം പേജ് (Home Page) --- */
+/* --- 6. ഹോം പേജ് (Home Page) - പുതിയ സ്റ്റൈലുകൾ --- */
 
-/* 6.1. ഹീറോ സ്ലൈഡർ */
+/* 6.1. പുതിയ ഹീറോ സ്ലൈഡർ */
 .hero-section-new {
     width: 100%;
     height: 70vh; 
@@ -332,13 +325,15 @@ img {
     height: 100%;
     object-fit: cover;
 }
+/* YouTube/Shorts ശരിയാക്കാൻ */
 .hero-slider-new .swiper-slide iframe {
     width: 100%;
     height: 100%;
     object-fit: cover;
     aspect-ratio: 9 / 16; 
-    pointer-events: none;
+    pointer-events: none; /* സ്വൈപ്പ് തടസ്സപ്പെടാതിരിക്കാൻ */
 }
+/* സ്വൈപ്പ് ശരിയാക്കാൻ */
 .hero-slider-new .swiper-slide::after {
     content: '';
     position: absolute;
@@ -349,6 +344,7 @@ img {
     background: transparent;
     z-index: 5;
 }
+/* ഡോട്ടുകൾ (Pagination) */
 .hero-slider-new .hero-pagination-dots {
     position: absolute;
     bottom: 20px;
@@ -380,7 +376,7 @@ img {
     max-width: 800px;
 }
 
-/* 6.3. ടോപ്പ് സെല്ലേഴ്സ് */
+/* 6.3. പുതിയ ടോപ്പ് സെല്ലേഴ്സ് */
 .top-sellers-swiper-new {
     padding-bottom: 3rem; 
 }
@@ -422,7 +418,7 @@ img {
     background-color: var(--primary-gold);
 }
 
-/* 6.4. കാറ്റഗറി ഗ്രിഡ് (ഹോം പേജ്) - സ്ലൈഡർ */
+/* 6.4. പുതിയ കാറ്റഗറി ഗ്രിഡ് (ഹോം പേജ്) - സ്ലൈഡർ */
 .category-swiper-new {
     width: 100%;
     overflow: hidden;
@@ -499,9 +495,7 @@ img {
     width: auto;
 }
 
-/* --- 7. ബട്ടൺ സ്റ്റൈലുകൾ (പഴയ ഗോൾഡ് ഡിസൈനിലേക്ക് തിരികെ) --- */
-
-/* 7.1. പ്രധാന ബട്ടൺ (സ്വർണ്ണം) */
+/* --- 7. ബട്ടൺ സ്റ്റൈലുകൾ (പുതിയത്, ഐക്കണുകളോട് കൂടിയത്) --- */
 .btn-primary-new,
 .btn-primary-icon {
     display: inline-flex;
@@ -514,9 +508,9 @@ img {
     text-decoration: none;
     cursor: pointer;
     font-size: 0.9rem;
-    background-color: var(--primary-gold); /* സ്വർണ്ണ ബാക്ക്ഗ്രൗണ്ട് */
-    border: 2px solid var(--primary-gold); /* സ്വർണ്ണ ബോർഡർ */
-    color: var(--bg-color); /* കറുപ്പ് ടെക്സ്റ്റ് */
+    background-color: var(--primary-gold);
+    border: 2px solid var(--primary-gold);
+    color: var(--bg-color);
     transition: all 0.3s ease;
 }
 .btn-primary-new:hover,
@@ -524,8 +518,6 @@ img {
     background-color: var(--secondary-gold);
     border-color: var(--secondary-gold);
 }
-
-/* 7.2. രണ്ടാംതരം ബട്ടൺ (സ്വർണ്ണ ബോർഡർ) */
 .btn-secondary-new,
 .btn-secondary-icon {
     display: inline-flex;
@@ -538,9 +530,9 @@ img {
     text-decoration: none;
     cursor: pointer;
     font-size: 0.9rem;
-    background-color: transparent; /* ബാക്ക്ഗ്രൗണ്ട് ഇല്ല */
-    border: 2px solid var(--primary-gold); /* സ്വർണ്ണ ബോർഡർ */
-    color: var(--primary-gold); /* സ്വർണ്ണ ടെക്സ്റ്റ് */
+    background-color: transparent;
+    border: 2px solid var(--primary-gold);
+    color: var(--primary-gold);
     transition: all 0.3s ease;
 }
 .btn-secondary-new:hover,
@@ -548,36 +540,19 @@ img {
     background-color: var(--primary-gold);
     color: var(--bg-color);
 }
-
-/* 7.3. ബട്ടൺ ഐക്കൺ (പൊതുവായത്) */
+.btn-primary-icon svg.icon-btn,
+.btn-secondary-icon svg.icon-btn,
 .btn-primary-new svg.icon-btn,
-.btn-primary-icon svg.icon-btn {
+.btn-secondary-new svg.icon-btn {
     width: 16px;
     height: 16px;
-    fill: var(--bg-color); /* കറുപ്പ് ഐക്കൺ */
-    stroke: var(--bg-color);
+    fill: currentColor;
+    stroke: currentColor; /* ബാഗ് ഐക്കണിന് വേണ്ടി */
     stroke-width: 2;
-}
-.btn-primary-new:hover svg.icon-btn,
-.btn-primary-icon:hover svg.icon-btn {
-    fill: var(--bg-color);
-    stroke: var(--bg-color);
-}
-.btn-secondary-new svg.icon-btn,
-.btn-secondary-icon svg.icon-btn {
-    width: 16px;
-    height: 16px;
-    stroke: var(--primary-gold); /* സ്വർണ്ണ ഐക്കൺ */
-    fill: none;
-    stroke-width: 2;
-}
-.btn-secondary-new:hover svg.icon-btn,
-.btn-secondary-icon:hover svg.icon-btn {
-    stroke: var(--bg-color); /* കറുപ്പ് ഐക്കൺ */
 }
 
 
-/* --- 8. കാറ്റഗറി പേജ് (Category Page) --- */
+/* --- 8. കാറ്റഗറി പേജ് (Category Page) - പുതിയ ലേഔട്ട് --- */
 .page-container { margin-top: 1rem; }
 .page-header-bar {
     text-align: center;
@@ -661,7 +636,7 @@ img {
     100% { transform: rotate(360deg); }
 }
 
-/* 8.1 കാറ്റഗറി പേജിലെ പ്രൊഡക്റ്റ് കാർഡ് */
+/* 8.1 കാറ്റഗറി പേജിലെ പുതിയ പ്രൊഡക്റ്റ് കാർഡ് */
 .category-product-card {
     background-color: var(--card-bg);
     border-radius: 8px;
@@ -706,14 +681,9 @@ img {
 }
 .cat-product-buttons {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1fr;
     gap: 0.5rem;
     margin-top: auto;
-}
-.cat-product-buttons .btn-secondary-new,
-.cat-product-buttons .btn-primary-new {
-    font-size: 0.8rem;
-    padding: 0.6rem 0.5rem;
 }
 
 
@@ -724,14 +694,14 @@ img {
     gap: 2rem;
 }
 
-/* 9.1 പ്രൊഡക്റ്റ് പേജിലെ Swiper ഗാലറി */
+/* 9.1 പ്രൊഡക്റ്റ് പേജിലെ പുതിയ Swiper ഗാലറി */
 .product-gallery-swiper {
     width: 100%;
     aspect-ratio: 1 / 1;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
 }
 .product-gallery-swiper .swiper-slide img {
     width: 100%;
@@ -739,11 +709,11 @@ img {
     object-fit: cover;
 }
 .product-gallery-swiper .swiper-pagination {
-    position: static;
-    margin-top: 10px;
+    position: absolute;
+    bottom: 10px;
 }
 .product-gallery-swiper .swiper-pagination-bullet {
-    background-color: var(--border-color);
+    background-color: rgba(255, 255, 255, 0.7);
     opacity: 0.8;
 }
 .product-gallery-swiper .swiper-pagination-bullet-active {
@@ -760,18 +730,18 @@ img {
 }
 .product-info .price-container.large { margin-bottom: 1.5rem; }
 
-/* വില (വെള്ള) */
+/* *** വില (വെള്ള) *** */
 .product-info .price-container.large .price-main { 
     font-size: 2rem;
     color: var(--text-color); 
 }
-/* MRP (ചുവപ്പ്) */
+/* *** MRP (ചുവപ്പ്) *** */
 .product-info .price-container.large .product-mrp-red { 
     font-size: 1.25rem;
     color: var(--error-red);
 }
 
-/* Description (നീളമുള്ള വാക്കുകൾ ശരിയാക്കാൻ) */
+/* *** Description (നീളമുള്ള വാക്കുകൾ ശരിയാക്കാൻ) *** */
 .product-description {
     margin-bottom: 1.5rem;
     color: var(--text-muted);
@@ -779,13 +749,15 @@ img {
     background-color: var(--card-bg);
     padding: 1rem;
     border-radius: 8px;
+    
+    /* ഈ വരികൾ നീളമുള്ള വാക്കുകളെ അടുത്ത വരിയിലേക്ക് മാറ്റും */
     overflow-wrap: break-word;
     word-wrap: break-word; 
-    word-break: break-all;
+    word-break: break-all; /* നീളമുള്ള ലിങ്കുകൾക്ക് വേണ്ടി */
 }
 .product-size {
     font-size: 1.1rem;
-    margin-bottom: 1rem;
+    margin-bottom: 1rem; /* വിലയോട് അടുപ്പിക്കാൻ */
     color: var(--text-muted);
 }
 /* പ്രൊഡക്റ്റ് പേജിലെ 2 ബട്ടണുകൾ */
@@ -796,6 +768,17 @@ img {
     max-width: 400px;
     margin-bottom: 1rem;
 }
+/* *** 'Add to Cart' ബട്ടണിലെ ഐക്കൺ (വെള്ള) *** */
+.product-actions-grid .btn-secondary-new svg.icon-btn {
+    stroke: var(--text-color);
+    fill: none;
+}
+/* 'Buy on WhatsApp' ബട്ടണിലെ ഐക്കൺ (കറുപ്പ്) */
+.product-actions-grid .btn-primary-new svg.icon-btn {
+    fill: var(--bg-color);
+    stroke: var(--bg-color);
+}
+
 
 #add-to-cart-feedback {
     margin-top: 1rem;
@@ -814,12 +797,10 @@ img {
     text-align: center;
     margin-bottom: 2rem;
 }
-/* 'You May Also Like' സ്ലൈഡർ */
-.related-products-section .product-grid-new {
-    overflow: hidden;
-}
-.related-products-swiper .swiper-slide {
-    width: 180px;
+.related-products-section .product-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
 }
 
 
@@ -987,19 +968,11 @@ img {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
-    /* ഗോൾഡ് ഡിസൈൻ ഉപയോഗിക്കുന്നു */
-    background-color: var(--primary-gold);
-    border: 2px solid var(--primary-gold);
-    color: var(--bg-color);
-}
-.btn-checkout:hover {
-    background-color: var(--secondary-gold);
-    border-color: var(--secondary-gold);
 }
 .btn-checkout svg {
     width: 20px;
     height: 20px;
-    fill: var(--bg-color);
+    fill: currentColor;
 }
 .empty-cart-message {
     text-align: center;
@@ -1050,7 +1023,7 @@ img {
     border-radius: 4px;
 }
 
-/* --- 13. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ (ഡിസൈൻ നിലനിർത്തി) --- */
+/* --- 13. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ (പുതിയ ഡിസൈൻ) --- */
 #floating-action-buttons {
     position: fixed;
     bottom: 15px;
@@ -1138,17 +1111,9 @@ img {
     }
     .btn-primary-new, .btn-secondary-new,
     .btn-primary-icon, .btn-secondary-icon {
-        font-size: 0.9rem;
-        padding: 0.75rem 1rem;
-    }
-    .cat-product-buttons .btn-secondary-new,
-    .cat-product-buttons .btn-primary-new,
-    .top-sellers-buttons .btn-secondary-new,
-    .top-sellers-buttons .btn-primary-new {
         font-size: 0.75rem;
         padding: 0.6rem 0.5rem;
     }
-
 
     .featured-section {
         text-align: center;
@@ -1177,8 +1142,8 @@ img {
         flex-grow: 1;
     }
 
-    .related-products-swiper .swiper-slide {
-        width: 160px;
+    .related-products-section .product-grid {
+        grid-template-columns: repeat(2, 1fr);
     }
     
     .cart-item {
@@ -1196,8 +1161,9 @@ img {
         height: 100%;
     }
     
+    /* പ്രൊഡക്റ്റ് പേജിലെ 2 ബട്ടണുകൾ മൊബൈലിൽ */
     .product-actions-grid {
-        max-width: 100%;
+        max-width: 100%; /* മുഴുവൻ വീതി */
     }
 }
 
@@ -1244,8 +1210,8 @@ img {
     .product-detail-grid {
         grid-template-columns: 1fr 1fr;
     }
-    .related-products-swiper .swiper-slide {
-        width: 180px;
+    .related-products-section .product-grid {
+        grid-template-columns: repeat(4, 1fr);
     }
     
     .cart-page-layout {
@@ -1257,6 +1223,7 @@ img {
         text-align: center;
     }
     
+    /* പ്രൊഡക്റ്റ് പേജിലെ 2 ബട്ടണുകൾ ഡെസ്ക്ടോപ്പിൽ */
     .product-actions-grid {
         max-width: 400px;
     }
