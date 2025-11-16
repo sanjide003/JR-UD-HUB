@@ -1,6 +1,6 @@
 // ഇതാണ് 'admin.js' ഫയൽ.
-// *** എഡിറ്റ് ബഗ് പരിഹരിച്ചു ***
-// *** ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ ചേർത്തു ***
+// *** എഡിറ്റ് ബഗ് പരിഹരിച്ചു (ലിസണറുകൾ തിരികെ ചേർത്തു) ***
+// *** ഡൈനാമിക് അഡ്മിൻ പാനൽ ടൈറ്റിൽ ചേർത്തു ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -75,7 +75,6 @@ const modalCloseButton = document.getElementById("modal-close-button");
 const modalTitle = document.getElementById("modal-title");
 const modalForm = document.getElementById("modal-form");
 
-// *** പുതിയത്: കൺഫർമേഷൻ മോഡൽ Elements ***
 const confirmModal = document.getElementById("confirm-modal");
 const confirmCloseButton = document.getElementById("confirm-close-button");
 const confirmBtnCancel = document.getElementById("confirm-btn-cancel");
@@ -86,7 +85,7 @@ const confirmMessage = document.getElementById("confirm-message");
 
 let currentProductsQuery = null;
 let currentFeaturedQuery = null;
-let deleteInfo = { id: null, type: null }; // *** പുതിയത്: ഡിലീറ്റ് ചെയ്യാനുള്ള വിവരങ്ങൾ സേവ് ചെയ്യാൻ
+let deleteInfo = { id: null, type: null }; 
 
 // --- Helper Functions ---
 function showStatus(element, message, isError = true) {
@@ -225,6 +224,12 @@ async function loadAllSettings() {
             document.getElementById("setting-facebook-url").value = settings.facebookUrl || '';
             document.getElementById("setting-instagram-url").value = settings.instagramUrl || '';
             document.getElementById("setting-youtube-url").value = settings.youtubeUrl || '';
+
+            // *** പുതിയത്: അഡ്മിൻ പാനൽ തലക്കെട്ട് അപ്ഡേറ്റ് ചെയ്യുന്നു ***
+            const titleElement = document.getElementById("admin-panel-title");
+            if (titleElement) {
+                titleElement.textContent = `${settings.logoText || 'Admin'} - Panel`;
+            }
         }
     } catch (error) {
         console.error("Error loading settings: ", error);
@@ -246,6 +251,11 @@ generalSettingsForm.addEventListener("submit", async (e) => {
         const docRef = doc(db, "settings", "global");
         await setDoc(docRef, settings, { merge: true });
         showStatus(adminStatus, "General settings saved!", false);
+        // *** പുതിയത്: സേവ് ചെയ്ത ശേഷം തലക്കെട്ട് അപ്ഡേറ്റ് ചെയ്യുന്നു ***
+        const titleElement = document.getElementById("admin-panel-title");
+        if (titleElement) {
+            titleElement.textContent = `${settings.logoText || 'Admin'} - Panel`;
+        }
     } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
     finally { enableButton(button, "Save General Settings"); }
 });
@@ -549,6 +559,7 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
 
 
 // --- 8. Edit & Delete Logic ---
+// *** എഡിറ്റ് ബഗ് പരിഹരിച്ചു: ഈ ലിസണർ തിരികെ ചേർത്തു ***
 document.body.addEventListener('click', async (e) => {
     const target = e.target;
     
@@ -556,7 +567,6 @@ document.body.addEventListener('click', async (e) => {
     if (target.classList.contains('btn-delete')) {
         const id = target.dataset.id;
         const type = target.dataset.type;
-        // *** `confirm()`-ന് പകരം പുതിയ മോഡൽ തുറക്കുന്നു ***
         openConfirmModal(id, type);
     }
     
@@ -568,14 +578,13 @@ document.body.addEventListener('click', async (e) => {
     }
 });
 
-// *** പുതിയത്: ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ തുറക്കാൻ ***
+// ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ
 function openConfirmModal(id, type) {
-    deleteInfo = { id, type }; // ഡിലീറ്റ് വിവരങ്ങൾ സേവ് ചെയ്യുന്നു
+    deleteInfo = { id, type }; 
     confirmTitle.textContent = `Delete ${type}?`;
     confirmMessage.textContent = `Are you sure you want to delete this ${type}? This action cannot be undone.`;
     confirmModal.style.display = 'flex';
 }
-// *** പുതിയത്: ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ അടയ്ക്കാൻ ***
 function closeConfirmModal() {
     confirmModal.style.display = 'none';
     deleteInfo = { id: null, type: null };
@@ -583,7 +592,6 @@ function closeConfirmModal() {
 confirmCloseButton.addEventListener('click', closeConfirmModal);
 confirmBtnCancel.addEventListener('click', closeConfirmModal);
 
-// *** പുതിയത്: ഡിലീറ്റ് സ്ഥിരീകരിക്കുമ്പോൾ ***
 confirmBtnDelete.addEventListener('click', async () => {
     const { id, type } = deleteInfo;
     if (!id || !type) return;
@@ -608,10 +616,10 @@ confirmBtnDelete.addEventListener('click', async () => {
     }
 });
 
-        
+// എഡിറ്റ് മോഡൽ
 async function openEditModal(id, type) {
     modalForm.innerHTML = '';
-    showLoader(modalLoader);
+    // showLoader(modalLoader); // മോഡൽ ലോഡർ ഇപ്പോൾ ഉപയോഗിക്കുന്നില്ല
     editModal.style.display = 'flex';
     
     try {
@@ -702,7 +710,7 @@ async function openEditModal(id, type) {
         showStatus(adminStatus, `Error: ${error.message}`);
         closeEditModal();
     } finally {
-        hideLoader(modalLoader);
+        // hideLoader(modalLoader);
     }
 }
         
@@ -757,7 +765,6 @@ modalForm.addEventListener("submit", async (e) => {
     } catch (error) {
         console.error("Error saving changes: ", error);
         showStatus(adminStatus, `Error: ${error.message}`);
-        // *** എറർ വന്നാൽ ബട്ടൺ തിരികെ കൊണ്ടുവരുന്നു ***
         enableButton(button, "Save Changes");
     }
 });
