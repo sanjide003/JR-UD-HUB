@@ -1,5 +1,6 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
    *** 'SHOP BY CATEGORY' കാർഡ് ഡിസൈൻ മാറ്റി (ചിത്രത്തിന് മുകളിൽ ബ്ലർ ടെക്സ്റ്റ്) ***
+   *** കാർഡ് വലിപ്പം ശരിയാക്കാൻ <img> മാറ്റി background-image ആക്കി ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -611,43 +612,40 @@ img {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    height: 220px; /* *** ഉയരം കൂട്ടി *** */
-    position: relative; /* *** ടെക്സ്റ്റ് മുകളിൽ വെക്കാൻ *** */
+    height: 220px; 
+    position: relative; 
+    
+    /* *** <img> ടാഗിന് പകരം പശ്ചാത്തല ചിത്രം *** */
+    background-color: var(--card-bg); /* ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
 }
 .category-card-home-new:hover {
     color: var(--primary-gold);
     border-color: var(--primary-gold);
     transform: translateY(-3px);
 }
-.category-card-home-new img {
-    width: 100%;
-    height: 100%; /* *** മുഴുവൻ ഉയരം *** */
-    object-fit: cover;
-    transition: transform 0.3s ease;
-}
-.category-card-home-new:hover img {
-    transform: scale(1.05);
-}
-/* *** 'img-wrapper' നീക്കം ചെയ്തു *** */
+/* *** <img> ടാഗിന്റെ സ്റ്റൈലുകൾ നീക്കം ചെയ്തു *** */
+
 .category-card-home-new h3 {
     font-family: var(--font-main);
     font-weight: 500;
-    font-size: 1rem; /* *** അല്പം വലുതാക്കി *** */
+    font-size: 1rem; 
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--text-color); /* *** നിറം വെള്ളയാക്കി *** */
+    color: var(--text-color); 
     
-    /* *** പൊസിഷനും ബ്ലർ ബാക്ക്ഗ്രൗണ്ടും *** */
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
     padding: 0.75rem;
     margin: 0;
-    background: rgba(0, 0, 0, 0.5); /* 50% കറുത്ത ബാക്ക്ഗ്രൗണ്ട് */
-    -webkit-backdrop-filter: blur(5px); /* ബ്ലർ എഫക്റ്റ് */
+    background: rgba(0, 0, 0, 0.5); 
+    -webkit-backdrop-filter: blur(5px); 
     backdrop-filter: blur(5px);
 }
 
