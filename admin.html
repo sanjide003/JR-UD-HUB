@@ -1,7 +1,6 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. 
-  *** മെനു ഇടതുവശത്തേക്ക് മാറ്റി ***
-  *** "Featured Products" എന്ന പുതിയ പേജ് ചേർത്തു ***
+  *** പുതിയ ഇമേജ് അപ്‌ലോഡ് സിസ്റ്റം, റെഡ് സ്റ്റാർ, ബട്ടൺ ലോഡിംഗ് എന്നിവ ചേർത്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -20,14 +19,17 @@
                 <h1>Admin Login</h1>
                 <form id="login-form">
                     <div class="form-group">
-                        <label for="login-email">Email</label>
+                        <label for="login-email">Email <span class="required-star">*</span></label>
                         <input type="email" id="login-email" required>
                     </div>
                     <div class="form-group">
-                        <label for="login-password">Password</label>
+                        <label for="login-password">Password <span class="required-star">*</span></label>
                         <input type="password" id="login-password" required>
                     </div>
-                    <button type="submit" class="btn" id="login-button">Login</button>
+                    <button type="submit" class="btn" id="login-button">
+                        <span class="btn-text">Login</span>
+                        <span class="btn-loader loader-small" style="display: none;"></span>
+                    </button>
                     <div id="login-status" class="status-message"></div>
                 </form>
             </div>
@@ -61,10 +63,8 @@
                 <button id="admin-nav-close-btn">&times;</button>
             </div>
             <div class="admin-nav-links">
-                <!-- നിങ്ങൾ ആവശ്യപ്പെട്ട ഓർഡറിൽ 8 പേജുകൾ -->
                 <button class="nav-link active" data-page="page-add-product">Add New Product</button>
                 <button class="nav-link" data-page="page-existing-products">Existing Products</button>
-                <!-- *** പുതിയത്: Featured Products ടാബ് *** -->
                 <button class="nav-link" data-page="page-featured-products">Featured Products</button>
                 <button class="nav-link" data-page="page-add-category">Add New Category</button>
                 <button class="nav-link" data-page="page-existing-categories">Existing Categories</button>
@@ -86,11 +86,11 @@
                     <h2>Add New Product</h2>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="product-name">Product Name</label>
+                            <label for="product-name">Product Name <span class="required-star">*</span></label>
                             <input type="text" id="product-name" required>
                         </div>
                          <div class="form-group">
-                            <label for="product-category">Category</label>
+                            <label for="product-category">Category <span class="required-star">*</span></label>
                             <select id="product-category" required>
                                 <option value="">Loading categories...</option>
                             </select>
@@ -100,7 +100,7 @@
                             <input type="number" id="product-mrp" placeholder="e.g., 500">
                         </div>
                         <div class="form-group">
-                            <label for="product-price">Retail Price (₹)</label>
+                            <label for="product-price">Retail Price (₹) <span class="required-star">*</span></label>
                             <input type="number" id="product-price" placeholder="e.g., 350" required>
                         </div>
                          <div class="form-group">
@@ -115,14 +115,21 @@
                             <label for="product-description">Description</label>
                             <textarea id="product-description" rows="4"></textarea>
                         </div>
+                        
+                        <!-- *** പുതിയ ഇമേജ് അപ്‌ലോഡ് സിസ്റ്റം *** -->
                         <div class="form-group full-width">
-                            <label for="product-image-urls">Product Image URLs (One URL per line)</label>
-                            <textarea class="image-url-input" id="product-image-urls" rows="4" placeholder="Paste image links here, each on a new line." required></textarea>
-                            <div class="image-preview" id="product-image-preview"></div>
+                            <label>Product Image URLs <span class="required-star">*</span></label>
+                            <div id="product-image-list-container" class="image-url-list">
+                                <!-- 'admin.js' വഴി ഇമേജ് ഇൻപുട്ടുകൾ ഇവിടെ വരും -->
+                            </div>
+                            <button type="button" id="add-image-url-btn" class="btn btn-secondary">Add Image URL</button>
                         </div>
+
                     </div>
-                    <button type="submit" class="btn" id="add-product-button">Add Product</button>
-                    <div class="loader" id="product-loader"></div>
+                    <button type="submit" class="btn" id="add-product-button">
+                        <span class="btn-text">Add Product</span>
+                        <span class="btn-loader loader-small" style="display: none;"></span>
+                    </button>
                 </form>
             </div>
 
@@ -155,7 +162,7 @@
                 </div>
             </div>
             
-            <!-- *** പുതിയത്: പേജ് 3: Featured Products *** -->
+            <!-- പേജ് 3: Featured Products -->
             <div id="page-featured-products" class="page-content">
                 <div class="data-list-section">
                     <h2>Featured Products (Top Sellers)</h2>
@@ -184,17 +191,19 @@
                     <h2>Add New Category</h2>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="category-name">Category Name</label>
+                            <label for="category-name">Category Name <span class="required-star">*</span></label>
                             <input type="text" id="category-name" placeholder="e.g., Attar" required>
                         </div>
                         <div class="form-group">
-                            <label for="category-image-url">Category Image URL</label>
+                            <label for="category-image-url">Category Image URL <span class="required-star">*</span></label>
                             <input type="text" class="image-url-input" id="category-image-url" placeholder="Paste image URL from Imgur, etc." required>
                             <div class="image-preview" id="category-image-preview"></div>
                         </div>
                     </div>
-                    <button type="submit" class="btn" id="add-category-button">Add Category</button>
-                    <div class="loader" id="category-loader"></div>
+                    <button type="submit" class="btn" id="add-category-button">
+                        <span class="btn-text">Add Category</span>
+                        <span class="btn-loader loader-small" style="display: none;"></span>
+                    </button>
                 </form>
             </div>
 
@@ -223,23 +232,25 @@
                     <h2>Add New Hero Slide</h2>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="hero-slide-url">Media URL (Video or Image)</label>
+                            <label for="hero-slide-url">Media URL (Video or Image) <span class="required-star">*</span></label>
                             <input type="text" id="hero-slide-url" placeholder="Paste .mp4 or .jpg link here" required>
                         </div>
                         <div class="form-group">
-                            <label for="hero-slide-type">Media Type</label>
+                            <label for="hero-slide-type">Media Type <span class="required-star">*</span></label>
                             <select id="hero-slide-type" required>
                                 <option value="video">Video</option>
                                 <option value="image">Image</option>
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="hero-slide-order">Display Order</label>
+                            <label for="hero-slide-order">Display Order <span class="required-star">*</span></label>
                             <input type="number" id="hero-slide-order" placeholder="e.g., 1, 2, 3..." value="1" required>
                         </div>
                     </div>
-                    <button type="submit" class="btn" id="add-hero-slide-button">Add Slide</button>
-                    <div class="loader" id="hero-slide-loader"></div>
+                    <button type="submit" class="btn" id="add-hero-slide-button">
+                        <span class="btn-text">Add Slide</span>
+                        <span class="btn-loader loader-small" style="display: none;"></span>
+                    </button>
                 </form>
 
                 <div class="data-list-section">
@@ -283,8 +294,10 @@
                             <input type="text" id="setting-video-url" placeholder="Paste YouTube or .mp4 link here">
                         </div>
                     </div>
-                    <button type="submit" class="btn">Save General Settings</button>
-                    <div class="loader" id="general-settings-loader"></div>
+                    <button type="submit" class="btn" id="save-general-settings-button">
+                        <span class="btn-text">Save General Settings</span>
+                        <span class="btn-loader loader-small" style="display: none;"></span>
+                    </button>
                 </form>
             </div>
 
@@ -310,8 +323,10 @@
                             <input type="text" id="setting-whatsapp" placeholder="918086081985 (without +)">
                         </div>
                     </div>
-                    <button type="submit" class="btn">Save Contact Details</button>
-                    <div class="loader" id="contact-settings-loader"></div>
+                    <button type="submit" class="btn" id="save-contact-settings-button">
+                        <span class="btn-text">Save Contact Details</span>
+                        <span class="btn-loader loader-small" style="display: none;"></span>
+                    </button>
                 </form>
             </div>
 
@@ -337,8 +352,10 @@
                             <input type="text" id="setting-youtube-url" placeholder="https://youtube.com/yourchannel">
                         </div>
                     </div>
-                    <button type="submit" class="btn">Save "Follow Us" Links</button>
-                    <div class="loader" id="follow-settings-loader"></div>
+                    <button type="submit" class="btn" id="save-follow-settings-button">
+                        <span class="btn-text">Save "Follow Us" Links</span>
+                        <span class="btn-loader loader-small" style="display: none;"></span>
+                    </button>
                 </form>
             </div>
 
@@ -354,7 +371,6 @@
                 <form id="modal-form">
                     <!-- 'admin.js' ഉപയോഗിച്ച് ഫോം ഫീൽഡുകൾ ഇവിടെ വരും -->
                 </form>
-                <div class="loader" id="modal-loader"></div>
             </div>
         </div>
         
