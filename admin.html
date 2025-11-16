@@ -1,16 +1,13 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. 
-  ഇതിൻ്റെ ഡിസൈൻ വരുന്നത് 'admin.css'-ൽ നിന്നും,
-  പ്രവർത്തനങ്ങൾ വരുന്നത് 'admin.js'-ൽ നിന്നുമാണ്.
+  *** "Follow Us" എന്ന പുതിയ ടാബ് ചേർത്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- *** മൊബൈൽ റെസ്പോൺസീവ് ഡിസൈനിനായി ഈ വരി തിരികെ ചേർത്തു *** -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - Al Ambar Perfumes</title>
-    <!-- അഡ്മിൻ പാനലിൻ്റെ ഡിസൈൻ ഫയൽ -->
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
@@ -50,9 +47,10 @@
             <nav class="tab-links">
                 <button class="tab-link active" data-tab="tab-products">Manage Products</button>
                 <button class="tab-link" data-tab="tab-categories">Manage Categories</button>
-                <!-- പുതിയതായി ചേർത്ത ഹീറോ ടാബ് -->
                 <button class="tab-link" data-tab="tab-hero">Manage Hero</button>
                 <button class="tab-link" data-tab="tab-settings">Site Settings</button>
+                <!-- *** പുതിയ ടാബ്: Follow Us *** -->
+                <button class="tab-link" data-tab="tab-social">Follow Us Links</button>
             </nav>
 
             <!-- ടാബ് 1: ഉൽപ്പന്നങ്ങൾ കൈകാര്യം ചെയ്യാൻ -->
@@ -158,7 +156,7 @@
                 </div>
             </div>
             
-            <!-- പുതിയതായി ചേർത്ത ടാബ് 3: ഹീറോ സ്ലൈഡർ -->
+            <!-- ടാബ് 3: ഹീറോ സ്ലൈഡർ -->
             <div id="tab-hero" class="tab-content">
                 <form id="add-hero-slide-form" class="form-section">
                     <h2>Add New Hero Slide</h2>
@@ -204,7 +202,7 @@
                 </div>
             </div>
 
-            <!-- ടാബ് 4: സൈറ്റ് സെറ്റിംഗ്സ് -->
+            <!-- ടാബ് 4: സൈറ്റ് സെറ്റിംഗ്സ് (സോഷ്യൽ ലിങ്കുകൾ നീക്കം ചെയ്തു) -->
             <div id="tab-settings" class="tab-content">
                 <form id="site-settings-form" class="form-section">
                     <h2>Site Settings (Home Page & Footer)</h2>
@@ -221,10 +219,6 @@
                             <label for="setting-logo-subtitle">Logo Subtitle (Shown below logo)</label>
                             <input type="text" id="setting-logo-subtitle" placeholder="e.g., JR UD HUB">
                         </div>
-                        <!-- 
-                          ഹീറോ വീഡിയോ URL ഇവിടെ നിന്ന് നീക്കം ചെയ്തു,
-                          പകരം 'Manage Hero' ടാബ് ഉപയോഗിക്കുന്നു
-                        -->
                         <div class="form-group">
                             <label for="setting-video-url">Home Page Experience Video URL</label>
                             <input type="text" id="setting-video-url" placeholder="Paste YouTube or .mp4 link here">
@@ -241,23 +235,40 @@
                             <label for="setting-address">Contact Address</label>
                             <input type="text" id="setting-address" placeholder="Kerala, India">
                         </div>
-                        <div class="form-group">
-                            <label for="setting-whatsapp">WhatsApp Number (For Orders)</label>
-                            <input type="text" id="setting-whatsapp" placeholder="918086081985 (without +)">
-                        </div>
-                         <div class="form-group">
-                            <label for="setting-facebook-url">Facebook URL</label>
-                            <input type="text" id="setting-facebook-url" placeholder="https://facebook.com/yourpage">
-                        </div>
-                        <div class="form-group">
-                            <label for="setting-instagram-url">Instagram URL</label>
-                            <input type="text" id="setting-instagram-url" placeholder="https://instagram.com/yourpage">
-                        </div>
+                         <!-- *** സോഷ്യൽ ലിങ്കുകൾ ഇവിടെ നിന്ന് നീക്കം ചെയ്തു *** -->
                     </div>
                     <button type="submit" class="btn" id="save-settings-button">Save Settings</button>
                     <div class="loader" id="settings-loader"></div>
                 </form>
             </div>
+
+            <!-- *** പുതിയ ടാബ് 5: Follow Us Links *** -->
+            <div id="tab-social" class="tab-content">
+                <form id="social-settings-form" class="form-section">
+                    <h2>Social Media & Contact Links</h2>
+                    <div class="form-grid">
+                         <div class="form-group">
+                            <label for="social-whatsapp">WhatsApp Number (For Orders & Contact)</label>
+                            <input type="text" id="social-whatsapp" placeholder="918086081985 (without +)">
+                        </div>
+                        <div class="form-group">
+                            <label for="social-facebook-url">Facebook URL</label>
+                            <input type="text" id="social-facebook-url" placeholder="https://facebook.com/yourpage">
+                        </div>
+                         <div class="form-group">
+                            <label for="social-instagram-url">Instagram URL</label>
+                            <input type="text" id="social-instagram-url" placeholder="https://instagram.com/yourpage">
+                        </div>
+                        <div class="form-group">
+                            <label for="social-youtube-url">YouTube URL</label>
+                            <input type="text" id="social-youtube-url" placeholder="https://youtube.com/yourchannel">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn" id="save-social-button">Save Social Links</button>
+                    <div class="loader" id="social-loader"></div>
+                </form>
+            </div>
+
 
         </section>
         
