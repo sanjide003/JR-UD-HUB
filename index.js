@@ -1,6 +1,5 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** കാറ്റഗറി കാർഡ് ഡിസൈനിനും സ്ലൈഡർ എണ്ണത്തിനും മാറ്റങ്ങൾ വരുത്തി ***
-// *** <img> ടാഗിന് പകരം background-image ആക്കി ***
+// *** കാറ്റഗറി ലോഡ് ആവാത്ത പിശക് (q, catQuery) തിരുത്തി ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -231,13 +230,17 @@ async function loadTopSellers() {
 /**
  * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു
  * *** <img> ടാഗിന് പകരം background-image ആക്കി ***
+ * *** പിശക് തിരുത്തി: getDocs(q) എന്നതിനെ getDocs(catQuery) എന്നാക്കി ***
  */
 async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
     try {
         const catQuery = query(collection(db, "categories"), orderBy("name"), limit(8));
-        const catSnapshot = await getDocs(q);
+        
+        // *** പിശക് തിരുത്തി ***
+        const catSnapshot = await getDocs(catQuery); // 'q' മാറ്റി 'catQuery' എന്നാക്കി
+
         if (catSnapshot.empty) {
             grid.innerHTML = '<p>No categories to show.</p>'; return;
         }
@@ -249,11 +252,9 @@ async function loadHomeCategories() {
             card.className = 'swiper-slide category-card-home-new';
             card.href = `categories.html?filter=${catId}`;
             
-            // *** <img> ടാഗിന് പകരം പശ്ചാത്തല ചിത്രം JS വഴി സെറ്റ് ചെയ്യുന്നു ***
             const imageUrl = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
             card.style.backgroundImage = `url('${imageUrl}')`;
             
-            // *** <img> ടാഗ് നീക്കം ചെയ്തു, h3 മാത്രം ബാക്കി ***
             card.innerHTML = `
                 <h3>${category.name}</h3>
             `;
@@ -270,7 +271,10 @@ async function loadHomeCategories() {
                 1200: { slidesPerView: 5.2, spaceBetween: 20 }, 
             }
         });
-    } catch (error) { console.error("Error loading home categories: ", error); grid.innerHTML = '<p>Error loading categories.</p>'; }
+    } catch (error) { 
+        console.error("Error loading home categories: ", error); 
+        grid.innerHTML = '<p>Error loading categories.</p>'; // പിശക് ഇവിടെ കാണിക്കും
+    }
 }
 
 /**
