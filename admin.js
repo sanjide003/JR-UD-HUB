@@ -1,6 +1,5 @@
 // ഇതാണ് 'admin.js' ഫയൽ.
-// *** മെനു ഇടതുവശത്തേക്ക് മാറ്റി ***
-// *** "Featured Products" എന്ന പുതിയ പേജ് ചേർത്തു ***
+// *** പുതിയ ഇമേജ് അപ്‌ലോഡ് സിസ്റ്റം, റെഡ് സ്റ്റാർ, ബട്ടൺ ലോഡിംഗ് എന്നിവ ചേർത്തു ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -36,14 +35,12 @@ const loginStatus = document.getElementById("login-status");
 const logoutButton = document.getElementById("logout-button");
 const adminStatus = document.getElementById("admin-status");
 
-// *** പുതിയത്: Admin Nav Elements ***
 const adminNavOpenBtn = document.getElementById("admin-nav-open-btn");
 const adminNavCloseBtn = document.getElementById("admin-nav-close-btn");
 const adminSideNav = document.getElementById("admin-side-nav");
 const adminNavOverlay = document.getElementById("admin-nav-overlay");
 const adminNavLinks = document.querySelector(".admin-nav-links");
 
-// *** പുതിയത്: Page Content Elements ***
 const pageContents = document.querySelectorAll(".page-content");
 const navLinks = document.querySelectorAll(".nav-link");
 
@@ -56,34 +53,31 @@ const categoryImagePreview = document.getElementById("category-image-preview");
 // Product elements
 const addProductForm = document.getElementById("add-product-form");
 const productCategorySelect = document.getElementById("product-category");
-const productLoader = document.getElementById("product-loader");
 const productsListBody = document.getElementById("products-list-body");
-const productImagePreview = document.getElementById("product-image-preview");
 const productFilterCategory = document.getElementById("product-filter-category");
-const featuredProductsListBody = document.getElementById("featured-products-list-body"); // *** പുതിയത് ***
+const featuredProductsListBody = document.getElementById("featured-products-list-body");
+
+// *** പുതിയത്: ഇമേജ് അപ്‌ലോഡ് സിസ്റ്റം (പേജ് 1) ***
+const addImageUrlBtn = document.getElementById("add-image-url-btn");
+const productImageContainer = document.getElementById("product-image-list-container");
 
 // Hero Slide Elements
 const addHeroSlideForm = document.getElementById("add-hero-slide-form");
-const heroSlideLoader = document.getElementById("hero-slide-loader");
 const heroSlidesListBody = document.getElementById("hero-slides-list-body");
 
-// *** പുതിയത്: Settings Form Elements ***
+// Settings Form Elements
 const generalSettingsForm = document.getElementById("general-settings-form");
-const generalSettingsLoader = document.getElementById("general-settings-loader");
 const contactSettingsForm = document.getElementById("contact-settings-form");
-const contactSettingsLoader = document.getElementById("contact-settings-loader");
 const followSettingsForm = document.getElementById("follow-settings-form");
-const followSettingsLoader = document.getElementById("follow-settings-loader");
 
 // Modal elements
 const editModal = document.getElementById("edit-modal");
 const modalCloseButton = document.getElementById("modal-close-button");
 const modalTitle = document.getElementById("modal-title");
 const modalForm = document.getElementById("modal-form");
-const modalLoader = document.getElementById("modal-loader");
 
 let currentProductsQuery = null;
-let currentFeaturedQuery = null; // *** പുതിയത്: ഫീച്ചേർഡ് പ്രൊഡക്ട്സ് ലിസണർ ***
+let currentFeaturedQuery = null;
 
 // --- Helper Functions ---
 function showStatus(element, message, isError = true) {
@@ -98,21 +92,42 @@ function clearStatus(element) {
 function showLoader(loader) { if(loader) loader.style.display = 'block'; }
 function hideLoader(loader) { if(loader) loader.style.display = 'none'; }
 
+// *** പുതിയത്: ബട്ടൺ ലോഡിംഗ് ഹെൽപ്പറുകൾ ***
+function disableButton(button, text = "Saving...") {
+    if (!button) return;
+    button.disabled = true;
+    const btnText = button.querySelector('.btn-text');
+    const btnLoader = button.querySelector('.btn-loader');
+    if (btnText) btnText.textContent = text;
+    if (btnLoader) btnLoader.style.display = 'inline-block';
+}
+
+function enableButton(button, defaultText) {
+    if (!button) return;
+    button.disabled = false;
+    const btnText = button.querySelector('.btn-text');
+    const btnLoader = button.querySelector('.btn-loader');
+    if (btnText) btnText.textContent = defaultText;
+    if (btnLoader) btnLoader.style.display = 'none';
+}
+
+
 // --- 1. Authentication Logic ---
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     clearStatus(loginStatus);
-    loginButton.disabled = true;
-    loginButton.textContent = "Logging in...";
+    disableButton(loginButton, "Logging in..."); // *** ബട്ടൺ ലോഡിംഗ് ***
+    
     const email = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
+    
     try {
         await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
         console.error("Login Error:", error);
         showStatus(loginStatus, `Login Failed: ${error.message}`);
-        loginButton.disabled = false;
-        loginButton.textContent = "Login";
+    } finally {
+        enableButton(loginButton, "Login"); // *** ബട്ടൺ ലോഡിംഗ് ***
     }
 });
 
@@ -126,30 +141,30 @@ onAuthStateChanged(auth, (user) => {
         adminPanel.style.display = "block";
         loadCategories();
         loadProducts("all"); 
-        loadFeaturedProducts(); // *** പുതിയത്: ഫീച്ചേർഡ് പ്രൊഡക്ടുകൾ ലോഡ് ചെയ്യുന്നു ***
+        loadFeaturedProducts(); 
         loadHeroSlides(); 
         loadAllSettings();
+        // ഡിഫോൾട്ടായി ഒരു ഇമേജ് ഇൻപുട്ട് ചേർക്കുന്നു
+        if (productImageContainer.children.length === 0) {
+            addImageInput('product-image-list-container');
+        }
     } else {
         loginSection.style.display = "block";
         adminPanel.style.display = "none";
-        loginButton.disabled = false;
-        loginButton.textContent = "Login";
     }
 });
 
-// --- 2. പുതിയത്: Admin Nav Logic ---
+// --- 2. Admin Nav Logic ---
 function closeAdminNav() {
     adminSideNav.classList.remove("open");
     adminNavOverlay.classList.remove("open");
 }
-
 adminNavOpenBtn.addEventListener("click", () => {
     adminSideNav.classList.add("open");
     adminNavOverlay.classList.add("open");
 });
 adminNavCloseBtn.addEventListener("click", closeAdminNav);
 adminNavOverlay.addEventListener("click", closeAdminNav);
-
 adminNavLinks.addEventListener("click", (e) => {
     if (e.target.classList.contains("nav-link")) {
         const pageId = e.target.getAttribute("data-page");
@@ -164,31 +179,25 @@ adminNavLinks.addEventListener("click", (e) => {
     }
 });
 
-// --- 3. Image Preview Logic ---
+// --- 3. Image Preview Logic (പഴയത്) ---
 function setupImagePreview(inputId, previewId) {
     const input = document.getElementById(inputId);
     const previewContainer = document.getElementById(previewId);
     
     function updatePreview() {
         previewContainer.innerHTML = '';
-        const urls = input.value.split('\n')
-                             .map(url => url.trim())
-                             .filter(url => url.length > 0);
-        
-        urls.forEach(url => {
+        const url = input.value.trim();
+        if (url) {
             const img = document.createElement('img');
             img.src = url;
             img.onerror = () => { img.style.display = 'none'; };
             previewContainer.appendChild(img);
-        });
+        }
     }
-    
     input.addEventListener('input', updatePreview);
     input.addEventListener('change', updatePreview);
 }
 setupImagePreview('category-image-url', 'category-image-preview');
-setupImagePreview('product-image-urls', 'product-image-preview');
-
 
 // --- 4. Settings Logic (3 ഫോമുകൾക്കായി വിഭജിച്ചു) ---
 async function loadAllSettings() {
@@ -197,18 +206,15 @@ async function loadAllSettings() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
             const settings = docSnap.data();
-            // General
             document.getElementById("setting-logo-image-url").value = settings.logoImageUrl || '';
             document.getElementById("setting-logo-text").value = settings.logoText || '';
             document.getElementById("setting-logo-subtitle").value = settings.logoSubtitle || '';
             document.getElementById("setting-video-url").value = settings.videoUrl || '';
-            // Contact
             document.getElementById("setting-phone").value = settings.phone || '';
             document.getElementById("setting-email").value = settings.email || '';
             document.getElementById("setting-address").value = settings.address || '';
-            document.getElementById("setting-whatsapp").value = settings.whatsapp || ''; // Order WA
-            // Follow Us
-            document.getElementById("setting-follow-whatsapp").value = settings.followWhatsapp || ''; // Follow WA
+            document.getElementById("setting-whatsapp").value = settings.whatsapp || '';
+            document.getElementById("setting-follow-whatsapp").value = settings.followWhatsapp || '';
             document.getElementById("setting-facebook-url").value = settings.facebookUrl || '';
             document.getElementById("setting-instagram-url").value = settings.instagramUrl || '';
             document.getElementById("setting-youtube-url").value = settings.youtubeUrl || '';
@@ -219,10 +225,10 @@ async function loadAllSettings() {
     }
 }
         
-// ഫോം 1: General Settings
 generalSettingsForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    showLoader(generalSettingsLoader);
+    const button = document.getElementById('save-general-settings-button');
+    disableButton(button, "Saving...");
     try {
         const settings = {
             logoImageUrl: document.getElementById("setting-logo-image-url").value,
@@ -234,34 +240,34 @@ generalSettingsForm.addEventListener("submit", async (e) => {
         await setDoc(docRef, settings, { merge: true });
         showStatus(adminStatus, "General settings saved!", false);
     } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
-    finally { hideLoader(generalSettingsLoader); }
+    finally { enableButton(button, "Save General Settings"); }
 });
 
-// ഫോം 2: Contact Details
 contactSettingsForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    showLoader(contactSettingsLoader);
+    const button = document.getElementById('save-contact-settings-button');
+    disableButton(button, "Saving...");
     try {
         const settings = {
             phone: document.getElementById("setting-phone").value,
             email: document.getElementById("setting-email").value,
             address: document.getElementById("setting-address").value,
-            whatsapp: document.getElementById("setting-whatsapp").value, // Order WA
+            whatsapp: document.getElementById("setting-whatsapp").value,
         };
         const docRef = doc(db, "settings", "global");
         await setDoc(docRef, settings, { merge: true });
         showStatus(adminStatus, "Contact details saved!", false);
     } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
-    finally { hideLoader(contactSettingsLoader); }
+    finally { enableButton(button, "Save Contact Details"); }
 });
 
-// ഫോം 3: Follow Us Links
 followSettingsForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    showLoader(followSettingsLoader);
+    const button = document.getElementById('save-follow-settings-button');
+    disableButton(button, "Saving...");
     try {
         const settings = {
-            followWhatsapp: document.getElementById("setting-follow-whatsapp").value, // Follow WA
+            followWhatsapp: document.getElementById("setting-follow-whatsapp").value,
             facebookUrl: document.getElementById("setting-facebook-url").value,
             instagramUrl: document.getElementById("setting-instagram-url").value,
             youtubeUrl: document.getElementById("setting-youtube-url").value,
@@ -270,7 +276,7 @@ followSettingsForm.addEventListener("submit", async (e) => {
         await setDoc(docRef, settings, { merge: true });
         showStatus(adminStatus, '"Follow Us" links saved!', false);
     } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
-    finally { hideLoader(followSettingsLoader); }
+    finally { enableButton(button, 'Save "Follow Us" Links'); }
 });
 
 
@@ -318,7 +324,8 @@ function loadCategories() {
         
 addCategoryForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    showLoader(categoryLoader);
+    const button = document.getElementById('add-category-button');
+    disableButton(button, "Adding...");
     try {
         const name = document.getElementById("category-name").value;
         const imageUrl = document.getElementById("category-image-url").value;
@@ -336,7 +343,7 @@ addCategoryForm.addEventListener("submit", async (e) => {
         console.error("Error adding category: ", error);
         showStatus(adminStatus, `Error: ${error.message}`);
     } finally {
-        hideLoader(categoryLoader);
+        enableButton(button, "Add Category");
     }
 });
 
@@ -348,7 +355,6 @@ function loadProducts(categoryId = "all") {
      if (categoryId === "all") {
         q = query(collection(db, "products"), orderBy("createdAt", "desc"));
      } else {
-        // *** ഫിൽട്ടർ എറർ പരിഹരിച്ചു: ഫിൽട്ടർ ചെയ്യുമ്പോൾ 'orderBy' ഒഴിവാക്കി ***
         q = query(collection(db, "products"), 
             where("categoryId", "==", categoryId));
      }
@@ -390,7 +396,7 @@ function loadProducts(categoryId = "all") {
     });
 }
 
-// 6.2 *** പുതിയത്: Featured Products ***
+// 6.2 Featured Products
 function loadFeaturedProducts() {
      const q = query(collection(db, "products"), where("featured", "==", true));
      
@@ -441,10 +447,14 @@ productFilterCategory.addEventListener("change", (e) => {
 // 6.4 Add Product ഫോം
 addProductForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    showLoader(productLoader);
+    const button = document.getElementById('add-product-button');
+    disableButton(button, "Adding...");
+    
     try {
-        const imageUrlsText = document.getElementById("product-image-urls").value;
-        const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
+        const imageUrls = getImageUrlsFromUploader('product-image-list-container');
+        if (imageUrls.length === 0 || imageUrls[0] === '') {
+            throw new Error("Please add at least one image URL.");
+        }
 
         const product = {
             categoryId: productCategorySelect.value,
@@ -457,16 +467,21 @@ addProductForm.addEventListener("submit", async (e) => {
             images: imageUrls,
             createdAt: serverTimestamp()
         };
+        
+        if (!product.categoryId || !product.name || !product.price) {
+            throw new Error("Please fill in all required fields.");
+        }
 
         await addDoc(collection(db, "products"), product);
         showStatus(adminStatus, "Product added successfully!", false);
         addProductForm.reset();
-        document.getElementById('product-image-preview').innerHTML = '';
+        productImageContainer.innerHTML = '';
+        addImageInput('product-image-list-container'); // ഒരു പുതിയ ഇൻപുട്ട് ചേർക്കുന്നു
     } catch (error) {
         console.error("Error adding product: ", error);
         showStatus(adminStatus, `Error: ${error.message}`);
     } finally {
-        hideLoader(productLoader);
+        enableButton(button, "Add Product");
     }
 });
 
@@ -475,23 +490,16 @@ function loadHeroSlides() {
     const q = query(collection(db, "heroSlides"), orderBy("order"));
     onSnapshot(q, (querySnapshot) => {
         heroSlidesListBody.innerHTML = '';
-        
         if (querySnapshot.empty) {
             heroSlidesListBody.innerHTML = '<tr><td colspan="5">No hero slides found.</td></tr>';
             return;
         }
-        
         querySnapshot.forEach((doc) => {
             const slide = doc.data();
             const id = doc.id;
-            
-            let preview = '';
-            if (slide.type === 'image') {
-                preview = `<img src="${slide.url}" alt="Preview">`;
-            } else {
-                preview = `<video src="${slide.url}" muted width="50" height="50"></video>`;
-            }
-
+            let preview = (slide.type === 'image') 
+                ? `<img src="${slide.url}" alt="Preview">` 
+                : `<video src="${slide.url}" muted width="50" height="50"></video>`;
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${preview}</td>
@@ -512,7 +520,8 @@ function loadHeroSlides() {
 
 addHeroSlideForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    showLoader(heroSlideLoader);
+    const button = document.getElementById('add-hero-slide-button');
+    disableButton(button, "Adding...");
     try {
         const slide = {
             url: document.getElementById("hero-slide-url").value,
@@ -520,16 +529,14 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
             order: Number(document.getElementById("hero-slide-order").value) || 0,
             createdAt: serverTimestamp()
         };
-        
         await addDoc(collection(db, "heroSlides"), slide);
-        
         showStatus(adminStatus, "Hero slide added successfully!", false);
         addHeroSlideForm.reset();
     } catch (error) {
         console.error("Error adding hero slide: ", error);
         showStatus(adminStatus, `Error: ${error.message}`);
     } finally {
-        hideLoader(heroSlideLoader);
+        enableButton(button, "Add Slide");
     }
 });
 
@@ -537,12 +544,9 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
 // --- 8. Edit & Delete Logic ---
 document.body.addEventListener('click', async (e) => {
     const target = e.target;
-    
-    // Delete ബട്ടൺ
     if (target.classList.contains('btn-delete')) {
         const id = target.dataset.id;
         const type = target.dataset.type;
-        
         if (confirm(`Are you sure you want to delete this ${type}? This action cannot be undone.`)) {
             try {
                 let collectionName = '';
@@ -560,8 +564,6 @@ document.body.addEventListener('click', async (e) => {
             }
         }
     }
-    
-    // Edit ബട്ടൺ
     if (target.classList.contains('btn-edit')) {
         const id = target.dataset.id;
         const type = target.dataset.type;
@@ -578,10 +580,7 @@ async function openEditModal(id, type) {
         const collectionName = type === 'product' ? 'products' : 'categories';
         const docRef = doc(db, collectionName, id);
         const docSnap = await getDoc(docRef);
-        
-        if (!docSnap.exists()) {
-            throw new Error("Item not found.");
-        }
+        if (!docSnap.exists()) throw new Error("Item not found.");
         
         const data = docSnap.data();
         modalTitle.textContent = `Edit ${type}`;
@@ -591,33 +590,35 @@ async function openEditModal(id, type) {
                 <input type="hidden" id="modal-item-id" value="${id}">
                 <input type="hidden" id="modal-item-type" value="category">
                 <div class="form-group">
-                    <label for="modal-category-name">Category Name</label>
+                    <label for="modal-category-name">Category Name <span class="required-star">*</span></label>
                     <input type="text" id="modal-category-name" value="${data.name}" required>
                 </div>
                 <div class="form-group">
-                    <label for="modal-category-image-url">Category Image URL</label>
+                    <label for="modal-category-image-url">Category Image URL <span class="required-star">*</span></label>
                     <input type="text" class="image-url-input" id="modal-category-image-url" value="${data.imageUrl}" required>
                     <div class="image-preview" id="modal-category-image-preview"></div>
                 </div>
-                <button type="submit" class="btn">Save Changes</button>
+                <button type="submit" class="btn" id="modal-save-button">
+                    <span class="btn-text">Save Changes</span>
+                    <span class="btn-loader loader-small" style="display: none;"></span>
+                </button>
             `;
             setupImagePreview('modal-category-image-url', 'modal-category-image-preview');
             document.getElementById('modal-category-image-url').dispatchEvent(new Event('input'));
             
         } 
         else if (type === 'product') {
-            const imagesText = data.images ? data.images.join('\n') : '';
             modalForm.innerHTML = `
                 <input type="hidden" id="modal-item-id" value="${id}">
                 <input type="hidden" id="modal-item-type" value="product">
                 
                 <div class="form-grid">
                     <div class="form-group">
-                        <label for="modal-product-name">Product Name</label>
+                        <label for="modal-product-name">Product Name <span class="required-star">*</span></label>
                         <input type="text" id="modal-product-name" value="${data.name}" required>
                     </div>
                     <div class="form-group">
-                        <label for="modal-product-category">Category</label>
+                        <label for="modal-product-category">Category <span class="required-star">*</span></label>
                         <select id="modal-product-category" required>${productCategorySelect.innerHTML}</select>
                     </div>
                      <div class="form-group">
@@ -625,7 +626,7 @@ async function openEditModal(id, type) {
                         <input type="number" id="modal-product-mrp" value="${data.mrp || ''}">
                     </div>
                     <div class="form-group">
-                        <label for="modal-product-price">Retail Price (₹)</label>
+                        <label for="modal-product-price">Retail Price (₹) <span class="required-star">*</span></label>
                         <input type="number" id="modal-product-price" value="${data.price || ''}" required>
                     </div>
                     <div class="form-group">
@@ -641,16 +642,23 @@ async function openEditModal(id, type) {
                         <textarea id="modal-product-description" rows="4">${data.description || ''}</textarea>
                     </div>
                     <div class="form-group full-width">
-                        <label for="modal-product-image-urls">Product Image URLs (One URL per line)</label>
-                        <textarea class="image-url-input" id="modal-product-image-urls" rows="4" required>${imagesText}</textarea>
-                        <div class="image-preview" id="modal-product-image-preview"></div>
+                        <label>Product Image URLs <span class="required-star">*</span></label>
+                        <div id="modal-image-list-container" class="image-url-list">
+                            <!-- 'admin.js' വഴി ഇമേജ് ഇൻപുട്ടുകൾ ഇവിടെ വരും -->
+                        </div>
+                        <button type="button" id="add-modal-image-url-btn" class="btn btn-secondary">Add Image URL</button>
                     </div>
                 </div>
-                <button type="submit" class="btn">Save Changes</button>
+                <button type="submit" class="btn" id="modal-save-button">
+                    <span class="btn-text">Save Changes</span>
+                    <span class="btn-loader loader-small" style="display: none;"></span>
+                </button>
             `;
             document.getElementById('modal-product-category').value = data.categoryId;
-            setupImagePreview('modal-product-image-urls', 'modal-product-image-preview');
-            document.getElementById('modal-product-image-urls').dispatchEvent(new Event('input'));
+            
+            // *** പുതിയ ഇമേജ് സിസ്റ്റം മോഡലിൽ പ്രവർത്തിപ്പിക്കുന്നു ***
+            setupImageUploader('modal-image-list-container', 'add-modal-image-url-btn');
+            populateImageUploader('modal-image-list-container', data.images || []);
         }
         
     } catch (error) {
@@ -664,12 +672,14 @@ async function openEditModal(id, type) {
         
 function closeEditModal() {
     editModal.style.display = 'none';
+    modalForm.innerHTML = ''; // മോഡൽ ക്ലീൻ ചെയ്യുന്നു
 }
 modalCloseButton.addEventListener('click', closeEditModal);
         
-modalForm.addEventListener('submit', async (e) => {
+modalForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    showLoader(modalLoader);
+    const button = document.getElementById('modal-save-button');
+    disableButton(button, "Saving...");
     
     const id = document.getElementById('modal-item-id').value;
     const type = document.getElementById('modal-item-type').value;
@@ -684,8 +694,10 @@ modalForm.addEventListener('submit', async (e) => {
                 imageUrl: document.getElementById('modal-category-image-url').value,
             };
         } else if (type === 'product') {
-            const imageUrlsText = document.getElementById("modal-product-image-urls").value;
-            const imageUrls = imageUrlsText.split('\n').map(url => url.trim()).filter(url => url.length > 0);
+            const imageUrls = getImageUrlsFromUploader('modal-image-list-container');
+            if (imageUrls.length === 0 || imageUrls[0] === '') {
+                throw new Error("Please add at least one image URL.");
+            }
             
             dataToSave = {
                 categoryId: document.getElementById('modal-product-category').value,
@@ -709,6 +721,109 @@ modalForm.addEventListener('submit', async (e) => {
         console.error("Error saving changes: ", error);
         showStatus(adminStatus, `Error: ${error.message}`);
     } finally {
-        hideLoader(modalLoader);
+        // മോഡൽ അടച്ചതുകൊണ്ട് ബട്ടൺ റീസെറ്റ് ചെയ്യേണ്ട ആവശ്യമില്ല.
     }
+});
+
+
+// --- 9. പുതിയത്: ഇമേജ് അപ്‌ലോഡ് സിസ്റ്റം ---
+
+/**
+ * ഒരു കണ്ടെയ്‌നറിലേക്ക് ഇമേജ് ഇൻപുട്ടുകൾ ചേർക്കുന്ന ലോജിക് സെറ്റപ്പ് ചെയ്യുന്നു
+ * @param {string} containerId - ഇൻപുട്ടുകൾ വീഴേണ്ട DIV-ന്റെ ID
+ * @param {string} addBtnId - "Add Image URL" ബട്ടണിന്റെ ID
+ */
+function setupImageUploader(containerId, addBtnId) {
+    const container = document.getElementById(containerId);
+    const addBtn = document.getElementById(addBtnId);
+
+    if (!container || !addBtn) return;
+
+    // "Add Image URL" ബട്ടൺ
+    addBtn.addEventListener('click', () => {
+        addImageInput(containerId);
+    });
+
+    // "Remove" ബട്ടൺ (Event Delegation)
+    container.addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-remove-image')) {
+            e.target.closest('.image-url-item').remove();
+        }
+    });
+
+    // പ്രിവ്യൂ അപ്‌ഡേറ്റ് ചെയ്യാൻ
+    container.addEventListener('input', (e) => {
+        if (e.target.tagName === 'INPUT' && e.target.type === 'text') {
+            const url = e.target.value.trim();
+            const previewImg = e.target.closest('.image-url-item').querySelector('.image-preview-item');
+            if (previewImg) {
+                previewImg.src = url || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; // ശൂന്യമായ ചിത്രം
+            }
+        }
+    });
+}
+
+/**
+ * ഒരു പുതിയ ഇമേജ് ഇൻപുട്ട് ഫീൽഡ് DOM-ലേക്ക് ചേർക്കുന്നു
+ * @param {string} containerId - ഇൻപുട്ടുകൾ വീഴേണ്ട DIV-ന്റെ ID
+ * @param {string} url - (Optional) ഇൻപുട്ടിൽ മുൻകൂട്ടി നിറയ്ക്കേണ്ട URL
+ */
+function addImageInput(containerId, url = '') {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const item = document.createElement('div');
+    item.className = 'image-url-item';
+    
+    item.innerHTML = `
+        <img src="${url || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" alt="Preview" class="image-preview-item">
+        <input type="text" value="${url}" placeholder="Paste image URL here" required>
+        <button type="button" class="btn-remove-image">&times;</button>
+    `;
+    
+    container.appendChild(item);
+}
+
+/**
+ * ഇമേജ് അപ്‌ലോഡർ കണ്ടെയ്‌നറിൽ നിന്ന് എല്ലാ URL-കളും ശേഖരിക്കുന്നു
+ * @param {string} containerId - ഇൻപുട്ടുകൾ ഉള്ള DIV-ന്റെ ID
+ * @returns {string[]} - URL-കളുടെ ഒരു അറേ
+ */
+function getImageUrlsFromUploader(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return [];
+    
+    const urls = [];
+    container.querySelectorAll('.image-url-item input').forEach(input => {
+        const url = input.value.trim();
+        if (url) {
+            urls.push(url);
+        }
+    });
+    return urls;
+}
+
+/**
+ * മോഡൽ തുറക്കുമ്പോൾ, നിലവിലുള്ള ഇമേജുകൾ ഇൻപുട്ടുകളായി കാണിക്കുന്നു
+ * @param {string} containerId - മോഡലിലെ ഇമേജ് കണ്ടെയ്‌നറിന്റെ ID
+ * @param {string[]} urls - നിലവിലുള്ള URL-കളുടെ അറേ
+ */
+function populateImageUploader(containerId, urls) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = ''; // പഴയത് ക്ലിയർ ചെയ്യുന്നു
+    
+    if (urls.length > 0) {
+        urls.forEach(url => {
+            addImageInput(containerId, url);
+        });
+    } else {
+        // ഒരു ശൂന്യമായ ഇൻപുട്ട് നൽകുന്നു
+        addImageInput(containerId);
+    }
+}
+
+// പേജ് ലോഡ് ചെയ്യുമ്പോൾ, പ്രധാന "Add Product" ഫോമിനായി ഇമേജ് അപ്‌ലോഡർ സെറ്റപ്പ് ചെയ്യുന്നു
+document.addEventListener('DOMContentLoaded', () => {
+    setupImageUploader('product-image-list-container', 'add-image-url-btn');
 });
