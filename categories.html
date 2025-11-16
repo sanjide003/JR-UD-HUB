@@ -1,7 +1,6 @@
 <!-- 
   ഇതാണ് കാറ്റഗറി പേജ്. 
-  'categories.js'-മായി പ്രവർത്തിക്കാൻ ID-കൾ ശരിയാക്കി.
-  ആവർത്തനം ഒഴിവാക്കാൻ CSS-മായി യോജിപ്പിച്ചു.
+  *** പുതിയ പേജ് ലോഡർ ചേർത്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -12,6 +11,15 @@
     <link rel="stylesheet" href="public.css">
 </head>
 <body>
+
+    <!-- 0. പേജ് ലോഡർ -->
+    <div id="preloader">
+        <div class="loader-logo-container">
+            <!-- ലോഗോയും സ്പിന്നറും common.js & public.css വഴി വരും -->
+            <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
+            <div class="loader-ring"></div>
+        </div>
+    </div>
 
     <!-- 1. ഹെഡർ -->
     <header class="main-header" id="main-header"></header>
@@ -32,8 +40,6 @@
             
             <!-- 
               3.1 കാറ്റഗറി ലിസ്റ്റ്
-              'categories.js' ഈ ID-കൾ ഉപയോഗിച്ച് ലിസ്റ്റ് ഉണ്ടാക്കും.
-              'public.css' ഇവയെ മൊബൈലിലും ഡെസ്ക്ടോപ്പിലും ശരിയായി കാണിക്കും/മറയ്ക്കും.
             -->
             
             <!-- മൊബൈലിന് മുകളിലുള്ള ബാർ (public.css ഇത് ഡെസ്ക്ടോപ്പിൽ മറയ്ക്കും) -->
