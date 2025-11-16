@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** പ്രൊഡക്റ്റ് പേജ് പൂർണ്ണമായും അപ്ഡേറ്റ് ചെയ്തു ***
+   *** പ്രൊഡക്റ്റ് പേജിലെ Description ബഗ് പരിഹരിച്ചു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -17,7 +17,7 @@
     --success-green: #2ecc71;
     
     --font-main: 'Inter', sans-serif;
-    --font-heading: 'Playfair+Display', serif; 
+    --font-heading: 'Playfair Display', serif; 
     --font-new-heading: 'Inter', sans-serif;
     
     --header-height: 70px;
@@ -694,7 +694,7 @@ img {
     gap: 2rem;
 }
 
-/* 9.1 പ്രൊഡക്റ്റ് പേജിലെ പുതിയ Swiper ഗാലറി */
+/* 9.1 പ്രൊഡക്റ്റ് പേജിലെ Swiper ഗാലറി (പഴയ ഗാലറി മാറ്റി) */
 .product-gallery-swiper {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -729,19 +729,18 @@ img {
     margin-bottom: 1rem;
 }
 .product-info .price-container.large { margin-bottom: 1.5rem; }
-
-/* *** വില (വെള്ള) *** */
+/* വില (സ്വർണ്ണം) */
 .product-info .price-container.large .price-main { 
     font-size: 2rem;
-    color: var(--text-color); 
+    color: var(--primary-gold); /* തൽക്കാലം സ്വർണ്ണം നിലനിർത്തുന്നു, മാറ്റം വരുത്താം */
 }
-/* *** MRP (ചുവപ്പ്) *** */
-.product-info .price-container.large .product-mrp-red { 
+/* MRP (ചാരനിറം) */
+.product-info .price-container.large .price-mrp { 
     font-size: 1.25rem;
-    color: var(--error-red);
+    color: var(--text-muted);
 }
-
-/* *** Description (നീളമുള്ള വാക്കുകൾ ശരിയാക്കാൻ) *** */
+/* *** ഇതാണ് പുതിയതായി ചേർത്ത കോഡ് *** */
+/* Description (നീളമുള്ള വാക്കുകൾ ശരിയാക്കാൻ) */
 .product-description {
     margin-bottom: 1.5rem;
     color: var(--text-muted);
@@ -757,8 +756,7 @@ img {
 }
 .product-size {
     font-size: 1.1rem;
-    margin-bottom: 1rem; /* വിലയോട് അടുപ്പിക്കാൻ */
-    color: var(--text-muted);
+    margin-bottom: 2rem;
 }
 /* പ്രൊഡക്റ്റ് പേജിലെ 2 ബട്ടണുകൾ */
 .product-actions-grid {
@@ -767,11 +765,6 @@ img {
     gap: 0.75rem;
     max-width: 400px;
     margin-bottom: 1rem;
-}
-/* *** 'Add to Cart' ബട്ടണിലെ ഐക്കൺ (വെള്ള) *** */
-.product-actions-grid .btn-secondary-new svg.icon-btn {
-    stroke: var(--text-color);
-    fill: none;
 }
 /* 'Buy on WhatsApp' ബട്ടണിലെ ഐക്കൺ (കറുപ്പ്) */
 .product-actions-grid .btn-primary-new svg.icon-btn {
