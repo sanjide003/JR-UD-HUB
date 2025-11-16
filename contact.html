@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് കോൺടാക്റ്റ് പേജിന്റെ ശരിയായ കോഡ്.
-  പഴയ ഫയൽ മാറ്റി ഇത് ഉപയോഗിക്കുക.
+  *** പുതിയ പേജ് ലോഡർ ചേർത്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -12,6 +12,15 @@
     <link rel="stylesheet" href="public.css">
 </head>
 <body>
+
+    <!-- 0. പേജ് ലോഡർ -->
+    <div id="preloader">
+        <div class="loader-logo-container">
+            <!-- ലോഗോയും സ്പിന്നറും common.js & public.css വഴി വരും -->
+            <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
+            <div class="loader-ring"></div>
+        </div>
+    </div>
 
     <!-- 1. ഹെഡർ (common.js വഴി ലോഡ് ആവും) -->
     <header class="main-header" id="main-header"></header>
