@@ -1,6 +1,6 @@
 // ഇതാണ് 'admin.js' ഫയൽ.
-// *** എഡിറ്റ് ഫംഗ്ഷൻ ബഗ് പരിഹരിച്ചു (മോഡൽ സബ്മിറ്റ്) ***
-// *** പുതിയ കൺഫർമേഷൻ പോപ്പ്-അപ്പ് ചേർത്തു ***
+// *** എഡിറ്റ് ബഗ് പരിഹരിച്ചു ***
+// *** ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ ചേർത്തു ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -47,6 +47,7 @@ const navLinks = document.querySelectorAll(".nav-link");
 
 // Category elements
 const addCategoryForm = document.getElementById("add-category-form");
+const categoryLoader = document.getElementById("category-loader");
 const categoriesListBody = document.getElementById("categories-list-body");
 const categoryImagePreview = document.getElementById("category-image-preview");
 
@@ -55,7 +56,7 @@ const addProductForm = document.getElementById("add-product-form");
 const productCategorySelect = document.getElementById("product-category");
 const productsListBody = document.getElementById("products-list-body");
 const productFilterCategory = document.getElementById("product-filter-category");
-const featuredProductsListBody = document.getElementById("featured-products-list-body");
+const featuredProductsListBody = document.getElementById("featured-products-list-body"); 
 const addImageUrlBtn = document.getElementById("add-image-url-btn");
 const productImageContainer = document.getElementById("product-image-list-container");
 
@@ -76,15 +77,16 @@ const modalForm = document.getElementById("modal-form");
 
 // *** പുതിയത്: കൺഫർമേഷൻ മോഡൽ Elements ***
 const confirmModal = document.getElementById("confirm-modal");
+const confirmCloseButton = document.getElementById("confirm-close-button");
+const confirmBtnCancel = document.getElementById("confirm-btn-cancel");
+const confirmBtnDelete = document.getElementById("confirm-btn-delete");
 const confirmTitle = document.getElementById("confirm-title");
 const confirmMessage = document.getElementById("confirm-message");
-const confirmBtnOk = document.getElementById("confirm-btn-ok");
-const confirmBtnCancel = document.getElementById("confirm-btn-cancel");
-const confirmCloseBtn = document.getElementById("confirm-close-btn");
-let onConfirmOk = null; // OK ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ പ്രവർത്തിക്കേണ്ട ഫംഗ്ഷൻ
+
 
 let currentProductsQuery = null;
 let currentFeaturedQuery = null;
+let deleteInfo = { id: null, type: null }; // *** പുതിയത്: ഡിലീറ്റ് ചെയ്യാനുള്ള വിവരങ്ങൾ സേവ് ചെയ്യാൻ
 
 // --- Helper Functions ---
 function showStatus(element, message, isError = true) {
@@ -96,16 +98,15 @@ function clearStatus(element) {
     element.textContent = '';
     element.className = 'status-message';
 }
+function showLoader(loader) { if(loader) loader.style.display = 'block'; }
+function hideLoader(loader) { if(loader) loader.style.display = 'none'; }
 
 function disableButton(button, text = "Saving...") {
     if (!button) return;
     button.disabled = true;
     const btnText = button.querySelector('.btn-text');
     const btnLoader = button.querySelector('.btn-loader');
-    if (btnText) {
-        btnText.dataset.originalText = btnText.textContent; // പഴയ ടെക്സ്റ്റ് സേവ് ചെയ്യുന്നു
-        btnText.textContent = text;
-    }
+    if (btnText) btnText.textContent = text;
     if (btnLoader) btnLoader.style.display = 'inline-block';
 }
 
@@ -114,10 +115,7 @@ function enableButton(button, defaultText) {
     button.disabled = false;
     const btnText = button.querySelector('.btn-text');
     const btnLoader = button.querySelector('.btn-loader');
-    if (btnText) {
-        // സേവ് ചെയ്ത ടെക്സ്റ്റ് ഉപയോഗിക്കുന്നു, അല്ലെങ്കിൽ defaultText
-        btnText.textContent = defaultText || btnText.dataset.originalText || 'Submit';
-    }
+    if (btnText) btnText.textContent = defaultText;
     if (btnLoader) btnLoader.style.display = 'none';
 }
 
@@ -298,13 +296,16 @@ function loadCategories() {
 
     onSnapshot(q, (querySnapshot) => {
         categoriesListBody.innerHTML = '';
+        
         if (querySnapshot.empty) {
             categoriesListBody.innerHTML = '<tr><td colspan="3">No categories found.</td></tr>';
             return;
         }
+        
         querySnapshot.forEach((doc) => {
             const category = doc.data();
             const id = doc.id;
+            
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><img src="${category.imageUrl || ''}" alt="${category.name}"></td>
@@ -315,6 +316,7 @@ function loadCategories() {
                 </td>
             `;
             categoriesListBody.appendChild(row);
+            
             const option = document.createElement('option');
             option.value = id;
             option.textContent = category.name;
@@ -334,11 +336,13 @@ addCategoryForm.addEventListener("submit", async (e) => {
     try {
         const name = document.getElementById("category-name").value;
         const imageUrl = document.getElementById("category-image-url").value;
+        
         await addDoc(collection(db, "categories"), {
             name: name,
             imageUrl: imageUrl,
             createdAt: serverTimestamp()
         });
+        
         showStatus(adminStatus, "Category added successfully!", false);
         addCategoryForm.reset();
         document.getElementById('category-image-preview').innerHTML = '';
@@ -351,28 +355,36 @@ addCategoryForm.addEventListener("submit", async (e) => {
 });
 
 // --- 6. Product Logic ---
+
+// 6.1 Existing Products (ഫിൽട്ടറിംഗ് സഹിതം)
 function loadProducts(categoryId = "all") {
      let q;
      if (categoryId === "all") {
         q = query(collection(db, "products"), orderBy("createdAt", "desc"));
      } else {
-        q = query(collection(db, "products"), where("categoryId", "==", categoryId));
+        q = query(collection(db, "products"), 
+            where("categoryId", "==", categoryId));
      }
+     
      if (currentProductsQuery) currentProductsQuery(); 
+
      currentProductsQuery = onSnapshot(q, (querySnapshot) => {
         productsListBody.innerHTML = '';
         if (querySnapshot.empty) {
             productsListBody.innerHTML = '<tr><td colspan="4">No products found.</td></tr>';
             return;
         }
+        
         querySnapshot.forEach((doc) => {
             const product = doc.data();
             const id = doc.id;
             const imageUrl = product.images && product.images[0] ? product.images[0] : '';
+            
             let priceDisplay = `₹${product.price || 0}`;
             if (product.mrp && product.mrp > product.price) {
                 priceDisplay += ` <span class="price-mrp-admin">₹${product.mrp}</span>`;
             }
+
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><img src="${imageUrl}" alt="${product.name}"></td>
@@ -391,23 +403,29 @@ function loadProducts(categoryId = "all") {
     });
 }
 
+// 6.2 Featured Products
 function loadFeaturedProducts() {
      const q = query(collection(db, "products"), where("featured", "==", true));
+     
      if (currentFeaturedQuery) currentFeaturedQuery(); 
+
      currentFeaturedQuery = onSnapshot(q, (querySnapshot) => {
         featuredProductsListBody.innerHTML = '';
         if (querySnapshot.empty) {
             featuredProductsListBody.innerHTML = '<tr><td colspan="4">No featured products found.</td></tr>';
             return;
         }
+        
         querySnapshot.forEach((doc) => {
             const product = doc.data();
             const id = doc.id;
             const imageUrl = product.images && product.images[0] ? product.images[0] : '';
+            
             let priceDisplay = `₹${product.price || 0}`;
             if (product.mrp && product.mrp > product.price) {
                 priceDisplay += ` <span class="price-mrp-admin">₹${product.mrp}</span>`;
             }
+
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><img src="${imageUrl}" alt="${product.name}"></td>
@@ -426,20 +444,25 @@ function loadFeaturedProducts() {
     });
 }
 
+
+// 6.3 ഫിൽട്ടർ ഡ്രോപ്പ്ഡൗൺ പ്രവർത്തിപ്പിക്കുന്നു
 productFilterCategory.addEventListener("change", (e) => {
     const categoryId = e.target.value;
     loadProducts(categoryId);
 });
 
+// 6.4 Add Product ഫോം
 addProductForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const button = document.getElementById('add-product-button');
     disableButton(button, "Adding...");
+    
     try {
         const imageUrls = getImageUrlsFromUploader('product-image-list-container');
         if (imageUrls.length === 0 || imageUrls[0] === '') {
             throw new Error("Please add at least one image URL.");
         }
+
         const product = {
             categoryId: productCategorySelect.value,
             name: document.getElementById("product-name").value,
@@ -451,9 +474,11 @@ addProductForm.addEventListener("submit", async (e) => {
             images: imageUrls,
             createdAt: serverTimestamp()
         };
+        
         if (!product.categoryId || !product.name || !product.price) {
             throw new Error("Please fill in all required fields.");
         }
+
         await addDoc(collection(db, "products"), product);
         showStatus(adminStatus, "Product added successfully!", false);
         addProductForm.reset();
@@ -524,98 +549,69 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
 
 
 // --- 8. Edit & Delete Logic ---
-
-// *** പുതിയത്: കൺഫർമേഷൻ മോഡൽ ലോജിക് ***
-function showConfirmationModal(title, message, onOk, type = 'delete') {
-    confirmTitle.textContent = title;
-    confirmMessage.textContent = message;
-    
-    // OK ബട്ടൺ സ്റ്റൈൽ മാറ്റുന്നു
-    if (type === 'edit') {
-        confirmBtnOk.textContent = 'Edit';
-        confirmBtnOk.classList.add('edit'); // നീല നിറം നൽകാൻ
-    } else {
-        confirmBtnOk.textContent = 'Delete';
-        confirmBtnOk.classList.remove('edit'); // ചുവപ്പ് നിറം നൽകാൻ
-    }
-    
-    confirmModal.style.display = 'flex';
-    
-    // പഴയ ലിസണറുകൾ നീക്കം ചെയ്യുന്നു
-    const newOkBtn = confirmBtnOk.cloneNode(true);
-    confirmBtnOk.parentNode.replaceChild(newOkBtn, confirmBtnOk);
-    
-    newOkBtn.addEventListener('click', () => {
-        if (onOk) onOk();
-        closeConfirmationModal();
-    });
-}
-function closeConfirmationModal() {
-    confirmModal.style.display = 'none';
-}
-confirmBtnCancel.addEventListener('click', closeConfirmationModal);
-confirmCloseBtn.addEventListener('click', closeConfirmationModal);
-// *** കൺഫർമേഷൻ മോഡൽ ലോജിക് കഴിഞ്ഞു ***
-
-
 document.body.addEventListener('click', async (e) => {
-    const target = e.target.closest('.btn-delete'); // ഡിലീറ്റ് ബട്ടൺ
-    const editTarget = e.target.closest('.btn-edit'); // എഡിറ്റ് ബട്ടൺ
-
+    const target = e.target;
+    
     // Delete ബട്ടൺ
-    if (target) {
+    if (target.classList.contains('btn-delete')) {
         const id = target.dataset.id;
         const type = target.dataset.type;
-        
-        // *** പുതിയത്: കൺഫർമേഷൻ മോഡൽ കാണിക്കുന്നു ***
-        showConfirmationModal(
-            'Confirm Deletion',
-            `Are you sure you want to delete this ${type}? This action cannot be undone.`,
-            async () => { // OK ക്ലിക്ക് ചെയ്യുമ്പോൾ ഈ ഫംഗ്ഷൻ പ്രവർത്തിക്കും
-                try {
-                    let collectionName = '';
-                    if (type === 'product') collectionName = 'products';
-                    else if (type === 'category') collectionName = 'categories';
-                    else if (type === 'heroSlide') collectionName = 'heroSlides';
-                    
-                    if (collectionName) {
-                        await deleteDoc(doc(db, collectionName, id));
-                        showStatus(adminStatus, `${type} deleted successfully.`, false);
-                    }
-                } catch (error) {
-                    console.error("Error deleting item: ", error);
-                    showStatus(adminStatus, `Error: ${error.message}`);
-                }
-            },
-            'delete' // ഡിലീറ്റ് ബട്ടൺ ചുവപ്പാക്കാൻ
-        );
+        // *** `confirm()`-ന് പകരം പുതിയ മോഡൽ തുറക്കുന്നു ***
+        openConfirmModal(id, type);
     }
     
     // Edit ബട്ടൺ
-    if (editTarget) {
-        const id = editTarget.dataset.id;
-        const type = editTarget.dataset.type;
-        
-        // *** പുതിയത്: കൺഫർമേഷൻ മോഡൽ കാണിക്കുന്നു ***
-        showConfirmationModal(
-            'Confirm Edit',
-            `Are you sure you want to edit this ${type}?`,
-            () => { // OK ക്ലിക്ക് ചെയ്യുമ്പോൾ ഈ ഫംഗ്ഷൻ പ്രവർത്തിക്കും
-                openEditModal(id, type); // എഡിറ്റ് മോഡൽ തുറക്കുന്നു
-            },
-            'edit' // എഡിറ്റ് ബട്ടൺ നീലയാക്കാൻ
-        );
+    if (target.classList.contains('btn-edit')) {
+        const id = target.dataset.id;
+        const type = target.dataset.type;
+        openEditModal(id, type);
     }
 });
+
+// *** പുതിയത്: ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ തുറക്കാൻ ***
+function openConfirmModal(id, type) {
+    deleteInfo = { id, type }; // ഡിലീറ്റ് വിവരങ്ങൾ സേവ് ചെയ്യുന്നു
+    confirmTitle.textContent = `Delete ${type}?`;
+    confirmMessage.textContent = `Are you sure you want to delete this ${type}? This action cannot be undone.`;
+    confirmModal.style.display = 'flex';
+}
+// *** പുതിയത്: ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ അടയ്ക്കാൻ ***
+function closeConfirmModal() {
+    confirmModal.style.display = 'none';
+    deleteInfo = { id: null, type: null };
+}
+confirmCloseButton.addEventListener('click', closeConfirmModal);
+confirmBtnCancel.addEventListener('click', closeConfirmModal);
+
+// *** പുതിയത്: ഡിലീറ്റ് സ്ഥിരീകരിക്കുമ്പോൾ ***
+confirmBtnDelete.addEventListener('click', async () => {
+    const { id, type } = deleteInfo;
+    if (!id || !type) return;
+
+    disableButton(confirmBtnDelete, "Deleting...");
+    try {
+        let collectionName = '';
+        if (type === 'product') collectionName = 'products';
+        else if (type === 'category') collectionName = 'categories';
+        else if (type === 'heroSlide') collectionName = 'heroSlides';
+        
+        if (collectionName) {
+            await deleteDoc(doc(db, collectionName, id));
+            showStatus(adminStatus, `${type} deleted successfully.`, false);
+        }
+    } catch (error) {
+        console.error("Error deleting item: ", error);
+        showStatus(adminStatus, `Error: ${error.message}`);
+    } finally {
+        enableButton(confirmBtnDelete, "Confirm Delete");
+        closeConfirmModal();
+    }
+});
+
         
 async function openEditModal(id, type) {
     modalForm.innerHTML = '';
-    
-    // *** എഡിറ്റ് ബഗ് പരിഹാരം: ഡാറ്റ മോഡലിൽ അറ്റാച്ച് ചെയ്യുന്നു ***
-    modalForm.dataset.itemId = id;
-    modalForm.dataset.itemType = type;
-
-    showLoader(document.getElementById('modal-loader'));
+    showLoader(modalLoader);
     editModal.style.display = 'flex';
     
     try {
@@ -629,6 +625,8 @@ async function openEditModal(id, type) {
         
         if (type === 'category') {
             modalForm.innerHTML = `
+                <input type="hidden" id="modal-item-id" value="${id}">
+                <input type="hidden" id="modal-item-type" value="category">
                 <div class="form-group">
                     <label for="modal-category-name">Category Name <span class="required-star">*</span></label>
                     <input type="text" id="modal-category-name" value="${data.name}" required>
@@ -649,6 +647,9 @@ async function openEditModal(id, type) {
         } 
         else if (type === 'product') {
             modalForm.innerHTML = `
+                <input type="hidden" id="modal-item-id" value="${id}">
+                <input type="hidden" id="modal-item-type" value="product">
+                
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="modal-product-name">Product Name <span class="required-star">*</span></label>
@@ -680,7 +681,8 @@ async function openEditModal(id, type) {
                     </div>
                     <div class="form-group full-width">
                         <label>Product Image URLs <span class="required-star">*</span></label>
-                        <div id="modal-image-list-container" class="image-url-list"></div>
+                        <div id="modal-image-list-container" class="image-url-list">
+                        </div>
                         <button type="button" id="add-modal-image-url-btn" class="btn btn-secondary">Add Image URL</button>
                     </div>
                 </div>
@@ -690,6 +692,7 @@ async function openEditModal(id, type) {
                 </button>
             `;
             document.getElementById('modal-product-category').value = data.categoryId;
+            
             setupImageUploader('modal-image-list-container', 'add-modal-image-url-btn');
             populateImageUploader('modal-image-list-container', data.images || []);
         }
@@ -699,26 +702,24 @@ async function openEditModal(id, type) {
         showStatus(adminStatus, `Error: ${error.message}`);
         closeEditModal();
     } finally {
-        hideLoader(document.getElementById('modal-loader'));
+        hideLoader(modalLoader);
     }
 }
         
 function closeEditModal() {
     editModal.style.display = 'none';
     modalForm.innerHTML = ''; 
-    modalForm.removeAttribute('data-item-id'); // ഡാറ്റ ക്ലീൻ ചെയ്യുന്നു
-    modalForm.removeAttribute('data-item-type');
 }
 modalCloseButton.addEventListener('click', closeEditModal);
-        
-// *** എഡിറ്റ് ബഗ് പരിഹാരം: ഈ ലിസണർ ഇപ്പോൾ ശരിയായി പ്രവർത്തിക്കും ***
+
+// *** എഡിറ്റ് ബഗ് പരിഹരിച്ചു: ഈ ലിസണർ തിരികെ ചേർത്തു ***
 modalForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const button = document.getElementById('modal-save-button');
     disableButton(button, "Saving...");
     
-    const id = e.target.dataset.itemId; // ഡാറ്റാസെറ്റിൽ നിന്ന് എടുക്കുന്നു
-    const type = e.target.dataset.itemType;
+    const id = document.getElementById('modal-item-id').value;
+    const type = document.getElementById('modal-item-type').value;
     
     try {
         let dataToSave = {};
@@ -734,6 +735,7 @@ modalForm.addEventListener("submit", async (e) => {
             if (imageUrls.length === 0 || imageUrls[0] === '') {
                 throw new Error("Please add at least one image URL.");
             }
+            
             dataToSave = {
                 categoryId: document.getElementById('modal-product-category').value,
                 name: document.getElementById('modal-product-name').value,
@@ -755,16 +757,18 @@ modalForm.addEventListener("submit", async (e) => {
     } catch (error) {
         console.error("Error saving changes: ", error);
         showStatus(adminStatus, `Error: ${error.message}`);
-        // എറർ ഉണ്ടെങ്കിൽ ബട്ടൺ തിരികെ പ്രവർത്തനക്ഷമമാക്കുന്നു
+        // *** എറർ വന്നാൽ ബട്ടൺ തിരികെ കൊണ്ടുവരുന്നു ***
         enableButton(button, "Save Changes");
     }
 });
 
 
 // --- 9. പുതിയത്: ഇമേജ് അപ്‌ലോഡ് സിസ്റ്റം ---
+
 function setupImageUploader(containerId, addBtnId) {
     const container = document.getElementById(containerId);
     const addBtn = document.getElementById(addBtnId);
+
     if (!container || !addBtn) return;
 
     addBtn.addEventListener('click', () => {
@@ -791,19 +795,23 @@ function setupImageUploader(containerId, addBtnId) {
 function addImageInput(containerId, url = '') {
     const container = document.getElementById(containerId);
     if (!container) return;
+
     const item = document.createElement('div');
     item.className = 'image-url-item';
+    
     item.innerHTML = `
         <img src="${url || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" alt="Preview" class="image-preview-item">
         <input type="text" value="${url}" placeholder="Paste image URL here" required>
         <button type="button" class="btn-remove-image">&times;</button>
     `;
+    
     container.appendChild(item);
 }
 
 function getImageUrlsFromUploader(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return [];
+    
     const urls = [];
     container.querySelectorAll('.image-url-item input').forEach(input => {
         const url = input.value.trim();
@@ -818,6 +826,7 @@ function populateImageUploader(containerId, urls) {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = ''; 
+    
     if (urls && urls.length > 0) {
         urls.forEach(url => {
             addImageInput(containerId, url);
