@@ -1,5 +1,6 @@
 // ഇതാണ് 'admin.js' ഫയൽ.
-// *** "Follow Us" എന്ന പുതിയ ടാബിന്റെ ലോജിക് ചേർത്തു ***
+// *** പുതിയ ഹാംബർഗർ മെനു ലോജിക് ചേർത്തു ***
+// *** "Follow Us" ലിങ്കുകൾ "Site Settings"-ലേക്ക് മാറ്റി ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -23,9 +24,9 @@ import {
     orderBy,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { db, auth } from './firebase-config.js'; // നമ്മുടെ കോൺഫിഗ് ഫയൽ
+import { db, auth } from './firebase-config.js';
 
-// --- DOM Elements (പേജിലെ ഘടകങ്ങളെ എടുക്കുന്നു) ---
+// --- DOM Elements ---
 const loginSection = document.getElementById("login-section");
 const adminPanel = document.getElementById("admin-panel");
 const loginForm = document.getElementById("login-form");
@@ -33,6 +34,13 @@ const loginButton = document.getElementById("login-button");
 const loginStatus = document.getElementById("login-status");
 const logoutButton = document.getElementById("logout-button");
 const adminStatus = document.getElementById("admin-status");
+
+// *** പുതിയത്: Admin Nav Elements ***
+const adminNavOpenBtn = document.getElementById("admin-nav-open-btn");
+const adminNavCloseBtn = document.getElementById("admin-nav-close-btn");
+const adminSideNav = document.getElementById("admin-side-nav");
+const adminNavOverlay = document.getElementById("admin-nav-overlay");
+const adminNavLinks = document.querySelector(".admin-nav-links");
 
 const tabLinks = document.querySelectorAll(".tab-link");
 const tabContents = document.querySelectorAll(".tab-content");
@@ -59,10 +67,6 @@ const heroSlidesListBody = document.getElementById("hero-slides-list-body");
 const siteSettingsForm = document.getElementById("site-settings-form");
 const settingsLoader = document.getElementById("settings-loader");
 
-// *** പുതിയത്: Social elements ***
-const socialSettingsForm = document.getElementById("social-settings-form");
-const socialLoader = document.getElementById("social-loader");
-
 // Modal elements
 const editModal = document.getElementById("edit-modal");
 const modalCloseButton = document.getElementById("modal-close-button");
@@ -70,7 +74,7 @@ const modalTitle = document.getElementById("modal-title");
 const modalForm = document.getElementById("modal-form");
 const modalLoader = document.getElementById("modal-loader");
 
-// --- Helper Functions (സഹായ ഫംഗ്ഷനുകൾ) ---
+// --- Helper Functions ---
 function showStatus(element, message, isError = true) {
     element.textContent = message;
     element.className = isError ? 'status-message error' : 'status-message success';
@@ -83,7 +87,7 @@ function clearStatus(element) {
 function showLoader(loader) { loader.style.display = 'block'; }
 function hideLoader(loader) { loader.style.display = 'none'; }
 
-// --- 1. Authentication Logic (ലോഗിൻ) ---
+// --- 1. Authentication Logic ---
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     clearStatus(loginStatus);
@@ -113,7 +117,6 @@ onAuthStateChanged(auth, (user) => {
         loadProducts();
         loadHeroSlides(); 
         loadSiteSettings();
-        loadSocialSettings(); // *** പുതിയത്: സോഷ്യൽ ലിങ്കുകൾ ലോഡ് ചെയ്യുന്നു ***
     } else {
         loginSection.style.display = "block";
         adminPanel.style.display = "none";
@@ -122,20 +125,34 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// --- 2. Tab Switching Logic (ടാബ് മാറ്റുമ്പോൾ) ---
-tabLinks.forEach(link => {
-    link.addEventListener("click", () => {
-        const tabId = link.getAttribute("data-tab");
+// --- 2. Tab Switching & New Admin Nav Logic ---
+function closeAdminNav() {
+    adminSideNav.classList.remove("open");
+    adminNavOverlay.classList.remove("open");
+}
+
+adminNavOpenBtn.addEventListener("click", () => {
+    adminSideNav.classList.add("open");
+    adminNavOverlay.classList.add("open");
+});
+adminNavCloseBtn.addEventListener("click", closeAdminNav);
+adminNavOverlay.addEventListener("click", closeAdminNav);
+
+adminNavLinks.addEventListener("click", (e) => {
+    if (e.target.classList.contains("tab-link")) {
+        const tabId = e.target.getAttribute("data-tab");
         
         tabLinks.forEach(item => item.classList.remove("active"));
         tabContents.forEach(item => item.classList.remove("active"));
         
-        link.classList.add("active");
+        e.target.classList.add("active");
         document.getElementById(tabId).classList.add("active");
-    });
+        
+        closeAdminNav(); // ടാബ് തിരഞ്ഞെടുത്ത ശേഷം മെനു അടയ്ക്കുന്നു
+    }
 });
 
-// --- 3. Image Preview Logic (ഇമേജ് പ്രിവ്യൂ) ---
+// --- 3. Image Preview Logic ---
 function setupImagePreview(inputId, previewId) {
     const input = document.getElementById(inputId);
     const previewContainer = document.getElementById(previewId);
@@ -161,21 +178,28 @@ setupImagePreview('category-image-url', 'category-image-preview');
 setupImagePreview('product-image-urls', 'product-image-preview');
 
 
-// --- 4. Site Settings Logic (സൈറ്റ് സെറ്റിംഗ്സ്) ---
-// *** സോഷ്യൽ ലിങ്കുകൾ ഇവിടെ നിന്ന് നീക്കം ചെയ്തു ***
+// --- 4. Site Settings Logic (Follow Us ലിങ്കുകൾ ചേർത്തു) ---
 async function loadSiteSettings() {
     try {
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
             const settings = docSnap.data();
+            // General
             document.getElementById("setting-logo-image-url").value = settings.logoImageUrl || '';
             document.getElementById("setting-logo-text").value = settings.logoText || '';
             document.getElementById("setting-logo-subtitle").value = settings.logoSubtitle || '';
             document.getElementById("setting-video-url").value = settings.videoUrl || '';
+            // Contact
             document.getElementById("setting-phone").value = settings.phone || '';
             document.getElementById("setting-email").value = settings.email || '';
             document.getElementById("setting-address").value = settings.address || '';
+            document.getElementById("setting-whatsapp").value = settings.whatsapp || ''; // Order WA
+            // Follow Us
+            document.getElementById("setting-follow-whatsapp").value = settings.followWhatsapp || ''; // Follow WA
+            document.getElementById("setting-facebook-url").value = settings.facebookUrl || '';
+            document.getElementById("setting-instagram-url").value = settings.instagramUrl || '';
+            document.getElementById("setting-youtube-url").value = settings.youtubeUrl || '';
         }
     } catch (error) {
         console.error("Error loading settings: ", error);
@@ -188,13 +212,21 @@ siteSettingsForm.addEventListener("submit", async (e) => {
     showLoader(settingsLoader);
     try {
         const settings = {
+            // General
             logoImageUrl: document.getElementById("setting-logo-image-url").value,
             logoText: document.getElementById("setting-logo-text").value,
             logoSubtitle: document.getElementById("setting-logo-subtitle").value,
             videoUrl: document.getElementById("setting-video-url").value,
+            // Contact
             phone: document.getElementById("setting-phone").value,
             email: document.getElementById("setting-email").value,
             address: document.getElementById("setting-address").value,
+            whatsapp: document.getElementById("setting-whatsapp").value, // Order WA
+            // Follow Us
+            followWhatsapp: document.getElementById("setting-follow-whatsapp").value, // Follow WA
+            facebookUrl: document.getElementById("setting-facebook-url").value,
+            instagramUrl: document.getElementById("setting-instagram-url").value,
+            youtubeUrl: document.getElementById("setting-youtube-url").value,
         };
         
         const docRef = doc(db, "settings", "global");
@@ -209,7 +241,7 @@ siteSettingsForm.addEventListener("submit", async (e) => {
     }
 });
 
-// --- 5. Category Logic (കാറ്റഗറി) ---
+// --- 5. Category Logic ---
 function loadCategories() {
     const q = query(collection(db, "categories"), orderBy("name"));
     onSnapshot(q, (querySnapshot) => {
@@ -271,7 +303,7 @@ addCategoryForm.addEventListener("submit", async (e) => {
     }
 });
 
-// --- 6. Product Logic (ഉൽപ്പന്നം) ---
+// --- 6. Product Logic ---
 function loadProducts() {
      const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
      onSnapshot(q, (querySnapshot) => {
@@ -403,49 +435,8 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
     }
 });
 
-// --- *** പുതിയത് 8. Social Links Logic *** ---
-async function loadSocialSettings() {
-    try {
-        const docRef = doc(db, "settings", "social"); // *** പുതിയ പാത്ത് ***
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            const social = docSnap.data();
-            document.getElementById("social-whatsapp").value = social.whatsapp || '';
-            document.getElementById("social-facebook-url").value = social.facebookUrl || '';
-            document.getElementById("social-instagram-url").value = social.instagramUrl || '';
-            document.getElementById("social-youtube-url").value = social.youtubeUrl || '';
-        }
-    } catch (error) {
-        console.error("Error loading social settings: ", error);
-        showStatus(adminStatus, "Error loading social links.");
-    }
-}
 
-socialSettingsForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    showLoader(socialLoader);
-    try {
-        const socialLinks = {
-            whatsapp: document.getElementById("social-whatsapp").value,
-            facebookUrl: document.getElementById("social-facebook-url").value,
-            instagramUrl: document.getElementById("social-instagram-url").value,
-            youtubeUrl: document.getElementById("social-youtube-url").value,
-        };
-        
-        const docRef = doc(db, "settings", "social"); // *** പുതിയ പാത്ത് ***
-        await setDoc(docRef, socialLinks, { merge: true });
-        
-        showStatus(adminStatus, "Social links saved successfully!", false);
-    } catch (error) {
-        console.error("Error saving social links: ", error);
-        showStatus(adminStatus, `Error: ${error.message}`);
-    } finally {
-        hideLoader(socialLoader);
-    }
-});
-
-
-// --- 9. Edit & Delete Logic (എഡിറ്റ്, ഡിലീറ്റ്) ---
+// --- 8. Edit & Delete Logic ---
 document.body.addEventListener('click', async (e) => {
     const target = e.target;
     
