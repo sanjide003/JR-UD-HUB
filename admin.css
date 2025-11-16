@@ -1,9 +1,7 @@
 /* * =========================================
  * AL AMBAR - ADMIN STYLESHEET (admin.css)
  * =========================================
- * * ഈ ഫയൽ admin.html പേജിന് 
- * വേണ്ടി മാത്രമുള്ളതാണ്.
- * റെസ്പോൺസീവ് സ്റ്റൈലുകൾ തിരികെ ചേർത്തു.
+ * *** പുതിയ ഹെഡർ, സൈഡ് മെനു ഡിസൈൻ ചേർത്തു ***
  */
 
 /* --- 1. Root Variables (നിറങ്ങൾ) --- */
@@ -26,12 +24,13 @@ body {
     color: var(--text-color);
     margin: 0;
     padding: 0;
+    padding-top: 70px; /* പുതിയ ഹെഡറിന് വേണ്ടി */
 }
 
 .container {
     max-width: 1100px;
-    margin: 2rem auto;
-    padding: 1rem 2rem;
+    margin: 1.5rem auto;
+    padding: 0 1.5rem;
 }
 
 /* --- 3. Login Box --- */
@@ -49,6 +48,8 @@ body {
     text-align: center;
     color: var(--primary-gold);
     margin-bottom: 2rem;
+    font-family: var(--font-main);
+    font-weight: 600;
 }
 
 /* --- 4. Admin Panel --- */
@@ -56,113 +57,181 @@ body {
     display: none; /* ലോഗിൻ ചെയ്ത ശേഷം മാത്രം കാണിക്കും */
 }
 
-.admin-header {
+/* *** പുതിയത്: Admin Header *** */
+.admin-main-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 2rem;
-    border-bottom: 1px solid var(--primary-gold);
-    padding-bottom: 1rem;
-}
-
-.admin-header h1 {
-    color: var(--primary-gold);
-    margin-bottom: 0;
-}
-
-/* --- 5. Tabs --- */
-.tab-links {
-    display: flex;
+    padding: 0 1.5rem;
+    height: 70px;
     background-color: var(--card-bg);
-    border-radius: 8px 8px 0 0;
-    overflow-x: auto; /* മൊബൈലിൽ സ്ക്രോൾ ചെയ്യാൻ */
-    white-space: nowrap;
-    border-bottom: 2px solid var(--primary-gold);
+    border-bottom: 1px solid var(--border-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+.admin-main-header h1 {
+    color: var(--primary-gold);
+    font-size: 1.5rem;
+    font-family: var(--font-main);
+    font-weight: 600;
+    margin: 0;
+}
+.admin-header-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+#admin-nav-open-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+    padding: 5px;
+}
+#admin-nav-open-btn svg {
+    width: 28px;
+    height: 28px;
+    stroke: var(--text-color);
+}
+.btn-logout {
+    background-color: var(--error-red);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
 }
 
-.tab-link {
+/* *** പുതിയത്: Admin Side Nav *** */
+.admin-side-nav {
+    position: fixed;
+    top: 0;
+    right: -100vw;
+    width: 280px;
+    height: 100%;
+    background-color: var(--card-bg);
+    border-left: 1px solid var(--border-color);
+    z-index: 1002;
+    transition: right 0.4s ease;
+    display: flex;
+    flex-direction: column;
+}
+.admin-side-nav.open {
+    right: 0;
+}
+.admin-nav-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease;
+}
+.admin-nav-overlay.open {
+    opacity: 1;
+    visibility: visible;
+}
+.admin-nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    height: 70px;
+}
+.admin-nav-header h2 {
+    color: var(--primary-gold);
+    font-family: var(--font-main);
+    font-weight: 600;
+}
+#admin-nav-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 2rem;
+    cursor: pointer;
+}
+.admin-nav-links {
+    flex-grow: 1;
+    overflow-y: auto;
+}
+.tab-link {
+    display: block;
+    width: 100%;
+    padding: 1.25rem 1.5rem;
     cursor: pointer;
     background-color: transparent;
     border: none;
+    border-bottom: 1px solid var(--border-color);
     color: var(--text-muted);
     font-size: 1rem;
     font-weight: 500;
     transition: all 0.3s ease;
-    flex-shrink: 0; /* ടാബുകൾ ചുരുങ്ങാതിരിക്കാൻ */
+    text-align: left;
+    font-family: var(--font-main);
 }
-
 .tab-link:hover {
     background-color: #2a2a2a;
     color: var(--text-color);
 }
-
 .tab-link.active {
     color: var(--primary-gold);
-    border-bottom: 2px solid var(--primary-gold);
     background-color: #252525;
-    margin-bottom: -2px; /* Border-മായി യോജിപ്പിക്കാൻ */
 }
 
+/* *** ടാബ് ഉള്ളടക്കം *** */
 .tab-content {
-    display: none; /* JS വഴി കാണിക്കും */
+    display: none;
     background-color: var(--card-bg);
     padding: 2rem;
-    border-radius: 0 0 8px 8px;
+    border-radius: 8px;
     border: 1px solid var(--border-color);
-    border-top: none;
     animation: fadeIn 0.5s;
+    margin-top: 1.5rem;
 }
-
 .tab-content.active {
     display: block;
 }
-
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 /* --- 6. Form Elements --- */
 .form-section {
-    padding: 1.5rem 0;
+    padding-top: 1.5rem;
 }
-
 .form-section h2 {
     color: var(--text-color);
     border-bottom: 1px solid #444;
     padding-bottom: 0.5rem;
     margin-bottom: 1.5rem;
     font-size: 1.5rem;
+    font-family: var(--font-main);
+    font-weight: 600;
 }
-
 .form-grid {
     display: grid;
     grid-template-columns: 1fr;
     gap: 1.5rem;
 }
-
 .form-group {
     margin-bottom: 1.5rem;
 }
-
 .form-group.full-width {
-    grid-column: 1 / -1; /* 2 കോളത്തിലും നിറഞ്ഞുനിൽക്കാൻ */
+    grid-column: 1 / -1;
 }
-
 .form-group label {
     display: block;
     margin-bottom: 0.5rem;
     color: var(--text-muted);
     font-weight: 500;
 }
-
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -179,12 +248,10 @@ select {
     font-size: 1rem;
     box-sizing: border-box; /* Important */
 }
-
 textarea {
     resize: vertical;
     min-height: 100px;
 }
-
 /* --- 7. Image Preview --- */
 .image-preview {
     display: flex;
@@ -192,7 +259,6 @@ textarea {
     gap: 10px;
     margin-top: 10px;
 }
-
 .image-preview img {
     width: 80px;
     height: 80px;
@@ -200,7 +266,6 @@ textarea {
     border-radius: 5px;
     border: 2px solid var(--border-color);
 }
-
 /* --- 8. Buttons --- */
 .btn {
     display: inline-block;
@@ -215,17 +280,9 @@ textarea {
     text-align: center;
     transition: background-color 0.3s ease;
 }
-
 .btn:hover {
     background-color: #b8860b;
 }
-
-.btn-logout {
-    background-color: var(--error-red);
-    color: #fff;
-    padding: 0.5rem 1rem;
-}
-
 .btn-edit {
     background-color: #3498db;
     color: #fff;
@@ -233,14 +290,12 @@ textarea {
     padding: 0.4rem 0.8rem;
     margin-right: 5px;
 }
-
 .btn-delete {
     background-color: var(--error-red);
     color: #fff;
     font-size: 0.8rem;
     padding: 0.4rem 0.8rem;
 }
-
 /* --- 9. Status Messages & Loader --- */
 .status-message {
     padding: 1rem;
@@ -248,21 +303,18 @@ textarea {
     margin: 1.5rem 0;
     text-align: center;
     font-weight: 500;
-    display: none; /* JS വഴി കാണിക്കും */
+    display: none;
 }
-
 .status-message.error {
     background-color: rgba(231, 76, 60, 0.2);
     color: var(--error-red);
     display: block;
 }
-
 .status-message.success {
     background-color: rgba(46, 204, 113, 0.2);
     color: var(--success-green);
     display: block;
 }
-
 .loader {
     border: 4px solid #555;
     border-top: 4px solid var(--primary-gold);
@@ -273,47 +325,36 @@ textarea {
     margin: 1rem auto;
     display: none;
 }
-
 @keyframes spin {
-    0% {
-        transform: rotate(0deg);
-    }
-    100% {
-        transform: rotate(360deg);
-    }
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
 }
-
 /* --- 10. Data Table --- */
 .data-list-section {
     margin-top: 2rem;
 }
-
 .data-table-wrapper {
     max-height: 500px;
     overflow-y: auto;
     border: 1px solid var(--border-color);
     border-radius: 5px;
 }
-
 .data-table {
     width: 100%;
     border-collapse: collapse;
 }
-
 .data-table th,
 .data-table td {
     padding: 0.8rem 1rem;
     text-align: left;
     border-bottom: 1px solid var(--border-color);
 }
-
 .data-table th {
     background-color: #2a2a2a;
     color: var(--primary-gold);
     position: sticky;
     top: 0;
 }
-
 .data-table td img {
     width: 40px;
     height: 40px;
@@ -322,20 +363,16 @@ textarea {
     vertical-align: middle;
     margin-right: 10px;
 }
-
 .data-table td:last-child {
     text-align: right;
     white-space: nowrap;
 }
-
-/* MRP & Price in table */
 .price-mrp-admin {
     text-decoration: line-through;
     color: var(--text-muted);
     font-size: 0.9em;
     margin-left: 5px;
 }
-
 /* --- 11. Modal (for Editing) --- */
 .modal-overlay {
     position: fixed;
@@ -344,12 +381,11 @@ textarea {
     width: 100%;
     height: 100%;
     background-color: rgba(0, 0, 0, 0.8);
-    display: none; /* JS വഴി കാണിക്കും */
+    display: none;
     justify-content: center;
     align-items: center;
     z-index: 1000;
 }
-
 .modal-content {
     background-color: var(--card-bg);
     padding: 2rem;
@@ -360,7 +396,6 @@ textarea {
     overflow-y: auto;
     border: 1px solid var(--primary-gold);
 }
-
 .modal-header {
     display: flex;
     justify-content: space-between;
@@ -369,12 +404,12 @@ textarea {
     padding-bottom: 1rem;
     margin-bottom: 1.5rem;
 }
-
 .modal-header h2 {
     color: var(--primary-gold);
     margin: 0;
+    font-family: var(--font-main);
+    font-weight: 600;
 }
-
 .modal-close {
     background: none;
     border: none;
@@ -382,66 +417,50 @@ textarea {
     font-size: 2rem;
     cursor: pointer;
 }
-
 /* --- 12. Responsive (Admin) --- */
-
-/* ടാബ്ലെറ്റ് & ഡെസ്ക്ടോപ്പ് */
 @media (min-width: 768px) {
-    /* വലിയ സ്ക്രീനിൽ ഫോമുകൾ 2 കോളമാക്കുന്നു */
     .form-grid {
         grid-template-columns: 1fr 1fr;
         gap: 2rem;
     }
 }
-
-/* മൊബൈൽ */
 @media (max-width: 768px) {
+    body {
+        padding-top: 60px; /* മൊബൈലിൽ ഹെഡർ ചെറുതാക്കി */
+    }
     .container {
-        padding: 1rem;
+        padding: 0 1rem;
         margin-top: 1rem;
     }
-
+    .admin-main-header {
+        height: 60px;
+        padding: 0 1rem;
+    }
+    .admin-main-header h1 {
+        font-size: 1.2rem;
+    }
     .login-box {
         padding: 1.5rem;
         margin-top: 2rem;
     }
-
-    .tab-link {
-        padding: 0.8rem;
-        font-size: 0.9rem;
-    }
-
     .tab-content {
         padding: 1.5rem;
     }
-
     .data-table th,
     .data-table td {
         padding: 0.5rem;
     }
-    
-    /* മൊബൈലിൽ ടേബിൾ സ്ക്രോൾ ചെയ്യാൻ */
     .data-table-wrapper {
         overflow-x: auto;
     }
     .data-table {
-        min-width: 600px; /* ടേബിളിന് ഒരു മിനിമം വീതി നൽകുന്നു */
+        min-width: 600px;
     }
-
     .btn {
-        width: 100%; /* ബട്ടണുകൾ മുഴുവൻ വീതിയിൽ */
+        width: 100%;
     }
-
     .btn-edit,
     .btn-delete {
-        width: auto; /* ടേബിളിലെ ബട്ടണുകൾ ഒഴികെ */
-    }
-
-    .admin-header {
-        flex-direction: column;
-        gap: 1rem;
-    }
-    .admin-header h1 {
-        font-size: 1.5rem;
+        width: auto;
     }
 }
