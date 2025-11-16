@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** പ്രൊഡക്റ്റ് പേജിലെ Description ബഗ് പരിഹരിച്ചു ***
+   *** പുതിയ കാർട്ട് പേജ് ഡിസൈൻ ചേർത്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -540,6 +540,10 @@ img {
     background-color: var(--primary-gold);
     color: var(--bg-color);
 }
+/* 'View Details' ബട്ടൺ (ഐക്കൺ ഇല്ലാത്തത്) */
+.btn-primary-new {
+    gap: 0; /* ഐക്കൺ ഇല്ലാത്തതിനാൽ ഗ്യാപ് വേണ്ട */
+}
 .btn-primary-icon svg.icon-btn,
 .btn-secondary-icon svg.icon-btn,
 .btn-primary-new svg.icon-btn,
@@ -681,9 +685,13 @@ img {
 }
 .cat-product-buttons {
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr; /* 2 ബട്ടണുകൾ */
     gap: 0.5rem;
     margin-top: auto;
+}
+/* 'You May Also Like' സെക്ഷനിലെ ബട്ടണുകൾ */
+.related-buttons {
+    grid-template-columns: 1fr 1fr;
 }
 
 
@@ -729,18 +737,14 @@ img {
     margin-bottom: 1rem;
 }
 .product-info .price-container.large { margin-bottom: 1.5rem; }
-/* വില (സ്വർണ്ണം) */
 .product-info .price-container.large .price-main { 
     font-size: 2rem;
-    color: var(--primary-gold); /* തൽക്കാലം സ്വർണ്ണം നിലനിർത്തുന്നു, മാറ്റം വരുത്താം */
+    color: var(--primary-gold);
 }
-/* MRP (ചാരനിറം) */
 .product-info .price-container.large .price-mrp { 
     font-size: 1.25rem;
     color: var(--text-muted);
 }
-/* *** ഇതാണ് പുതിയതായി ചേർത്ത കോഡ് *** */
-/* Description (നീളമുള്ള വാക്കുകൾ ശരിയാക്കാൻ) */
 .product-description {
     margin-bottom: 1.5rem;
     color: var(--text-muted);
@@ -749,16 +753,14 @@ img {
     padding: 1rem;
     border-radius: 8px;
     
-    /* ഈ വരികൾ നീളമുള്ള വാക്കുകളെ അടുത്ത വരിയിലേക്ക് മാറ്റും */
     overflow-wrap: break-word;
     word-wrap: break-word; 
-    word-break: break-all; /* നീളമുള്ള ലിങ്കുകൾക്ക് വേണ്ടി */
+    word-break: break-all;
 }
 .product-size {
     font-size: 1.1rem;
     margin-bottom: 2rem;
 }
-/* പ്രൊഡക്റ്റ് പേജിലെ 2 ബട്ടണുകൾ */
 .product-actions-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -766,10 +768,12 @@ img {
     max-width: 400px;
     margin-bottom: 1rem;
 }
-/* 'Buy on WhatsApp' ബട്ടണിലെ ഐക്കൺ (കറുപ്പ്) */
 .product-actions-grid .btn-primary-new svg.icon-btn {
     fill: var(--bg-color);
     stroke: var(--bg-color);
+}
+.product-actions-grid .btn-primary-new {
+    gap: 0; /* ഐക്കൺ ഇല്ലാത്തതിനാൽ ഗ്യാപ് വേണ്ട */
 }
 
 
@@ -790,10 +794,10 @@ img {
     text-align: center;
     margin-bottom: 2rem;
 }
-.related-products-section .product-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+/* 'You May Also Like' ഗ്രിഡ് മാറ്റി */
+.related-products-section .product-grid-new {
+    width: 100%;
+    overflow: hidden;
 }
 
 
@@ -852,30 +856,43 @@ img {
 }
 
 /* --- 11. ഷോപ്പിംഗ് കാർട്ട് പേജ് (Cart Page) --- */
-.cart-page-layout {
-    display: grid;
-    grid-template-columns: 1fr;
+/* പഴയ സ്റ്റൈലുകൾ നീക്കം ചെയ്തു / പുതിയവ ചേർത്തു */
+
+.cart-page-layout-new {
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
 }
-.cart-items-list {
+
+.cart-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* പുതിയ ഉൽപ്പന്ന കാർഡ് (കാർട്ട്) */
+.cart-item-card {
+    background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
 }
-.cart-item {
-    display: grid;
-    grid-template-columns: 80px 1fr auto;
+
+/* കാർഡിലെ പ്രധാന ഭാഗം (ഫോട്ടോ, പേര്, എണ്ണം) */
+.cart-item-main {
+    display: flex;
     gap: 1rem;
     padding: 1rem;
-    align-items: center;
-    border-bottom: 1px solid var(--border-color);
 }
-.cart-item:last-child { border-bottom: none; }
 .cart-item-image {
     width: 80px;
     height: 80px;
     object-fit: cover;
     border-radius: 4px;
+    flex-shrink: 0;
+}
+.cart-item-info {
+    flex-grow: 1;
 }
 .cart-item-info h3 {
     font-size: 1.1rem;
@@ -885,18 +902,21 @@ img {
 .cart-item-info .cart-item-price {
     font-size: 1rem;
     color: var(--primary-gold);
+    margin-bottom: 0.25rem;
 }
-.cart-item-controls {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 0.5rem;
+.cart-item-info .cart-item-size {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
 }
+
+/* എണ്ണം മാറ്റാനുള്ള കൺട്രോൾ */
 .quantity-control {
     display: flex;
     align-items: center;
     border: 1px solid var(--border-color);
     border-radius: 4px;
+    max-width: 120px; /* വീതി കുറച്ചു */
 }
 .quantity-btn {
     background: none;
@@ -915,24 +935,56 @@ img {
     border-left: 1px solid var(--border-color);
     border-right: 1px solid var(--border-color);
     padding: 0.5rem 0;
+    -moz-appearance: textfield; /* Firefox-ൽ +/- മറയ്ക്കാൻ */
 }
-.cart-remove-btn {
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none; /* Chrome, Safari-ൽ +/- മറയ്ക്കാൻ */
+    margin: 0;
+}
+
+
+/* കാർഡിലെ ബട്ടണുകൾ (Remove, Buy this now) */
+.cart-item-actions {
+    display: flex;
+    border-top: 1px solid var(--border-color);
+}
+.cart-item-actions button {
+    flex: 1; /* ബട്ടണുകൾ തുല്യമായി വീതിക്കുന്നു */
     background: none;
     border: none;
-    color: var(--text-muted);
-    font-size: 0.9rem;
+    padding: 0.85rem 1rem;
     cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
 }
-.cart-remove-btn:hover { color: var(--error-red); }
-.cart-summary {
+.cart-item-actions button:hover {
+    color: var(--text-color);
+    background-color: #222;
+}
+.cart-item-actions .remove-btn {
+    border-right: 1px solid var(--border-color);
+    color: var(--error-red);
+}
+.cart-item-actions .buy-now-btn {
+    color: var(--primary-gold);
+}
+
+
+/* വലതുവശത്തെ "Price Details" */
+.cart-summary-container {
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem); /* ഹെഡറിന് താഴെ */
+}
+.cart-summary-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1.5rem;
-    position: sticky;
-    top: 100px;
 }
-.cart-summary h2 {
+.cart-summary-card h2 {
     font-family: var(--font-heading);
     color: var(--primary-gold);
     margin-bottom: 1.5rem;
@@ -952,21 +1004,16 @@ img {
     border-top: 1px solid var(--border-color);
     padding-top: 1rem;
 }
-.btn-checkout {
+
+/* "Place All Order" ബട്ടൺ */
+.btn-checkout-full {
     width: 100%;
     padding: 1rem;
     font-size: 1.1rem;
     margin-top: 1rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
 }
-.btn-checkout svg {
-    width: 20px;
-    height: 20px;
-    fill: currentColor;
-}
+
+
 .empty-cart-message {
     text-align: center;
     padding: 3rem 1rem;
@@ -1006,6 +1053,10 @@ img {
 .price-mrp {
     font-size: 1rem;
     color: var(--text-muted);
+}
+/* പ്രൊഡക്റ്റ് പേജിലെ ചുവന്ന MRP */
+.product-mrp-red del {
+    color: var(--error-red);
 }
 .price-discount {
     font-size: 0.8rem;
@@ -1135,18 +1186,10 @@ img {
         flex-grow: 1;
     }
 
-    .related-products-section .product-grid {
-        grid-template-columns: repeat(2, 1fr);
-    }
-    
-    .cart-item {
-        grid-template-columns: 60px 1fr auto;
-        gap: 0.75rem;
-        padding: 0.75rem;
-    }
-    .cart-item-image {
-        width: 60px;
-        height: 60px;
+    /* കാർട്ട് പേജ് മൊബൈലിൽ */
+    .cart-summary-container {
+        position: relative; /* സ്റ്റിക്കി ഒഴിവാക്കി */
+        top: 0;
     }
     
     .hero-slider-new .swiper-slide iframe {
@@ -1154,7 +1197,6 @@ img {
         height: 100%;
     }
     
-    /* പ്രൊഡക്റ്റ് പേജിലെ 2 ബട്ടണുകൾ മൊബൈലിൽ */
     .product-actions-grid {
         max-width: 100%; /* മുഴുവൻ വീതി */
     }
@@ -1203,11 +1245,9 @@ img {
     .product-detail-grid {
         grid-template-columns: 1fr 1fr;
     }
-    .related-products-section .product-grid {
-        grid-template-columns: repeat(4, 1fr);
-    }
     
-    .cart-page-layout {
+    /* കാർട്ട് പേജ് ഡെസ്ക്ടോപ്പിൽ */
+    .cart-page-layout-new {
         grid-template-columns: 2fr 1fr;
         align-items: flex-start;
     }
@@ -1216,7 +1256,6 @@ img {
         text-align: center;
     }
     
-    /* പ്രൊഡക്റ്റ് പേജിലെ 2 ബട്ടണുകൾ ഡെസ്ക്ടോപ്പിൽ */
     .product-actions-grid {
         max-width: 400px;
     }
