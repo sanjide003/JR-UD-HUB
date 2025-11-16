@@ -1,6 +1,7 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. 
-  *** പുതിയ ഹെഡർ, സൈഡ് മെനു ഡിസൈൻ, ഫിൽട്ടർ ഡ്രോപ്പ്ഡൗൺ എന്നിവ ചേർത്തു ***
+  *** മെനു ഇടതുവശത്തേക്ക് മാറ്റി ***
+  *** "Featured Products" എന്ന പുതിയ പേജ് ചേർത്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -36,10 +37,9 @@
     <!-- 2. അഡ്മിൻ പാനൽ (ലോഗിൻ ചെയ്ത ശേഷം മാത്രം) -->
     <section id="admin-panel">
 
-        <!-- *** പുതിയ ഹെഡർ *** -->
+        <!-- *** പുതിയ ഹെഡർ (മെനു ഐക്കൺ ഇടതുവശത്ത്) *** -->
         <header class="admin-main-header">
-            <h1>Al Ambar - Admin</h1>
-            <div class="admin-header-right">
+            <div class="admin-header-left">
                 <button id="admin-nav-open-btn" aria-label="Open Menu">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -47,10 +47,14 @@
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
+                <h1>Al Ambar - Admin</h1>
+            </div>
+            <div class="admin-header-right">
+                <button id="logout-button" class="btn btn-logout">Logout</button>
             </div>
         </header>
 
-        <!-- *** പുതിയ സൈഡ് മെനു (ടാബുകൾ) *** -->
+        <!-- *** പുതിയ സൈഡ് മെനു (ഇടതുവശത്ത് നിന്ന്) *** -->
         <nav class="admin-side-nav" id="admin-side-nav">
             <div class="admin-nav-header">
                 <h2>Menu</h2>
@@ -60,15 +64,14 @@
                 <!-- നിങ്ങൾ ആവശ്യപ്പെട്ട ഓർഡറിൽ 8 പേജുകൾ -->
                 <button class="nav-link active" data-page="page-add-product">Add New Product</button>
                 <button class="nav-link" data-page="page-existing-products">Existing Products</button>
+                <!-- *** പുതിയത്: Featured Products ടാബ് *** -->
+                <button class="nav-link" data-page="page-featured-products">Featured Products</button>
                 <button class="nav-link" data-page="page-add-category">Add New Category</button>
                 <button class="nav-link" data-page="page-existing-categories">Existing Categories</button>
                 <button class="nav-link" data-page="page-manage-hero">Manage Hero</button>
                 <button class="nav-link" data-page="page-general-settings">General Site Settings</button>
                 <button class="nav-link" data-page="page-contact-details">Contact Details</button>
                 <button class="nav-link" data-page="page-follow-us">"Follow Us" Links</button>
-            </div>
-            <div class="admin-nav-footer">
-                <button id="logout-button" class="btn btn-logout">Logout</button>
             </div>
         </nav>
         <div class="admin-nav-overlay" id="admin-nav-overlay"></div>
@@ -123,12 +126,11 @@
                 </form>
             </div>
 
-            <!-- പേജ് 2: Existing Products (പുതിയ ഫിൽട്ടർ സഹിതം) -->
+            <!-- പേജ് 2: Existing Products (ഫിൽട്ടർ സഹിതം) -->
             <div id="page-existing-products" class="page-content">
                 <div class="data-list-section">
                     <h2>Existing Products</h2>
                     
-                    <!-- *** പുതിയത്: കാറ്റഗറി ഫിൽട്ടർ *** -->
                     <div class="form-group" style="max-width: 300px;">
                         <label for="product-filter-category">Filter by Category</label>
                         <select id="product-filter-category">
@@ -152,8 +154,31 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- *** പുതിയത്: പേജ് 3: Featured Products *** -->
+            <div id="page-featured-products" class="page-content">
+                <div class="data-list-section">
+                    <h2>Featured Products (Top Sellers)</h2>
+                    <p class="form-group">Products marked as "Featured" on the "Add New Product" page will appear here.</p>
+                    <div class="data-table-wrapper">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="featured-products-list-body">
+                                <!-- 'admin.js' വഴി ഫീച്ചേർഡ് പ്രൊഡക്ടുകൾ ഇവിടെ വരും -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
-            <!-- പേജ് 3: Add New Category -->
+            <!-- പേജ് 4: Add New Category -->
             <div id="page-add-category" class="page-content">
                 <form id="add-category-form" class="form-section">
                     <h2>Add New Category</h2>
@@ -173,7 +198,7 @@
                 </form>
             </div>
 
-            <!-- പേജ് 4: Existing Categories -->
+            <!-- പേജ് 5: Existing Categories -->
             <div id="page-existing-categories" class="page-content">
                 <div class="data-list-section">
                     <h2>Existing Categories</h2>
@@ -192,7 +217,7 @@
                 </div>
             </div>
             
-            <!-- പേജ് 5: Manage Hero -->
+            <!-- പേജ് 6: Manage Hero -->
             <div id="page-manage-hero" class="page-content">
                 <form id="add-hero-slide-form" class="form-section">
                     <h2>Add New Hero Slide</h2>
@@ -236,7 +261,7 @@
                 </div>
             </div>
 
-            <!-- പേജ് 6: General Site Settings -->
+            <!-- പേജ് 7: General Site Settings -->
             <div id="page-general-settings" class="page-content">
                 <form id="general-settings-form" class="form-section">
                     <h2>General Site Settings</h2>
@@ -263,7 +288,7 @@
                 </form>
             </div>
 
-            <!-- പേജ് 7: Contact Details -->
+            <!-- പേജ് 8: Contact Details -->
             <div id="page-contact-details" class="page-content">
                 <form id="contact-settings-form" class="form-section">
                     <h2>Contact Details</h2>
@@ -290,7 +315,7 @@
                 </form>
             </div>
 
-            <!-- പേജ് 8: "Follow Us" Links -->
+            <!-- പേജ് 9: "Follow Us" Links -->
             <div id="page-follow-us" class="page-content">
                 <form id="follow-settings-form" class="form-section">
                     <h2>"Follow Us" Links</h2>
