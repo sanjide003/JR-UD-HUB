@@ -1,6 +1,5 @@
 // ഇതാണ് 'admin.js' ഫയൽ.
-// *** Vercel-ന് വേണ്ടി പാത്തുകൾ പരിശോധിച്ചു ***
-// *** സബ്ടൈറ്റിൽ ലോഡ്/സേവ് ചേർത്തു ***
+// *** "Follow Us" എന്ന പുതിയ ടാബിന്റെ ലോജിക് ചേർത്തു ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -60,6 +59,10 @@ const heroSlidesListBody = document.getElementById("hero-slides-list-body");
 const siteSettingsForm = document.getElementById("site-settings-form");
 const settingsLoader = document.getElementById("settings-loader");
 
+// *** പുതിയത്: Social elements ***
+const socialSettingsForm = document.getElementById("social-settings-form");
+const socialLoader = document.getElementById("social-loader");
+
 // Modal elements
 const editModal = document.getElementById("edit-modal");
 const modalCloseButton = document.getElementById("modal-close-button");
@@ -110,6 +113,7 @@ onAuthStateChanged(auth, (user) => {
         loadProducts();
         loadHeroSlides(); 
         loadSiteSettings();
+        loadSocialSettings(); // *** പുതിയത്: സോഷ്യൽ ലിങ്കുകൾ ലോഡ് ചെയ്യുന്നു ***
     } else {
         loginSection.style.display = "block";
         adminPanel.style.display = "none";
@@ -158,7 +162,7 @@ setupImagePreview('product-image-urls', 'product-image-preview');
 
 
 // --- 4. Site Settings Logic (സൈറ്റ് സെറ്റിംഗ്സ്) ---
-// *** പാത്ത് 'settings/global' ശരിയാണ് ***
+// *** സോഷ്യൽ ലിങ്കുകൾ ഇവിടെ നിന്ന് നീക്കം ചെയ്തു ***
 async function loadSiteSettings() {
     try {
         const docRef = doc(db, "settings", "global");
@@ -167,15 +171,11 @@ async function loadSiteSettings() {
             const settings = docSnap.data();
             document.getElementById("setting-logo-image-url").value = settings.logoImageUrl || '';
             document.getElementById("setting-logo-text").value = settings.logoText || '';
-            // *** സബ്ടൈറ്റിൽ ലോഡ് ചെയ്യുന്നു ***
             document.getElementById("setting-logo-subtitle").value = settings.logoSubtitle || '';
             document.getElementById("setting-video-url").value = settings.videoUrl || '';
             document.getElementById("setting-phone").value = settings.phone || '';
             document.getElementById("setting-email").value = settings.email || '';
             document.getElementById("setting-address").value = settings.address || '';
-            document.getElementById("setting-whatsapp").value = settings.whatsapp || '';
-            document.getElementById("setting-facebook-url").value = settings.facebookUrl || '';
-            document.getElementById("setting-instagram-url").value = settings.instagramUrl || '';
         }
     } catch (error) {
         console.error("Error loading settings: ", error);
@@ -190,18 +190,13 @@ siteSettingsForm.addEventListener("submit", async (e) => {
         const settings = {
             logoImageUrl: document.getElementById("setting-logo-image-url").value,
             logoText: document.getElementById("setting-logo-text").value,
-            // *** സബ്ടൈറ്റിൽ സേവ് ചെയ്യുന്നു ***
             logoSubtitle: document.getElementById("setting-logo-subtitle").value,
             videoUrl: document.getElementById("setting-video-url").value,
             phone: document.getElementById("setting-phone").value,
             email: document.getElementById("setting-email").value,
             address: document.getElementById("setting-address").value,
-            whatsapp: document.getElementById("setting-whatsapp").value,
-            facebookUrl: document.getElementById("setting-facebook-url").value,
-            instagramUrl: document.getElementById("setting-instagram-url").value,
         };
         
-        // *** പാത്ത് 'settings/global' ശരിയാണ് ***
         const docRef = doc(db, "settings", "global");
         await setDoc(docRef, settings, { merge: true });
         
@@ -215,7 +210,6 @@ siteSettingsForm.addEventListener("submit", async (e) => {
 });
 
 // --- 5. Category Logic (കാറ്റഗറി) ---
-// *** പാത്ത് 'categories' ശരിയാണ് ***
 function loadCategories() {
     const q = query(collection(db, "categories"), orderBy("name"));
     onSnapshot(q, (querySnapshot) => {
@@ -260,7 +254,6 @@ addCategoryForm.addEventListener("submit", async (e) => {
         const name = document.getElementById("category-name").value;
         const imageUrl = document.getElementById("category-image-url").value;
         
-        // *** പാത്ത് 'categories' ശരിയാണ് ***
         await addDoc(collection(db, "categories"), {
             name: name,
             imageUrl: imageUrl,
@@ -279,7 +272,6 @@ addCategoryForm.addEventListener("submit", async (e) => {
 });
 
 // --- 6. Product Logic (ഉൽപ്പന്നം) ---
-// *** പാത്ത് 'products' ശരിയാണ് ***
 function loadProducts() {
      const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
      onSnapshot(q, (querySnapshot) => {
@@ -336,7 +328,6 @@ addProductForm.addEventListener("submit", async (e) => {
             createdAt: serverTimestamp()
         };
 
-        // *** പാത്ത് 'products' ശരിയാണ് ***
         await addDoc(collection(db, "products"), product);
         showStatus(adminStatus, "Product added successfully!", false);
         addProductForm.reset();
@@ -350,7 +341,6 @@ addProductForm.addEventListener("submit", async (e) => {
 });
 
 // --- 7. Hero Slide Logic ---
-// *** പാത്ത് 'heroSlides' ശരിയാണ് ***
 function loadHeroSlides() {
     const q = query(collection(db, "heroSlides"), orderBy("order"));
     onSnapshot(q, (querySnapshot) => {
@@ -401,7 +391,6 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
             createdAt: serverTimestamp()
         };
         
-        // *** പാത്ത് 'heroSlides' ശരിയാണ് ***
         await addDoc(collection(db, "heroSlides"), slide);
         
         showStatus(adminStatus, "Hero slide added successfully!", false);
@@ -414,7 +403,49 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
     }
 });
 
-// --- 8. Edit & Delete Logic (എഡിറ്റ്, ഡിലീറ്റ്) ---
+// --- *** പുതിയത് 8. Social Links Logic *** ---
+async function loadSocialSettings() {
+    try {
+        const docRef = doc(db, "settings", "social"); // *** പുതിയ പാത്ത് ***
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            const social = docSnap.data();
+            document.getElementById("social-whatsapp").value = social.whatsapp || '';
+            document.getElementById("social-facebook-url").value = social.facebookUrl || '';
+            document.getElementById("social-instagram-url").value = social.instagramUrl || '';
+            document.getElementById("social-youtube-url").value = social.youtubeUrl || '';
+        }
+    } catch (error) {
+        console.error("Error loading social settings: ", error);
+        showStatus(adminStatus, "Error loading social links.");
+    }
+}
+
+socialSettingsForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    showLoader(socialLoader);
+    try {
+        const socialLinks = {
+            whatsapp: document.getElementById("social-whatsapp").value,
+            facebookUrl: document.getElementById("social-facebook-url").value,
+            instagramUrl: document.getElementById("social-instagram-url").value,
+            youtubeUrl: document.getElementById("social-youtube-url").value,
+        };
+        
+        const docRef = doc(db, "settings", "social"); // *** പുതിയ പാത്ത് ***
+        await setDoc(docRef, socialLinks, { merge: true });
+        
+        showStatus(adminStatus, "Social links saved successfully!", false);
+    } catch (error) {
+        console.error("Error saving social links: ", error);
+        showStatus(adminStatus, `Error: ${error.message}`);
+    } finally {
+        hideLoader(socialLoader);
+    }
+});
+
+
+// --- 9. Edit & Delete Logic (എഡിറ്റ്, ഡിലീറ്റ്) ---
 document.body.addEventListener('click', async (e) => {
     const target = e.target;
     
@@ -430,7 +461,6 @@ document.body.addEventListener('click', async (e) => {
                 else if (type === 'category') collectionName = 'categories';
                 else if (type === 'heroSlide') collectionName = 'heroSlides';
                 
-                // *** പാത്തുകൾ ശരിയാണ് ***
                 if (collectionName) {
                     await deleteDoc(doc(db, collectionName, id));
                     showStatus(adminStatus, `${type} deleted successfully.`, false);
@@ -456,7 +486,6 @@ async function openEditModal(id, type) {
     editModal.style.display = 'flex';
     
     try {
-        // *** പാത്തുകൾ ശരിയാണ് ***
         const collectionName = type === 'product' ? 'products' : 'categories';
         const docRef = doc(db, collectionName, id);
         const docSnap = await getDoc(docRef);
@@ -558,7 +587,6 @@ modalForm.addEventListener('submit', async (e) => {
     
     try {
         let dataToSave = {};
-        // *** പാത്തുകൾ ശരിയാണ് ***
         const collectionName = type === 'product' ? 'products' : 'categories';
 
         if (type === 'category') {
@@ -582,7 +610,6 @@ modalForm.addEventListener('submit', async (e) => {
             };
         }
         
-        // *** പാത്തുകൾ ശരിയാണ് ***
         const docRef = doc(db, collectionName, id);
         await setDoc(docRef, dataToSave, { merge: true });
         
