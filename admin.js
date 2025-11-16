@@ -1,5 +1,5 @@
 // ഇതാണ് 'admin.js' ഫയൽ.
-// *** പുതിയ ഹാംബർഗർ മെനു, പേജ് സിസ്റ്റം, പ്രൊഡക്റ്റ് ഫിൽട്ടർ എന്നിവ ചേർത്തു ***
+// *** "Existing Products" ഫിൽട്ടർ എറർ പരിഹരിച്ചു ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -350,12 +350,14 @@ addCategoryForm.addEventListener("submit", async (e) => {
 // --- 6. Product Logic (പുതിയ ഫിൽട്ടറിംഗ് സഹിതം) ---
 function loadProducts(categoryId = "all") {
      let q;
+     // *** ഫിൽട്ടർ എറർ പരിഹരിച്ചു ***
      if (categoryId === "all") {
+        // "All Categories" ആണെങ്കിൽ മാത്രം തീയതി അനുസരിച്ച് ഓർഡർ ചെയ്യുന്നു
         q = query(collection(db, "products"), orderBy("createdAt", "desc"));
      } else {
+        // ഒരു പ്രത്യേക കാറ്റഗറി ഫിൽട്ടർ ചെയ്യുമ്പോൾ, ഓർഡർ ചെയ്യുന്നില്ല (ഇൻഡെക്സ് എറർ ഒഴിവാക്കാൻ)
         q = query(collection(db, "products"), 
-            where("categoryId", "==", categoryId),
-            orderBy("createdAt", "desc"));
+            where("categoryId", "==", categoryId));
      }
      
      // പഴയ onSnapshot നിർത്തുന്നു (ഒന്നിലധികം listener ഒഴിവാക്കാൻ)
