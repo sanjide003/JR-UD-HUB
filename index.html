@@ -1,6 +1,7 @@
 <!-- 
   ഇതാണ് ഹോം പേജ്. 
   *** Mute/Unmute ബട്ടൺ പൂർണ്ണമായും നീക്കം ചെയ്തു ***
+  *** പുതിയ പേജ് ലോഡർ ചേർത്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -13,6 +14,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body>
+
+    <!-- 0. പേജ് ലോഡർ -->
+    <div id="preloader">
+        <div class="loader-logo-container">
+            <!-- ലോഗോയും സ്പിന്നറും common.js & public.css വഴി വരും -->
+            <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
+            <div class="loader-ring"></div>
+        </div>
+    </div>
 
     <!-- 1. ഹെഡർ -->
     <header class="main-header" id="main-header"></header>
