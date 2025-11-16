@@ -1,6 +1,6 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** "Add to Cart" ഐക്കൺ മാറ്റി (ബാഗ് ആക്കി) ***
-// *** ഡോട്ടുകളുടെ സ്ഥാനം മാറ്റി, കാറ്റഗറി ഓട്ടോപ്ലേ നിർത്തി ***
+// *** ടോപ്പ് സെല്ലർ ഡോട്ടുകൾക്ക് ആനിമേഷൻ ചേർത്തു ***
+// *** കാറ്റഗറി ഓട്ടോപ്ലേ നിർത്തി ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -121,7 +121,7 @@ async function loadHeroSlider() {
 
 /**
  * 2. "Top Sellers" കറൗസൽ ലോഡ് ചെയ്യുന്നു
- * *** ഡോട്ടുകളുടെ സ്ഥാനം മാറ്റി, ഐക്കൺ മാറ്റി ***
+ * *** പുതിയ ആനിമേറ്റഡ് ഡോട്ടുകൾ ചേർത്തു ***
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
@@ -140,7 +140,7 @@ async function loadTopSellers() {
             card.className = 'swiper-slide';
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
             
-            // *** ഡോട്ടുകൾ (top-sellers-pagination-new) ചിത്രത്തിന് താഴെയും പേരിന് മുകളിലുമായി മാറ്റി ***
+            // *** ഡോട്ടുകൾ കാർഡിനുള്ളിൽ നിന്ന് നീക്കം ചെയ്തു ***
             card.innerHTML = `
                 <a href="product.html?id=${productId}">
                     <img src="${imageUrl}" 
@@ -149,7 +149,6 @@ async function loadTopSellers() {
                          onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
                 </a>
                 <div class="top-sellers-product-info">
-                    <div class="top-sellers-pagination-new"></div> <!-- *** പുതിയത്: ഡോട്ടുകൾ ഇവിടേക്ക് മാറ്റി *** -->
                     <div class="top-sellers-product-name">${product.name} ${product.size ? `(${product.size})` : ''}</div>
                     <div class="top-sellers-product-price">₹${product.price || 0} /-</div>
                     <div class="top-sellers-buttons">
@@ -160,7 +159,6 @@ async function loadTopSellers() {
                             data-mrp="${product.mrp}"
                             data-image="${imageUrl}"
                             data-size="${product.size || ''}">
-                            <!-- *** ഐക്കൺ മാറ്റി (Shopping Bag) *** -->
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                                 <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -177,15 +175,56 @@ async function loadTopSellers() {
             grid.appendChild(card);
         });
 
+        // *** പുതിയ ആനിമേറ്റഡ് ഡോട്ടുകൾക്ക് വേണ്ടിയുള്ള കോഡ് ***
+        const autoplayDelay = 4000; // 4 സെക്കൻഡ് (CSS-മായി മാച്ച് ചെയ്യണം)
+
         new Swiper('.top-sellers-swiper-new', {
             loop: true,
-            autoplay: { delay: 3000, disableOnInteraction: false, },
+            autoplay: { 
+                delay: autoplayDelay, 
+                disableOnInteraction: false 
+            },
             speed: 1000,
             slidesPerView: 1, 
             spaceBetween: 20,
             pagination: { 
-                el: '.top-sellers-pagination-new', // *** ക്ലാസ്സ് മാറ്റി ***
-                clickable: true 
+                el: '.top-sellers-pagination-new', // *** HTML-ലെ പുതിയ കണ്ടെയ്നർ ***
+                clickable: true,
+                // *** പ്രോഗ്രസ് ബാർ നിർമ്മിക്കാൻ ***
+                renderBullet: function (index, className) {
+                    return '<span class="' + className + '"><span class="pagination-progress"></span></span>';
+                }
+            },
+            // *** ആനിമേഷൻ പ്രവർത്തിപ്പിക്കാൻ ***
+            on: {
+                init: function (swiper) {
+                    // തുടക്കത്തിൽ ആദ്യത്തെ ഡോട്ട് ആനിമേറ്റ് ചെയ്യുന്നു
+                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+                    if (activeBullet) {
+                        const progressEl = activeBullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
+                        }
+                    }
+                },
+                slideChangeTransitionStart: function (swiper) {
+                    // എല്ലാ ആനിമേഷനുകളും റീസെറ്റ് ചെയ്യുന്നു
+                    swiper.pagination.bullets.forEach(bullet => {
+                        const progressEl = bullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = 'none';
+                        }
+                    });
+                    
+                    // പുതിയ ആക്ടീവ് ഡോട്ട് ആനിമേറ്റ് ചെയ്യുന്നു
+                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+                    if (activeBullet) {
+                        const progressEl = activeBullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
+                        }
+                    }
+                }
             },
             breakpoints: { 
                 640: { slidesPerView: 2 }, 
@@ -263,7 +302,6 @@ if (topSellersGrid) {
         button.innerHTML = 'ADDED!';
         button.disabled = true;
         setTimeout(() => {
-            // *** ഐക്കൺ മാറ്റി (Shopping Bag) ***
             button.innerHTML = `
                 <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
