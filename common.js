@@ -1,8 +1,15 @@
 // ഇതാണ് 'common.js' ഫയൽ.
-// *** ഹെഡറിലെ കാർട്ട് ഐക്കണും, ഫ്ലോട്ടിംഗ് ബട്ടണുകളും അപ്ഡേറ്റ് ചെയ്തു ***
+// *** സൈഡ് മെനു വലതുവശത്തേക്ക് മാറ്റി, കാറ്റഗറി ഡ്രോപ്പ്ഡൗൺ ചേർത്തു ***
 
 import { db, auth } from './firebase-config.js';
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { 
+    doc, 
+    getDoc,
+    collection,
+    getDocs,
+    query,
+    orderBy 
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { 
     signInAnonymously 
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
@@ -85,6 +92,7 @@ async function buildHeader() {
                 </svg>
                 <span class="cart-item-count" id="cart-item-count">0</span>
             </a>
+            <!-- *** മെനു ബട്ടൺ (ഐക്കൺ public.css വഴി വെള്ള നിറമാകും) *** -->
             <button class="header-icon-btn" id="nav-open-btn" aria-label="Open Menu">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -99,11 +107,26 @@ async function buildHeader() {
 
 /**
  * 2. വശത്തുള്ള മെനു (Side Nav) നിർമ്മിക്കുന്നു
+ * *** കാറ്റഗറി ഡ്രോപ്പ്ഡൗൺ ചേർത്തു ***
  */
 async function buildSideNav() {
     const settings = await fetchSiteSettings();
     const navElement = document.getElementById('side-nav');
     if (!navElement) return;
+
+    // കാറ്റഗറികൾ ഫയർബേസിൽ നിന്ന് ലോഡ് ചെയ്യുന്നു
+    let categoryLinks = '<li><a href="categories.html?filter=all" class="nav-category-link">All Products</a></li>';
+    try {
+        const q = query(collection(db, "categories"), orderBy("name"));
+        const catSnapshot = await getDocs(q);
+        catSnapshot.forEach((doc) => {
+            const category = doc.data();
+            categoryLinks += `<li><a href="categories.html?filter=${doc.id}" class="nav-category-link">${category.name}</a></li>`;
+        });
+    } catch (error) {
+        console.error("Error loading categories for nav: ", error);
+        categoryLinks = '<li><a href="categories.html" class="nav-category-link">Error loading categories</a></li>';
+    }
 
     navElement.innerHTML = `
         <div class="side-nav-header">
@@ -117,7 +140,18 @@ async function buildSideNav() {
         </div>
         <ul class="side-nav-links">
             <li><a href="index.html">Home</a></li>
-            <li><a href="categories.html">Catalog</a></li>
+            
+            <!-- *** പുതിയ കാറ്റഗറി ഡ്രോപ്പ്ഡൗൺ *** -->
+            <li class="catalog-item">
+                <button class="catalog-toggle" id="catalog-toggle-btn">
+                    <span>Catalog</span>
+                    <svg class="dropdown-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M4.646 6.646a.5.5 0 0 1 .708 0L8 9.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z"></path></svg>
+                </button>
+                <ul class="category-dropdown-list" id="nav-category-list">
+                    ${categoryLinks}
+                </ul>
+            </li>
+            
             <li><a href="contact.html">Contact</a></li>
         </ul>
         <div class="side-nav-social">
@@ -261,13 +295,12 @@ async function buildFloatingButtons() {
         </a>
     `;
     
-    // *** ഫോൺ ബട്ടൺ നീക്കം ചെയ്തു ***
-    
     container.innerHTML = html;
 }
 
 /**
  * മെനു തുറക്കാനും അടക്കാനുമുള്ള ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
+ * *** കാറ്റഗറി ഡ്രോപ്പ്ഡൗൺ ഇവന്റ് ചേർത്തു ***
  */
 function setupNavEvents() {
     const navOpenBtn = document.getElementById('nav-open-btn');
@@ -289,6 +322,25 @@ function setupNavEvents() {
         navOverlay.addEventListener('click', () => {
             sideNav.classList.remove('open');
             navOverlay.classList.remove('open');
+        });
+    }
+    
+    // *** പുതിയ കാറ്റഗറി ഡ്രോപ്പ്ഡൗൺ ലോജിക് ***
+    const catalogToggle = document.getElementById('catalog-toggle-btn');
+    const categoryList = document.getElementById('nav-category-list');
+    
+    if (catalogToggle && categoryList) {
+        catalogToggle.addEventListener('click', () => {
+            const isOpen = categoryList.classList.toggle('open');
+            catalogToggle.classList.toggle('open');
+            
+            if (isOpen) {
+                // തുറക്കുമ്പോൾ
+                categoryList.style.maxHeight = categoryList.scrollHeight + "px";
+            } else {
+                // അടക്കുമ്പോൾ
+                categoryList.style.maxHeight = null;
+            }
         });
     }
 }
