@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** പുതിയ കാർട്ട് പേജ് ഡിസൈൻ ചേർത്തു ***
+   *** കാർട്ട് പേജിലെ "Price Details" സ്റ്റൈൽ ചെയ്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -856,8 +856,6 @@ img {
 }
 
 /* --- 11. ഷോപ്പിംഗ് കാർട്ട് പേജ് (Cart Page) --- */
-/* പഴയ സ്റ്റൈലുകൾ നീക്കം ചെയ്തു / പുതിയവ ചേർത്തു */
-
 .cart-page-layout-new {
     display: flex;
     flex-direction: column;
@@ -869,20 +867,25 @@ img {
     flex-direction: column;
     gap: 1.5rem;
 }
-
-/* പുതിയ ഉൽപ്പന്ന കാർഡ് (കാർട്ട്) */
 .cart-item-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
 }
-
-/* കാർഡിലെ പ്രധാന ഭാഗം (ഫോട്ടോ, പേര്, എണ്ണം) */
 .cart-item-main {
     display: flex;
     gap: 1rem;
     padding: 1rem;
+}
+/* *** പുതിയത്: കാർട്ടിലെ പേരും ഫോട്ടോയും ക്ലിക്ക് ചെയ്യാൻ *** */
+.cart-item-link {
+    text-decoration: none;
+    color: var(--text-color);
+    display: block; /* ക്ലിക്ക് ഏരിയ ശരിയാക്കാൻ */
+}
+.cart-item-link:hover {
+    color: var(--primary-gold);
 }
 .cart-item-image {
     width: 80px;
@@ -910,13 +913,12 @@ img {
     margin-bottom: 0.5rem;
 }
 
-/* എണ്ണം മാറ്റാനുള്ള കൺട്രോൾ */
 .quantity-control {
     display: flex;
     align-items: center;
     border: 1px solid var(--border-color);
     border-radius: 4px;
-    max-width: 120px; /* വീതി കുറച്ചു */
+    max-width: 120px;
 }
 .quantity-btn {
     background: none;
@@ -935,22 +937,20 @@ img {
     border-left: 1px solid var(--border-color);
     border-right: 1px solid var(--border-color);
     padding: 0.5rem 0;
-    -moz-appearance: textfield; /* Firefox-ൽ +/- മറയ്ക്കാൻ */
+    -moz-appearance: textfield;
 }
 .quantity-input::-webkit-outer-spin-button,
 .quantity-input::-webkit-inner-spin-button {
-    -webkit-appearance: none; /* Chrome, Safari-ൽ +/- മറയ്ക്കാൻ */
+    -webkit-appearance: none;
     margin: 0;
 }
 
-
-/* കാർഡിലെ ബട്ടണുകൾ (Remove, Buy this now) */
 .cart-item-actions {
     display: flex;
     border-top: 1px solid var(--border-color);
 }
 .cart-item-actions button {
-    flex: 1; /* ബട്ടണുകൾ തുല്യമായി വീതിക്കുന്നു */
+    flex: 1;
     background: none;
     border: none;
     padding: 0.85rem 1rem;
@@ -972,11 +972,9 @@ img {
     color: var(--primary-gold);
 }
 
-
-/* വലതുവശത്തെ "Price Details" */
 .cart-summary-container {
     position: sticky;
-    top: calc(var(--header-height) + 1.5rem); /* ഹെഡറിന് താഴെ */
+    top: calc(var(--header-height) + 1.5rem);
 }
 .cart-summary-card {
     background-color: var(--card-bg);
@@ -997,6 +995,10 @@ img {
     margin-bottom: 1rem;
     font-size: 1.1rem;
 }
+/* *** പുതിയത്: ഡിസ്കൗണ്ട് സ്റ്റൈൽ *** */
+.summary-row.discount span:last-child {
+    color: var(--success-green);
+}
 .summary-row.total {
     font-size: 1.25rem;
     font-weight: 700;
@@ -1004,15 +1006,21 @@ img {
     border-top: 1px solid var(--border-color);
     padding-top: 1rem;
 }
+/* *** പുതിയത്: സേവിംഗ്സ് സ്റ്റൈൽ *** */
+.summary-savings {
+    font-weight: 700;
+    color: var(--success-green);
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+}
 
-/* "Place All Order" ബട്ടൺ */
 .btn-checkout-full {
     width: 100%;
     padding: 1rem;
     font-size: 1.1rem;
     margin-top: 1rem;
 }
-
 
 .empty-cart-message {
     text-align: center;
@@ -1036,7 +1044,6 @@ img {
     font-size: 0.95rem;
     margin-top: 1rem;
 }
-/* വില വിവരങ്ങൾ */
 .price-container {
     display: flex;
     align-items: center;
@@ -1054,7 +1061,6 @@ img {
     font-size: 1rem;
     color: var(--text-muted);
 }
-/* പ്രൊഡക്റ്റ് പേജിലെ ചുവന്ന MRP */
 .product-mrp-red del {
     color: var(--error-red);
 }
