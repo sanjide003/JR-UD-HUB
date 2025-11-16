@@ -1,5 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// *** "Add to Cart" ബട്ടണിൽ 'size', 'id' എന്നിവ കൂടി ചേർക്കുന്നു ***
+// *** "Add to Cart" ഐക്കൺ മാറ്റി (ബാഗ് ആക്കി) ***
 
 import {
     collection,
@@ -158,6 +158,7 @@ async function startLoadingProducts(categoryId) {
 
 /**
  * 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (ഇൻഫിനിറ്റ് സ്ക്രോൾ)
+ * *** ഐക്കൺ മാറ്റി ***
  */
 async function loadProducts() {
     if (isLoading || !currentQuery) return;
@@ -210,7 +211,12 @@ async function loadProducts() {
                             data-mrp="${mrp}"
                             data-image="${imageUrl}"
                             data-size="${product.size || ''}">
-                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
+                            <!-- *** ഐക്കൺ മാറ്റി (Shopping Bag) *** -->
+                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                                <line x1="3" y1="6" x2="21" y2="6"></line>
+                                <path d="M16 10a4 4 0 0 1-8 0"></path>
+                            </svg>
                             <span>Add to Cart</span>
                         </button>
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">
@@ -246,6 +252,7 @@ function updateActiveCategoryUI(categoryId) {
 
 /**
  * 6. "Add to Cart" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
+ * *** ഐക്കൺ മാറ്റി ***
  */
 productGrid.addEventListener('click', (e) => {
     const button = e.target.closest('.btn-add-to-cart');
@@ -254,12 +261,12 @@ productGrid.addEventListener('click', (e) => {
     e.preventDefault();
     const id = button.dataset.id;
     const product = {
-        id: id, // *** 'id' ചേർത്തു ***
+        id: id, 
         name: button.dataset.name,
         price: parseFloat(button.dataset.price),
         mrp: parseFloat(button.dataset.mrp),
         image: button.dataset.image,
-        size: button.dataset.size // *** 'size' ചേർത്തു ***
+        size: button.dataset.size 
     };
 
     addToCart(id, product);
@@ -267,8 +274,13 @@ productGrid.addEventListener('click', (e) => {
     button.innerHTML = 'Added!';
     button.disabled = true;
     setTimeout(() => {
+        // *** ഐക്കൺ മാറ്റി (Shopping Bag) ***
         button.innerHTML = `
-            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
+            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <path d="M16 10a4 4 0 0 1-8 0"></path>
+            </svg>
             <span>Add to Cart</span>
         `;
         button.disabled = false;
