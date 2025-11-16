@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. 
-  *** എഡിറ്റ്/ഡിലീറ്റ് എന്നിവയ്ക്കായി ഒരു പുതിയ കൺഫർമേഷൻ മോഡൽ ചേർത്തു ***
+  *** ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ ചേർത്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -39,6 +39,7 @@
     <!-- 2. അഡ്മിൻ പാനൽ (ലോഗിൻ ചെയ്ത ശേഷം മാത്രം) -->
     <section id="admin-panel">
 
+        <!-- *** ഹെഡർ (മെനു ഐക്കൺ ഇടതുവശത്ത്) *** -->
         <header class="admin-main-header">
             <div class="admin-header-left">
                 <button id="admin-nav-open-btn" aria-label="Open Menu">
@@ -55,6 +56,7 @@
             </div>
         </header>
 
+        <!-- *** സൈഡ് മെനു (ഇടതുവശത്ത് നിന്ന്) *** -->
         <nav class="admin-side-nav" id="admin-side-nav">
             <div class="admin-nav-header">
                 <h2>Menu</h2>
@@ -74,6 +76,7 @@
         </nav>
         <div class="admin-nav-overlay" id="admin-nav-overlay"></div>
 
+        <!-- *** ടാബ് ഉള്ളടക്കം *** -->
         <div class="container">
             <div id="admin-status" class="status-message"></div>
 
@@ -172,7 +175,8 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="featured-products-list-body"></tbody>
+                            <tbody id="featured-products-list-body">
+                            </tbody>
                         </table>
                     </div>
                 </div>
@@ -359,29 +363,32 @@
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 id="modal-title">Edit Item</h2>
-                    <button classs="modal-close" id="modal-close-button">&times;</button>
+                    <button class="modal-close" id="modal-close-button">&times;</button>
                 </div>
                 <form id="modal-form">
                     <!-- 'admin.js' ഉപയോഗിച്ച് ഫോം ഫീൽഡുകൾ ഇവിടെ വരും -->
                 </form>
             </div>
         </div>
-        
-        <!-- *** പുതിയത്: കൺഫർമേഷൻ മോഡൽ *** -->
+
+        <!-- *** പുതിയത്: ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ *** -->
         <div id="confirm-modal" class="modal-overlay">
             <div class="modal-content" style="max-width: 400px;">
                 <div class="modal-header">
-                    <h2 id="confirm-title">Confirm</h2>
-                    <button class="modal-close" id="confirm-close-btn">&times;</button>
+                    <h2 id="confirm-title">Are you sure?</h2>
+                    <button class="modal-close" id="confirm-close-button">&times;</button>
                 </div>
-                <p id="confirm-message" style="margin: 1.5rem 0;"></p>
-                <div class="confirm-actions">
+                <p id="confirm-message">This action cannot be undone.</p>
+                <div class="confirm-buttons">
                     <button class="btn btn-secondary" id="confirm-btn-cancel">Cancel</button>
-                    <button class="btn" id="confirm-btn-ok" style="background-color: var(--error-red); color: white;">OK</button>
+                    <button class="btn btn-delete" id="confirm-btn-delete">
+                        <span class="btn-text">Confirm Delete</span>
+                        <span class="btn-loader loader-small" style="display: none;"></span>
+                    </button>
                 </div>
             </div>
         </div>
-
+        
     </section>
 
     <!-- JS ഫയലുകൾ -->
