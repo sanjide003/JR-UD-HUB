@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** "Add to Cart" ബട്ടണിൽ 'size', 'id' എന്നിവ കൂടി ചേർക്കുന്നു ***
+// *** "You May Also Like" സെക്ഷനിലെ ഐക്കൺ മാറ്റി (ബാഗ് ആക്കി) ***
 
 import { 
     collection, 
@@ -61,7 +61,6 @@ async function loadProductDetails() {
         const product = docSnap.data();
         const productIdStr = docSnap.id;
         
-        // *** 'currentProduct'-ൽ 'id', 'size' എന്നിവ ചേർക്കുന്നു ***
         currentProduct = {
             id: productIdStr,
             name: product.name,
@@ -183,7 +182,6 @@ function setupProductActionButtons() {
     if (cartButton) {
         cartButton.addEventListener('click', () => {
             if (currentProduct) {
-                // *** 'currentProduct'-ൽ ഇപ്പോൾ 'id', 'size' എന്നിവയുണ്ട് ***
                 addToCart(currentProduct.id, currentProduct);
                 feedback.textContent = `${currentProduct.name} has been added to your cart.`;
                 feedback.style.display = 'block';
@@ -217,7 +215,6 @@ function setupProductActionButtons() {
                 const productLink = window.location.href; 
                 let message = `Hi, I'm interested in this product:\n\n`;
                 message += `*${currentProduct.name}*\n`;
-                // *** 'size' ഇവിടെ ചേർക്കുന്നു ***
                 if(currentProduct.size) {
                     message += `*Size: ${currentProduct.size}*\n`;
                 }
@@ -236,6 +233,7 @@ function setupProductActionButtons() {
 
 /**
  * ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (പുതിയ സ്ലൈഡർ രൂപത്തിൽ)
+ * *** ഐക്കൺ മാറ്റി ***
  */
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
@@ -277,6 +275,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                             data-mrp="${mrp}"
                             data-image="${imageUrl}"
                             data-size="${product.size || ''}">
+                            <!-- *** ഐക്കൺ മാറ്റി (Shopping Bag) *** -->
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                                 <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -325,17 +324,18 @@ relatedProductsGrid.addEventListener('click', (e) => {
         e.preventDefault();
         const id = cartButton.dataset.id;
         const product = {
-            id: id, // *** 'id' ചേർത്തു ***
+            id: id, 
             name: cartButton.dataset.name,
             price: parseFloat(cartButton.dataset.price),
             mrp: parseFloat(cartButton.dataset.mrp),
             image: cartButton.dataset.image,
-            size: cartButton.dataset.size // *** 'size' ചേർത്തു ***
+            size: cartButton.dataset.size 
         };
         addToCart(id, product);
         cartButton.innerHTML = 'Added!';
         cartButton.disabled = true;
         setTimeout(() => {
+            // *** ഐക്കൺ മാറ്റി (Shopping Bag) ***
             cartButton.innerHTML = `
                 <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -357,14 +357,14 @@ relatedProductsGrid.addEventListener('click', (e) => {
         const id = buyButton.dataset.id;
         const name = buyButton.dataset.name;
         const price = parseFloat(buyButton.dataset.price);
-        const size = buyButton.dataset.size; // *** 'size' എടുത്തു ***
+        const size = buyButton.dataset.size; 
         
         const productLink = `${window.location.origin}/product.html?id=${id}`;
         
         let message = `Hi, I'm interested in this product:\n\n`;
         message += `*${name}*\n`;
         if(size) {
-            message += `*Size: ${size}*\n`; // *** 'size' ചേർത്തു ***
+            message += `*Size: ${size}*\n`; 
         }
         message += `*Price: ₹${price.toFixed(2)}*\n\n`;
         message += `Product Link:\n${productLink}`;
