@@ -1,5 +1,6 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
    *** ഹെഡർ സെന്ററാക്കി, മെനു ഇടതുവശത്താക്കി, 'Powered by' സ്റ്റൈൽ ചേർത്തു ***
+   *** മെനു ഐക്കൺ (☰) കാണാനുള്ള സ്റ്റൈൽ ചേർത്തു, മൊബൈൽ ഗ്രിഡ് വീതി (50px) ആക്കി ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -166,7 +167,18 @@ img {
 }
 .header-grid-center {
     justify-self: center; /* ലോഗോ നടുവിലേക്ക് */
+    /* *** നടുഭാഗം മുറിഞ്ഞുപോകാതിരിക്കാൻ *** */
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
+.header-grid-center .header-logo-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .header-grid-right {
     justify-self: end; /* കാർട്ട് ഐക്കൺ വലത്തേക്ക് */
     display: flex;
@@ -191,6 +203,14 @@ img {
     height: 24px;
     stroke-width: 2;
 }
+
+/* *** പുതിയ ഹാംബർഗർ ഐക്കൺ സ്റ്റൈൽ (SVG മാറ്റി) *** */
+.header-icon-btn .hamburger-icon {
+    font-size: 28px; /* ഐക്കൺ വലുതാക്കി */
+    color: var(--text-color);
+    line-height: 1;
+}
+
 .cart-icon-wrapper {
     position: relative;
     color: var(--text-color); /* കാർട്ട് ഐക്കൺ വെള്ള */
@@ -1244,7 +1264,7 @@ img {
     }
     .main-header {
         padding: 0 1rem;
-        grid-template-columns: 60px auto 60px; /* മൊബൈലിൽ ഹെഡർ ഗ്രിഡ് ശരിയാക്കി */
+        grid-template-columns: 50px auto 50px; /* *** ഗ്രിഡ് വീതി 50px ആക്കി (നടു ശരിയാക്കാൻ) *** */
     }
     .header-logo-text {
         display: block; /* *** മൊബൈലിൽ ലോഗോ ടെക്സ്റ്റ് കാണിക്കാൻ *** */
