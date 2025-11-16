@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** കാർട്ട് പേജിലെ "Price Details" സ്റ്റൈൽ ചെയ്തു ***
+   *** സൈഡ് മെനു വലതുവശത്തേക്ക് മാറ്റി, വെള്ള ഐക്കൺ, ഡ്രോപ്പ്ഡൗൺ എന്നിവ ചേർത്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -124,7 +124,7 @@ img {
 .header-icon-btn {
     background: none;
     border: none;
-    color: var(--text-color);
+    color: var(--text-color); /* *** മെനു ഐക്കൺ വെള്ള നിറമാക്കി *** */
     cursor: pointer;
     position: relative;
     padding: 5px;
@@ -136,6 +136,7 @@ img {
 }
 .cart-icon-wrapper {
     position: relative;
+    color: var(--text-color); /* കാർട്ട് ഐക്കൺ വെള്ള */
 }
 .cart-item-count {
     position: absolute;
@@ -158,18 +159,20 @@ img {
 .side-nav {
     position: fixed;
     top: 0;
-    left: -100%;
-    width: 300px;
+    right: -100vw; /* *** വലതുവശത്തേക്ക് മാറ്റി (തുടക്കത്തിൽ പുറത്ത്) *** */
+    width: auto; /* *** വീതി ഓട്ടോമാറ്റിക് ആക്കി *** */
+    min-width: 250px; /* *** കുറഞ്ഞ വീതി *** */
+    max-width: 80vw; /* *** കൂടിയ വീതി *** */
     height: 100%;
     background-color: var(--bg-color);
-    border-right: 1px solid var(--border-color);
+    border-left: 1px solid var(--border-color); /* *** ബോർഡർ ഇടത്തേക്ക് മാറ്റി *** */
     z-index: 1002;
-    transition: left 0.4s ease;
+    transition: right 0.4s ease; /* *** 'left' എന്നതിന് പകരം 'right' *** */
     display: flex;
     flex-direction: column;
     padding: 1.5rem;
 }
-.side-nav.open { left: 0; }
+.side-nav.open { right: 0; } /* *** വലത്തേക്ക് 0 ആക്കി *** */
 .nav-overlay {
     position: fixed;
     top: 0;
@@ -201,8 +204,11 @@ img {
     list-style: none;
     margin-top: 1.5rem;
     flex-grow: 1;
+    white-space: nowrap; /* *** ഉള്ളടക്കം ഒരു വരിയിൽ നിർത്താൻ *** */
 }
-.side-nav-links li { border-bottom: 1px solid var(--border-color); }
+.side-nav-links li { 
+    border-bottom: 1px solid var(--border-color); 
+}
 .side-nav-links a {
     display: block;
     padding: 1rem 0;
@@ -212,6 +218,62 @@ img {
     font-weight: 500;
 }
 .side-nav-links a:hover { color: var(--primary-gold); }
+
+/* *** പുതിയ കാറ്റഗറി ഡ്രോപ്പ്ഡൗൺ സ്റ്റൈലുകൾ *** */
+.catalog-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 1rem 0;
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--font-main);
+}
+.catalog-toggle:hover {
+    color: var(--primary-gold);
+}
+.dropdown-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    transition: transform 0.3s ease;
+    margin-left: 1rem;
+}
+.catalog-toggle.open .dropdown-icon {
+    transform: rotate(180deg);
+}
+.category-dropdown-list {
+    list-style: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    padding-left: 1rem; /* അല്പം വലത്തേക്ക് നീക്കാൻ */
+    border-top: 1px solid var(--border-color);
+}
+.category-dropdown-list.open {
+    /* 'max-height' JS വഴി സെറ്റ് ചെയ്യും */
+}
+.nav-category-link {
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    color: var(--text-muted) !important;
+    padding: 0.75rem 0 !important;
+    border-bottom: 1px solid #222;
+}
+.category-dropdown-list li:last-child .nav-category-link {
+    border-bottom: none;
+}
+.nav-category-link:hover {
+    color: var(--primary-gold) !important;
+}
+/* *** ഡ്രോപ്പ്ഡൗൺ സ്റ്റൈലുകൾ കഴിഞ്ഞു *** */
+
+
 .side-nav-social {
     display: flex;
     justify-content: center;
