@@ -1,6 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** 'SHOP BY CATEGORY' കാർഡ് ഡിസൈൻ മാറ്റി (ചിത്രത്തിന് മുകളിൽ ബ്ലർ ടെക്സ്റ്റ്) ***
-   *** കാർഡ് വലിപ്പം ശരിയാക്കാൻ <img> മാറ്റി background-image ആക്കി ***
+   *** 'SHOP BY CATEGORY' കാർഡ് ഒതുങ്ങിപ്പോയ പ്രശ്നം പരിഹരിച്ചു (display: block നീക്കം ചെയ്തു) ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -605,7 +604,7 @@ img {
 }
 /* *** പുതിയ കാർഡ് സ്റ്റൈൽ (ചിത്രത്തിന് മുകളിൽ ടെക്സ്റ്റ്) *** */
 .category-card-home-new {
-    display: block;
+    /* *** പിശക് തിരുത്തി: display: block; നീക്കം ചെയ്തു *** */
     text-decoration: none;
     color: var(--text-muted);
     transition: all 0.3s ease;
@@ -616,7 +615,7 @@ img {
     position: relative; 
     
     /* *** <img> ടാഗിന് പകരം പശ്ചാത്തല ചിത്രം *** */
-    background-color: var(--card-bg); /* ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ */
+    background-color: var(--card-bg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -626,7 +625,6 @@ img {
     border-color: var(--primary-gold);
     transform: translateY(-3px);
 }
-/* *** <img> ടാഗിന്റെ സ്റ്റൈലുകൾ നീക്കം ചെയ്തു *** */
 
 .category-card-home-new h3 {
     font-family: var(--font-main);
