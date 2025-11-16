@@ -1,6 +1,6 @@
 <!-- 
-  ഇതാണ് കോൺടാക്റ്റ് പേജിന്റെ ശരിയായ കോഡ്.
-  *** പുതിയ പേജ് ലോഡർ ചേർത്തു ***
+  ഇതാണ് കോൺടാക്റ്റ് പേജ്.
+  *** മാപ്പ് നീക്കം ചെയ്തു, സോഷ്യൽ ലിങ്കുകൾ ചേർത്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -36,10 +36,10 @@
             <h1>Contact Us</h1>
         </div>
 
-        <!-- കോൺടാക്റ്റ് പേജ് ഗ്രിഡ് -->
-        <div class="contact-page-grid">
+        <!-- കോൺടാക്റ്റ് പേജ് ഗ്രിഡ് (മാപ്പ് ഇല്ലാതെ) -->
+        <div class="contact-page-grid-single">
             
-            <!-- 3.1 ഇടതുവശം: വിവരങ്ങൾ -->
+            <!-- 3.1 വിവരങ്ങൾ -->
             <div class="contact-page-info">
                 <h2>Get in Touch</h2>
                 <p class="contact-page-subtitle">We are here to help. Reach out to us anytime.</p>
@@ -49,7 +49,6 @@
                     <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M6.62 10.79C8.06 13.62 10.38 15.94 13.21 17.38L15.41 15.18C15.69 14.9 16.08 14.82 16.43 14.93C17.55 15.3 18.77 15.5 20 15.5C20.55 15.5 21 15.95 21 16.5V20C21 20.55 20.55 21 20 21C10.61 21 3 13.39 3 4C3 3.45 3.45 3 4 3H7.5C8.05 3 8.5 3.45 8.5 4C8.5 5.23 8.7 6.45 9.07 7.57C9.18 7.92 9.1 8.31 8.82 8.59L6.62 10.79Z"></path></svg>
                     <div>
                         <strong>Phone</strong>
-                        <!-- 'contact.js' ഈ ID ഉപയോഗിക്കുന്നു -->
                         <a href="tel:..." id="contact-phone-main">Loading...</a>
                     </div>
                 </div>
@@ -59,7 +58,6 @@
                     <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6c0-1.1-.9-2-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6zm-2 0l-8 5-8-5h16zm0 12H4V8l8 5 8-5v10z"></path></svg>
                     <div>
                         <strong>Email</strong>
-                        <!-- 'contact.js' ഈ ID ഉപയോഗിക്കുന്നു -->
                         <a href="mailto:..." id="contact-email-main">Loading...</a>
                     </div>
                 </div>
@@ -69,24 +67,22 @@
                     <svg class="contact-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"></path></svg>
                     <div>
                         <strong>Address</strong>
-                        <!-- 'contact.js' ഈ ID ഉപയോഗിക്കുന്നു -->
                         <span id="contact-address-main">Loading...</span>
                     </div>
                 </div>
+
+                <!-- *** പുതിയത്: സോഷ്യൽ മീഡിയ ലിങ്കുകൾ *** -->
+                <div class="contact-social-section">
+                    <h2>Follow Us</h2>
+                    <div class="contact-social-icons" id="contact-social-icons">
+                        <!-- 'contact.js' വഴി ഐക്കണുകൾ ഇവിടെ വരും -->
+                        <span class="loading-placeholder">Loading social links...</span>
+                    </div>
+                </div>
+
             </div>
 
-            <!-- 3.2 വലതുവശം: മാപ്പ് -->
-            <div class="contact-page-map">
-                <iframe 
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3928.790514127503!2d76.3134371147944!3d10.034304892827727!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3b080c98f51a441b%3A0x62533b3b4f6b648!2sAl%20Ambar%20Perfumes!5e0!3m2!1sen!2sin!4v1679038596701!5m2!1sen!2sin" 
-                    width="100%" 
-                    height="100%" 
-                    style="border:0; min-height: 450px;" 
-                    allowfullscreen="" 
-                    loading="lazy" 
-                    referrerpolicy="no-referrer-when-downgrade">
-                </iframe>
-            </div>
+            <!-- 3.2 മാപ്പ് നീക്കം ചെയ്തു -->
 
         </div>
     </main>
