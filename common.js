@@ -1,5 +1,6 @@
 // ഇതാണ് 'common.js' ഫയൽ.
 // *** ഹെഡർ നടുവിലാക്കി, മെനു ഇടതുവശത്താക്കി, സോഷ്യൽ ലിങ്കുകൾ അപ്ഡേറ്റ് ചെയ്തു ***
+// *** മെനു ഐക്കൺ SVG-ക്ക് പകരം HTML കോഡ് ആക്കി (കാണാതിരുന്ന പ്രശ്നം പരിഹരിച്ചു) ***
 
 import { db, auth } from './firebase-config.js';
 import { 
@@ -77,12 +78,9 @@ async function buildHeader() {
     headerElement.innerHTML = `
         <!-- *** 1. ഇടതുവശം (മെനു ബട്ടൺ) *** -->
         <div class="header-grid-left">
+            <!-- *** SVG മാറ്റി HTML ഐക്കൺ (☰) ആക്കി *** -->
             <button class="header-icon-btn" id="nav-open-btn" aria-label="Open Menu">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
+                <span class="hamburger-icon">&#9776;</span>
             </button>
         </div>
 
