@@ -1,8 +1,7 @@
 /* * =========================================
  * AL AMBAR - ADMIN STYLESHEET (admin.css)
  * =========================================
- * *** മെനു ഇടതുവശത്തേക്ക് മാറ്റി ***
- * *** "Featured Products" പേജ് ചേർത്തു ***
+ * *** പുതിയ ഇമേജ് അപ്‌ലോഡ് സിസ്റ്റം, റെഡ് സ്റ്റാർ, ബട്ടൺ ലോഡിംഗ് എന്നിവ ചേർത്തു ***
  */
 
 /* --- 1. Root Variables (നിറങ്ങൾ) --- */
@@ -61,7 +60,7 @@ body {
 /* *** പുതിയത്: Admin Header (മെനു ഇടതുവശത്ത്) *** */
 .admin-main-header {
     display: flex;
-    justify-content: space-between; /* ഐക്കണും ലോഗൗട്ടും രണ്ടറ്റത്തേക്ക് മാറ്റുന്നു */
+    justify-content: space-between;
     align-items: center;
     padding: 0 1.5rem;
     height: 70px;
@@ -77,7 +76,7 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
-    min-width: 0; /* തലക്കെട്ട് ചുരുങ്ങാൻ */
+    min-width: 0;
 }
 .admin-main-header h1 {
     color: var(--primary-gold);
@@ -93,7 +92,7 @@ body {
     display: flex;
     align-items: center;
     gap: 1rem;
-    flex-shrink: 0; /* ലോഗൗട്ട് ബട്ടൺ ചുരുങ്ങാതിരിക്കാൻ */
+    flex-shrink: 0;
 }
 #admin-nav-open-btn {
     background: none;
@@ -112,7 +111,7 @@ body {
     color: #fff;
     padding: 0.5rem 1rem;
     font-size: 0.9rem;
-    width: auto; /* ഫുൾ വിഡ്ത് അല്ലാതിരിക്കാൻ */
+    width: auto;
 }
 
 /* *** പുതിയത്: Admin Side Nav (ഇടതുവശത്ത്) *** */
@@ -253,6 +252,12 @@ body {
     color: var(--text-muted);
     font-weight: 500;
 }
+/* *** പുതിയത്: റെഡ് സ്റ്റാർ (*) *** */
+.required-star {
+    color: var(--error-red);
+    margin-left: 4px;
+    font-weight: bold;
+}
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -287,9 +292,58 @@ textarea {
     border-radius: 5px;
     border: 2px solid var(--border-color);
 }
+
+/* *** പുതിയത്: ഇമേജ് അപ്‌ലോഡ് സിസ്റ്റം *** */
+.image-url-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+.image-url-item {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.image-url-item input {
+    flex-grow: 1;
+}
+.image-url-item .image-preview-item {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+    border: 1px solid var(--border-color);
+    background-color: #333;
+}
+.image-url-item .btn-remove-image {
+    background-color: var(--error-red);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 1rem;
+    padding: 0;
+    line-height: 30px;
+}
+.btn-secondary {
+    background-color: #555;
+    color: var(--text-color);
+}
+.btn-secondary:hover {
+    background-color: #666;
+}
+
+
 /* --- 8. Buttons --- */
 .btn {
-    display: inline-block;
+    display: inline-flex; /* *** ലോഡറിന് വേണ്ടി മാറ്റി *** */
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
     padding: 0.9rem 1.5rem;
     background-color: var(--primary-gold);
     color: #000;
@@ -299,24 +353,22 @@ textarea {
     cursor: pointer;
     font-size: 1rem;
     text-align: center;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, opacity 0.3s ease;
 }
 .btn:hover {
     background-color: #b8860b;
 }
+.btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
 .btn-edit {
-    background-color: #3498db;
-    color: #fff;
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
-    margin-right: 5px;
+    display: inline-block; /* എഡിറ്റ് ബട്ടണുകൾക്ക് ലോഡർ വേണ്ട */
 }
 .btn-delete {
-    background-color: var(--error-red);
-    color: #fff;
-    font-size: 0.8rem;
-    padding: 0.4rem 0.8rem;
+    display: inline-block; /* ഡിലീറ്റ് ബട്ടണുകൾക്ക് ലോഡർ വേണ്ട */
 }
+
 /* --- 9. Status Messages & Loader --- */
 .status-message {
     padding: 1rem;
@@ -346,6 +398,24 @@ textarea {
     margin: 1rem auto;
     display: none;
 }
+/* *** പുതിയത്: ബട്ടൺ ലോഡർ *** */
+.loader-small {
+    border: 2px solid #555;
+    border-top: 2px solid var(--primary-gold);
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    animation: spin 1s linear infinite;
+}
+.btn .btn-loader {
+    display: none;
+    width: 16px;
+    height: 16px;
+    border: 2px solid #000;
+    border-top: 2px solid var(--primary-gold);
+}
+
+
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
