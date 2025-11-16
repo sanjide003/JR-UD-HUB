@@ -1,6 +1,5 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** ടോപ്പ് സെല്ലർ ഡോട്ടുകൾക്ക് ആനിമേഷൻ ചേർത്തു ***
-// *** കാറ്റഗറി ഓട്ടോപ്ലേ നിർത്തി ***
+// *** കാറ്റഗറി കാർഡ് ഡിസൈനിനും സ്ലൈഡർ എണ്ണത്തിനും മാറ്റങ്ങൾ വരുത്തി ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -140,7 +139,6 @@ async function loadTopSellers() {
             card.className = 'swiper-slide';
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
             
-            // *** ഡോട്ടുകൾ കാർഡിനുള്ളിൽ നിന്ന് നീക്കം ചെയ്തു ***
             card.innerHTML = `
                 <a href="product.html?id=${productId}">
                     <img src="${imageUrl}" 
@@ -175,8 +173,7 @@ async function loadTopSellers() {
             grid.appendChild(card);
         });
 
-        // *** പുതിയ ആനിമേറ്റഡ് ഡോട്ടുകൾക്ക് വേണ്ടിയുള്ള കോഡ് ***
-        const autoplayDelay = 4000; // 4 സെക്കൻഡ് (CSS-മായി മാച്ച് ചെയ്യണം)
+        const autoplayDelay = 4000; 
 
         new Swiper('.top-sellers-swiper-new', {
             loop: true,
@@ -188,17 +185,14 @@ async function loadTopSellers() {
             slidesPerView: 1, 
             spaceBetween: 20,
             pagination: { 
-                el: '.top-sellers-pagination-new', // *** HTML-ലെ പുതിയ കണ്ടെയ്നർ ***
+                el: '.top-sellers-pagination-new', 
                 clickable: true,
-                // *** പ്രോഗ്രസ് ബാർ നിർമ്മിക്കാൻ ***
                 renderBullet: function (index, className) {
                     return '<span class="' + className + '"><span class="pagination-progress"></span></span>';
                 }
             },
-            // *** ആനിമേഷൻ പ്രവർത്തിപ്പിക്കാൻ ***
             on: {
                 init: function (swiper) {
-                    // തുടക്കത്തിൽ ആദ്യത്തെ ഡോട്ട് ആനിമേറ്റ് ചെയ്യുന്നു
                     const activeBullet = swiper.pagination.bullets[swiper.realIndex];
                     if (activeBullet) {
                         const progressEl = activeBullet.querySelector('.pagination-progress');
@@ -208,7 +202,6 @@ async function loadTopSellers() {
                     }
                 },
                 slideChangeTransitionStart: function (swiper) {
-                    // എല്ലാ ആനിമേഷനുകളും റീസെറ്റ് ചെയ്യുന്നു
                     swiper.pagination.bullets.forEach(bullet => {
                         const progressEl = bullet.querySelector('.pagination-progress');
                         if (progressEl) {
@@ -216,7 +209,6 @@ async function loadTopSellers() {
                         }
                     });
                     
-                    // പുതിയ ആക്ടീവ് ഡോട്ട് ആനിമേറ്റ് ചെയ്യുന്നു
                     const activeBullet = swiper.pagination.bullets[swiper.realIndex];
                     if (activeBullet) {
                         const progressEl = activeBullet.querySelector('.pagination-progress');
@@ -237,7 +229,7 @@ async function loadTopSellers() {
 
 /**
  * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു
- * *** ഓട്ടോപ്ലേ നിർത്തി, ലൂപ്പ് നീക്കം ചെയ്തു ***
+ * *** സ്ലൈഡർ എണ്ണവും കാർഡ് HTML കോഡും മാറ്റി ***
  */
 async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
@@ -256,24 +248,22 @@ async function loadHomeCategories() {
             card.className = 'swiper-slide category-card-home-new';
             card.href = `categories.html?filter=${catId}`;
             const imageUrl = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
+            // *** HTML ഘടന മാറ്റി (ചിത്രത്തിന് മുകളിൽ ടെക്സ്റ്റ്) ***
             card.innerHTML = `
-                <div class="cat-card-home-img-wrapper">
-                    <img src="${imageUrl}" alt="${category.name}" onerror="this.src='https://placehold.co/260x360/1e1e1e/D4AF37?text=Error'">
-                </div>
+                <img src="${imageUrl}" alt="${category.name}" onerror="this.src='https://placehold.co/260x360/1e1e1e/D4AF37?text=Error'">
                 <h3>${category.name}</h3>
             `;
             grid.appendChild(card);
         });
         new Swiper('.category-swiper-new', {
-            loop: false, // *** 'true' മാറ്റി ***
+            loop: false, 
             speed: 1000,
-            // autoplay: { delay: 2500, disableOnInteraction: false, }, // *** ഓട്ടോപ്ലേ നീക്കം ചെയ്തു ***
-            slidesPerView: 3,
-            spaceBetween: 15,
+            slidesPerView: 2.2, // *** 2.2 കാർഡുകൾ കാണിക്കും ***
+            spaceBetween: 12, // *** അകലം അല്പം കുറച്ചു ***
             breakpoints: {
-                640: { slidesPerView: 4, spaceBetween: 20 },
-                900: { slidesPerView: 6, spaceBetween: 20 },
-                1200: { slidesPerView: 7, spaceBetween: 20 },
+                640: { slidesPerView: 3.2, spaceBetween: 15 },
+                900: { slidesPerView: 4.2, spaceBetween: 15 },
+                1200: { slidesPerView: 5.2, spaceBetween: 20 }, // *** എണ്ണം മാറ്റി ***
             }
         });
     } catch (error) { console.error("Error loading home categories: ", error); grid.innerHTML = '<p>Error loading categories.</p>'; }
