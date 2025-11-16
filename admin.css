@@ -1,7 +1,8 @@
 /* * =========================================
  * AL AMBAR - ADMIN STYLESHEET (admin.css)
  * =========================================
- * *** പുതിയ ഹെഡർ, സൈഡ് മെനു, പേജ് സിസ്റ്റം എന്നിവ ഉപയോഗിക്കുന്നു ***
+ * *** ഹെഡർ ഐക്കൺ ബഗ് പരിഹരിച്ചു ***
+ * *** മെനു വീതി ശരിയാക്കി ***
  */
 
 /* --- 1. Root Variables (നിറങ്ങൾ) --- */
@@ -78,11 +79,18 @@ body {
     font-family: var(--font-main);
     font-weight: 600;
     margin: 0;
+    /* *** ഐക്കൺ ബഗ് പരിഹരിക്കാൻ ഈ വരികൾ ചേർത്തു *** */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex-shrink: 1; /* തലക്കെട്ട് ചുരുങ്ങാൻ അനുവദിക്കുന്നു */
+    min-width: 0; 
 }
 .admin-header-right {
     display: flex;
     align-items: center;
     gap: 1rem;
+    flex-shrink: 0; /* ഐക്കണുകൾ ചുരുങ്ങാതിരിക്കാൻ */
 }
 #admin-nav-open-btn {
     background: none;
@@ -108,7 +116,7 @@ body {
 .admin-side-nav {
     position: fixed;
     top: 0;
-    right: -100vw;
+    right: -280px; /* *** വീതി (280px) അനുസരിച്ച് കൃത്യമായി പുറത്തേക്ക് മാറ്റി *** */
     width: 280px;
     height: 100%;
     background-color: #1f1f1f; /* അല്പം വ്യത്യസ്തമായ നിറം */
