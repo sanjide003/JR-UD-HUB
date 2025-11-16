@@ -1,6 +1,7 @@
 // ഇതാണ് ഷോപ്പിംഗ് കാർട്ടിന്റെ "തലച്ചോർ" (cart.js).
 // ഉൽപ്പന്നങ്ങൾ ചേർക്കാനും, നീക്കം ചെയ്യാനും, എണ്ണം കൂട്ടാനും, ആകെ തുക കണക്കാക്കാനും ഈ ഫയൽ സഹായിക്കുന്നു.
 // ഈ ഫയൽ ഉൽപ്പന്നങ്ങൾ ബ്രൗസറിന്റെ 'localStorage'-ൽ സൂക്ഷിക്കുന്നു.
+// *** 'id', 'size' എന്നിവ കൂടി സേവ് ചെയ്യുന്നു ***
 
 // കാർട്ട് ഡാറ്റ 'localStorage'-ൽ നിന്ന് എടുക്കുന്നു
 function getCart() {
@@ -19,12 +20,16 @@ function saveCart(cart) {
 export function addToCart(productId, productDetails) {
     const cart = getCart();
     
-    if (cart[productId]) {
+    // *** 'productId' ഉപയോഗിക്കുന്നത് ഉറപ്പാക്കുന്നു ***
+    const key = productId; 
+
+    if (cart[key]) {
         // ഉൽപ്പന്നം കാർട്ടിൽ ഉണ്ടെങ്കിൽ, എണ്ണം 1 കൂട്ടുന്നു
-        cart[productId].quantity += 1;
+        cart[key].quantity += 1;
     } else {
         // ഇല്ലെങ്കിൽ, പുതിയ ഉൽപ്പന്നമായി ചേർക്കുന്നു
-        cart[productId] = {
+        // 'productDetails'-ൽ ഇപ്പോൾ 'id', 'size' എന്നിവയുണ്ട്
+        cart[key] = {
             ...productDetails,
             quantity: 1
         };
