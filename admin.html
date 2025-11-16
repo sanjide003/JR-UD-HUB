@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. 
-  *** ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ ചേർത്തു ***
+  *** തലക്കെട്ടിന് ID ചേർത്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -49,7 +49,8 @@
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
-                <h1>Al Ambar - Admin</h1>
+                <!-- *** പുതിയത്: തലക്കെട്ടിന് ID നൽകി *** -->
+                <h1 id="admin-panel-title">Al Ambar - Admin</h1>
             </div>
             <div class="admin-header-right">
                 <button id="logout-button" class="btn btn-logout">Logout</button>
@@ -371,7 +372,7 @@
             </div>
         </div>
 
-        <!-- *** പുതിയത്: ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ *** -->
+        <!-- *** ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ *** -->
         <div id="confirm-modal" class="modal-overlay">
             <div class="modal-content" style="max-width: 400px;">
                 <div class="modal-header">
