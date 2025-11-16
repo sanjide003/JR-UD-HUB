@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** 'SHOP BY CATEGORY' കാർഡ് ഒതുങ്ങിപ്പോയ പ്രശ്നം പരിഹരിച്ചു (display: block നീക്കം ചെയ്തു) ***
+   *** 'SHOP BY CATEGORY' കാർഡ് ഒതുങ്ങിപ്പോയ പ്രശ്നം പരിഹരിച്ചു (സ്ലൈഡിന് ഉയരം നൽകി) ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -88,7 +88,7 @@ h1, h2, h3, h4, h5, h6, .section-title-new, .product-title, .page-header-bar h1,
 .section-title-new {
     font-weight: 600;
     letter-spacing: 1px;
-    text-align: center; /* *** തലക്കെട്ട് നടുവിലാക്കി *** */
+    text-align: center; 
     margin-bottom: 2rem; 
 }
 .page-header-bar h1, .product-title {
@@ -542,19 +542,19 @@ img {
 /* *** പുതിയത്: ആനിമേറ്റഡ് ഡോട്ടുകൾ (പ്രോഗ്രസ് ബാർ) *** */
 .top-sellers-pagination-new {
     position: relative; 
-    margin-top: 1.5rem; /* സ്ലൈഡറിന് താഴെ */
-    margin-bottom: 1.5rem; /* അടുത്ത സെക്ഷന് മുകളിൽ */
+    margin-top: 1.5rem; 
+    margin-bottom: 1.5rem; 
     display: flex;
     justify-content: center;
-    gap: 8px; /* ഡോട്ടുകൾ തമ്മിലുള്ള അകലം */
+    gap: 8px; 
 }
 .top-sellers-pagination-new .swiper-pagination-bullet {
-    width: 30px; /* നീളമുള്ള ബാർ */
+    width: 30px; 
     height: 5px;
     border-radius: 3px;
-    background-color: var(--border-color); /* 'ട്രാക്ക്' (നിറയാത്ത ഭാഗം) */
+    background-color: var(--border-color); 
     opacity: 1;
-    overflow: hidden; /* പ്രോഗ്രസ് ബാർ ഒതുക്കാൻ */
+    overflow: hidden; 
     cursor: pointer;
 }
 /* പ്രോഗ്രസ് ബാർ (നിറയുന്നത്) */
@@ -562,13 +562,13 @@ img {
     display: block;
     width: 100%;
     height: 100%;
-    background-color: var(--primary-gold); /* 'ഫിൽ' (നിറഞ്ഞ ഭാഗം) */
-    transform: scaleX(0); /* തുടക്കത്തിൽ 0 */
-    transform-origin: left; /* ഇടതുനിന്ന് വലത്തേക്ക് നിറയാൻ */
+    background-color: var(--primary-gold); 
+    transform: scaleX(0); 
+    transform-origin: left; 
 }
 /* ആക്ടീവ് ആയ ഡോട്ട് മാത്രം ആനിമേഷൻ കാണിക്കും */
 .top-sellers-pagination-new .swiper-pagination-bullet-active .pagination-progress {
-    animation: progress-fill 4s linear forwards; /* 4 സെക്കൻഡ്, index.js-മായി മാച്ച് ചെയ്യണം */
+    animation: progress-fill 4s linear forwards; 
 }
 /* ആനിമേഷൻ കീഫ്രെയിം */
 @keyframes progress-fill {
@@ -602,19 +602,22 @@ img {
     width: 100%;
     overflow: hidden;
 }
+/* *** പുതിയത്: സ്ലൈഡിന് നിർബന്ധമായും ഉയരം നൽകുന്നു (ഒതുങ്ങിപ്പോകുന്നത് തടയാൻ) *** */
+.category-swiper-new .swiper-slide {
+    height: 220px; 
+}
+
 /* *** പുതിയ കാർഡ് സ്റ്റൈൽ (ചിത്രത്തിന് മുകളിൽ ടെക്സ്റ്റ്) *** */
 .category-card-home-new {
-    /* *** പിശക് തിരുത്തി: display: block; നീക്കം ചെയ്തു *** */
     text-decoration: none;
     color: var(--text-muted);
     transition: all 0.3s ease;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    height: 220px; 
+    height: 100%; /* *** 100% ആക്കി (മാതാപിതാവിന്റെ 220px എടുക്കാൻ) *** */
     position: relative; 
     
-    /* *** <img> ടാഗിന് പകരം പശ്ചാത്തല ചിത്രം *** */
     background-color: var(--card-bg);
     background-size: cover;
     background-position: center;
