@@ -1,5 +1,6 @@
 // ഇതാണ് 'admin.js' ഫയൽ.
-// *** "Existing Products" ഫിൽട്ടർ എറർ പരിഹരിച്ചു ***
+// *** മെനു ഇടതുവശത്തേക്ക് മാറ്റി ***
+// *** "Featured Products" എന്ന പുതിയ പേജ് ചേർത്തു ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -19,7 +20,7 @@ import {
     deleteDoc,
     onSnapshot, 
     query,
-    where, // ഫിൽട്ടറിംഗിനായി where ചേർത്തു
+    where, 
     serverTimestamp,
     orderBy,
     setLogLevel
@@ -58,7 +59,8 @@ const productCategorySelect = document.getElementById("product-category");
 const productLoader = document.getElementById("product-loader");
 const productsListBody = document.getElementById("products-list-body");
 const productImagePreview = document.getElementById("product-image-preview");
-const productFilterCategory = document.getElementById("product-filter-category"); // *** പുതിയത്: ഫിൽട്ടർ ഡ്രോപ്പ്ഡൗൺ ***
+const productFilterCategory = document.getElementById("product-filter-category");
+const featuredProductsListBody = document.getElementById("featured-products-list-body"); // *** പുതിയത് ***
 
 // Hero Slide Elements
 const addHeroSlideForm = document.getElementById("add-hero-slide-form");
@@ -73,7 +75,6 @@ const contactSettingsLoader = document.getElementById("contact-settings-loader")
 const followSettingsForm = document.getElementById("follow-settings-form");
 const followSettingsLoader = document.getElementById("follow-settings-loader");
 
-
 // Modal elements
 const editModal = document.getElementById("edit-modal");
 const modalCloseButton = document.getElementById("modal-close-button");
@@ -81,7 +82,8 @@ const modalTitle = document.getElementById("modal-title");
 const modalForm = document.getElementById("modal-form");
 const modalLoader = document.getElementById("modal-loader");
 
-let currentProductsQuery = null; // നിലവിലെ പ്രൊഡക്റ്റ് ക്വറി സേവ് ചെയ്യാൻ
+let currentProductsQuery = null;
+let currentFeaturedQuery = null; // *** പുതിയത്: ഫീച്ചേർഡ് പ്രൊഡക്ട്സ് ലിസണർ ***
 
 // --- Helper Functions ---
 function showStatus(element, message, isError = true) {
@@ -123,7 +125,8 @@ onAuthStateChanged(auth, (user) => {
         loginSection.style.display = "none";
         adminPanel.style.display = "block";
         loadCategories();
-        loadProducts("all"); // തുടക്കത്തിൽ എല്ലാ പ്രൊഡക്ടുകളും ലോഡ് ചെയ്യുന്നു
+        loadProducts("all"); 
+        loadFeaturedProducts(); // *** പുതിയത്: ഫീച്ചേർഡ് പ്രൊഡക്ടുകൾ ലോഡ് ചെയ്യുന്നു ***
         loadHeroSlides(); 
         loadAllSettings();
     } else {
@@ -151,17 +154,13 @@ adminNavLinks.addEventListener("click", (e) => {
     if (e.target.classList.contains("nav-link")) {
         const pageId = e.target.getAttribute("data-page");
         
-        // എല്ലാ പേജുകളും മറയ്ക്കുന്നു
         pageContents.forEach(item => item.classList.remove("active"));
-        // എല്ലാ ലിങ്കുകളും അൺ-ആക്ടീവ് ആക്കുന്നു
         navLinks.forEach(item => item.classList.remove("active"));
         
-        // ക്ലിക്ക് ചെയ്ത പേജ് കാണിക്കുന്നു
         document.getElementById(pageId).classList.add("active");
-        // ക്ലിക്ക് ചെയ്ത ലിങ്ക് ആക്ടീവ് ആക്കുന്നു
         e.target.classList.add("active");
         
-        closeAdminNav(); // മെനു അടയ്ക്കുന്നു
+        closeAdminNav(); 
     }
 });
 
@@ -279,9 +278,7 @@ followSettingsForm.addEventListener("submit", async (e) => {
 function loadCategories() {
     const q = query(collection(db, "categories"), orderBy("name"));
     
-    // ഫിൽട്ടർ ഡ്രോപ്പ്ഡൗൺ ക്ലിയർ ചെയ്യുന്നു
     productFilterCategory.innerHTML = '<option value="all">All Categories</option>';
-    // ആഡ് പ്രൊഡക്റ്റ് ഡ്രോപ്പ്ഡൗൺ ക്ലിയർ ചെയ്യുന്നു
     productCategorySelect.innerHTML = '<option value="">Select a category...</option>';
 
     onSnapshot(q, (querySnapshot) => {
@@ -296,7 +293,6 @@ function loadCategories() {
             const category = doc.data();
             const id = doc.id;
             
-            // കാറ്റഗറി ലിസ്റ്റിൽ (പേജ് 4) ചേർക്കുന്നു
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td><img src="${category.imageUrl || ''}" alt="${category.name}"></td>
@@ -308,13 +304,10 @@ function loadCategories() {
             `;
             categoriesListBody.appendChild(row);
             
-            // ആഡ് പ്രൊഡക്റ്റ് ഫോമിൽ (പേജ് 1) ചേർക്കുന്നു
             const option = document.createElement('option');
             option.value = id;
             option.textContent = category.name;
             productCategorySelect.appendChild(option.cloneNode(true));
-            
-            // ഫിൽട്ടർ ഡ്രോപ്പ്ഡൗണിൽ (പേജ് 2) ചേർക്കുന്നു
             productFilterCategory.appendChild(option.cloneNode(true));
         });
     }, (error) => {
@@ -347,20 +340,19 @@ addCategoryForm.addEventListener("submit", async (e) => {
     }
 });
 
-// --- 6. Product Logic (പുതിയ ഫിൽട്ടറിംഗ് സഹിതം) ---
+// --- 6. Product Logic ---
+
+// 6.1 Existing Products (ഫിൽട്ടറിംഗ് സഹിതം)
 function loadProducts(categoryId = "all") {
      let q;
-     // *** ഫിൽട്ടർ എറർ പരിഹരിച്ചു ***
      if (categoryId === "all") {
-        // "All Categories" ആണെങ്കിൽ മാത്രം തീയതി അനുസരിച്ച് ഓർഡർ ചെയ്യുന്നു
         q = query(collection(db, "products"), orderBy("createdAt", "desc"));
      } else {
-        // ഒരു പ്രത്യേക കാറ്റഗറി ഫിൽട്ടർ ചെയ്യുമ്പോൾ, ഓർഡർ ചെയ്യുന്നില്ല (ഇൻഡെക്സ് എറർ ഒഴിവാക്കാൻ)
+        // *** ഫിൽട്ടർ എറർ പരിഹരിച്ചു: ഫിൽട്ടർ ചെയ്യുമ്പോൾ 'orderBy' ഒഴിവാക്കി ***
         q = query(collection(db, "products"), 
             where("categoryId", "==", categoryId));
      }
      
-     // പഴയ onSnapshot നിർത്തുന്നു (ഒന്നിലധികം listener ഒഴിവാക്കാൻ)
      if (currentProductsQuery) currentProductsQuery(); 
 
      currentProductsQuery = onSnapshot(q, (querySnapshot) => {
@@ -398,12 +390,55 @@ function loadProducts(categoryId = "all") {
     });
 }
 
-// *** പുതിയത്: ഫിൽട്ടർ ഡ്രോപ്പ്ഡൗൺ പ്രവർത്തിപ്പിക്കുന്നു ***
+// 6.2 *** പുതിയത്: Featured Products ***
+function loadFeaturedProducts() {
+     const q = query(collection(db, "products"), where("featured", "==", true));
+     
+     if (currentFeaturedQuery) currentFeaturedQuery(); 
+
+     currentFeaturedQuery = onSnapshot(q, (querySnapshot) => {
+        featuredProductsListBody.innerHTML = '';
+        if (querySnapshot.empty) {
+            featuredProductsListBody.innerHTML = '<tr><td colspan="4">No featured products found.</td></tr>';
+            return;
+        }
+        
+        querySnapshot.forEach((doc) => {
+            const product = doc.data();
+            const id = doc.id;
+            const imageUrl = product.images && product.images[0] ? product.images[0] : '';
+            
+            let priceDisplay = `₹${product.price || 0}`;
+            if (product.mrp && product.mrp > product.price) {
+                priceDisplay += ` <span class="price-mrp-admin">₹${product.mrp}</span>`;
+            }
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><img src="${imageUrl}" alt="${product.name}"></td>
+                <td>${product.name} ⭐</td>
+                <td>${priceDisplay}</td>
+                <td>
+                    <button class="btn btn-edit" data-id="${id}" data-type="product">Edit</button>
+                    <button class="btn btn-delete" data-id="${id}" data-type="product">Delete</button>
+                </td>
+            `;
+            featuredProductsListBody.appendChild(row);
+        });
+     }, (error) => {
+        console.error("Error loading featured products: ", error);
+        featuredProductsListBody.innerHTML = '<tr><td colspan="4">Error loading featured products.</td></tr>';
+    });
+}
+
+
+// 6.3 ഫിൽട്ടർ ഡ്രോപ്പ്ഡൗൺ പ്രവർത്തിപ്പിക്കുന്നു
 productFilterCategory.addEventListener("change", (e) => {
     const categoryId = e.target.value;
     loadProducts(categoryId);
 });
 
+// 6.4 Add Product ഫോം
 addProductForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     showLoader(productLoader);
