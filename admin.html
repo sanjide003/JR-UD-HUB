@@ -1,7 +1,6 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. 
-  *** പുതിയ ഹെഡർ, സൈഡ് മെനു ഡിസൈൻ ചേർത്തു ***
-  *** "Follow Us" ലിങ്കുകൾ "Site Settings"-ലേക്ക് മാറ്റി ***
+  *** പുതിയ ഹെഡർ, സൈഡ് മെനു ഡിസൈൻ, ഫിൽട്ടർ ഡ്രോപ്പ്ഡൗൺ എന്നിവ ചേർത്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -41,7 +40,6 @@
         <header class="admin-main-header">
             <h1>Al Ambar - Admin</h1>
             <div class="admin-header-right">
-                <button id="logout-button" class="btn btn-logout">Logout</button>
                 <button id="admin-nav-open-btn" aria-label="Open Menu">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <line x1="3" y1="12" x2="21" y2="12"></line>
@@ -59,10 +57,18 @@
                 <button id="admin-nav-close-btn">&times;</button>
             </div>
             <div class="admin-nav-links">
-                <button class="tab-link active" data-tab="tab-products">Manage Products</button>
-                <button class="tab-link" data-tab="tab-categories">Manage Categories</button>
-                <button class="tab-link" data-tab="tab-hero">Manage Hero</button>
-                <button class="tab-link" data-tab="tab-settings">Site Settings</button>
+                <!-- നിങ്ങൾ ആവശ്യപ്പെട്ട ഓർഡറിൽ 8 പേജുകൾ -->
+                <button class="nav-link active" data-page="page-add-product">Add New Product</button>
+                <button class="nav-link" data-page="page-existing-products">Existing Products</button>
+                <button class="nav-link" data-page="page-add-category">Add New Category</button>
+                <button class="nav-link" data-page="page-existing-categories">Existing Categories</button>
+                <button class="nav-link" data-page="page-manage-hero">Manage Hero</button>
+                <button class="nav-link" data-page="page-general-settings">General Site Settings</button>
+                <button class="nav-link" data-page="page-contact-details">Contact Details</button>
+                <button class="nav-link" data-page="page-follow-us">"Follow Us" Links</button>
+            </div>
+            <div class="admin-nav-footer">
+                <button id="logout-button" class="btn btn-logout">Logout</button>
             </div>
         </nav>
         <div class="admin-nav-overlay" id="admin-nav-overlay"></div>
@@ -71,8 +77,8 @@
         <div class="container">
             <div id="admin-status" class="status-message"></div>
 
-            <!-- ടാബ് 1: ഉൽപ്പന്നങ്ങൾ കൈകാര്യം ചെയ്യാൻ -->
-            <div id="tab-products" class="tab-content active">
+            <!-- പേജ് 1: Add New Product -->
+            <div id="page-add-product" class="page-content active">
                 <form id="add-product-form" class="form-section">
                     <h2>Add New Product</h2>
                     <div class="form-grid">
@@ -115,9 +121,22 @@
                     <button type="submit" class="btn" id="add-product-button">Add Product</button>
                     <div class="loader" id="product-loader"></div>
                 </form>
+            </div>
 
+            <!-- പേജ് 2: Existing Products (പുതിയ ഫിൽട്ടർ സഹിതം) -->
+            <div id="page-existing-products" class="page-content">
                 <div class="data-list-section">
                     <h2>Existing Products</h2>
+                    
+                    <!-- *** പുതിയത്: കാറ്റഗറി ഫിൽട്ടർ *** -->
+                    <div class="form-group" style="max-width: 300px;">
+                        <label for="product-filter-category">Filter by Category</label>
+                        <select id="product-filter-category">
+                            <option value="all">All Categories</option>
+                            <!-- 'admin.js' വഴി കാറ്റഗറികൾ ഇവിടെ വരും -->
+                        </select>
+                    </div>
+
                     <div class="data-table-wrapper">
                         <table class="data-table">
                             <thead>
@@ -134,8 +153,8 @@
                 </div>
             </div>
 
-            <!-- ടാബ് 2: കാറ്റഗറികൾ കൈകാര്യം ചെയ്യാൻ -->
-            <div id="tab-categories" class="tab-content">
+            <!-- പേജ് 3: Add New Category -->
+            <div id="page-add-category" class="page-content">
                 <form id="add-category-form" class="form-section">
                     <h2>Add New Category</h2>
                     <div class="form-grid">
@@ -152,7 +171,10 @@
                     <button type="submit" class="btn" id="add-category-button">Add Category</button>
                     <div class="loader" id="category-loader"></div>
                 </form>
-                
+            </div>
+
+            <!-- പേജ് 4: Existing Categories -->
+            <div id="page-existing-categories" class="page-content">
                 <div class="data-list-section">
                     <h2>Existing Categories</h2>
                      <div class="data-table-wrapper">
@@ -170,8 +192,8 @@
                 </div>
             </div>
             
-            <!-- ടാബ് 3: ഹീറോ സ്ലൈഡർ -->
-            <div id="tab-hero" class="tab-content">
+            <!-- പേജ് 5: Manage Hero -->
+            <div id="page-manage-hero" class="page-content">
                 <form id="add-hero-slide-form" class="form-section">
                     <h2>Add New Hero Slide</h2>
                     <div class="form-grid">
@@ -214,12 +236,10 @@
                 </div>
             </div>
 
-            <!-- ടാബ് 4: സൈറ്റ് സെറ്റിംഗ്സ് (പുതിയ ഫീൽഡുകൾ ചേർത്തു) -->
-            <div id="tab-settings" class="tab-content">
-                <form id="site-settings-form" class="form-section">
-                    <h2>Site Settings</h2>
-                    
-                    <h3>General</h3>
+            <!-- പേജ് 6: General Site Settings -->
+            <div id="page-general-settings" class="page-content">
+                <form id="general-settings-form" class="form-section">
+                    <h2>General Site Settings</h2>
                     <div class="form-grid">
                          <div class="form-group">
                             <label for="setting-logo-image-url">Logo Image URL</label>
@@ -238,8 +258,15 @@
                             <input type="text" id="setting-video-url" placeholder="Paste YouTube or .mp4 link here">
                         </div>
                     </div>
-                    
-                    <h3 style="margin-top: 2rem;">Contact Details</h3>
+                    <button type="submit" class="btn">Save General Settings</button>
+                    <div class="loader" id="general-settings-loader"></div>
+                </form>
+            </div>
+
+            <!-- പേജ് 7: Contact Details -->
+            <div id="page-contact-details" class="page-content">
+                <form id="contact-settings-form" class="form-section">
+                    <h2>Contact Details</h2>
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="setting-phone">Contact Phone</label>
@@ -258,8 +285,15 @@
                             <input type="text" id="setting-whatsapp" placeholder="918086081985 (without +)">
                         </div>
                     </div>
+                    <button type="submit" class="btn">Save Contact Details</button>
+                    <div class="loader" id="contact-settings-loader"></div>
+                </form>
+            </div>
 
-                    <h3 style="margin-top: 2rem;">"Follow Us" Links</h3>
+            <!-- പേജ് 8: "Follow Us" Links -->
+            <div id="page-follow-us" class="page-content">
+                <form id="follow-settings-form" class="form-section">
+                    <h2>"Follow Us" Links</h2>
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="setting-follow-whatsapp">"Follow Us" WhatsApp Link</label>
@@ -278,12 +312,12 @@
                             <input type="text" id="setting-youtube-url" placeholder="https://youtube.com/yourchannel">
                         </div>
                     </div>
-
-                    <button type="submit" class="btn" id="save-settings-button" style="margin-top: 1rem;">Save Settings</button>
-                    <div class="loader" id="settings-loader"></div>
+                    <button type="submit" class="btn">Save "Follow Us" Links</button>
+                    <div class="loader" id="follow-settings-loader"></div>
                 </form>
             </div>
-        </div>
+
+        </div> <!-- .container അവസാനിക്കുന്നു -->
 
         <!-- എഡിറ്റ് ചെയ്യാനുള്ള മോഡൽ -->
         <div id="edit-modal" class="modal-overlay">
