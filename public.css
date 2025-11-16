@@ -131,11 +131,15 @@ img {
     position: relative;
     padding: 5px;
 }
-/* *** മെനു ഐക്കൺ ശരിയാക്കി (svg.icon-cart എന്നതിൽ നിന്ന് .icon-cart മാറ്റി) *** */
+/* *** മെനു ഐക്കൺ ശരിയാക്കി *** */
 .header-icon-btn svg {
     width: 24px;
     height: 24px;
+    stroke: currentColor; /* മെനു ഐക്കണിന് വേണ്ടി */
     stroke-width: 2;
+}
+.header-icon-btn svg.icon-cart {
+    fill: none; /* ബാഗ് ഐക്കൺ */
 }
 .cart-icon-wrapper {
     position: relative;
@@ -223,10 +227,10 @@ img {
     border-top: 1px solid var(--border-color);
 }
 .side-nav-social a { color: var(--text-muted); }
-.side-nav-social a svg { width: 24px; height: 24px; }
+.side-nav-social a svg { width: 24px; height: 24px; fill: currentColor; }
 
 
-/* --- 5. ഫൂട്ടർ (Main Footer) - പുതിയ അക്കോർഡിയൻ സ്റ്റൈൽ --- */
+/* --- 5. ഫൂട്ടർ (Main Footer) --- */
 .main-footer-new {
     background-color: var(--bg-color);
     color: var(--text-muted);
@@ -304,9 +308,9 @@ img {
 }
 
 
-/* --- 6. ഹോം പേജ് (Home Page) - പുതിയ സ്റ്റൈലുകൾ --- */
+/* --- 6. ഹോം പേജ് (Home Page) --- */
 
-/* 6.1. പുതിയ ഹീറോ സ്ലൈഡർ */
+/* 6.1. ഹീറോ സ്ലൈഡർ */
 .hero-section-new {
     width: 100%;
     height: 70vh; 
@@ -376,7 +380,7 @@ img {
     max-width: 800px;
 }
 
-/* 6.3. പുതിയ ടോപ്പ് സെല്ലേഴ്സ് */
+/* 6.3. ടോപ്പ് സെല്ലേഴ്സ് */
 .top-sellers-swiper-new {
     padding-bottom: 3rem; 
 }
@@ -418,7 +422,7 @@ img {
     background-color: var(--primary-gold);
 }
 
-/* 6.4. പുതിയ കാറ്റഗറി ഗ്രിഡ് (ഹോം പേജ്) - സ്ലൈഡർ */
+/* 6.4. കാറ്റഗറി ഗ്രിഡ് (ഹോം പേജ്) - സ്ലൈഡർ */
 .category-swiper-new {
     width: 100%;
     overflow: hidden;
@@ -573,7 +577,7 @@ img {
 }
 
 
-/* --- 8. കാറ്റഗറി പേജ് (Category Page) - പുതിയ ലേഔട്ട് --- */
+/* --- 8. കാറ്റഗറി പേജ് (Category Page) --- */
 .page-container { margin-top: 1rem; }
 .page-header-bar {
     text-align: center;
@@ -657,7 +661,7 @@ img {
     100% { transform: rotate(360deg); }
 }
 
-/* 8.1 കാറ്റഗറി പേജിലെ പുതിയ പ്രൊഡക്റ്റ് കാർഡ് */
+/* 8.1 കാറ്റഗറി പേജിലെ പ്രൊഡക്റ്റ് കാർഡ് */
 .category-product-card {
     background-color: var(--card-bg);
     border-radius: 8px;
@@ -720,7 +724,7 @@ img {
     gap: 2rem;
 }
 
-/* 9.1 പ്രൊഡക്റ്റ് പേജിലെ പുതിയ Swiper ഗാലറി */
+/* 9.1 പ്രൊഡക്റ്റ് പേജിലെ Swiper ഗാലറി */
 .product-gallery-swiper {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -810,6 +814,7 @@ img {
     text-align: center;
     margin-bottom: 2rem;
 }
+/* 'You May Also Like' സ്ലൈഡർ */
 .related-products-section .product-grid-new {
     overflow: hidden;
 }
@@ -982,11 +987,19 @@ img {
     align-items: center;
     justify-content: center;
     gap: 0.5rem;
+    /* ഗോൾഡ് ഡിസൈൻ ഉപയോഗിക്കുന്നു */
+    background-color: var(--primary-gold);
+    border: 2px solid var(--primary-gold);
+    color: var(--bg-color);
+}
+.btn-checkout:hover {
+    background-color: var(--secondary-gold);
+    border-color: var(--secondary-gold);
 }
 .btn-checkout svg {
     width: 20px;
     height: 20px;
-    fill: currentColor;
+    fill: var(--bg-color);
 }
 .empty-cart-message {
     text-align: center;
@@ -1037,7 +1050,7 @@ img {
     border-radius: 4px;
 }
 
-/* --- 13. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ (പുതിയ ഡിസൈൻ) --- */
+/* --- 13. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ (ഡിസൈൻ നിലനിർത്തി) --- */
 #floating-action-buttons {
     position: fixed;
     bottom: 15px;
@@ -1123,13 +1136,11 @@ img {
     .top-sellers-buttons {
         padding: 0;
     }
-    /* എല്ലാ ബട്ടണുകൾക്കും ഒരേ വലുപ്പം */
     .btn-primary-new, .btn-secondary-new,
     .btn-primary-icon, .btn-secondary-icon {
         font-size: 0.9rem;
         padding: 0.75rem 1rem;
     }
-    /* ചെറിയ ബട്ടണുകൾ (കാറ്റഗറി, YMAL) */
     .cat-product-buttons .btn-secondary-new,
     .cat-product-buttons .btn-primary-new,
     .top-sellers-buttons .btn-secondary-new,
@@ -1166,11 +1177,8 @@ img {
         flex-grow: 1;
     }
 
-    .related-products-section .product-grid-new {
-        /* JS സ്ലൈഡർ ഉപയോഗിക്കുന്നതിനാൽ ഗ്രിഡ് ആവശ്യമില്ല */
-    }
     .related-products-swiper .swiper-slide {
-        width: 160px; /* മൊബൈലിൽ ഏകദേശം 2.2 കാർഡുകൾ */
+        width: 160px;
     }
     
     .cart-item {
@@ -1236,11 +1244,8 @@ img {
     .product-detail-grid {
         grid-template-columns: 1fr 1fr;
     }
-    .related-products-section .product-grid-new {
-        /* JS സ്ലൈഡർ ഉപയോഗിക്കുന്നതിനാൽ ഗ്രിഡ് ആവശ്യമില്ല */
-    }
     .related-products-swiper .swiper-slide {
-        width: 180px; /* ഡെസ്ക്ടോപ്പിൽ ഏകദേശം 4 കാർഡുകൾ */
+        width: 180px;
     }
     
     .cart-page-layout {
