@@ -1,5 +1,5 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** "Buy" ബട്ടൺ മാറ്റി "View Details" എന്നാക്കി (ഐക്കൺ നീക്കം ചെയ്തു) ***
+// *** "Add to Cart" ബട്ടണിൽ 'size', 'id' എന്നിവ കൂടി ചേർക്കുന്നു ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -167,11 +167,11 @@ async function loadTopSellers() {
                             data-name="${product.name}"
                             data-price="${product.price}"
                             data-mrp="${product.mrp}"
-                            data-image="${imageUrl}">
+                            data-image="${imageUrl}"
+                            data-size="${product.size || ''}">
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 9h2V6h3V4h-3V1h-2v3H8v2h3v3zm-4 9c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zm10 0c-1.1 0-1.99.9-1.99 2S15.9 22 17 22s2-.9 2-2-.9-2-2-2zm-9.83-3.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.86-7.01L19.42 4h-.01L18 4l-3.25 6H8.53L4.27 2H1v2h2l3.6 7.59-1.35 2.44C4.52 15.37 5.48 17 7 17h12v-2H7l1.1-2h7.44l.25.13z"></path></svg>
                             <span>ADD TO CART</span>
                         </button>
-                        <!-- *** ഇതാണ് മാറ്റം വരുത്തിയ ബട്ടൺ: "View Details" *** -->
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">
                             <span>View Details</span>
                         </a>
@@ -251,10 +251,12 @@ if (topSellersGrid) {
         e.preventDefault(); 
         const id = button.dataset.id;
         const product = {
+            id: id, // *** 'id' ചേർത്തു ***
             name: button.dataset.name,
             price: parseFloat(button.dataset.price),
             mrp: parseFloat(button.dataset.mrp),
-            image: button.dataset.image
+            image: button.dataset.image,
+            size: button.dataset.size // *** 'size' ചേർത്തു ***
         };
         addToCart(id, product);
         button.innerHTML = 'ADDED!';
