@@ -1,7 +1,6 @@
 // ഇതാണ് ഷോപ്പിംഗ് കാർട്ടിന്റെ "തലച്ചോർ" (cart.js).
-// ഉൽപ്പന്നങ്ങൾ ചേർക്കാനും, നീക്കം ചെയ്യാനും, എണ്ണം കൂട്ടാനും, ആകെ തുക കണക്കാക്കാനും ഈ ഫയൽ സഹായിക്കുന്നു.
-// ഈ ഫയൽ ഉൽപ്പന്നങ്ങൾ ബ്രൗസറിന്റെ 'localStorage'-ൽ സൂക്ഷിക്കുന്നു.
 // *** 'id', 'size' എന്നിവ കൂടി സേവ് ചെയ്യുന്നു ***
+// *** ആകെ MRP കണക്കാക്കാൻ പുതിയ ഫംഗ്ഷൻ ചേർത്തു ***
 
 // കാർട്ട് ഡാറ്റ 'localStorage'-ൽ നിന്ന് എടുക്കുന്നു
 function getCart() {
@@ -83,6 +82,20 @@ export function getCartTotal() {
     }
     return total;
 }
+
+// *** പുതിയ ഫംഗ്ഷൻ: ആകെ MRP കണക്കാക്കുന്നു ***
+export function getCartTotalMRP() {
+    const cart = getCart();
+    let totalMRP = 0;
+    for (const id in cart) {
+        const item = cart[id];
+        // MRP ഉണ്ടെങ്കിൽ അത്, അല്ലെങ്കിൽ സാധാരണ വില
+        const mrp = (item.mrp && item.mrp > item.price) ? item.mrp : item.price;
+        totalMRP += mrp * item.quantity;
+    }
+    return totalMRP;
+}
+
 
 // കാർട്ട് പൂർണ്ണമായും ക്ലിയർ ചെയ്യുന്നു (ഓർഡർ ചെയ്ത ശേഷം)
 export function clearCart() {
