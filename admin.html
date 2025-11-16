@@ -1,6 +1,7 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. 
-  *** "Follow Us" എന്ന പുതിയ ടാബ് ചേർത്തു ***
+  *** പുതിയ ഹെഡർ, സൈഡ് മെനു ഡിസൈൻ ചേർത്തു ***
+  *** "Follow Us" ലിങ്കുകൾ "Site Settings"-ലേക്ക് മാറ്റി ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -12,10 +13,9 @@
 </head>
 <body>
 
-    <div class="container">
-
-        <!-- 1. ലോഗിൻ സെക്ഷൻ -->
-        <section id="login-section">
+    <!-- 1. ലോഗിൻ സെക്ഷൻ -->
+    <section id="login-section">
+        <div class="container">
             <div class="login-box">
                 <h1>Admin Login</h1>
                 <form id="login-form">
@@ -31,27 +31,45 @@
                     <div id="login-status" class="status-message"></div>
                 </form>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- 2. അഡ്മിൻ പാനൽ (ലോഗിൻ ചെയ്ത ശേഷം മാത്രം) -->
-        <section id="admin-panel">
+    <!-- 2. അഡ്മിൻ പാനൽ (ലോഗിൻ ചെയ്ത ശേഷം മാത്രം) -->
+    <section id="admin-panel">
 
-            <div class="admin-header">
-                <h1>Al Ambar - Admin Panel</h1>
+        <!-- *** പുതിയ ഹെഡർ *** -->
+        <header class="admin-main-header">
+            <h1>Al Ambar - Admin</h1>
+            <div class="admin-header-right">
                 <button id="logout-button" class="btn btn-logout">Logout</button>
+                <button id="admin-nav-open-btn" aria-label="Open Menu">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="3" y1="12" x2="21" y2="12"></line>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <line x1="3" y1="18" x2="21" y2="18"></line>
+                    </svg>
+                </button>
             </div>
-            
-            <div id="admin-status" class="status-message"></div>
+        </header>
 
-            <!-- ടാബുകൾ -->
-            <nav class="tab-links">
+        <!-- *** പുതിയ സൈഡ് മെനു (ടാബുകൾ) *** -->
+        <nav class="admin-side-nav" id="admin-side-nav">
+            <div class="admin-nav-header">
+                <h2>Menu</h2>
+                <button id="admin-nav-close-btn">&times;</button>
+            </div>
+            <div class="admin-nav-links">
                 <button class="tab-link active" data-tab="tab-products">Manage Products</button>
                 <button class="tab-link" data-tab="tab-categories">Manage Categories</button>
                 <button class="tab-link" data-tab="tab-hero">Manage Hero</button>
                 <button class="tab-link" data-tab="tab-settings">Site Settings</button>
-                <!-- *** പുതിയ ടാബ്: Follow Us *** -->
-                <button class="tab-link" data-tab="tab-social">Follow Us Links</button>
-            </nav>
+            </div>
+        </nav>
+        <div class="admin-nav-overlay" id="admin-nav-overlay"></div>
+
+        <!-- *** ടാബ് ഉള്ളടക്കം *** -->
+        <div class="container">
+            <div id="admin-status" class="status-message"></div>
 
             <!-- ടാബ് 1: ഉൽപ്പന്നങ്ങൾ കൈകാര്യം ചെയ്യാൻ -->
             <div id="tab-products" class="tab-content active">
@@ -110,9 +128,7 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="products-list-body">
-                                <!-- 'admin.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
-                            </tbody>
+                            <tbody id="products-list-body"></tbody>
                         </table>
                     </div>
                 </div>
@@ -148,9 +164,7 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="categories-list-body">
-                                <!-- 'admin.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ ഇവിടെ വരും -->
-                            </tbody>
+                            <tbody id="categories-list-body"></tbody>
                         </table>
                     </div>
                 </div>
@@ -194,35 +208,39 @@
                                     <th>Actions</th>
                                 </tr>
                             </thead>
-                            <tbody id="hero-slides-list-body">
-                                <!-- 'admin.js' ഉപയോഗിച്ച് സ്ലൈഡുകൾ ഇവിടെ വരും -->
-                            </tbody>
+                            <tbody id="hero-slides-list-body"></tbody>
                         </table>
                     </div>
                 </div>
             </div>
 
-            <!-- ടാബ് 4: സൈറ്റ് സെറ്റിംഗ്സ് (സോഷ്യൽ ലിങ്കുകൾ നീക്കം ചെയ്തു) -->
+            <!-- ടാബ് 4: സൈറ്റ് സെറ്റിംഗ്സ് (പുതിയ ഫീൽഡുകൾ ചേർത്തു) -->
             <div id="tab-settings" class="tab-content">
                 <form id="site-settings-form" class="form-section">
-                    <h2>Site Settings (Home Page & Footer)</h2>
+                    <h2>Site Settings</h2>
+                    
+                    <h3>General</h3>
                     <div class="form-grid">
                          <div class="form-group">
                             <label for="setting-logo-image-url">Logo Image URL</label>
                             <input type="text" id="setting-logo-image-url" placeholder="Paste logo image link here">
                         </div>
                         <div class="form-group">
-                            <label for="setting-logo-text">Logo Text (Shown next to logo)</label>
+                            <label for="setting-logo-text">Logo Text</label>
                             <input type="text" id="setting-logo-text" placeholder="e.g., AL AMBAR">
                         </div>
                          <div class="form-group">
-                            <label for="setting-logo-subtitle">Logo Subtitle (Shown below logo)</label>
+                            <label for="setting-logo-subtitle">Logo Subtitle</label>
                             <input type="text" id="setting-logo-subtitle" placeholder="e.g., JR UD HUB">
                         </div>
                         <div class="form-group">
                             <label for="setting-video-url">Home Page Experience Video URL</label>
                             <input type="text" id="setting-video-url" placeholder="Paste YouTube or .mp4 link here">
                         </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 2rem;">Contact Details</h3>
+                    <div class="form-grid">
                         <div class="form-group">
                             <label for="setting-phone">Contact Phone</label>
                             <input type="text" id="setting-phone" placeholder="+91 ...">
@@ -235,43 +253,38 @@
                             <label for="setting-address">Contact Address</label>
                             <input type="text" id="setting-address" placeholder="Kerala, India">
                         </div>
-                         <!-- *** സോഷ്യൽ ലിങ്കുകൾ ഇവിടെ നിന്ന് നീക്കം ചെയ്തു *** -->
+                         <div class="form-group">
+                            <label for="setting-whatsapp">Order WhatsApp Number</label>
+                            <input type="text" id="setting-whatsapp" placeholder="918086081985 (without +)">
+                        </div>
                     </div>
-                    <button type="submit" class="btn" id="save-settings-button">Save Settings</button>
+
+                    <h3 style="margin-top: 2rem;">"Follow Us" Links</h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="setting-follow-whatsapp">"Follow Us" WhatsApp Link</label>
+                            <input type="text" id="setting-follow-whatsapp" placeholder="https://wa.me/your-number-or-group">
+                        </div>
+                         <div class="form-group">
+                            <label for="setting-facebook-url">Facebook URL</label>
+                            <input type="text" id="setting-facebook-url" placeholder="https://facebook.com/yourpage">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-instagram-url">Instagram URL</label>
+                            <input type="text" id="setting-instagram-url" placeholder="https://instagram.com/yourpage">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-youtube-url">YouTube URL</label>
+                            <input type="text" id="setting-youtube-url" placeholder="https://youtube.com/yourchannel">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn" id="save-settings-button" style="margin-top: 1rem;">Save Settings</button>
                     <div class="loader" id="settings-loader"></div>
                 </form>
             </div>
+        </div>
 
-            <!-- *** പുതിയ ടാബ് 5: Follow Us Links *** -->
-            <div id="tab-social" class="tab-content">
-                <form id="social-settings-form" class="form-section">
-                    <h2>Social Media & Contact Links</h2>
-                    <div class="form-grid">
-                         <div class="form-group">
-                            <label for="social-whatsapp">WhatsApp Number (For Orders & Contact)</label>
-                            <input type="text" id="social-whatsapp" placeholder="918086081985 (without +)">
-                        </div>
-                        <div class="form-group">
-                            <label for="social-facebook-url">Facebook URL</label>
-                            <input type="text" id="social-facebook-url" placeholder="https://facebook.com/yourpage">
-                        </div>
-                         <div class="form-group">
-                            <label for="social-instagram-url">Instagram URL</label>
-                            <input type="text" id="social-instagram-url" placeholder="https://instagram.com/yourpage">
-                        </div>
-                        <div class="form-group">
-                            <label for="social-youtube-url">YouTube URL</label>
-                            <input type="text" id="social-youtube-url" placeholder="https://youtube.com/yourchannel">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn" id="save-social-button">Save Social Links</button>
-                    <div class="loader" id="social-loader"></div>
-                </form>
-            </div>
-
-
-        </section>
-        
         <!-- എഡിറ്റ് ചെയ്യാനുള്ള മോഡൽ -->
         <div id="edit-modal" class="modal-overlay">
             <div class="modal-content">
@@ -286,7 +299,7 @@
             </div>
         </div>
         
-    </div>
+    </section>
 
     <!-- JS ഫയലുകൾ -->
     <script type="module" src="firebase-config.js"></script>
