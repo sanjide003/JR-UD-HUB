@@ -1,5 +1,6 @@
 // ഇതാണ് 'index.js' ഫയൽ.
 // *** കാറ്റഗറി കാർഡ് ഡിസൈനിനും സ്ലൈഡർ എണ്ണത്തിനും മാറ്റങ്ങൾ വരുത്തി ***
+// *** <img> ടാഗിന് പകരം background-image ആക്കി ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -229,14 +230,14 @@ async function loadTopSellers() {
 
 /**
  * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു
- * *** സ്ലൈഡർ എണ്ണവും കാർഡ് HTML കോഡും മാറ്റി ***
+ * *** <img> ടാഗിന് പകരം background-image ആക്കി ***
  */
 async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
     try {
         const catQuery = query(collection(db, "categories"), orderBy("name"), limit(8));
-        const catSnapshot = await getDocs(catQuery);
+        const catSnapshot = await getDocs(q);
         if (catSnapshot.empty) {
             grid.innerHTML = '<p>No categories to show.</p>'; return;
         }
@@ -247,10 +248,13 @@ async function loadHomeCategories() {
             const card = document.createElement('a');
             card.className = 'swiper-slide category-card-home-new';
             card.href = `categories.html?filter=${catId}`;
+            
+            // *** <img> ടാഗിന് പകരം പശ്ചാത്തല ചിത്രം JS വഴി സെറ്റ് ചെയ്യുന്നു ***
             const imageUrl = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
-            // *** HTML ഘടന മാറ്റി (ചിത്രത്തിന് മുകളിൽ ടെക്സ്റ്റ്) ***
+            card.style.backgroundImage = `url('${imageUrl}')`;
+            
+            // *** <img> ടാഗ് നീക്കം ചെയ്തു, h3 മാത്രം ബാക്കി ***
             card.innerHTML = `
-                <img src="${imageUrl}" alt="${category.name}" onerror="this.src='https://placehold.co/260x360/1e1e1e/D4AF37?text=Error'">
                 <h3>${category.name}</h3>
             `;
             grid.appendChild(card);
@@ -258,12 +262,12 @@ async function loadHomeCategories() {
         new Swiper('.category-swiper-new', {
             loop: false, 
             speed: 1000,
-            slidesPerView: 2.2, // *** 2.2 കാർഡുകൾ കാണിക്കും ***
-            spaceBetween: 12, // *** അകലം അല്പം കുറച്ചു ***
+            slidesPerView: 2.2, 
+            spaceBetween: 12, 
             breakpoints: {
                 640: { slidesPerView: 3.2, spaceBetween: 15 },
                 900: { slidesPerView: 4.2, spaceBetween: 15 },
-                1200: { slidesPerView: 5.2, spaceBetween: 20 }, // *** എണ്ണം മാറ്റി ***
+                1200: { slidesPerView: 5.2, spaceBetween: 20 }, 
             }
         });
     } catch (error) { console.error("Error loading home categories: ", error); grid.innerHTML = '<p>Error loading categories.</p>'; }
