@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് ഷോപ്പിംഗ് കാർട്ട് പേജ്.
-  *** പുതിയ Flipkart ഡിസൈനിലേക്ക് മാറ്റി ***
+  *** "Price Details" ബോക്സ് അപ്ഡേറ്റ് ചെയ്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -32,11 +32,6 @@
             <!-- 3.1 ഉൽപ്പന്നങ്ങളുടെ ലിസ്റ്റ് (ഇടതുവശം) -->
             <div class="cart-items-container" id="cart-items-container">
                 <!-- 'cart-page.js' ഉപയോഗിച്ച് ഉൽപ്പന്ന കാർഡുകൾ ഇവിടെ വരും -->
-                <!-- 
-                  <div class="empty-cart-message">
-                      <h2>Your Cart is Empty</h2>
-                  </div> 
-                -->
             </div>
             
             <!-- 3.2 ആകെ തുകയും ഓർഡർ ബട്ടണും (വലതുവശം) -->
@@ -45,14 +40,23 @@
                 <!-- "Price Details" കാർഡ് -->
                 <div class="cart-summary-card">
                     <h2>Price Details</h2>
+                    <!-- *** പുതിയ വരികൾ ചേർത്തു *** -->
                     <div class="summary-row">
-                        <span>Price (Total)</span>
-                        <span id="cart-subtotal">₹0.00</span>
+                        <span id="cart-price-label">Price (0 items)</span>
+                        <span id="cart-mrp-total">₹0.00</span>
                     </div>
-                    <!-- ഭാവിയിൽ ഡിസ്കൗണ്ട് ഇവിടെ ചേർക്കാം -->
+                    <div class="summary-row discount">
+                        <span>Discount</span>
+                        <span id="cart-discount">- ₹0.00</span>
+                    </div>
+                    <!-- *** പഴയ വരികൾ അപ്ഡേറ്റ് ചെയ്തു *** -->
                     <div class="summary-row total">
                         <span>Total Amount</span>
                         <span id="cart-total">₹0.00</span>
+                    </div>
+                    <!-- *** സേവിംഗ്സ് സന്ദേശം ചേർത്തു *** -->
+                    <div class="summary-savings" id="cart-savings-message" style="display: none;">
+                        You'll save ₹0 on this order!
                     </div>
                 </div>
 
