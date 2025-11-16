@@ -1,65 +1,74 @@
 <!-- 
-  ഇതൊരു പുതിയ ഫയലാണ്. ഷോപ്പിംഗ് കാർട്ട് പേജ്.
-  'public.css', 'common.js' എന്നിവയോടൊപ്പം 'cart-page.js' എന്ന ഫയലും ഉപയോഗിക്കുന്നു.
+  ഇതാണ് ഷോപ്പിംഗ് കാർട്ട് പേജ്.
+  *** പുതിയ Flipkart ഡിസൈനിലേക്ക് മാറ്റി ***
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- *** മൊബൈൽ റെസ്പോൺസീവ് ഡിസൈനിനായി ഈ വരി തിരികെ ചേർത്തു *** -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shopping Cart - Al Ambar Perfumes</title>
-    <!-- പൊതുവായ ഡിസൈൻ ഫയൽ -->
+    <!-- പൊതുവാay ഡിസൈൻ ഫയൽ -->
     <link rel="stylesheet" href="public.css">
 </head>
 <body>
 
-    <!-- 1. പുതിയ ഹെഡർ (common.js വഴി ലോഡ് ആവും) -->
+    <!-- 1. ഹെഡർ -->
     <header class="main-header" id="main-header"></header>
     
-    <!-- 2. വശത്തുള്ള മെനു (common.js വഴി ലോഡ് ആവും) -->
+    <!-- 2. സൈഡ് മെനു -->
     <nav class="side-nav" id="side-nav"></nav>
     <div class="nav-overlay" id="nav-overlay"></div>
 
-    <!-- 3. പ്രധാന ഉള്ളടക്കം (കാർട്ട്) -->
+    <!-- 3. പ്രധാന ഉള്ളടക്കം (പുതിയ കാർട്ട്) -->
     <main class="container page-container">
         <div class="page-header-bar">
             <h1>Your Shopping Cart</h1>
         </div>
 
-        <div class="cart-page-layout">
-            <!-- കാർട്ടിലെ ഉൽപ്പന്നങ്ങളുടെ ലിസ്റ്റ് -->
-            <div class="cart-items-list" id="cart-items-list">
-                <!-- 'cart-page.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
+        <!-- *** പുതിയ കാർട്ട് ലേഔട്ട് *** -->
+        <div class="cart-page-layout-new">
+            
+            <!-- 3.1 ഉൽപ്പന്നങ്ങളുടെ ലിസ്റ്റ് (ഇടതുവശം) -->
+            <div class="cart-items-container" id="cart-items-container">
+                <!-- 'cart-page.js' ഉപയോഗിച്ച് ഉൽപ്പന്ന കാർഡുകൾ ഇവിടെ വരും -->
+                <!-- 
+                  <div class="empty-cart-message">
+                      <h2>Your Cart is Empty</h2>
+                  </div> 
+                -->
             </div>
             
-            <!-- കാർട്ടിന്റെ ആകെ തുകയും ചെക്ക്ഔട്ട് ബട്ടണും -->
-            <div class="cart-summary" id="cart-summary">
-                <h2>Order Summary</h2>
-                <div class="summary-row">
-                    <span>Subtotal</span>
-                    <span id="cart-subtotal">₹0.00</span>
-                </div>
-                <div class="summary-row total">
-                    <span>Total</span>
-                    <span id="cart-total">₹0.00</span>
-                </div>
+            <!-- 3.2 ആകെ തുകയും ഓർഡർ ബട്ടണും (വലതുവശം) -->
+            <div class="cart-summary-container" id="cart-summary-container">
                 
-                <!-- 
-                  പുതിയതായി ചേർത്തത്: alert()-ന് പകരം സന്ദേശം കാണിക്കാനുള്ള സ്ഥലം 
-                -->
-                <div id="cart-error-message" class="cart-error" style="display: none;"></div>
-                
-                <!-- *** WhatsApp ഐക്കൺ ഇവിടെ നിന്ന് നീക്കം ചെയ്തു *** -->
-                <button class="btn btn-primary btn-checkout" id="whatsapp-checkout-button">
-                    Order on WhatsApp
+                <!-- "Price Details" കാർഡ് -->
+                <div class="cart-summary-card">
+                    <h2>Price Details</h2>
+                    <div class="summary-row">
+                        <span>Price (Total)</span>
+                        <span id="cart-subtotal">₹0.00</span>
+                    </div>
+                    <!-- ഭാവിയിൽ ഡിസ്കൗണ്ട് ഇവിടെ ചേർക്കാം -->
+                    <div class="summary-row total">
+                        <span>Total Amount</span>
+                        <span id="cart-total">₹0.00</span>
+                    </div>
+                </div>
+
+                <!-- "Order All" ബട്ടൺ -->
+                <button class="btn btn-primary-new btn-checkout-full" id="full-checkout-button">
+                    Place All Order
                 </button>
-                <div id="checkout-loader" class="loader-small" style="display: none;"></div>
+                
+                <div id="cart-error-message" class="cart-error" style="display: none;"></div>
+                <div id="checkout-loader" class="loader-small" style="display: none; margin-top: 1rem;"></div>
+
             </div>
         </div>
     </main>
 
-    <!-- 4. പുതിയ ഫൂട്ടർ (common.js വഴി ലോഡ് ആവും) -->
+    <!-- 4. ഫൂട്ടർ -->
     <footer class="main-footer-new" id="main-footer"></footer>
 
     <!-- JS ഫയലുകൾ -->
