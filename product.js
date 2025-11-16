@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** "Buy on WhatsApp" ബട്ടണുകളിൽ നിന്ന് ഐക്കൺ നീക്കം ചെയ്തു ***
+// *** "Add to Cart" ബട്ടണിൽ 'size', 'id' എന്നിവ കൂടി ചേർക്കുന്നു ***
 
 import { 
     collection, 
@@ -61,12 +61,14 @@ async function loadProductDetails() {
         const product = docSnap.data();
         const productIdStr = docSnap.id;
         
+        // *** 'currentProduct'-ൽ 'id', 'size' എന്നിവ ചേർക്കുന്നു ***
         currentProduct = {
             id: productIdStr,
             name: product.name,
             price: product.price || 0,
             mrp: product.mrp || 0,
-            image: product.images && product.images[0] ? product.images[0] : ''
+            image: product.images && product.images[0] ? product.images[0] : '',
+            size: product.size || ''
         };
 
         const price = product.price || 0;
@@ -181,6 +183,7 @@ function setupProductActionButtons() {
     if (cartButton) {
         cartButton.addEventListener('click', () => {
             if (currentProduct) {
+                // *** 'currentProduct'-ൽ ഇപ്പോൾ 'id', 'size' എന്നിവയുണ്ട് ***
                 addToCart(currentProduct.id, currentProduct);
                 feedback.textContent = `${currentProduct.name} has been added to your cart.`;
                 feedback.style.display = 'block';
@@ -214,6 +217,10 @@ function setupProductActionButtons() {
                 const productLink = window.location.href; 
                 let message = `Hi, I'm interested in this product:\n\n`;
                 message += `*${currentProduct.name}*\n`;
+                // *** 'size' ഇവിടെ ചേർക്കുന്നു ***
+                if(currentProduct.size) {
+                    message += `*Size: ${currentProduct.size}*\n`;
+                }
                 message += `*Price: ₹${currentProduct.price.toFixed(2)}*\n\n`; 
                 message += `Product Link:\n${productLink}`;
                 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
@@ -233,11 +240,9 @@ function setupProductActionButtons() {
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
     try {
-        // *** 9 എണ്ണം വരെ കാണിക്കാൻ ലിമിറ്റ് 10 ആക്കി ***
         const q = query(collection(db, "products"), where("categoryId", "==", categoryId), limit(10));
         const querySnapshot = await getDocs(q);
         
-        // *** Swiper HTML ഘടന ചേർത്തു ***
         relatedProductsGrid.innerHTML = `
             <div class="swiper related-products-swiper">
                 <div class="swiper-wrapper" id="related-products-wrapper"></div>
@@ -247,19 +252,17 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
 
         let count = 0;
         querySnapshot.forEach((doc) => {
-            if (doc.id === excludeProductId || count >= 9) return; // 9 എണ്ണമായി പരിമിതപ്പെടുത്തി
+            if (doc.id === excludeProductId || count >= 9) return; 
             
             const product = doc.data();
             const productId = doc.id;
             const card = document.createElement('div');
-            // *** swiper-slide ക്ലാസ്സ് ചേർത്തു ***
             card.className = 'swiper-slide category-product-card';
             
             const price = product.price || 0;
             const mrp = product.mrp || 0;
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
-            // *** 'You May Also Like' ബട്ടണുകൾ പുതിയ ഡിസൈൻ ആക്കി ***
             card.innerHTML = `
                 <a href="product.html?id=${productId}" class="cat-product-image-link">
                     <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
@@ -267,13 +270,13 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                 <div class="cat-product-content">
                     <h3 class="cat-product-title">${product.name}</h3>
                     <div class="product-actions-grid related-buttons">
-                        <!-- വെള്ള ബാഗ് ഐക്കൺ -->
                         <button class="btn btn-secondary-new btn-add-to-cart"
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${price}"
                             data-mrp="${mrp}"
-                            data-image="${imageUrl}">
+                            data-image="${imageUrl}"
+                            data-size="${product.size || ''}">
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                                 <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -281,11 +284,11 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                             </svg>
                             <span>Cart</span>
                         </button>
-                        <!-- "Buy" ബട്ടണിൽ നിന്ന് ഐക്കൺ നീക്കം ചെയ്തു -->
                         <button class="btn btn-primary-new btn-buy-whatsapp-related"
                             data-id="${productId}"
                             data-name="${product.name}"
-                            data-price="${price}">
+                            data-price="${price}"
+                            data-size="${product.size || ''}">
                             <span>Buy</span>
                         </button>
                     </div>
@@ -298,7 +301,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
         if (count === 0) {
             relatedProductsGrid.innerHTML = '<p class="loading-placeholder">No related products found.</p>';
         } else {
-            // *** 'You May Also Like' സ്ലൈഡർ പ്രവർത്തിപ്പിക്കുന്നു ***
             new Swiper('.related-products-swiper', {
                 loop: false,
                 slidesPerView: 2.2,
@@ -323,10 +325,12 @@ relatedProductsGrid.addEventListener('click', (e) => {
         e.preventDefault();
         const id = cartButton.dataset.id;
         const product = {
+            id: id, // *** 'id' ചേർത്തു ***
             name: cartButton.dataset.name,
             price: parseFloat(cartButton.dataset.price),
             mrp: parseFloat(cartButton.dataset.mrp),
-            image: cartButton.dataset.image
+            image: cartButton.dataset.image,
+            size: cartButton.dataset.size // *** 'size' ചേർത്തു ***
         };
         addToCart(id, product);
         cartButton.innerHTML = 'Added!';
@@ -347,20 +351,21 @@ relatedProductsGrid.addEventListener('click', (e) => {
         e.preventDefault();
         if (!whatsappNumber) {
             console.error("WhatsApp number not found.");
-            // *** alert() മാറ്റി കസ്റ്റം ഫീഡ്ബാക്ക് ഉപയോഗിക്കാം, പക്ഷെ ഇവിടെ alert ആണ് എളുപ്പം ***
-            // *** തൽക്കാലം alert() ഒഴിവാക്കുന്നു, കൺസോളിൽ ലോഗ് ചെയ്യുന്നു ***
-            console.error("Could not send message. WhatsApp number is not configured.");
             return;
         }
         
         const id = buyButton.dataset.id;
-        const name = buyButton.dataset.id;
+        const name = buyButton.dataset.name;
         const price = parseFloat(buyButton.dataset.price);
+        const size = buyButton.dataset.size; // *** 'size' എടുത്തു ***
         
-        const productLink = `${window.location.origin}${window.location.pathname.replace('product.html', 'product.html')}?id=${id}`;
+        const productLink = `${window.location.origin}/product.html?id=${id}`;
         
         let message = `Hi, I'm interested in this product:\n\n`;
         message += `*${name}*\n`;
+        if(size) {
+            message += `*Size: ${size}*\n`; // *** 'size' ചേർത്തു ***
+        }
         message += `*Price: ₹${price.toFixed(2)}*\n\n`;
         message += `Product Link:\n${productLink}`;
         
