@@ -1,5 +1,6 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** പുതിയ "More Links" ബാനറിനും പ്രൊഡക്റ്റ് പേജ് ഡോട്ടുകൾക്കും സ്റ്റൈൽ ചേർത്തു ***
+   *** "More Links" ബാനറിനും പ്രൊഡക്റ്റ് പേജ് ഡോട്ടുകൾക്കും സ്റ്റൈൽ ചേർത്തു ***
+   *** പിശക് തിരുത്തി: പ്രൊഡക്റ്റ് ഗാലറി കണ്ടെയ്‌നർ സ്റ്റൈൽ ചേർത്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -856,6 +857,18 @@ img {
     gap: 2rem;
 }
 
+/* *** പുതിയത്: ഗാലറിയും ഇൻഫോയും ഒരുമിച്ചുള്ള കണ്ടെയ്‌നർ *** */
+.product-gallery-container {
+    position: relative;
+    /* ഡെസ്ക്ടോപ്പിൽ ഗ്രിഡിന്റെ ഒരു ഭാഗം */
+}
+.product-info {
+    position: relative;
+    /* ഡെസ്ക്ടോപ്പിൽ ഗ്രിഡിന്റെ മറു ഭാഗം */
+}
+/* *** മാറ്റം കഴിഞ്ഞു *** */
+
+
 /* 9.1 പ്രൊഡക്റ്റ് പേജിലെ ഗാലറി */
 .product-gallery-wrapper {
     position: relative; /* "More Links" ബാനറിന് വേണ്ടി */
@@ -960,8 +973,6 @@ img {
 }
 /* *** "More Links" സ്റ്റൈൽ കഴിഞ്ഞു *** */
 
-
-.product-info { padding-top: 1rem; }
 
 .product-info .price-container.large { margin-bottom: 1.5rem; }
 .product-info .price-container.large .price-main { 
