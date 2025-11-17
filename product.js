@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** പേജ് ബ്ലാങ്ക് ആവുന്ന പിശക് (ഒറ്റ ചിത്രം) തിരുത്തി ***
+// *** പുതിയ 'More Info' ഐക്കൺ, ആനിമേറ്റഡ് ഡോട്ടുകൾ എന്നിവ ചേർത്തു ***
 
 import { 
     collection, 
@@ -17,12 +17,18 @@ import { addToCart } from './cart.js';
 
 setLogLevel('Debug');
 
-const productDetailContent = document.getElementById('product-detail-content');
+// *** HTML-ലെ പുതിയ ID-കൾ ***
+const galleryContainer = document.getElementById('product-gallery-container');
+const infoContainer = document.getElementById('product-info-container');
+const dotsContainer = document.getElementById('product-dots-container'); // പുതിയ ഡോട്ട് കണ്ടെയ്നർ
 const relatedProductsGrid = document.getElementById('related-products-grid');
+
 let currentProduct = null;
 let whatsappNumber = ''; // WhatsApp നമ്പർ സേവ് ചെയ്യാൻ
 
-// *** പുതിയ ഫംഗ്ഷൻ: ടെക്സ്റ്റിലെ ലിങ്കുകൾ ക്ലിക്ക് ചെയ്യാൻ ***
+/**
+ * ടെക്സ്റ്റിലെ ലിങ്കുകൾ ക്ലിക്ക് ചെയ്യാൻ
+ */
 function linkify(text) {
     if (!text) return '';
     const urlRegex = /(\b(https|http|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])|(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
@@ -42,17 +48,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 /**
  * URL-ൽ നിന്ന് ID എടുത്ത് ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ കാണിക്കുന്നു
- * *** ഒറ്റ ചിത്രമുള്ളപ്പോൾ സ്ലൈഡർ പിശക് തിരുത്തി ***
+ * *** പുതിയ ഘടന അനുസരിച്ച് പൂർണ്ണമായും മാറ്റി എഴുതി ***
  */
 async function loadProductDetails() {
-    if (!productDetailContent) return;
+    if (!galleryContainer || !infoContainer || !dotsContainer) return;
 
     try {
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
         
         if (!productId) {
-            productDetailContent.innerHTML = '<p class="error-message">Product ID not found. Please go back and try again.</p>';
+            galleryContainer.innerHTML = '<p class="error-message">Product ID not found.</p>';
             return;
         }
 
@@ -67,7 +73,7 @@ async function loadProductDetails() {
         const docSnap = await getDoc(docRef);
 
         if (!docSnap.exists()) {
-            productDetailContent.innerHTML = '<p class="error-message">Product not found.</p>';
+            galleryContainer.innerHTML = '<p class="error-message">Product not found.</p>';
             return;
         }
 
@@ -83,21 +89,21 @@ async function loadProductDetails() {
             size: product.size || ''
         };
 
-        const price = product.price || 0;
-        const mrp = product.mrp || 0;
-        let priceHTML = `<span class="price-main">₹${price}</span>`;
-        if (mrp > price) {
-            const discount = Math.round(((mrp - price) / mrp) * 100);
-            priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
-            priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
+        // --- 1. ഗാലറിയും 'More' ഐക്കണും നിർമ്മിക്കുന്നു ---
+        
+        // 'More' ഐക്കൺ (ലിങ്ക് ഉണ്ടെങ്കിൽ മാത്രം)
+        let moreIconHTML = '';
+        if (product.externalLink) {
+            moreIconHTML = `
+                <a href="${product.externalLink}" target="_blank" rel="noopener noreferrer" class="product-more-link" aria-label="More Info">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M11 7h2v2h-2V7zm0 4h2v6h-2v-6zm1-9C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"></path></svg>
+                </a>
+            `;
         }
-
-        // --- 1. ഗാലറി നിർമ്മിക്കുന്നു ---
-        const hasImages = product.images && product.images.length > 0;
-        const hasMultipleImages = hasImages && product.images.length > 1;
-
+        
+        // സ്ലൈഡറിലെ ചിത്രങ്ങൾ
         let slidesHTML = '';
-        if (hasImages) {
+        if (product.images && product.images.length > 0) {
             product.images.forEach((imgUrl) => {
                 slidesHTML += `
                     <div class="swiper-slide">
@@ -113,30 +119,35 @@ async function loadProductDetails() {
             `;
         }
         
-        const gallerySideHTML = `
-            <div class="product-gallery-container">
-                <div class="product-gallery-wrapper">
-                    <div id="product-more-links-banner"></div>
-                    <div id="product-more-links-list"></div>
-                    <div class="product-gallery-swiper swiper-container">
-                        <div class="swiper-wrapper">
-                            ${slidesHTML}
-                        </div>
-                    </div>
+        // ഗാലറി HTML പൂർത്തിയാക്കുന്നു
+        galleryContainer.innerHTML = `
+            ${moreIconHTML}
+            <div class="product-gallery-swiper swiper-container">
+                <div class="swiper-wrapper">
+                    ${slidesHTML}
                 </div>
-                <!-- *** ഡോട്ടുകൾ ഒന്നിൽ കൂടുതൽ ചിത്രം ഉണ്ടെങ്കിൽ മാത്രം കാണിക്കും *** -->
-                <div class="product-pagination-new swiper-pagination-custom" style="display: ${hasMultipleImages ? 'flex' : 'none'};"></div>
+                <!-- ഡോട്ടുകൾ ഇനി JS വഴി പുറത്തുള്ള കണ്ടെയ്നറിൽ വരും -->
             </div>
         `;
 
-        // --- 2. വിവരങ്ങൾ നിർമ്മിക്കുന്നു ---
+
+        // --- 2. വിവരങ്ങൾ (Info) നിർമ്മിക്കുന്നു ---
+        const price = product.price || 0;
+        const mrp = product.mrp || 0;
+        let priceHTML = `<span class="price-main">₹${price}</span>`;
+        if (mrp > price) {
+            const discount = Math.round(((mrp - price) / mrp) * 100);
+            priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
+            priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
+        }
+
         let descriptionHTML = 'No description available.';
         if (product.description) {
             let linkifiedText = linkify(product.description);
             descriptionHTML = linkifiedText.replace(/\n/g, '<br>');
         }
 
-        const infoSideHTML = `
+        infoContainer.innerHTML = `
             <div class="product-info">
                 <h1 class="product-title">${product.name}</h1>
                 <div class="product-size">
@@ -151,13 +162,14 @@ async function loadProductDetails() {
                 
                 <div class="product-actions-grid">
                     <button class="btn-secondary-new" id="add-to-cart-btn">
-                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                             <line x1="3" y1="6" x2="21" y2="6"></line>
                             <path d="M16 10a4 4 0 0 1-8 0"></path>
                         </svg>
                         Add to Cart
                     </button>
+                    
                     <a class="btn-primary-new" id="buy-on-whatsapp-btn" href="#">
                         Buy on WhatsApp
                     </a>
@@ -166,122 +178,63 @@ async function loadProductDetails() {
             </div>
         `;
 
-        // --- 3. എല്ലാം പേജിൽ ചേർക്കുന്നു ---
-        productDetailContent.innerHTML = gallerySideHTML + infoSideHTML;
         
-        // --- 4. സ്ലൈഡർ ആരംഭിക്കുന്നു (ഒന്നിൽ കൂടുതൽ ചിത്രം ഉണ്ടെങ്കിൽ മാത്രം) ---
-        if (hasMultipleImages) {
-            const autoplayDelay = 3000;
-            new Swiper('.product-gallery-swiper', {
-                loop: true,
-                autoplay: {
-                    delay: autoplayDelay,
-                    disableOnInteraction: false,
-                },
-                pagination: {
-                    el: '.product-pagination-new',
-                    clickable: true,
-                    renderBullet: function (index, className) {
-                        return '<span class="' + className + '"><span class="pagination-progress"></span></span>';
-                    }
-                },
-                on: {
-                    init: function (swiper) {
-                        const activeBullet = swiper.pagination.bullets[swiper.realIndex];
-                        if (activeBullet) {
-                            const progressEl = activeBullet.querySelector('.pagination-progress');
-                            if (progressEl) {
-                                progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
-                            }
-                        }
-                    },
-                    slideChangeTransitionStart: function (swiper) {
-                        swiper.pagination.bullets.forEach(bullet => {
-                            const progressEl = bullet.querySelector('.pagination-progress');
-                            if (progressEl) {
-                                progressEl.style.animation = 'none';
-                            }
-                        });
-                        
-                        const activeBullet = swiper.pagination.bullets[swiper.realIndex];
-                        if (activeBullet) {
-                            const progressEl = activeBullet.querySelector('.pagination-progress');
-                            if (progressEl) {
-                                progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
-                            }
-                        }
-                    }
-                },
-                allowTouchMove: true,
-                speed: 600,
-            });
-        } else {
-            // ഒരൊറ്റ ചിത്രം മാത്രമാണെങ്കിൽ, ലളിതമായ സ്ലൈഡർ (loop, autoplay, dots ഇല്ലാതെ)
-            new Swiper('.product-gallery-swiper', {
-                allowTouchMove: true,
-            });
-        }
-        
-        // --- 5. ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു ---
-        setupProductActionButtons();
-        
-        // --- 6. "More Links" ബാനർ പ്രവർത്തിപ്പിക്കുന്നു ---
-        setupMoreLinksBanner(product.moreLinks || []);
+        // --- 3. സ്ലൈഡറും ആനിമേറ്റഡ് ഡോട്ടുകളും പ്രവർത്തിപ്പിക്കുന്നു ---
+        const autoplayDelay = 3000; // 3 സെക്കൻഡ്
 
-        // --- 7. ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു ---
+        new Swiper('.product-gallery-swiper', {
+            loop: true,
+            autoplay: {
+                delay: autoplayDelay,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.product-pagination-new', // *** പുതിയ ഡോട്ട് കണ്ടെയ്നർ ***
+                clickable: true,
+                renderBullet: function (index, className) {
+                    return '<span class="' + className + '"><span class="pagination-progress"></span></span>';
+                }
+            },
+            on: {
+                init: function (swiper) {
+                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+                    if (activeBullet) {
+                        const progressEl = activeBullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
+                        }
+                    }
+                },
+                slideChangeTransitionStart: function (swiper) {
+                    swiper.pagination.bullets.forEach(bullet => {
+                        const progressEl = bullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = 'none';
+                        }
+                    });
+                    
+                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+                    if (activeBullet) {
+                        const progressEl = activeBullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
+                        }
+                    }
+                }
+            },
+            allowTouchMove: true,
+            speed: 600,
+        });
+        
+        setupProductActionButtons();
+
         if (product.categoryId) {
             loadRelatedProducts(product.categoryId, productIdStr);
         }
 
     } catch (error) {
         console.error("Error loading product details: ", error);
-        productDetailContent.innerHTML = '<p class="error-message">Error loading product details.</p>';
-    }
-}
-
-/**
- * *** പുതിയ ഫംഗ്ഷൻ: "More Links" ബാനർ പ്രവർത്തിപ്പിക്കുന്നു ***
- * @param {Array} links - അഡ്മിൻ പാനലിൽ നിന്ന് ലഭിച്ച ലിങ്കുകളുടെ അറേ
- */
-function setupMoreLinksBanner(links) {
-    const banner = document.getElementById('product-more-links-banner');
-    const list = document.getElementById('product-more-links-list');
-    
-    if (!banner || !list || links.length === 0) {
-        return; // ലിങ്കുകൾ ഇല്ലെങ്കിൽ ഒന്നും ചെയ്യേണ്ട
-    }
-
-    // ലിങ്കുകൾ ഉണ്ട്, ബാനർ കാണിക്കാം
-    banner.style.display = 'block';
-
-    if (links.length === 1) {
-        // ഒരൊറ്റ ലിങ്ക് ആണെങ്കിൽ
-        const link = links[0];
-        banner.innerHTML = `<span>${link.title}</span>`; // ലിങ്കിന്റെ പേര് ബാനറിൽ കാണിക്കുന്നു
-        banner.addEventListener('click', () => {
-            window.open(link.url, '_blank'); // ക്ലിക്ക് ചെയ്യുമ്പോൾ നേരെ ആ ലിങ്കിലേക്ക് പോകുന്നു
-        });
-    } else {
-        // ഒന്നിലധികം ലിങ്കുകൾ ഉണ്ടെങ്കിൽ
-        banner.innerHTML = `<span>More Links ▾</span>`; // ഡ്രോപ്പ്ഡൗൺ സൂചന
-        
-        let listHTML = '';
-        links.forEach(link => {
-            // ലിസ്റ്റിനുള്ളിൽ ടൈറ്റിൽ മാത്രം കാണിക്കുന്നു
-            listHTML += `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.title}</a>`;
-        });
-        list.innerHTML = listHTML;
-        
-        // ബാനറിൽ ക്ലിക്ക് ചെയ്യുമ്പോൾ ലിസ്റ്റ് കാണിക്കുന്നു/മറയ്ക്കുന്നു
-        banner.addEventListener('click', (e) => {
-            e.stopPropagation(); // പേജിന്റെ മറ്റ് ഭാഗങ്ങളിൽ ക്ലിക്ക് ചെയ്യുന്നത് തടയാൻ
-            list.classList.toggle('open');
-        });
-
-        // പുറത്ത് ക്ലിക്ക് ചെയ്താൽ ലിസ്റ്റ് മറയ്ക്കുന്നു
-        document.addEventListener('click', () => {
-            list.classList.remove('open');
-        });
+        galleryContainer.innerHTML = '<p class="error-message">Error loading product details.</p>';
     }
 }
 
@@ -305,7 +258,7 @@ function setupProductActionButtons() {
                 cartButton.disabled = true;
                 setTimeout(() => {
                     cartButton.innerHTML = `
-                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                             <line x1="3" y1="6" x2="21" y2="6"></line>
                             <path d="M16 10a4 4 0 0 1-8 0"></path>
