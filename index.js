@@ -1,5 +1,5 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** കാറ്റഗറി ലോഡ് ആവാത്ത പിശക് (q, catQuery) തിരുത്തി ***
+// *** 'SHOP BY CATEGORY' സ്ലൈഡർ മാറ്റി വെർട്ടിക്കൽ ലിസ്റ്റ് ആക്കി ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -229,8 +229,7 @@ async function loadTopSellers() {
 
 /**
  * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു
- * *** <img> ടാഗിന് പകരം background-image ആക്കി ***
- * *** പിശക് തിരുത്തി: getDocs(q) എന്നതിനെ getDocs(catQuery) എന്നാക്കി ***
+ * *** സ്ലൈഡർ കോഡ് നീക്കം ചെയ്തു, വെർട്ടിക്കൽ ലിസ്റ്റ് ആക്കി ***
  */
 async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
@@ -238,8 +237,7 @@ async function loadHomeCategories() {
     try {
         const catQuery = query(collection(db, "categories"), orderBy("name"), limit(8));
         
-        // *** പിശക് തിരുത്തി ***
-        const catSnapshot = await getDocs(catQuery); // 'q' മാറ്റി 'catQuery' എന്നാക്കി
+        const catSnapshot = await getDocs(catQuery); 
 
         if (catSnapshot.empty) {
             grid.innerHTML = '<p>No categories to show.</p>'; return;
@@ -249,7 +247,8 @@ async function loadHomeCategories() {
             const category = doc.data();
             const catId = doc.id;
             const card = document.createElement('a');
-            card.className = 'swiper-slide category-card-home-new';
+            // *** 'swiper-slide' ക്ലാസ്സ് നീക്കം ചെയ്തു ***
+            card.className = 'category-card-home-new';
             card.href = `categories.html?filter=${catId}`;
             
             const imageUrl = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
@@ -260,17 +259,9 @@ async function loadHomeCategories() {
             `;
             grid.appendChild(card);
         });
-        new Swiper('.category-swiper-new', {
-            loop: false, 
-            speed: 1000,
-            slidesPerView: 2.2, 
-            spaceBetween: 12, 
-            breakpoints: {
-                640: { slidesPerView: 3.2, spaceBetween: 15 },
-                900: { slidesPerView: 4.2, spaceBetween: 15 },
-                1200: { slidesPerView: 5.2, spaceBetween: 20 }, 
-            }
-        });
+        
+        // *** Swiper കോഡ് പൂർണ്ണമായും നീക്കം ചെയ്തു ***
+
     } catch (error) { 
         console.error("Error loading home categories: ", error); 
         grid.innerHTML = '<p>Error loading categories.</p>'; // പിശക് ഇവിടെ കാണിക്കും
