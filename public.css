@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** 'SHOP BY CATEGORY' കാർഡുകൾ 4:5 അനുപാതത്തിലാക്കി ***
+   *** കാറ്റഗറി പേര് സ്വർണ്ണ നിറമാക്കി, ടോപ്പ് സെല്ലർ റേഷ്യോ 4:5 ആക്കി ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -528,10 +528,15 @@ img {
 }
 .top-sellers-swiper-new .swiper-slide {
     text-align: center;
+    /* *** കാർഡ് സ്റ്റൈലുകൾ ചിത്രത്തിലേക്ക് മാറ്റി *** */
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
 }
 .top-sellers-product-image {
     width: 100%;
-    height: 350px;
+    /* *** height: 350px; മാറ്റി aspect-ratio ആക്കി *** */
+    aspect-ratio: 4 / 5; 
     object-fit: cover;
     margin-bottom: 0; 
 }
@@ -612,7 +617,6 @@ img {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    /* *** height: 220px; മാറ്റി aspect-ratio ആക്കി *** */
     aspect-ratio: 4 / 5; 
     position: relative; 
     
@@ -635,7 +639,8 @@ img {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    color: var(--text-color); 
+    /* *** നിറം വെള്ളയിൽ നിന്ന് സ്വർണ്ണ നിറമാക്കി *** */
+    color: var(--primary-gold); 
     
     position: absolute;
     bottom: 0;
