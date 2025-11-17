@@ -1,5 +1,6 @@
 /* ഇതാണ് പുതിയ 'explore.html' പേജിന് മാത്രമായുള്ള CSS ഫയൽ.
   ഇത് നമ്മുടെ ബ്ലാക്ക് & ഗോൾഡ് തീം ഉപയോഗിക്കുന്നു.
+  *** അപ്ഡേറ്റ്: സ്ലൈഡർ ഡോട്ടുകളും താഴെയുള്ള ബട്ടണുകളും നീക്കം ചെയ്തു ***
 */
 
 /* --- 1. ഫീഡ് കണ്ടെയ്നർ --- */
@@ -54,17 +55,8 @@
     height: 100%;
     object-fit: cover;
 }
-.explore-image-swiper .swiper-pagination {
-    bottom: 10px;
-}
-.explore-image-swiper .swiper-pagination-bullet {
-    background-color: rgba(255, 255, 255, 0.7);
-    opacity: 0.8;
-}
-.explore-image-swiper .swiper-pagination-bullet-active {
-    background-color: var(--primary-gold);
-    opacity: 1;
-}
+/* *** സ്ലൈഡർ ഡോട്ടുകളുടെ സ്റ്റൈലുകൾ നീക്കം ചെയ്തു *** */
+
 
 /* 2.3 പ്രൊഡക്റ്റ് വിവരങ്ങൾ (കാർഡിന് താഴെ) */
 .explore-card-content {
@@ -84,6 +76,7 @@
     cursor: pointer;
     padding: 0;
     color: var(--text-color); /* വെള്ള ഐക്കൺ */
+    transition: color 0.3s, fill 0.3s; /* ഫീഡ്ബാക്കിനായി ട്രാൻസിഷൻ */
 }
 .explore-action-icons button svg {
     width: 24px;
@@ -93,13 +86,24 @@
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
+    transition: fill 0.3s;
 }
-.explore-action-icons button.bookmark-btn {
+.explore-action-icons button.explore-bookmark-btn {
     margin-left: auto; /* ബുക്ക്മാർക്ക് ഐക്കൺ വലതുവശത്തേക്ക് നീക്കാൻ */
 }
 .explore-action-icons button:hover {
     color: var(--text-muted);
 }
+/* *** ബുക്ക്മാർക്ക് ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ (disabled state) *** */
+.explore-action-icons button.explore-bookmark-btn:disabled {
+    color: var(--primary-gold) !important;
+    cursor: not-allowed;
+}
+.explore-action-icons button.explore-bookmark-btn:disabled svg {
+    fill: var(--primary-gold); /* ഐക്കൺ നിറയ്ക്കുന്നു */
+    stroke: var(--primary-gold);
+}
+
 
 /* 2.5 പ്രൊഡക്റ്റ് പേരും വിലയും */
 .explore-product-title {
@@ -131,13 +135,8 @@
     margin-left: 5px;
 }
 
-/* 2.7 "Add to Cart", "Buy" ബട്ടണുകൾ */
-.explore-product-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.75rem;
-    margin-top: 1.5rem;
-}
+/* 2.7 *** താഴെയുള്ള ബട്ടണുകളുടെ സ്റ്റൈലുകൾ നീക്കം ചെയ്തു *** */
+
 
 /* --- 3. ലോഡിംഗ് --- */
 .loading-placeholder-full {
