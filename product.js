@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** പേജ് ബ്ലാങ്ക് ആവുന്ന പിശക് (HTML ഘടന) തിരുത്തി ***
+// *** പേജ് ബ്ലാങ്ക് ആവുന്ന പിശക് (ഒറ്റ ചിത്രം) തിരുത്തി ***
 
 import { 
     collection, 
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 /**
  * URL-ൽ നിന്ന് ID എടുത്ത് ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ കാണിക്കുന്നു
- * *** HTML ഘടന തിരുത്തി ***
+ * *** ഒറ്റ ചിത്രമുള്ളപ്പോൾ സ്ലൈഡർ പിശക് തിരുത്തി ***
  */
 async function loadProductDetails() {
     if (!productDetailContent) return;
@@ -93,8 +93,11 @@ async function loadProductDetails() {
         }
 
         // --- 1. ഗാലറി നിർമ്മിക്കുന്നു ---
+        const hasImages = product.images && product.images.length > 0;
+        const hasMultipleImages = hasImages && product.images.length > 1;
+
         let slidesHTML = '';
-        if (product.images && product.images.length > 0) {
+        if (hasImages) {
             product.images.forEach((imgUrl) => {
                 slidesHTML += `
                     <div class="swiper-slide">
@@ -110,7 +113,6 @@ async function loadProductDetails() {
             `;
         }
         
-        // *** പിശക് തിരുത്തി: ഗാലറിയും ഡോട്ടുകളും ഒരുമിച്ച് ഒരു 'div'-ൽ പൊതിയുന്നു ***
         const gallerySideHTML = `
             <div class="product-gallery-container">
                 <div class="product-gallery-wrapper">
@@ -122,7 +124,8 @@ async function loadProductDetails() {
                         </div>
                     </div>
                 </div>
-                <div class="product-pagination-new swiper-pagination-custom"></div>
+                <!-- *** ഡോട്ടുകൾ ഒന്നിൽ കൂടുതൽ ചിത്രം ഉണ്ടെങ്കിൽ മാത്രം കാണിക്കും *** -->
+                <div class="product-pagination-new swiper-pagination-custom" style="display: ${hasMultipleImages ? 'flex' : 'none'};"></div>
             </div>
         `;
 
@@ -148,7 +151,7 @@ async function loadProductDetails() {
                 
                 <div class="product-actions-grid">
                     <button class="btn-secondary-new" id="add-to-cart-btn">
-                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                             <line x1="3" y1="6" x2="21" y2="6"></line>
                             <path d="M16 10a4 4 0 0 1-8 0"></path>
@@ -164,57 +167,60 @@ async function loadProductDetails() {
         `;
 
         // --- 3. എല്ലാം പേജിൽ ചേർക്കുന്നു ---
-        // *** പിശക് തിരുത്തി: ഇപ്പോൾ ഗ്രിഡിൽ കൃത്യം 2 ഐറ്റംസ് വരും ***
         productDetailContent.innerHTML = gallerySideHTML + infoSideHTML;
         
-        // --- 4. പുതിയ ആനിമേറ്റഡ് ഡോട്ടുകളുള്ള സ്ലൈഡർ ആരംഭിക്കുന്നു ---
-        const autoplayDelay = 3000;
-        new Swiper('.product-gallery-swiper', {
-            loop: true,
-            autoplay: {
-                delay: autoplayDelay,
-                disableOnInteraction: false,
-            },
-            pagination: {
-                el: '.product-pagination-new',
-                clickable: true,
-                renderBullet: function (index, className) {
-                    return '<span class="' + className + '"><span class="pagination-progress"></span></span>';
-                }
-            },
-            on: {
-                init: function (swiper) {
-                    // ആദ്യത്തെ ഡോട്ടിന് ആനിമേഷൻ നൽകുന്നു
-                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
-                    if (activeBullet) {
-                        const progressEl = activeBullet.querySelector('.pagination-progress');
-                        if (progressEl) {
-                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
+        // --- 4. സ്ലൈഡർ ആരംഭിക്കുന്നു (ഒന്നിൽ കൂടുതൽ ചിത്രം ഉണ്ടെങ്കിൽ മാത്രം) ---
+        if (hasMultipleImages) {
+            const autoplayDelay = 3000;
+            new Swiper('.product-gallery-swiper', {
+                loop: true,
+                autoplay: {
+                    delay: autoplayDelay,
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.product-pagination-new',
+                    clickable: true,
+                    renderBullet: function (index, className) {
+                        return '<span class="' + className + '"><span class="pagination-progress"></span></span>';
+                    }
+                },
+                on: {
+                    init: function (swiper) {
+                        const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+                        if (activeBullet) {
+                            const progressEl = activeBullet.querySelector('.pagination-progress');
+                            if (progressEl) {
+                                progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
+                            }
+                        }
+                    },
+                    slideChangeTransitionStart: function (swiper) {
+                        swiper.pagination.bullets.forEach(bullet => {
+                            const progressEl = bullet.querySelector('.pagination-progress');
+                            if (progressEl) {
+                                progressEl.style.animation = 'none';
+                            }
+                        });
+                        
+                        const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+                        if (activeBullet) {
+                            const progressEl = activeBullet.querySelector('.pagination-progress');
+                            if (progressEl) {
+                                progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
+                            }
                         }
                     }
                 },
-                slideChangeTransitionStart: function (swiper) {
-                    // എല്ലാ ആനിമേഷനുകളും റീസെറ്റ് ചെയ്യുന്നു
-                    swiper.pagination.bullets.forEach(bullet => {
-                        const progressEl = bullet.querySelector('.pagination-progress');
-                        if (progressEl) {
-                            progressEl.style.animation = 'none';
-                        }
-                    });
-                    
-                    // പുതിയ ആക്ടീവ് ഡോട്ടിന് ആനിമേഷൻ നൽകുന്നു
-                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
-                    if (activeBullet) {
-                        const progressEl = activeBullet.querySelector('.pagination-progress');
-                        if (progressEl) {
-                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
-                        }
-                    }
-                }
-            },
-            allowTouchMove: true,
-            speed: 600,
-        });
+                allowTouchMove: true,
+                speed: 600,
+            });
+        } else {
+            // ഒരൊറ്റ ചിത്രം മാത്രമാണെങ്കിൽ, ലളിതമായ സ്ലൈഡർ (loop, autoplay, dots ഇല്ലാതെ)
+            new Swiper('.product-gallery-swiper', {
+                allowTouchMove: true,
+            });
+        }
         
         // --- 5. ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു ---
         setupProductActionButtons();
@@ -299,7 +305,7 @@ function setupProductActionButtons() {
                 cartButton.disabled = true;
                 setTimeout(() => {
                     cartButton.innerHTML = `
-                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24" 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                             <line x1="3" y1="6" x2="21" y2="6"></line>
                             <path d="M16 10a4 4 0 0 1-8 0"></path>
