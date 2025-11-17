@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** ഡിസ്ക്രിപ്ഷനിലെ ലിങ്കുകൾ ഓട്ടോമാറ്റിക്കായി ക്ലിക്ക് ചെയ്യാൻ കഴിയുന്നതാക്കി ***
+// *** പുതിയ "More Links" ബാനറും ആനിമേറ്റഡ് ഡോട്ടുകളും ചേർത്തു ***
 
 import { 
     collection, 
@@ -23,24 +23,12 @@ let currentProduct = null;
 let whatsappNumber = ''; // WhatsApp നമ്പർ സേവ് ചെയ്യാൻ
 
 // *** പുതിയ ഫംഗ്ഷൻ: ടെക്സ്റ്റിലെ ലിങ്കുകൾ ക്ലിക്ക് ചെയ്യാൻ ***
-/**
- * Finds URLs in a string and converts them to clickable <a> tags.
- * @param {string} text - The text to parse.
- * @returns {string} - The text with HTML links.
- */
 function linkify(text) {
     if (!text) return '';
-    // http, https, ftp, അല്ലെങ്കിൽ www എന്ന് തുടങ്ങുന്ന ലിങ്കുകൾ
     const urlRegex = /(\b(https|http|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])|(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
     
     return text.replace(urlRegex, function(url, p1, p2, p3) {
-        // p1 = https://... (ഫുൾ ലിങ്ക്)
-        // p3 = www... (www എന്ന് തുടങ്ങുന്ന ലിങ്ക്)
-        
-        // 'www' എന്ന് തുടങ്ങുന്ന ലിങ്കാണെങ്കിൽ 'http://' മുന്നിൽ ചേർക്കുന്നു
         const href = p3 ? 'http://' + p3 : p1;
-        
-        // പുതിയ ടാബിൽ തുറക്കാൻ ലിങ്ക് ഉണ്ടാക്കുന്നു
         return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
 }
@@ -54,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 /**
  * URL-ൽ നിന്ന് ID എടുത്ത് ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ കാണിക്കുന്നു
- * *** ഡിസ്ക്രിപ്ഷനിൽ ലിങ്കുകൾ കാണിക്കാൻ അപ്ഡേറ്റ് ചെയ്തു ***
+ * *** പുതിയ "More Links" ബാനറും ആനിമേറ്റഡ് ഡോട്ടുകളും ചേർത്തു ***
  */
 async function loadProductDetails() {
     if (!productDetailContent) return;
@@ -104,9 +92,9 @@ async function loadProductDetails() {
             priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
         }
 
-        let galleryHTML = '';
+        // --- 1. ഗാലറി നിർമ്മിക്കുന്നു ---
+        let slidesHTML = '';
         if (product.images && product.images.length > 0) {
-            let slidesHTML = '';
             product.images.forEach((imgUrl) => {
                 slidesHTML += `
                     <div class="swiper-slide">
@@ -114,32 +102,34 @@ async function loadProductDetails() {
                     </div>
                 `;
             });
-            galleryHTML = `
+        } else {
+            slidesHTML = `
+                <div class="swiper-slide">
+                    <img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image" alt="${product.name}">
+                </div>
+            `;
+        }
+        
+        const galleryHTML = `
+            <div class="product-gallery-wrapper">
+                <!-- *** പുതിയത്: "More Links" ബാനർ ഇവിടെ വരും *** -->
+                <div id="product-more-links-banner"></div>
+                <div id="product-more-links-list"></div>
+            
                 <div class="product-gallery-swiper swiper-container">
                     <div class="swiper-wrapper">
                         ${slidesHTML}
                     </div>
-                    <div class="swiper-pagination"></div>
                 </div>
-            `;
-        } else {
-            galleryHTML = `
-                <div class="product-gallery-swiper swiper-container">
-                    <div class="swiper-wrapper">
-                         <div class="swiper-slide">
-                            <img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image" alt="${product.name}">
-                        </div>
-                    </div>
-                </div>
-            `;
-        }
+            </div>
+            <!-- *** പുതിയത്: ആനിമേറ്റഡ് ഡോട്ടുകൾ ചിത്രത്തിന് താഴെ *** -->
+            <div class="product-pagination-new swiper-pagination-custom"></div>
+        `;
 
-        // *** പുതിയത്: ഡിസ്ക്രിപ്ഷൻ ലിങ്കാക്കുന്നു ***
+        // --- 2. വിവരങ്ങൾ നിർമ്മിക്കുന്നു ---
         let descriptionHTML = 'No description available.';
         if (product.description) {
-            // 1. ആദ്യം ലിങ്കുകൾ കണ്ടെത്തുന്നു
             let linkifiedText = linkify(product.description);
-            // 2. ശേഷം പുതിയ വരികൾ <br> ആക്കുന്നു
             descriptionHTML = linkifiedText.replace(/\n/g, '<br>');
         }
 
@@ -152,13 +142,11 @@ async function loadProductDetails() {
                 <div class="price-container large">
                     ${priceHTML}
                 </div>
-                <!-- *** ഡിസ്ക്രിപ്ഷൻ ഇവിടെ അപ്ഡേറ്റ് ചെയ്തു *** -->
                 <div class="product-description">
                     ${descriptionHTML}
                 </div>
                 
                 <div class="product-actions-grid">
-                    <!-- ബട്ടൺ 1: Add to Cart (പുതിയ ഡിസൈൻ) -->
                     <button class="btn-secondary-new" id="add-to-cart-btn">
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -167,8 +155,6 @@ async function loadProductDetails() {
                         </svg>
                         Add to Cart
                     </button>
-                    
-                    <!-- ബട്ടൺ 2: Buy on WhatsApp (ഐക്കൺ നീക്കം ചെയ്തു) -->
                     <a class="btn-primary-new" id="buy-on-whatsapp-btn" href="#">
                         Buy on WhatsApp
                     </a>
@@ -177,24 +163,62 @@ async function loadProductDetails() {
             </div>
         `;
 
+        // --- 3. എല്ലാം പേജിൽ ചേർക്കുന്നു ---
         productDetailContent.innerHTML = galleryHTML + infoHTML;
         
+        // --- 4. പുതിയ ആനിമേറ്റഡ് ഡോട്ടുകളുള്ള സ്ലൈഡർ ആരംഭിക്കുന്നു ---
+        const autoplayDelay = 3000;
         new Swiper('.product-gallery-swiper', {
             loop: true,
             autoplay: {
-                delay: 3000,
+                delay: autoplayDelay,
                 disableOnInteraction: false,
             },
             pagination: {
-                el: '.swiper-pagination',
+                el: '.product-pagination-new',
                 clickable: true,
+                renderBullet: function (index, className) {
+                    return '<span class="' + className + '"><span class="pagination-progress"></span></span>';
+                }
+            },
+            on: {
+                init: function (swiper) {
+                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+                    if (activeBullet) {
+                        const progressEl = activeBullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
+                        }
+                    }
+                },
+                slideChangeTransitionStart: function (swiper) {
+                    swiper.pagination.bullets.forEach(bullet => {
+                        const progressEl = bullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = 'none';
+                        }
+                    });
+                    
+                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+                    if (activeBullet) {
+                        const progressEl = activeBullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
+                        }
+                    }
+                }
             },
             allowTouchMove: true,
             speed: 600,
         });
         
+        // --- 5. ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു ---
         setupProductActionButtons();
+        
+        // --- 6. "More Links" ബാനർ പ്രവർത്തിപ്പിക്കുന്നു ---
+        setupMoreLinksBanner(product.moreLinks || []);
 
+        // --- 7. ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു ---
         if (product.categoryId) {
             loadRelatedProducts(product.categoryId, productIdStr);
         }
@@ -202,6 +226,52 @@ async function loadProductDetails() {
     } catch (error) {
         console.error("Error loading product details: ", error);
         productDetailContent.innerHTML = '<p class="error-message">Error loading product details.</p>';
+    }
+}
+
+/**
+ * *** പുതിയ ഫംഗ്ഷൻ: "More Links" ബാനർ പ്രവർത്തിപ്പിക്കുന്നു ***
+ * @param {Array} links - അഡ്മിൻ പാനലിൽ നിന്ന് ലഭിച്ച ലിങ്കുകളുടെ അറേ
+ */
+function setupMoreLinksBanner(links) {
+    const banner = document.getElementById('product-more-links-banner');
+    const list = document.getElementById('product-more-links-list');
+    
+    if (!banner || !list || links.length === 0) {
+        return; // ലിങ്കുകൾ ഇല്ലെങ്കിൽ ഒന്നും ചെയ്യേണ്ട
+    }
+
+    // ലിങ്കുകൾ ഉണ്ട്, ബാനർ കാണിക്കാം
+    banner.style.display = 'block';
+
+    if (links.length === 1) {
+        // ഒരൊറ്റ ലിങ്ക് ആണെങ്കിൽ
+        const link = links[0];
+        banner.innerHTML = `<span>${link.title}</span>`; // ലിങ്കിന്റെ പേര് ബാനറിൽ കാണിക്കുന്നു
+        banner.addEventListener('click', () => {
+            window.open(link.url, '_blank'); // ക്ലിക്ക് ചെയ്യുമ്പോൾ നേരെ ആ ലിങ്കിലേക്ക് പോകുന്നു
+        });
+    } else {
+        // ഒന്നിലധികം ലിങ്കുകൾ ഉണ്ടെങ്കിൽ
+        banner.innerHTML = `<span>More Links ▾</span>`; // ഡ്രോപ്പ്ഡൗൺ സൂചന
+        
+        let listHTML = '';
+        links.forEach(link => {
+            // ലിസ്റ്റിനുള്ളിൽ ടൈറ്റിൽ മാത്രം കാണിക്കുന്നു
+            listHTML += `<a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.title}</a>`;
+        });
+        list.innerHTML = listHTML;
+        
+        // ബാനറിൽ ക്ലിക്ക് ചെയ്യുമ്പോൾ ലിസ്റ്റ് കാണിക്കുന്നു/മറയ്ക്കുന്നു
+        banner.addEventListener('click', (e) => {
+            e.stopPropagation(); // പേജിന്റെ മറ്റ് ഭാഗങ്ങളിൽ ക്ലിക്ക് ചെയ്യുന്നത് തടയാൻ
+            list.classList.toggle('open');
+        });
+
+        // പുറത്ത് ക്ലിക്ക് ചെയ്താൽ ലിസ്റ്റ് മറയ്ക്കുന്നു
+        document.addEventListener('click', () => {
+            list.classList.remove('open');
+        });
     }
 }
 
@@ -267,7 +337,7 @@ function setupProductActionButtons() {
 }
 
 /**
- * ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (പുതിയ സ്ലൈഡർ രൂപത്തിൽ)
+ * ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
  */
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
