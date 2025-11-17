@@ -1,6 +1,7 @@
 // ഇതാണ് 'common.js' ഫയൽ.
 // *** ഫ്ലോട്ടിംഗ് WhatsApp ഐക്കൺ SVG അപ്ഡേറ്റ് ചെയ്തു ***
-// *** പുതിയത്: സൈഡ് മെനുവിൽ "Explore" ടാബ് ചേർത്തു ***
+// *** സൈഡ് മെനുവിൽ "Explore" ടാബ് ചേർത്തു ***
+// *** പുതിയത്: ഫൂട്ടർ ലിങ്കുകൾ നിങ്ങളുടെ നിർദ്ദേശപ്രകാരം പൂർണ്ണമായും മാറ്റി ***
 
 import { db, auth } from './firebase-config.js';
 import { 
@@ -111,7 +112,7 @@ async function buildHeader() {
 /**
  * 2. വശത്തുള്ള മെനു (Side Nav) നിർമ്മിക്കുന്നു
  * *** സോഷ്യൽ മീഡിയ ലിങ്കുകൾ അപ്ഡേറ്റ് ചെയ്തു ***
- * *** പുതിയത്: "Explore" ടാബ് ചേർത്തു ***
+ * *** "Explore" ടാബ് ചേർത്തു ***
  */
 async function buildSideNav() {
     const settings = await fetchSiteSettings();
@@ -172,7 +173,6 @@ async function buildSideNav() {
         <ul class="side-nav-links">
             <li><a href="index.html">Home</a></li>
             
-            <!-- *** പുതിയത്: Explore ടാബ് *** -->
             <li><a href="explore.html">Explore</a></li>
             
             <li class="catalog-item">
@@ -197,7 +197,7 @@ async function buildSideNav() {
 
 /**
  * 3. പുതിയ അക്കോർഡിയൻ ഫൂട്ടർ നിർമ്മിക്കുന്നു
- * *** സോഷ്യൽ ലിങ്കുകളും 'Powered by' വരിയും അപ്ഡേറ്റ് ചെയ്തു ***
+ * *** ഫൂട്ടർ ലിങ്കുകൾ നിങ്ങളുടെ നിർദ്ദേശപ്രകാരം മാറ്റി ***
  */
 async function buildFooter() {
     const settings = await fetchSiteSettings();
@@ -235,29 +235,17 @@ async function buildFooter() {
 
     footerElement.innerHTML = `
         <div class="footer-container-new">
-            <!-- ഐറ്റം 1: About -->
+            <!-- *** മാറ്റം 1: "ABOUT OUDARABIA" -> "ABOUT" *** -->
+            <!-- *** "Our Story" നീക്കം ചെയ്തു, പോളിസികൾ ചേർത്തു *** -->
             <div class="footer-accordion-item">
                 <button class="footer-accordion-toggle" data-target="footer-content-1">
-                    <span>ABOUT OUDARABIA</span>
+                    <span>ABOUT</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 11.293l-4.646-4.647a.5.5 0 0 1 .708-.708L8 9.879l4.939-4.939a.5.5 0 0 1 .708.708L8 11.293z"></path></svg>
                 </button>
                 <div class="footer-accordion-content" id="footer-content-1">
                     <ul>
-                        <li><a href="#">Our Story</a></li>
                         <li><a href="contact.html">Contact Us</a></li>
                         <li><a href="#">Store Locator</a></li>
-                    </ul>
-                </div>
-            </div>
-            
-            <!-- ഐറ്റം 2: Customer Care -->
-            <div class="footer-accordion-item">
-                <button class="footer-accordion-toggle" data-target="footer-content-2">
-                    <span>CUSTOMER CARE</span>
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 11.293l-4.646-4.647a.5.5 0 0 1 .708-.708L8 9.879l4.939-4.939a.5.5 0 0 1 .708.708L8 11.293z"></path></svg>
-                </button>
-                <div class="footer-accordion-content" id="footer-content-2">
-                    <ul>
                         <li><a href="#">Shipping Policy</a></li>
                         <li><a href="#">Privacy Policy</a></li>
                         <li><a href="#">Terms of Service</a></li>
@@ -265,7 +253,9 @@ async function buildFooter() {
                 </div>
             </div>
             
-            <!-- ഐറ്റം 3: Quick Links -->
+            <!-- *** മാറ്റം 2: "CUSTOMER CARE" സെക്ഷൻ നീക്കം ചെയ്തു *** -->
+            
+            <!-- *** മാറ്റം 3: "QUICK LINKS" അപ്ഡേറ്റ് ചെയ്തു *** -->
             <div class="footer-accordion-item">
                 <button class="footer-accordion-toggle" data-target="footer-content-3">
                     <span>QUICK LINKS</span>
@@ -274,8 +264,10 @@ async function buildFooter() {
                 <div class="footer-accordion-content" id="footer-content-3">
                     <ul>
                         <li><a href="index.html">Home</a></li>
-                        <li><a href="categories.html">Perfumes</a></li>
+                        <li><a href="explore.html">Explore</a></li>
+                        <li><a href="categories.html">Catalog</a></li>
                         <li><a href="cart.html">Cart</a></li>
+                        <li><a href="contact.html">Contact</a></li>
                     </ul>
                 </div>
             </div>
@@ -453,3 +445,6 @@ export async function loadSiteSettings() {
         }
     }
 }
+```EOF
+
+ഞാൻ `common.js` ഫയൽ അപ്ഡേറ്റ് ചെയ്തിട്ടുണ്ട്. `buildFooter` എന്ന ഫംഗ്ഷനിലെ ലിങ്കുകൾ നിങ്ങൾ പറഞ്ഞതുപോലെ ഞാൻ മാറ്റിയിട്ടുണ്ട്.
