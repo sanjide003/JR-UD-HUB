@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** ഫ്ലോട്ടിംഗ് ബട്ടൺ വലിപ്പം കൂട്ടി ***
+   *** ഫ്ലോട്ടിംഗ് WhatsApp ബട്ടൺ കളർ അപ്ഡേറ്റ് ചെയ്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -558,15 +558,6 @@ img {
     cursor: pointer;
 }
 /* പ്രോഗ്രസ് ബാർ (നിറയുന്നത്) */
-.top-sellers-pagination-new .pagination-progress {
-    display: block;
-    width: 100%;
-    height: 100%;
-    background-color: var(--primary-gold); 
-    transform: scaleX(0); 
-    transform-origin: left; 
-}
-/* ആക്ടീവ് ആയ ഡോട്ട് മാത്രം ആനിമേഷൻ കാണിക്കും */
 .top-sellers-pagination-new .swiper-pagination-bullet-active .pagination-progress {
     animation: progress-fill 4s linear forwards; 
 }
@@ -796,6 +787,7 @@ img {
 /* 8.1 കാറ്റഗറി പേജിലെ പുതിയ പ്രൊഡക്റ്റ് കാർഡ് */
 .category-product-card {
     background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
     border: 1px solid var(--border-color);
@@ -1234,8 +1226,8 @@ img {
     pointer-events: none; 
 }
 .float-btn {
-    width: 56px; /* *** വലിപ്പം കൂട്ടി *** */
-    height: 56px; /* *** വലിപ്പം കൂട്ടി *** */
+    width: 56px; 
+    height: 56px; 
     border-radius: 50%;
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -1252,22 +1244,26 @@ img {
     border-color: var(--primary-gold);
 }
 .float-btn.whatsapp {
-    /* ഇടതുവശത്ത് */
-}
-.float-btn.cart {
-    /* വലതുവശത്ത് */
-}
-.float-btn svg {
-    width: 32px; /* *** വലിപ്പം കൂട്ടി *** */
-    height: 32px; /* *** വലിപ്പം കൂട്ടി *** */
+    /* *** WhatsApp ബട്ടണിന്റെ സ്റ്റൈൽ അപ്ഡേറ്റ് ചെയ്തു *** */
+    background-color: #25D366; /* WhatsApp പച്ച */
+    border: 1px solid #25D366; /* WhatsApp പച്ച ബോർഡർ */
 }
 .float-btn.whatsapp svg {
-    fill: #25D366; 
+    fill: #FFFFFF; /* ഐക്കൺ വെള്ള */
+}
+.float-btn.cart {
+    stroke: var(--primary-gold); 
+    fill: none;
+    stroke-width: 2;
 }
 .float-btn.cart svg {
     stroke: var(--primary-gold); 
     fill: none;
     stroke-width: 2;
+}
+.float-btn svg {
+    width: 32px; 
+    height: 32px; 
 }
 
 
@@ -1321,12 +1317,12 @@ img {
         padding: 0 15px;
     }
     .float-btn {
-        width: 50px; /* *** മൊബൈൽ വലിപ്പം കൂട്ടി *** */
-        height: 50px; /* *** മൊബൈൽ വലിപ്പം കൂട്ടി *** */
+        width: 50px; 
+        height: 50px; 
     }
     .float-btn svg {
-        width: 28px; /* *** മൊബൈൽ വലിപ്പം കൂട്ടി *** */
-        height: 28px; /* *** മൊബൈൽ വലിപ്പം കൂട്ടി *** */
+        width: 28px; 
+        height: 28px; 
     }
     
     .category-nav-desktop {
@@ -1380,6 +1376,15 @@ img {
     }
     .category-nav-link {
         border: 1px solid var(--border-color);
+    }
+    .category-nav-link:hover {
+        color: var(--text-color);
+        background-color: var(--card-bg);
+    }
+    .category-nav-link.active {
+        color: var(--primary-gold);
+        border-color: var(--primary-gold);
+        background-color: var(--card-bg);
     }
     .category-page-content {
         flex-grow: 1;
