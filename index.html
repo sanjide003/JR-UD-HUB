@@ -1,9 +1,6 @@
 <!-- 
   ഇതാണ് ഹോം പേജ്. 
-  *** Mute/Unmute ബട്ടൺ പൂർണ്ണമായും നീക്കം ചെയ്തു ***
-  *** പുതിയ പേജ് ലോഡർ ചേർത്തു ***
-  *** 'FEATURED' സെക്ഷൻ നീക്കം ചെയ്തു ***
-  *** ടോപ്പ് സെല്ലർ ഡോട്ടുകൾ സ്ലൈഡറിന് പുറത്താക്കി ***
+  *** 'SHOP BY CATEGORY' സ്ലൈഡർ മാറ്റി വെർട്ടിക്കൽ ലിസ്റ്റ് ആക്കി ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -46,8 +43,6 @@
                 <div class="swiper-pagination hero-pagination-dots"></div>
             </div>
             
-            <!-- *** Mute/Unmute ബട്ടൺ ഇവിടെ നിന്ന് നീക്കം ചെയ്തു *** -->
-
         </section>
 
         <!-- 3.2. ഹീറോ ടെക്സ്റ്റ് -->
@@ -63,21 +58,18 @@
                     <!-- 'index.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
                 </div>
             </div>
-            <!-- *** ആനിമേറ്റഡ് ഡോട്ടുകൾ (പുതിയത്) *** -->
+            <!-- ആനിമേറ്റഡ് ഡോട്ടുകൾ -->
             <div class="top-sellers-pagination-new swiper-pagination-custom"></div>
         </section>
 
-        <!-- 3.4. ഷോപ്പ് ബൈ കാറ്റഗറി -->
+        <!-- 3.4. ഷോപ്പ് ബൈ കാറ്റഗറി (വെർട്ടിക്കൽ ലിസ്റ്റ്) -->
         <section class="home-section container">
             <h2 class="section-title-new">SHOP BY CATEGORY</h2>
-            <div class="swiper category-swiper-new">
-                <div class="swiper-wrapper" id="category-grid-home">
-                    <!-- 'index.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ (swiper-slide ആയി) ഇവിടെ വരും -->
-                </div>
+            <!-- *** സ്ലൈഡർ ക്ലാസ്സുകൾ നീക്കം ചെയ്തു, പുതിയ ക്ലാസ്സ് ചേർത്തു *** -->
+            <div id="category-grid-home" class="category-grid-vertical">
+                <!-- 'index.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ (ലിസ്റ്റ് ആയി) ഇവിടെ വരും -->
             </div>
         </section>
-        
-        <!-- *** 3.5. ഫീച്ചേർഡ് സെക്ഷൻ നീക്കം ചെയ്തു *** -->
         
     </main>
 
