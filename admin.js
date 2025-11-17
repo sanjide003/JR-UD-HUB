@@ -1,6 +1,5 @@
 // ഇതാണ് 'admin.js' ഫയൽ.
-// *** എഡിറ്റ് ബഗ് പരിഹരിച്ചു (ലിസണറുകൾ തിരികെ ചേർത്തു) ***
-// *** ഡൈനാമിക് അഡ്മിൻ പാനൽ ടൈറ്റിൽ ചേർത്തു ***
+// *** "More Links" എന്ന പുതിയ ഫീച്ചർ ചേർത്തു ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -59,6 +58,10 @@ const productFilterCategory = document.getElementById("product-filter-category")
 const featuredProductsListBody = document.getElementById("featured-products-list-body"); 
 const addImageUrlBtn = document.getElementById("add-image-url-btn");
 const productImageContainer = document.getElementById("product-image-list-container");
+
+// *** പുതിയത്: "More Links" Elements ***
+const addMoreLinkBtn = document.getElementById("add-more-link-btn");
+const productMoreLinksContainer = document.getElementById("product-more-links-container");
 
 // Hero Slide Elements
 const addHeroSlideForm = document.getElementById("add-hero-slide-form");
@@ -151,9 +154,19 @@ onAuthStateChanged(auth, (user) => {
         loadFeaturedProducts(); 
         loadHeroSlides(); 
         loadAllSettings();
+        
+        // --- *** പുതിയത്: ഇമേജ് & ലിങ്ക് അപ്‌ലോഡറുകൾ ആരംഭിക്കുന്നു *** ---
+        setupImageUploader('product-image-list-container', 'add-image-url-btn');
         if (productImageContainer.children.length === 0) {
             addImageInput('product-image-list-container');
         }
+
+        setupMoreLinksUploader('product-more-links-container', 'add-more-link-btn');
+        if (productMoreLinksContainer.children.length === 0) {
+            addMoreLinkInput('product-more-links-container');
+        }
+        // --- *** മാറ്റം കഴിഞ്ഞു *** ---
+
     } else {
         loginSection.style.display = "block";
         adminPanel.style.display = "none";
@@ -225,7 +238,6 @@ async function loadAllSettings() {
             document.getElementById("setting-instagram-url").value = settings.instagramUrl || '';
             document.getElementById("setting-youtube-url").value = settings.youtubeUrl || '';
 
-            // *** പുതിയത്: അഡ്മിൻ പാനൽ തലക്കെട്ട് അപ്ഡേറ്റ് ചെയ്യുന്നു ***
             const titleElement = document.getElementById("admin-panel-title");
             if (titleElement) {
                 titleElement.textContent = `${settings.logoText || 'Admin'} - Panel`;
@@ -251,7 +263,6 @@ generalSettingsForm.addEventListener("submit", async (e) => {
         const docRef = doc(db, "settings", "global");
         await setDoc(docRef, settings, { merge: true });
         showStatus(adminStatus, "General settings saved!", false);
-        // *** പുതിയത്: സേവ് ചെയ്ത ശേഷം തലക്കെട്ട് അപ്ഡേറ്റ് ചെയ്യുന്നു ***
         const titleElement = document.getElementById("admin-panel-title");
         if (titleElement) {
             titleElement.textContent = `${settings.logoText || 'Admin'} - Panel`;
@@ -366,7 +377,7 @@ addCategoryForm.addEventListener("submit", async (e) => {
 
 // --- 6. Product Logic ---
 
-// 6.1 Existing Products (ഫിൽട്ടറിംഗ് സഹിതം)
+// 6.1 Existing Products
 function loadProducts(categoryId = "all") {
      let q;
      if (categoryId === "all") {
@@ -473,6 +484,9 @@ addProductForm.addEventListener("submit", async (e) => {
             throw new Error("Please add at least one image URL.");
         }
 
+        // *** പുതിയത്: "More Links" ഡാറ്റ എടുക്കുന്നു ***
+        const moreLinks = getMoreLinksFromUploader('product-more-links-container');
+
         const product = {
             categoryId: productCategorySelect.value,
             name: document.getElementById("product-name").value,
@@ -482,6 +496,7 @@ addProductForm.addEventListener("submit", async (e) => {
             description: document.getElementById("product-description").value,
             featured: document.getElementById("product-featured").checked,
             images: imageUrls,
+            moreLinks: moreLinks, // *** പുതിയ ഡാറ്റ ചേർത്തു ***
             createdAt: serverTimestamp()
         };
         
@@ -492,8 +507,11 @@ addProductForm.addEventListener("submit", async (e) => {
         await addDoc(collection(db, "products"), product);
         showStatus(adminStatus, "Product added successfully!", false);
         addProductForm.reset();
-        productImageContainer.innerHTML = '';
-        addImageInput('product-image-list-container');
+        
+        // *** പുതിയത്: അപ്‌ലോഡറുകൾ റീസെറ്റ് ചെയ്യുന്നു ***
+        populateImageUploader('product-image-list-container', []);
+        populateMoreLinksUploader('product-more-links-container', []);
+
     } catch (error) {
         console.error("Error adding product: ", error);
         showStatus(adminStatus, `Error: ${error.message}`);
@@ -559,18 +577,15 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
 
 
 // --- 8. Edit & Delete Logic ---
-// *** എഡിറ്റ് ബഗ് പരിഹരിച്ചു: ഈ ലിസണർ തിരികെ ചേർത്തു ***
 document.body.addEventListener('click', async (e) => {
     const target = e.target;
     
-    // Delete ബട്ടൺ
     if (target.classList.contains('btn-delete')) {
         const id = target.dataset.id;
         const type = target.dataset.type;
         openConfirmModal(id, type);
     }
     
-    // Edit ബട്ടൺ
     if (target.classList.contains('btn-edit')) {
         const id = target.dataset.id;
         const type = target.dataset.type;
@@ -619,7 +634,6 @@ confirmBtnDelete.addEventListener('click', async () => {
 // എഡിറ്റ് മോഡൽ
 async function openEditModal(id, type) {
     modalForm.innerHTML = '';
-    // showLoader(modalLoader); // മോഡൽ ലോഡർ ഇപ്പോൾ ഉപയോഗിക്കുന്നില്ല
     editModal.style.display = 'flex';
     
     try {
@@ -693,6 +707,15 @@ async function openEditModal(id, type) {
                         </div>
                         <button type="button" id="add-modal-image-url-btn" class="btn btn-secondary">Add Image URL</button>
                     </div>
+
+                    <!-- *** പുതിയത്: എഡിറ്റ് മോഡലിൽ "More Links" *** -->
+                    <div class="form-group full-width">
+                        <label>More Links</label>
+                        <div id="modal-more-links-container" class="link-url-list"></div>
+                        <button type="button" id="add-modal-more-link-btn" class="btn btn-secondary">Add Link</button>
+                    </div>
+                    <!-- *** മാറ്റം കഴിഞ്ഞു *** -->
+
                 </div>
                 <button type="submit" class="btn" id="modal-save-button">
                     <span class="btn-text">Save Changes</span>
@@ -701,16 +724,18 @@ async function openEditModal(id, type) {
             `;
             document.getElementById('modal-product-category').value = data.categoryId;
             
+            // *** പുതിയത്: ഇമേജ്, ലിങ്ക് അപ്‌ലോഡറുകൾ ആരംഭിക്കുന്നു ***
             setupImageUploader('modal-image-list-container', 'add-modal-image-url-btn');
             populateImageUploader('modal-image-list-container', data.images || []);
+
+            setupMoreLinksUploader('modal-more-links-container', 'add-modal-more-link-btn');
+            populateMoreLinksUploader('modal-more-links-container', data.moreLinks || []);
         }
         
     } catch (error) {
         console.error("Error opening modal: ", error);
         showStatus(adminStatus, `Error: ${error.message}`);
         closeEditModal();
-    } finally {
-        // hideLoader(modalLoader);
     }
 }
         
@@ -720,7 +745,6 @@ function closeEditModal() {
 }
 modalCloseButton.addEventListener('click', closeEditModal);
 
-// *** എഡിറ്റ് ബഗ് പരിഹരിച്ചു: ഈ ലിസണർ തിരികെ ചേർത്തു ***
 modalForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const button = document.getElementById('modal-save-button');
@@ -744,6 +768,9 @@ modalForm.addEventListener("submit", async (e) => {
                 throw new Error("Please add at least one image URL.");
             }
             
+            // *** പുതിയത്: "More Links" ഡാറ്റ എടുക്കുന്നു ***
+            const moreLinks = getMoreLinksFromUploader('modal-more-links-container');
+            
             dataToSave = {
                 categoryId: document.getElementById('modal-product-category').value,
                 name: document.getElementById('modal-product-name').value,
@@ -753,6 +780,7 @@ modalForm.addEventListener("submit", async (e) => {
                 description: document.getElementById('modal-product-description').value,
                 featured: document.getElementById('modal-product-featured').checked,
                 images: imageUrls,
+                moreLinks: moreLinks, // *** പുതിയ ഡാറ്റ ചേർത്തു ***
             };
         }
         
@@ -770,7 +798,7 @@ modalForm.addEventListener("submit", async (e) => {
 });
 
 
-// --- 9. പുതിയത്: ഇമേജ് അപ്‌ലോഡ് സിസ്റ്റം ---
+// --- 9. ഇമേജ് അപ്‌ലോഡ് സിസ്റ്റം ---
 
 function setupImageUploader(containerId, addBtnId) {
     const container = document.getElementById(containerId);
@@ -843,6 +871,83 @@ function populateImageUploader(containerId, urls) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    setupImageUploader('product-image-list-container', 'add-image-url-btn');
-});
+// --- *** 10. പുതിയത്: "More Links" അപ്‌ലോഡ് സിസ്റ്റം *** ---
+
+/**
+ * "More Links" സെക്ഷൻ പ്രവർത്തിപ്പിക്കുന്നു (Add/Remove ബട്ടണുകൾ)
+ */
+function setupMoreLinksUploader(containerId, addBtnId) {
+    const container = document.getElementById(containerId);
+    const addBtn = document.getElementById(addBtnId);
+
+    if (!container || !addBtn) return;
+
+    // "Add Link" ബട്ടൺ
+    addBtn.addEventListener('click', () => {
+        addMoreLinkInput(containerId);
+    });
+
+    // "Remove Link" ബട്ടൺ
+    container.addEventListener('click', (e) => {
+        if (e.target.classList.contains('btn-remove-link')) {
+            e.target.closest('.link-url-item').remove();
+        }
+    });
+}
+
+/**
+ * ഒരു പുതിയ ലിങ്ക് ഇൻപുട്ട് (Title + URL) ചേർക്കുന്നു
+ */
+function addMoreLinkInput(containerId, link = { title: '', url: '' }) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const item = document.createElement('div');
+    item.className = 'link-url-item';
+    
+    item.innerHTML = `
+        <input type="text" class="link-title-input" value="${link.title}" placeholder="Link Title (e.g., YouTube Review)">
+        <input type="text" class="link-url-input" value="${link.url}" placeholder="Link URL (https://...)">
+        <button type="button" class="btn-remove-link">&times;</button>
+    `;
+    
+    container.appendChild(item);
+}
+
+/**
+ * എല്ലാ ലിങ്കുകളും ഒരു അറേ ആയി എടുക്കുന്നു
+ */
+function getMoreLinksFromUploader(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return [];
+    
+    const links = [];
+    container.querySelectorAll('.link-url-item').forEach(item => {
+        const title = item.querySelector('.link-title-input').value.trim();
+        const url = item.querySelector('.link-url-input').value.trim();
+        
+        if (title && url) { // രണ്ടും ഉണ്ടെങ്കിൽ മാത്രം സേവ് ചെയ്യുക
+            links.push({ title: title, url: url });
+        }
+    });
+    return links;
+}
+
+/**
+ * എഡിറ്റ് ചെയ്യുമ്പോൾ പഴയ ലിങ്കുകൾ ഇൻപുട്ടിൽ കാണിക്കുന്നു
+ */
+function populateMoreLinksUploader(containerId, links) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    container.innerHTML = ''; 
+    
+    if (links && links.length > 0) {
+        links.forEach(link => {
+            addMoreLinkInput(containerId, link);
+        });
+    } else {
+        // പഴയ ലിങ്കുകൾ ഇല്ലെങ്കിൽ, ഒരു ഒഴിഞ്ഞ ഇൻപുട്ട് കാണിക്കുന്നു
+        addMoreLinkInput(containerId);
+    }
+}
+// --- *** "More Links" കോഡ് കഴിഞ്ഞു *** ---
