@@ -1,5 +1,6 @@
 // ഇതാണ് 'product.js' ഫയൽ.
 // *** ഡിസ്ക്രിപ്ഷനിലെ ലിങ്കുകൾ ഓട്ടോമാറ്റിക്കായി ക്ലിക്ക് ചെയ്യാൻ കഴിയുന്നതാക്കി ***
+// *** പുതിയത്: "More Links" (Paid Promotion) ഗാലറിക്ക് മുകളിൽ ചേർത്തു ***
 
 import { 
     collection, 
@@ -55,6 +56,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 /**
  * URL-ൽ നിന്ന് ID എടുത്ത് ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ കാണിക്കുന്നു
  * *** ഡിസ്ക്രിപ്ഷനിൽ ലിങ്കുകൾ കാണിക്കാൻ അപ്ഡേറ്റ് ചെയ്തു ***
+ * *** "More Links" ഗാലറിയിലേക്ക് ചേർത്തു ***
  */
 async function loadProductDetails() {
     if (!productDetailContent) return;
@@ -104,6 +106,25 @@ async function loadProductDetails() {
             priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
         }
 
+        // *** പുതിയത്: "More Links" (Paid Promotion) కోసం HTML ***
+        let moreLinksHTML = '';
+        if (product.moreLinks && product.moreLinks.length > 0) {
+            moreLinksHTML = '<div class="product-more-links">';
+            product.moreLinks.forEach(link => {
+                // നിങ്ങൾ ആവശ്യപ്പെട്ട പ്രകാരം ടൈറ്റിൽ മാത്രം കാണിക്കുന്നു
+                moreLinksHTML += `
+                    <a href="${link.url}" class="product-promotion-link" target="_blank" rel="noopener noreferrer">
+                        <span>${link.title}</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
+                        </svg>
+                    </a>
+                `;
+            });
+            moreLinksHTML += '</div>';
+        }
+        // *** മാറ്റം കഴിഞ്ഞു ***
+
         let galleryHTML = '';
         if (product.images && product.images.length > 0) {
             let slidesHTML = '';
@@ -120,6 +141,7 @@ async function loadProductDetails() {
                         ${slidesHTML}
                     </div>
                     <div class="swiper-pagination"></div>
+                    ${moreLinksHTML} <!-- *** പുതിയ ലിങ്കുകൾ ഗാലറിക്കുള്ളിൽ ചേർത്തു *** -->
                 </div>
             `;
         } else {
@@ -130,6 +152,7 @@ async function loadProductDetails() {
                             <img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image" alt="${product.name}">
                         </div>
                     </div>
+                    ${moreLinksHTML} <!-- *** പുതിയ ലിങ്കുകൾ ഗാലറിക്കുള്ളിൽ ചേർത്തു *** -->
                 </div>
             `;
         }
