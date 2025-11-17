@@ -1,5 +1,8 @@
 // ഇതാണ് പുതിയ 'explore.js' ഫയൽ.
 // എല്ലാ പ്രൊഡക്ടുകളും കാറ്റഗറി വിവരങ്ങളും സഹിതം ഇവിടെ ലോഡ് ചെയ്യും.
+// *** അപ്ഡേറ്റ്: ഇമേജ് ഡോട്ടുകൾ നീക്കം ചെയ്തു ***
+// *** അപ്ഡേറ്റ്: താഴെയുള്ള ബട്ടണുകൾ നീക്കം ചെയ്തു ***
+// *** അപ്ഡേറ്റ്: ബുക്ക്മാർക്ക് ഐക്കണിൽ "Add to Cart" പ്രവർത്തനം ചേർത്തു ***
 
 import {
     collection,
@@ -105,10 +108,7 @@ async function loadProducts() {
         // പുതിയതായി ചേർത്ത സ്ലൈഡറുകൾ പ്രവർത്തിപ്പിക്കുന്നു
         new Swiper('.explore-image-swiper', {
             loop: false,
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
+            // *** നീക്കം ചെയ്തു: pagination (ഡോട്ടുകൾ) ***
             allowTouchMove: true,
         });
 
@@ -143,6 +143,7 @@ function buildCategoryHeader(categoryId) {
 
 /**
  * 4. ഇമേജ് സ്ലൈഡർ നിർമ്മിക്കുന്നു (പ്രൊഡക്റ്റ് പേജിലേക്ക് ലിങ്ക് സഹിതം)
+ * *** നീക്കം ചെയ്തു: pagination div ***
  */
 function buildImageSlider(productId, images, productName) {
     const productLink = `product.html?id=${productId}`;
@@ -174,13 +175,15 @@ function buildImageSlider(productId, images, productName) {
             <div class="swiper-wrapper">
                 ${slidesHTML}
             </div>
-            <div class="swiper-pagination"></div>
+            <!-- *** നീക്കം ചെയ്തു: <div class="swiper-pagination"></div> *** -->
         </div>
     `;
 }
 
 /**
  * 5. കാർഡിന്റെ താഴത്തെ ഭാഗം (വിവരണം, ബട്ടണുകൾ) നിർമ്മിക്കുന്നു
+ * *** അപ്ഡേറ്റ്: ബുക്ക്മാർക്ക് ഐക്കണിൽ "data-" ആട്രിബ്യൂട്ടുകൾ ചേർത്തു ***
+ * *** നീക്കം ചെയ്തു: താഴെയുള്ള ബട്ടണുകൾ ***
  */
 function buildCardContent(productId, product) {
     const price = product.price || 0;
@@ -217,7 +220,15 @@ function buildCardContent(productId, product) {
                 <button title="Share" class="share-btn">
                     <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>
-                <button title="Save" class="bookmark-btn">
+                
+                <!-- *** പുതിയത്: ബുക്ക്മാർക്ക് ബട്ടണിൽ Add to Cart ഡാറ്റ ചേർത്തു *** -->
+                <button title="Add to Cart" class="bookmark-btn"
+                    data-id="${productId}"
+                    data-name="${product.name}"
+                    data-price="${price}"
+                    data-mrp="${mrp}"
+                    data-image="${imageUrl}"
+                    data-size="${product.size || ''}">
                     <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
                 </button>
             </div>
@@ -233,22 +244,7 @@ function buildCardContent(productId, product) {
                 ${descriptionHTML}
             </div>
             
-            <!-- ബട്ടണുകൾ -->
-            <div class="explore-product-buttons">
-                <button class="btn btn-secondary-new btn-add-to-cart"
-                    data-id="${productId}"
-                    data-name="${product.name}"
-                    data-price="${price}"
-                    data-mrp="${mrp}"
-                    data-image="${imageUrl}"
-                    data-size="${product.size || ''}">
-                    <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                    Add to Cart
-                </button>
-                <a href="product.html?id=${productId}" class="btn btn-primary-new">
-                    View Details
-                </a>
-            </div>
+            <!-- *** നീക്കം ചെയ്തു: താഴെയുള്ള ബട്ടണുകൾ *** -->
         </div>
     `;
 }
@@ -270,14 +266,19 @@ if (loader) {
 
 /**
  * 7. "Add to Cart", "Show More" ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
+ * *** അപ്ഡേറ്റ്: 'btn-add-to-cart' എന്നതിന് പകരം 'bookmark-btn' ആക്കി ***
  */
 feedContainer.addEventListener('click', (e) => {
     const target = e.target;
 
-    // "Add to Cart" ബട്ടൺ
-    if (target.classList.contains('btn-add-to-cart') || target.closest('.btn-add-to-cart')) {
-        const button = target.closest('.btn-add-to-cart');
+    // "Add to Cart" (ബുക്ക്മാർക്ക് ഐക്കണിൽ)
+    if (target.closest('.bookmark-btn')) {
+        const button = target.closest('.bookmark-btn');
         e.preventDefault();
+        
+        // ബട്ടൺ ഓൾറെഡി ക്ലിക്ക് ചെയ്തതാണെങ്കിൽ വീണ്ടും ചെയ്യരുത്
+        if (button.classList.contains('added-to-cart')) return;
+
         const id = button.dataset.id;
         const product = {
             id: id, 
@@ -289,15 +290,12 @@ feedContainer.addEventListener('click', (e) => {
         };
 
         addToCart(id, product);
-        button.innerHTML = 'Added!';
-        button.disabled = true;
+        
+        // ഫീഡ്ബാക്ക് നൽകുന്നു (സ്വർണ്ണ നിറം + പൾസ്)
+        button.classList.add('added-to-cart');
         setTimeout(() => {
-            button.innerHTML = `
-                <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                Add to Cart
-            `;
-            button.disabled = false;
-        }, 2000);
+            button.classList.remove('added-to-cart');
+        }, 1500); // 1.5 സെക്കൻഡിന് ശേഷം സാധാരണ നിലയിലാവും
     }
 
     // "Show More" ബട്ടൺ (വിവരണം മുഴുവൻ കാണിക്കാൻ)
