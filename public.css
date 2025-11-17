@@ -1,5 +1,6 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
    *** ഡിസ്ക്രിപ്ഷനിലെ ലിങ്കുകൾക്ക് നീല നിറം നൽകി ***
+   *** പുതിയത്: "Paid Promotion" ലിങ്കിന് സ്റ്റൈൽ ചേർത്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -882,6 +883,46 @@ img {
     background-color: var(--primary-gold);
     opacity: 1;
 }
+
+/* *** പുതിയത്: "Paid Promotion" ലിങ്ക് സ്റ്റൈലുകൾ (ഗാലറിക്ക് മുകളിൽ) *** */
+.product-more-links {
+    position: absolute;
+    top: 10px; /* മുകളിൽ നിന്ന് 10px */
+    right: 10px; /* വലതുവശത്തുനിന്ന് 10px */
+    z-index: 10; /* സ്ലൈഡുകൾക്ക് മുകളിൽ വരാൻ */
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px; /* ഒന്നിൽ കൂടുതൽ ലിങ്കുകൾ ഉണ്ടെങ്കിൽ */
+}
+
+.product-promotion-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.6rem;
+    background-color: rgba(0, 0, 0, 0.5); /* കറുത്ത സുതാര്യമായ പശ്ചാത്തലം */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* നേരിയ ബോർഡർ */
+    color: var(--text-color); /* വെള്ള അക്ഷരം */
+    font-size: 0.75rem; /* വളരെ ചെറിയ അക്ഷരം */
+    font-weight: 500;
+    border-radius: 15px; /* YouTube-ലേതുപോലെ */
+    text-decoration: none;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px); /* പശ്ചാത്തലം ബ്ലർ ചെയ്യാൻ */
+}
+
+.product-promotion-link:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+
+.product-promotion-link svg {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+}
+/* *** സ്റ്റൈലുകൾ കഴിഞ്ഞു *** */
+
 
 .product-info { padding-top: 1rem; }
 
