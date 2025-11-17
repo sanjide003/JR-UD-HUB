@@ -1,5 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// *** "Add to Cart" ഐക്കൺ മാറ്റി (ബാഗ് ആക്കി) ***
+// *** ബട്ടൺ ലേഔട്ട് മാറ്റി (ഐക്കൺ മാത്രം + 'View') ***
 
 import {
     collection,
@@ -158,7 +158,7 @@ async function startLoadingProducts(categoryId) {
 
 /**
  * 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (ഇൻഫിനിറ്റ് സ്ക്രോൾ)
- * *** ഐക്കൺ മാറ്റി ***
+ * *** ബട്ടണുകൾ മാറ്റി (ഐക്കൺ + 'View') ***
  */
 async function loadProducts() {
     if (isLoading || !currentQuery) return;
@@ -204,6 +204,7 @@ async function loadProducts() {
                 <div class="cat-product-content">
                     <h3 class="cat-product-title">${product.name}</h3>
                     <div class="cat-product-buttons">
+                        <!-- *** 'Add to Cart' എഴുത്ത് നീക്കം ചെയ്തു *** -->
                         <button class="btn btn-secondary-icon btn-add-to-cart"
                             data-id="${productId}"
                             data-name="${product.name}"
@@ -211,16 +212,15 @@ async function loadProducts() {
                             data-mrp="${mrp}"
                             data-image="${imageUrl}"
                             data-size="${product.size || ''}">
-                            <!-- *** ഐക്കൺ മാറ്റി (Shopping Bag) *** -->
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                                 <line x1="3" y1="6" x2="21" y2="6"></line>
                                 <path d="M16 10a4 4 0 0 1-8 0"></path>
                             </svg>
-                            <span>Add to Cart</span>
                         </button>
+                        <!-- *** 'View Details' എന്നതിനെ 'View' എന്നാക്കി *** -->
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">
-                            <span>View Details</span>
+                            <span>View</span>
                         </a>
                     </div>
                 </div>
@@ -252,7 +252,7 @@ function updateActiveCategoryUI(categoryId) {
 
 /**
  * 6. "Add to Cart" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
- * *** ഐക്കൺ മാറ്റി ***
+ * *** ബട്ടണിൽ നിന്ന് എഴുത്ത് നീക്കം ചെയ്തു (setTimeout-ൽ നിന്നും) ***
  */
 productGrid.addEventListener('click', (e) => {
     const button = e.target.closest('.btn-add-to-cart');
@@ -274,14 +274,13 @@ productGrid.addEventListener('click', (e) => {
     button.innerHTML = 'Added!';
     button.disabled = true;
     setTimeout(() => {
-        // *** ഐക്കൺ മാറ്റി (Shopping Bag) ***
+        // *** 'Add to Cart' എഴുത്ത് നീക്കം ചെയ്തു ***
         button.innerHTML = `
             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
                 <path d="M16 10a4 4 0 0 1-8 0"></path>
             </svg>
-            <span>Add to Cart</span>
         `;
         button.disabled = false;
     }, 2000);
