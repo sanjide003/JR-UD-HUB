@@ -1,6 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** "More Links" ബാനറിനും പ്രൊഡക്റ്റ് പേജ് ഡോട്ടുകൾക്കും സ്റ്റൈൽ ചേർത്തു ***
-   *** പിശക് തിരുത്തി: പ്രൊഡക്റ്റ് ഗാലറി കണ്ടെയ്‌നർ സ്റ്റൈൽ ചേർത്തു ***
+   *** ഡിസ്ക്രിപ്ഷനിലെ ലിങ്കുകൾക്ക് നീല നിറം നൽകി ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -857,125 +856,34 @@ img {
     gap: 2rem;
 }
 
-/* *** പുതിയത്: ഗാലറിയും ഇൻഫോയും ഒരുമിച്ചുള്ള കണ്ടെയ്‌നർ *** */
-.product-gallery-container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    /* *** പിശക് തിരുത്തി: ഈ സ്റ്റൈൽ പേജ് ലോഡ് ആവാൻ അത്യാവശ്യമാണ് *** */
-    width: 100%; 
-}
-.product-info {
-    position: relative;
-    width: 100%;
-}
-/* *** മാറ്റം കഴിഞ്ഞു *** */
-
-
-/* 9.1 പ്രൊഡക്റ്റ് പേജിലെ ഗാലറി */
-.product-gallery-wrapper {
-    position: relative; /* "More Links" ബാനറിന് വേണ്ടി */
-}
+/* 9.1 പ്രൊഡക്റ്റ് പേജിലെ Swiper ഗാലറി (പഴയ ഗാലറി മാറ്റി) */
 .product-gallery-swiper {
     width: 100%;
     aspect-ratio: 1 / 1;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    margin-bottom: 0; /* ഡോട്ടുകൾ താഴെ വരുന്നതിനാൽ */
+    margin-bottom: 1rem;
 }
 .product-gallery-swiper .swiper-slide img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
-
-/* *** പുതിയത്: പ്രൊഡക്റ്റ് പേജിലെ ആനിമേറ്റഡ് ഡോട്ടുകൾ *** */
-.product-pagination-new {
-    position: relative; 
-    margin-top: 1.5rem; 
-    margin-bottom: 1.5rem; 
-    display: flex;
-    justify-content: center;
-    gap: 8px; 
+.product-gallery-swiper .swiper-pagination {
+    position: absolute;
+    bottom: 10px;
 }
-.product-pagination-new .swiper-pagination-bullet {
-    width: 30px; 
-    height: 5px;
-    border-radius: 3px;
-    background-color: var(--border-color); 
+.product-gallery-swiper .swiper-pagination-bullet {
+    background-color: rgba(255, 255, 255, 0.7);
+    opacity: 0.8;
+}
+.product-gallery-swiper .swiper-pagination-bullet-active {
+    background-color: var(--primary-gold);
     opacity: 1;
-    overflow: hidden; 
-    cursor: pointer;
 }
-.product-pagination-new .pagination-progress {
-    display: block;
-    width: 100%;
-    height: 100%;
-    background-color: var(--primary-gold); 
-    transform: scaleX(0); 
-    transform-origin: left; 
-}
-.product-pagination-new .swiper-pagination-bullet-active .pagination-progress {
-    animation: progress-fill 3s linear forwards; /* 3 സെക്കൻഡ് ആനിമേഷൻ */
-}
-/* *** ഡോട്ടുകളുടെ സ്റ്റൈൽ കഴിഞ്ഞു *** */
 
-
-/* *** പുതിയത്: "More Links" ബാനറും ഡ്രോപ്പ്ഡൗണും *** */
-#product-more-links-banner {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 10;
-    background: rgba(0, 0, 0, 0.6);
-    backdrop-filter: blur(5px);
-    -webkit-backdrop-filter: blur(5px);
-    color: var(--text-color);
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 0.8rem;
-    font-weight: 500;
-    cursor: pointer;
-    display: none; /* JS വഴി കാണിക്കും */
-    transition: background-color 0.3s ease;
-}
-#product-more-links-banner:hover {
-    background: rgba(0, 0, 0, 0.8);
-}
-#product-more-links-list {
-    position: absolute;
-    top: 40px; 
-    left: 10px;
-    z-index: 9;
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 5px;
-    overflow: hidden;
-    display: none; 
-    min-width: 200px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-}
-#product-more-links-list.open {
-    display: block;
-}
-#product-more-links-list a {
-    display: block;
-    padding: 0.75rem 1rem;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    text-decoration: none;
-    border-bottom: 1px solid var(--border-color);
-}
-#product-more-links-list a:last-child {
-    border-bottom: none;
-}
-#product-more-links-list a:hover {
-    background-color: #222;
-    color: var(--primary-gold);
-}
-/* *** "More Links" സ്റ്റൈൽ കഴിഞ്ഞു *** */
-
+.product-info { padding-top: 1rem; }
 
 .product-info .price-container.large { margin-bottom: 1.5rem; }
 .product-info .price-container.large .price-main { 
