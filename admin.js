@@ -1,5 +1,6 @@
 // ഇതാണ് 'admin.js' ഫയൽ.
 // *** "More Links" എന്ന പുതിയ ഫീച്ചർ ചേർത്തു ***
+// *** പുതിയത്: ഹോം പേജ് ബാനർ ഇമേജ് സെറ്റിംഗ് ചേർത്തു ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -229,6 +230,7 @@ async function loadAllSettings() {
             document.getElementById("setting-logo-text").value = settings.logoText || '';
             document.getElementById("setting-logo-subtitle").value = settings.logoSubtitle || '';
             document.getElementById("setting-video-url").value = settings.videoUrl || '';
+            document.getElementById("setting-home-banner-url").value = settings.homeBannerUrl || ''; // *** പുതിയത് ***
             document.getElementById("setting-phone").value = settings.phone || '';
             document.getElementById("setting-email").value = settings.email || '';
             document.getElementById("setting-address").value = settings.address || '';
@@ -259,6 +261,7 @@ generalSettingsForm.addEventListener("submit", async (e) => {
             logoText: document.getElementById("setting-logo-text").value,
             logoSubtitle: document.getElementById("setting-logo-subtitle").value,
             videoUrl: document.getElementById("setting-video-url").value,
+            homeBannerUrl: document.getElementById("setting-home-banner-url").value, // *** പുതിയത് ***
         };
         const docRef = doc(db, "settings", "global");
         await setDoc(docRef, settings, { merge: true });
