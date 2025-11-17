@@ -1,0 +1,70 @@
+<!-- 
+  ഇതാണ് പുതിയ 'Explore' പേജ്.
+  ഇതിൽ എല്ലാ പ്രൊഡക്ടുകളും ഒന്നിന് താഴെ ഒന്നായി കാണിക്കും.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explore - Al Ambar Perfumes</title>
+    
+    <!-- പൊതുവായ ഡിസൈൻ ഫയൽ -->
+    <link rel="stylesheet" href="public.css">
+    <!-- ഈ പേജിന് മാത്രമായുള്ള ഡിസൈൻ ഫയൽ -->
+    <link rel="stylesheet" href="explore.css">
+    
+    <!-- Swiper CSS (ചിത്രങ്ങൾ സ്ലൈഡ് ചെയ്യാൻ) -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+</head>
+<body>
+
+    <!-- 0. പേജ് ലോഡർ -->
+    <div id="preloader">
+        <div class="loader-logo-container">
+            <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
+            <div class="loader-ring"></div>
+        </div>
+    </div>
+
+    <!-- 1. ഹെഡർ -->
+    <header class="main-header" id="main-header"></header>
+    
+    <!-- 2. സൈഡ് മെനു -->
+    <nav class="side-nav" id="side-nav"></nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+
+    <!-- 3. പ്രധാന ഉള്ളടക്കം -->
+    <main class="container page-container">
+        <!-- പേജിന്റെ തലക്കെട്ട് -->
+        <div class="page-header-bar">
+            <h1>Explore All Products</h1>
+        </div>
+
+        <!-- പ്രൊഡക്റ്റ് ഫീഡ് കണ്ടെയ്നർ -->
+        <div class="explore-feed-container" id="explore-feed">
+            <!-- 'explore.js' ഉപയോഗിച്ച് പ്രൊഡക്റ്റ് കാർഡുകൾ ഇവിടെ വരും -->
+            <div class="loading-placeholder-full">Loading products...</div>
+        </div>
+        
+        <!-- ഇൻഫിനിറ്റ് സ്ക്രോൾ ലോഡർ -->
+        <div class="loader-container" id="explore-scroll-loader" style="display: none;">
+            <div class="loader-small"></div>
+        </div>
+
+    </main>
+
+    <!-- 4. ഫൂട്ടർ -->
+    <footer class="main-footer-new" id="main-footer"></footer>
+
+    <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ -->
+    <div id="floating-action-buttons"></div>
+
+    <!-- JS ഫയലുകൾ -->
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="cart.js"></script>
+    <script type="module" src="common.js"></script>
+    <script type="module" src="explore.js"></script>
+</body>
+</html>
