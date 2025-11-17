@@ -1,6 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** 'Add to Cart' ഐക്കൺ വെള്ള നിറമാക്കി (ഹോവറിൽ കറുപ്പ്) ***
-   *** കാറ്റഗറി പേജിലെ ബട്ടൺ ഗ്രിഡ് അഡ്ജസ്റ്റ് ചെയ്തു ***
+   *** ഫ്ലോട്ടിംഗ് ബട്ടൺ വലിപ്പം കൂട്ടി ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -839,7 +838,7 @@ img {
 }
 .cat-product-buttons {
     display: grid;
-    grid-template-columns: auto 1fr; /* *** 1fr 1fr എന്നതിൽ നിന്ന് മാറ്റി *** */
+    grid-template-columns: auto 1fr; /* *** ഐക്കൺ + 'View' ബട്ടണ് വേണ്ടി *** */
     gap: 0.5rem;
     margin-top: auto;
 }
@@ -1235,8 +1234,8 @@ img {
     pointer-events: none; 
 }
 .float-btn {
-    width: 50px;
-    height: 50px;
+    width: 56px; /* *** വലിപ്പം കൂട്ടി *** */
+    height: 56px; /* *** വലിപ്പം കൂട്ടി *** */
     border-radius: 50%;
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -1259,8 +1258,8 @@ img {
     /* വലതുവശത്ത് */
 }
 .float-btn svg {
-    width: 28px;
-    height: 28px;
+    width: 32px; /* *** വലിപ്പം കൂട്ടി *** */
+    height: 32px; /* *** വലിപ്പം കൂട്ടി *** */
 }
 .float-btn.whatsapp svg {
     fill: #25D366; 
@@ -1322,12 +1321,12 @@ img {
         padding: 0 15px;
     }
     .float-btn {
-        width: 45px;
-        height: 45px;
+        width: 50px; /* *** മൊബൈൽ വലിപ്പം കൂട്ടി *** */
+        height: 50px; /* *** മൊബൈൽ വലിപ്പം കൂട്ടി *** */
     }
     .float-btn svg {
-        width: 24px;
-        height: 24px;
+        width: 28px; /* *** മൊബൈൽ വലിപ്പം കൂട്ടി *** */
+        height: 28px; /* *** മൊബൈൽ വലിപ്പം കൂട്ടി *** */
     }
     
     .category-nav-desktop {
