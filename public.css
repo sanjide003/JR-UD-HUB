@@ -1,5 +1,6 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** 'SHOP BY CATEGORY' കാർഡ് ഒതുങ്ങിപ്പോയ പ്രശ്നം പരിഹരിച്ചു (സ്ലൈഡിന് ഉയരം നൽകി) ***
+   *** 'Add to Cart' ഐക്കൺ വെള്ള നിറമാക്കി (ഹോവറിൽ കറുപ്പ്) ***
+   *** കാറ്റഗറി പേജിലെ ബട്ടൺ ഗ്രിഡ് അഡ്ജസ്റ്റ് ചെയ്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -615,7 +616,7 @@ img {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    height: 100%; /* *** 100% ആക്കി (മാതാപിതാവിന്റെ 220px എടുക്കാൻ) *** */
+    height: 100%; 
     position: relative; 
     
     background-color: var(--card-bg);
@@ -710,6 +711,19 @@ img {
     stroke: currentColor; 
     stroke-width: 2;
 }
+
+/* --- *** പുതിയത്: ഐക്കൺ നിറം വെള്ളയാക്കാൻ *** --- */
+.btn-secondary-new svg.icon-btn,
+.btn-secondary-icon svg.icon-btn {
+    stroke: var(--text-color); /* വെള്ള */
+    fill: none;
+    transition: stroke 0.3s ease;
+}
+.btn-secondary-new:hover svg.icon-btn,
+.btn-secondary-icon:hover svg.icon-btn {
+    stroke: var(--bg-color); /* കറുപ്പ് (ഹോവർ ചെയ്യുമ്പോൾ) */
+}
+/* --- *** മാറ്റം കഴിഞ്ഞു *** --- */
 
 
 /* --- 8. കാറ്റഗറി പേജ് (Category Page) - പുതിയ ലേഔട്ട് --- */
@@ -825,7 +839,7 @@ img {
 }
 .cat-product-buttons {
     display: grid;
-    grid-template-columns: 1fr 1fr; 
+    grid-template-columns: auto 1fr; /* *** 1fr 1fr എന്നതിൽ നിന്ന് മാറ്റി *** */
     gap: 0.5rem;
     margin-top: auto;
 }
