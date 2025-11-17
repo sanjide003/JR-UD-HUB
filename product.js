@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** "You May Also Like" സെക്ഷനിലെ ഐക്കൺ മാറ്റി (ബാഗ് ആക്കി) ***
+// *** ഡിസ്ക്രിപ്ഷനിലെ ലിങ്കുകൾ ഓട്ടോമാറ്റിക്കായി ക്ലിക്ക് ചെയ്യാൻ കഴിയുന്നതാക്കി ***
 
 import { 
     collection, 
@@ -22,6 +22,30 @@ const relatedProductsGrid = document.getElementById('related-products-grid');
 let currentProduct = null;
 let whatsappNumber = ''; // WhatsApp നമ്പർ സേവ് ചെയ്യാൻ
 
+// *** പുതിയ ഫംഗ്ഷൻ: ടെക്സ്റ്റിലെ ലിങ്കുകൾ ക്ലിക്ക് ചെയ്യാൻ ***
+/**
+ * Finds URLs in a string and converts them to clickable <a> tags.
+ * @param {string} text - The text to parse.
+ * @returns {string} - The text with HTML links.
+ */
+function linkify(text) {
+    if (!text) return '';
+    // http, https, ftp, അല്ലെങ്കിൽ www എന്ന് തുടങ്ങുന്ന ലിങ്കുകൾ
+    const urlRegex = /(\b(https|http|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])|(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
+    
+    return text.replace(urlRegex, function(url, p1, p2, p3) {
+        // p1 = https://... (ഫുൾ ലിങ്ക്)
+        // p3 = www... (www എന്ന് തുടങ്ങുന്ന ലിങ്ക്)
+        
+        // 'www' എന്ന് തുടങ്ങുന്ന ലിങ്കാണെങ്കിൽ 'http://' മുന്നിൽ ചേർക്കുന്നു
+        const href = p3 ? 'http://' + p3 : p1;
+        
+        // പുതിയ ടാബിൽ തുറക്കാൻ ലിങ്ക് ഉണ്ടാക്കുന്നു
+        return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+    });
+}
+
+
 // പേജ് ലോഡ് ആവുമ്പോൾ
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings();
@@ -30,6 +54,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 /**
  * URL-ൽ നിന്ന് ID എടുത്ത് ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ കാണിക്കുന്നു
+ * *** ഡിസ്ക്രിപ്ഷനിൽ ലിങ്കുകൾ കാണിക്കാൻ അപ്ഡേറ്റ് ചെയ്തു ***
  */
 async function loadProductDetails() {
     if (!productDetailContent) return;
@@ -109,6 +134,15 @@ async function loadProductDetails() {
             `;
         }
 
+        // *** പുതിയത്: ഡിസ്ക്രിപ്ഷൻ ലിങ്കാക്കുന്നു ***
+        let descriptionHTML = 'No description available.';
+        if (product.description) {
+            // 1. ആദ്യം ലിങ്കുകൾ കണ്ടെത്തുന്നു
+            let linkifiedText = linkify(product.description);
+            // 2. ശേഷം പുതിയ വരികൾ <br> ആക്കുന്നു
+            descriptionHTML = linkifiedText.replace(/\n/g, '<br>');
+        }
+
         const infoHTML = `
             <div class="product-info">
                 <h1 class="product-title">${product.name}</h1>
@@ -118,8 +152,9 @@ async function loadProductDetails() {
                 <div class="price-container large">
                     ${priceHTML}
                 </div>
+                <!-- *** ഡിസ്ക്രിപ്ഷൻ ഇവിടെ അപ്ഡേറ്റ് ചെയ്തു *** -->
                 <div class="product-description">
-                    ${product.description ? product.description.replace(/\n/g, '<br>') : 'No description available.'}
+                    ${descriptionHTML}
                 </div>
                 
                 <div class="product-actions-grid">
@@ -233,7 +268,6 @@ function setupProductActionButtons() {
 
 /**
  * ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (പുതിയ സ്ലൈഡർ രൂപത്തിൽ)
- * *** ഐക്കൺ മാറ്റി ***
  */
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
@@ -275,7 +309,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                             data-mrp="${mrp}"
                             data-image="${imageUrl}"
                             data-size="${product.size || ''}">
-                            <!-- *** ഐക്കൺ മാറ്റി (Shopping Bag) *** -->
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                                 <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -335,7 +368,6 @@ relatedProductsGrid.addEventListener('click', (e) => {
         cartButton.innerHTML = 'Added!';
         cartButton.disabled = true;
         setTimeout(() => {
-            // *** ഐക്കൺ മാറ്റി (Shopping Bag) ***
             cartButton.innerHTML = `
                 <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
