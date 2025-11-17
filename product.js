@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** പുതിയ "More Links" ബാനറും ആനിമേറ്റഡ് ഡോട്ടുകളും ചേർത്തു ***
+// *** പേജ് ബ്ലാങ്ക് ആവുന്ന പിശക് (HTML ഘടന) തിരുത്തി ***
 
 import { 
     collection, 
@@ -42,7 +42,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 /**
  * URL-ൽ നിന്ന് ID എടുത്ത് ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ കാണിക്കുന്നു
- * *** പുതിയ "More Links" ബാനറും ആനിമേറ്റഡ് ഡോട്ടുകളും ചേർത്തു ***
+ * *** HTML ഘടന തിരുത്തി ***
  */
 async function loadProductDetails() {
     if (!productDetailContent) return;
@@ -110,20 +110,20 @@ async function loadProductDetails() {
             `;
         }
         
-        const galleryHTML = `
-            <div class="product-gallery-wrapper">
-                <!-- *** പുതിയത്: "More Links" ബാനർ ഇവിടെ വരും *** -->
-                <div id="product-more-links-banner"></div>
-                <div id="product-more-links-list"></div>
-            
-                <div class="product-gallery-swiper swiper-container">
-                    <div class="swiper-wrapper">
-                        ${slidesHTML}
+        // *** പിശക് തിരുത്തി: ഗാലറിയും ഡോട്ടുകളും ഒരുമിച്ച് ഒരു 'div'-ൽ പൊതിയുന്നു ***
+        const gallerySideHTML = `
+            <div class="product-gallery-container">
+                <div class="product-gallery-wrapper">
+                    <div id="product-more-links-banner"></div>
+                    <div id="product-more-links-list"></div>
+                    <div class="product-gallery-swiper swiper-container">
+                        <div class="swiper-wrapper">
+                            ${slidesHTML}
+                        </div>
                     </div>
                 </div>
+                <div class="product-pagination-new swiper-pagination-custom"></div>
             </div>
-            <!-- *** പുതിയത്: ആനിമേറ്റഡ് ഡോട്ടുകൾ ചിത്രത്തിന് താഴെ *** -->
-            <div class="product-pagination-new swiper-pagination-custom"></div>
         `;
 
         // --- 2. വിവരങ്ങൾ നിർമ്മിക്കുന്നു ---
@@ -133,7 +133,7 @@ async function loadProductDetails() {
             descriptionHTML = linkifiedText.replace(/\n/g, '<br>');
         }
 
-        const infoHTML = `
+        const infoSideHTML = `
             <div class="product-info">
                 <h1 class="product-title">${product.name}</h1>
                 <div class="product-size">
@@ -164,7 +164,8 @@ async function loadProductDetails() {
         `;
 
         // --- 3. എല്ലാം പേജിൽ ചേർക്കുന്നു ---
-        productDetailContent.innerHTML = galleryHTML + infoHTML;
+        // *** പിശക് തിരുത്തി: ഇപ്പോൾ ഗ്രിഡിൽ കൃത്യം 2 ഐറ്റംസ് വരും ***
+        productDetailContent.innerHTML = gallerySideHTML + infoSideHTML;
         
         // --- 4. പുതിയ ആനിമേറ്റഡ് ഡോട്ടുകളുള്ള സ്ലൈഡർ ആരംഭിക്കുന്നു ---
         const autoplayDelay = 3000;
@@ -183,6 +184,7 @@ async function loadProductDetails() {
             },
             on: {
                 init: function (swiper) {
+                    // ആദ്യത്തെ ഡോട്ടിന് ആനിമേഷൻ നൽകുന്നു
                     const activeBullet = swiper.pagination.bullets[swiper.realIndex];
                     if (activeBullet) {
                         const progressEl = activeBullet.querySelector('.pagination-progress');
@@ -192,6 +194,7 @@ async function loadProductDetails() {
                     }
                 },
                 slideChangeTransitionStart: function (swiper) {
+                    // എല്ലാ ആനിമേഷനുകളും റീസെറ്റ് ചെയ്യുന്നു
                     swiper.pagination.bullets.forEach(bullet => {
                         const progressEl = bullet.querySelector('.pagination-progress');
                         if (progressEl) {
@@ -199,6 +202,7 @@ async function loadProductDetails() {
                         }
                     });
                     
+                    // പുതിയ ആക്ടീവ് ഡോട്ടിന് ആനിമേഷൻ നൽകുന്നു
                     const activeBullet = swiper.pagination.bullets[swiper.realIndex];
                     if (activeBullet) {
                         const progressEl = activeBullet.querySelector('.pagination-progress');
