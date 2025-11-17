@@ -1,109 +1,311 @@
-// ഇതാണ് 'contact.js' ഫയൽ.
-// *** മാപ്പ് നീക്കം ചെയ്തു, സോഷ്യൽ ലിങ്കുകൾ ലോഡ് ചെയ്യുന്നു (Site Settings-ൽ നിന്ന്) ***
+// ഇതാണ് പുതിയ 'explore.js' ഫയൽ.
+// എല്ലാ പ്രൊഡക്ടുകളും കാറ്റഗറി വിവരങ്ങളും സഹിതം ഇവിടെ ലോഡ് ചെയ്യും.
+// *** അപ്ഡേറ്റ്: താഴെയുള്ള ബട്ടണുകൾ നീക്കം ചെയ്തു ***
+// *** അപ്ഡേറ്റ്: ബുക്ക്മാർക്ക് ഐക്കൺ 'Add to Cart' ആയി പ്രവർത്തിക്കും ***
+// *** അപ്ഡേറ്റ്: ഇമേജ് സ്ലൈഡർ ഡോട്ടുകൾ നീക്കം ചെയ്തു ***
 
-import { 
+import {
+    collection,
+    getDocs,
     doc,
     getDoc,
+    query,
+    limit,
+    startAfter,
+    orderBy,
+    setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db } from './firebase-config.js';
-import { loadSiteSettings } from './common.js'; // ഹെഡർ, ഫൂട്ടർ ലോഡ് ചെയ്യാൻ
+import { loadSiteSettings } from './common.js';
+import { addToCart } from './cart.js';
 
-// പേജ് ലോഡ് ആവുമ്പോൾ
-document.addEventListener("DOMContentLoaded", async () => { 
-    
-    // 1. പൊതുവായ കാര്യങ്ങൾ ലോഡ് ചെയ്യാൻ കാത്തുനിൽക്കുന്നു
-    await loadSiteSettings();
-    
-    // 2. ഇപ്പോൾ കോൺടാക്റ്റ് വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു
-    loadContactPageDetails();
+setLogLevel('Debug');
+
+// --- DOM Elements ---
+const feedContainer = document.getElementById("explore-feed");
+const loader = document.getElementById("explore-scroll-loader");
+
+// --- State ---
+let categoriesMap = new Map(); // കാറ്റഗറി വിവരങ്ങൾ സേവ് ചെയ്യാൻ
+let lastVisible = null;
+let isLoading = false;
+const productsPerPage = 5; // ഒരു സമയം 5 എണ്ണം ലോഡ് ചെയ്യാം
+
+// --- പേജ് ലോഡ് ആവുമ്പോൾ ---
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadSiteSettings(); // ഹെഡർ, ഫൂട്ടർ ലോഡ് ചെയ്യാൻ
+    await loadCategories();   // പ്രൊഡക്റ്റ് ലോഡ് ചെയ്യുന്നതിന് മുൻപ് കാറ്റഗറികൾ എടുക്കുന്നു
+    await loadProducts();     // പ്രൊഡക്ടുകൾ ലോഡ് ചെയ്യാൻ തുടങ്ങുന്നു
 });
 
 /**
- * കോൺടാക്റ്റ് പേജിലെ പ്രധാന വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു
- * *** Follow Us ലിങ്കുകൾ കൂടി ലോഡ് ചെയ്യുന്നു ***
+ * 1. എല്ലാ കാറ്റഗറി വിവരങ്ങളും (പേര്, ഇമേജ്) എടുത്ത് 'categoriesMap'-ൽ സേവ് ചെയ്യുന്നു.
  */
-async function loadContactPageDetails() {
-    const contactPhoneMain = document.getElementById("contact-phone-main");
-    const contactEmailMain = document.getElementById("contact-email-main");
-    const contactAddressMain = document.getElementById("contact-address-main");
-    const socialContainer = document.getElementById("contact-social-icons");
-
-    if (!contactPhoneMain || !contactEmailMain || !contactAddressMain || !socialContainer) {
-        return;
-    }
-
+async function loadCategories() {
     try {
-        const docRef = doc(db, "settings", "global");
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists()) {
-            const settings = docSnap.data();
-
-            // ഫോൺ
-            contactPhoneMain.textContent = settings.phone || "Not available";
-            if (settings.phone) contactPhoneMain.href = `tel:${settings.phone}`;
-            
-            // ഇമെയിൽ
-            contactEmailMain.textContent = settings.email || "Not available";
-            if (settings.email) contactEmailMain.href = `mailto:${settings.email}`;
-            
-            // വിലാസം
-            contactAddressMain.textContent = settings.address || "Not available";
-
-            // *** പുതിയത്: സോഷ്യൽ മീഡിയ ഐക്കണുകൾ ***
-            let socialHtml = '';
-
-            // WhatsApp (Follow Us)
-            if (settings.followWhatsapp) {
-                socialHtml += `
-                    <a href="${settings.followWhatsapp}" target="_blank" class="contact-social-icon" aria-label="WhatsApp">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg>
-                    </a>
-                `;
-            }
-            // Instagram
-            if (settings.instagramUrl) {
-                socialHtml += `
-                    <a href="${settings.instagramUrl}" target="_blank" class="contact-social-icon" aria-label="Instagram">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.225 1.664-4.771 4.919-4.919C8.333 2.175 8.741 2.163 12 2.163m0-2.163C8.741 0 8.333.014 7.053.072 2.748.27 0 3.018 0 7.053c-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.202 4.305 2.949 7.053 7.053 7.053 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c4.305-.202 7.053-2.949 7.053-7.053.058-1.28.072 1.688.072-4.947s-.014-3.667-.072-4.947C21.725 2.748 19.227 0 15.028.072 13.748.014 13.34 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"></path></svg>
-                    </a>
-                `;
-            }
-            // Facebook
-            if (settings.facebookUrl) {
-                socialHtml += `
-                    <a href="${settings.facebookUrl}" target="_blank" class="contact-social-icon" aria-label="Facebook">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.9V12h2.538v-2.245c0-2.508 1.493-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.465l-1.26.001c-1.243 0-1.63.771-1.63 1.562V12h2.771l-.443 2.89H13.63v6.988C18.343 21.128 22 16.991 22 12z"></path></svg>
-                    </a>
-                `;
-            }
-            // YouTube
-            if (settings.youtubeUrl) {
-                socialHtml += `
-                    <a href="${settings.youtubeUrl}" target="_blank" class="contact-social-icon" aria-label="YouTube">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21.58 7.19c-.23-.86-.9-1.52-1.76-1.76C18.26 5 12 5 12 5s-6.26 0-7.82.43c-.86.23-1.52.9-1.76 1.76C2 8.74 2 12 2 12s0 3.26.43 4.81c.23.86.9 1.52 1.76 1.76C5.74 19 12 19 12 19s6.26 0 7.82-.43c.86-.23 1.52-.9 1.76-1.76C22 15.26 22 12 22 12s0-3.26-.42-4.81zM9.75 15.5V8.5L15.75 12 9.75 15.5z"></path></svg>
-                    </a>
-                `;
-            }
-
-            if (socialHtml === '') {
-                socialContainer.innerHTML = '<span class="loading-placeholder">No social links found.</span>';
-            } else {
-                socialContainer.innerHTML = socialHtml;
-            }
-            
-        } else {
-            console.log("No site settings found at 'settings/global'.");
-            contactPhoneMain.textContent = "Error loading";
-            contactEmailMain.textContent = "Error loading";
-            contactAddressMain.textContent = "Error loading";
-            socialContainer.innerHTML = '<span class="loading-placeholder">Could not load social links.</span>';
-        }
+        const q = query(collection(db, "categories"));
+        const catSnapshot = await getDocs(q);
+        catSnapshot.forEach((doc) => {
+            const data = doc.data();
+            categoriesMap.set(doc.id, {
+                name: data.name,
+                imageUrl: data.imageUrl
+            });
+        });
     } catch (error) {
-        console.error("Error loading contact page settings: ", error);
-        contactPhoneMain.textContent = "Error loading";
-        contactEmailMain.textContent = "Error loading";
-        contactAddressMain.textContent = "Error loading";
-        socialContainer.innerHTML = '<span class="loading-placeholder">Error loading links.</span>';
+        console.error("Error loading categories map: ", error);
     }
 }
+
+/**
+ * 2. എല്ലാ പ്രൊഡക്ടുകളും ലോഡ് ചെയ്യുന്നു (ഇൻഫിനിറ്റ് സ്ക്രോൾ)
+ */
+async function loadProducts() {
+    if (isLoading) return;
+    isLoading = true;
+    if (loader) loader.style.display = 'flex';
+    if (lastVisible === null) feedContainer.innerHTML = ''; // ആദ്യത്തെ ലോഡ് ആണെങ്കിൽ ക്ലിയർ ചെയ്യുക
+
+    try {
+        const productsRef = collection(db, "products");
+        let q;
+
+        if (lastVisible) {
+            q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(productsPerPage));
+        } else {
+            q = query(productsRef, orderBy("createdAt", "desc"), limit(productsPerPage));
+        }
+
+        const documentSnapshots = await getDocs(q);
+
+        if (documentSnapshots.empty) {
+            if (feedContainer.innerHTML === '') {
+                feedContainer.innerHTML = '<p class="loading-placeholder-full">No products found.</p>';
+            }
+            if (loader) loader.style.display = 'none';
+            lastVisible = null; // ഇനി ലോഡ് ചെയ്യാൻ ഒന്നുമില്ല
+            return;
+        }
+
+        lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
+
+        documentSnapshots.forEach((doc) => {
+            const product = doc.data();
+            const productId = doc.id;
+            const card = document.createElement('div');
+            card.className = 'explore-card';
+            
+            // കാർഡ് നിർമ്മിക്കുന്നു
+            card.innerHTML = `
+                ${buildCategoryHeader(product.categoryId)}
+                ${buildImageSlider(productId, product.images, product.name)}
+                ${buildCardContent(productId, product)}
+            `;
+            
+            feedContainer.appendChild(card);
+        });
+        
+        // പുതിയതായി ചേർത്ത സ്ലൈഡറുകൾ പ്രവർത്തിപ്പിക്കുന്നു (ഡോട്ടുകൾ ഇല്ലാതെ)
+        new Swiper('.explore-image-swiper', {
+            loop: false,
+            // *** ഡോട്ടുകൾ (Pagination) നീക്കം ചെയ്തു ***
+            allowTouchMove: true,
+        });
+
+    } catch (error) {
+        console.error("Error loading products: ", error);
+        feedContainer.innerHTML = '<p class="loading-placeholder-full">Error loading products.</p>';
+    } finally {
+        isLoading = false;
+        if (loader) loader.style.display = 'none';
+    }
+}
+
+/**
+ * 3. കാറ്റഗറി ഹെഡർ (മുകൾ ഭാഗം) നിർമ്മിക്കുന്നു
+ */
+function buildCategoryHeader(categoryId) {
+    const category = categoriesMap.get(categoryId);
+    if (!category) {
+        return ''; // കാറ്റഗറി ഇല്ലെങ്കിൽ ഈ ഭാഗം കാണിക്കില്ല
+    }
+    
+    const categoryLink = `categories.html?filter=${categoryId}`;
+    const categoryImg = category.imageUrl || 'https://placehold.co/40x40/333/D4AF37?text=C';
+
+    return `
+        <a href="${categoryLink}" class="explore-card-header">
+            <img src="${categoryImg}" alt="${category.name}" class="explore-category-img">
+            <span class="explore-category-name">${category.name}</span>
+        </a>
+    `;
+}
+
+/**
+ * 4. ഇമേജ് സ്ലൈഡർ നിർമ്മിക്കുന്നു (പ്രൊഡക്റ്റ് പേജിലേക്ക് ലിങ്ക് സഹിതം)
+ * *** ഡോട്ടുകൾ (Pagination) നീക്കം ചെയ്തു ***
+ */
+function buildImageSlider(productId, images, productName) {
+    const productLink = `product.html?id=${productId}`;
+    let slidesHTML = '';
+
+    if (images && images.length > 0) {
+        images.forEach(imgUrl => {
+            slidesHTML += `
+                <div class="swiper-slide">
+                    <a href="${productLink}">
+                        <img src="${imgUrl}" alt="${productName}">
+                    </a>
+                </div>
+            `;
+        });
+    } else {
+        // ഇമേജ് ഇല്ലെങ്കിൽ
+        slidesHTML = `
+            <div class="swiper-slide">
+                <a href="${productLink}">
+                    <img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image" alt="${productName}">
+                </a>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="explore-image-swiper swiper-container">
+            <div class="swiper-wrapper">
+                ${slidesHTML}
+            </div>
+            <!-- <div class="swiper-pagination"></div> --> <!-- *** ഡോട്ടുകൾ നീക്കം ചെയ്തു *** -->
+        </div>
+    `;
+}
+
+/**
+ * 5. കാർഡിന്റെ താഴത്തെ ഭാഗം (വിവരണം, ബട്ടണുകൾ) നിർമ്മിക്കുന്നു
+ * *** താഴെയുള്ള ബട്ടണുകൾ നീക്കം ചെയ്തു ***
+ * *** ബുക്ക്മാർക്ക് ഐക്കണിൽ 'Add to Cart' ഡാറ്റ ചേർത്തു ***
+ */
+function buildCardContent(productId, product) {
+    const price = product.price || 0;
+    const mrp = product.mrp || 0;
+    let priceHTML = `<span class="price-main">₹${price}</span>`;
+    if (mrp > price) {
+        const discount = Math.round(((mrp - price) / mrp) * 100);
+        priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
+        priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
+    }
+
+    // വിവരണം (Description) ചെറുതാക്കുന്നു
+    let descriptionHTML = '';
+    if (product.description) {
+        if (product.description.length > 100) {
+            descriptionHTML = `${product.description.substring(0, 100)}... <button class="read-more-btn">Show More</button>`;
+        } else {
+            descriptionHTML = product.description;
+        }
+    }
+
+    const imageUrl = product.images && product.images[0] ? product.images[0] : '';
+
+    return `
+        <div class="explore-card-content">
+            <!-- ഐക്കണുകൾ (ലൈക്ക്, കമന്റ്...) -->
+            <div class="explore-action-icons">
+                <button title="Like" class="like-btn">
+                    <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                </button>
+                <button title="Comment" class="comment-btn">
+                    <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                </button>
+                <button title="Share" class="share-btn">
+                    <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                </button>
+                
+                <!-- *** ബുക്ക്മാർക്ക് ബട്ടൺ ഇപ്പോൾ 'Add to Cart' ആണ് *** -->
+                <button title="Add to Cart" class="explore-bookmark-btn"
+                    data-id="${productId}"
+                    data-name="${product.name}"
+                    data-price="${price}"
+                    data-mrp="${mrp}"
+                    data-image="${imageUrl}"
+                    data-size="${product.size || ''}">
+                    
+                    <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                </button>
+            </div>
+
+            <!-- പേരും വിലയും -->
+            <h3 class="explore-product-title">${product.name}</h3>
+            <div class="price-container">
+                ${priceHTML}
+            </div>
+
+            <!-- വിവരണം -->
+            <div class="explore-product-description" data-full-text="${product.description || ''}">
+                ${descriptionHTML}
+            </div>
+            
+            <!-- *** "Add to Cart", "View Details" ബട്ടണുകൾ നീക്കം ചെയ്തു *** -->
+            
+        </div>
+    `;
+}
+
+/**
+ * 6. ഇൻഫിനിറ്റ് സ്ക്രോൾ നിരീക്ഷകൻ (Observer)
+ */
+const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !isLoading && lastVisible) { 
+        loadProducts();
+    }
+}, {
+    rootMargin: '400px' // സ്ക്രീനിന്റെ അടിയിൽ എത്തുന്നതിന് 400px മുൻപ് ലോഡ് ചെയ്യുക
+});
+
+if (loader) {
+    observer.observe(loader);
+}
+
+/**
+ * 7. "Add to Cart" (ബുക്ക്മാർക്ക് ഐക്കൺ വഴി), "Show More" ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
+ */
+feedContainer.addEventListener('click', (e) => {
+    const target = e.target;
+    const bookmarkButton = target.closest('.explore-bookmark-btn'); // ബുക്ക്മാർക്ക് ബട്ടൺ കണ്ടെത്തുന്നു
+
+    // "Add to Cart" (ബുക്ക്മാർക്ക് ഐക്കൺ വഴി)
+    if (bookmarkButton && !bookmarkButton.disabled) {
+        e.preventDefault();
+        const id = bookmarkButton.dataset.id;
+        const product = {
+            id: id, 
+            name: bookmarkButton.dataset.name,
+            price: parseFloat(bookmarkButton.dataset.price),
+            mrp: parseFloat(bookmarkButton.dataset.mrp),
+            image: bookmarkButton.dataset.image,
+            size: bookmarkButton.dataset.size 
+        };
+
+        addToCart(id, product);
+        
+        // ഫീഡ്ബാക്ക്: ഐക്കൺ സ്വർണ്ണ നിറമാക്കുന്നു
+        bookmarkButton.disabled = true;
+        const svg = bookmarkButton.querySelector('svg');
+        svg.style.fill = 'var(--primary-gold)'; // ഐക്കൺ നിറയ്ക്കുന്നു
+        bookmarkButton.style.color = 'var(--primary-gold)'; // ബോർഡറും സ്വർണ്ണ നിറമാക്കുന്നു
+
+        setTimeout(() => {
+            // 2 സെക്കൻഡിന് ശേഷം പഴയതുപോലെ ആക്കുന്നു
+            bookmarkButton.disabled = false;
+            svg.style.fill = 'none'; // നിറം നീക്കം ചെയ്യുന്നു
+            bookmarkButton.style.color = ''; // ഡിഫോൾട്ട് നിറത്തിലേക്ക് (വെള്ള) മാറ്റുന്നു
+        }, 2000);
+    }
+
+    // "Show More" ബട്ടൺ (വിവരണം മുഴുവൻ കാണിക്കാൻ)
+    if (target.classList.contains('read-more-btn')) {
+        const descriptionDiv = target.closest('.explore-product-description');
+        const fullText = descriptionDiv.dataset.fullText.replace(/\n/g, '<br>'); // പുതിയ വരികൾ ചേർക്കാൻ
+        descriptionDiv.innerHTML = fullText;
+    }
+});
