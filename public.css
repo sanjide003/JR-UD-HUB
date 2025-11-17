@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** 'SHOP BY CATEGORY' സ്ലൈഡർ മാറ്റി വെർട്ടിക്കൽ ലിസ്റ്റ് ആക്കി ***
+   *** 'SHOP BY CATEGORY' കാർഡുകൾ 4:5 അനുപാതത്തിലാക്കി ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -598,14 +598,13 @@ img {
 
 
 /* 6.4. പുതിയ കാറ്റഗറി ഗ്രിഡ് (ഹോം പേജ്) - വെർട്ടിക്കൽ ലിസ്റ്റ് */
-/* *** സ്ലൈഡർ സ്റ്റൈലുകൾ നീക്കം ചെയ്തു, ഗ്രിഡ് സ്റ്റൈലുകൾ ചേർത്തു *** */
 .category-grid-vertical {
     display: grid;
-    grid-template-columns: 1fr; /* ഒന്നിന് താഴെ ഒന്നായി */
-    gap: 1.5rem; /* കാർഡുകൾ തമ്മിലുള്ള അകലം */
+    grid-template-columns: 1fr; 
+    gap: 1.5rem; 
 }
 
-/* *** കാർഡ് സ്റ്റൈൽ (ചിത്രത്തിന് മുകളിൽ ടെക്സ്റ്റ്) *** */
+/* *** കാർഡ് സ്റ്റൈൽ (4:5 അനുപാതം) *** */
 .category-card-home-new {
     text-decoration: none;
     color: var(--text-muted);
@@ -613,7 +612,8 @@ img {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    height: 220px; /* *** ഉയരം നിശ്ചയിച്ചു *** */
+    /* *** height: 220px; മാറ്റി aspect-ratio ആക്കി *** */
+    aspect-ratio: 4 / 5; 
     position: relative; 
     
     background-color: var(--card-bg);
@@ -1251,12 +1251,11 @@ img {
     border-color: var(--primary-gold);
 }
 .float-btn.whatsapp {
-    /* *** WhatsApp ബട്ടണിന്റെ സ്റ്റൈൽ അപ്ഡേറ്റ് ചെയ്തു *** */
-    background-color: #25D366; /* WhatsApp പച്ച */
-    border: 1px solid #25D366; /* WhatsApp പച്ച ബോർഡർ */
+    background-color: #25D366; 
+    border: 1px solid #25D366; 
 }
 .float-btn.whatsapp svg {
-    fill: #FFFFFF; /* ഐക്കൺ വെള്ള */
+    fill: #FFFFFF; 
 }
 .float-btn.cart {
     /* കാർട്ട് ബട്ടൺ സ്റ്റൈൽ */
