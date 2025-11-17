@@ -1,5 +1,6 @@
 // ഇതാണ് 'index.js' ഫയൽ.
 // *** 'SHOP BY CATEGORY' സ്ലൈഡർ മാറ്റി വെർട്ടിക്കൽ ലിസ്റ്റ് ആക്കി ***
+// *** പുതിയത്: ഹോം പേജ് ബാനർ ലോഡ് ചെയ്യാനുള്ള കോഡ് ചേർത്തു ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -20,10 +21,37 @@ setLogLevel('Debug');
 
 document.addEventListener("DOMContentLoaded", () => {
     loadSiteSettings();
+    loadHomeBanner(); // *** പുതിയ ഫംഗ്ഷൻ കോൾ ***
     loadHeroSlider();
     loadTopSellers();
     loadHomeCategories();
 });
+
+/**
+ * *** പുതിയ ഫംഗ്ഷൻ: ഹോം പേജ് ബാനർ ലോഡ് ചെയ്യുന്നു ***
+ */
+async function loadHomeBanner() {
+    const bannerContainer = document.getElementById('home-top-banner');
+    if (!bannerContainer) return;
+
+    try {
+        const docRef = doc(db, "settings", "global");
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists() && docSnap.data().homeBannerUrl) {
+            const bannerUrl = docSnap.data().homeBannerUrl;
+            bannerContainer.innerHTML = `<img src="${bannerUrl}" alt="Special Offer Banner">`;
+            bannerContainer.style.display = 'block';
+        } else {
+            bannerContainer.style.display = 'none';
+        }
+    } catch (error) {
+        console.error("Error loading home banner: ", error);
+        bannerContainer.style.display = 'none';
+    }
+}
+// *** മാറ്റം കഴിഞ്ഞു ***
+
 
 /**
  * 1. ഹീറോ സ്ലൈഡർ ലോഡ് ചെയ്യുന്നു (Mute ബട്ടൺ ഇല്ലാതെ)
