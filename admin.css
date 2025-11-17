@@ -1,8 +1,7 @@
 /* * =========================================
  * AL AMBAR - ADMIN STYLESHEET (admin.css)
  * =========================================
- * *** എഡിറ്റ്/ഡിലീറ്റ് ബട്ടൺ നിറങ്ങൾ തിരികെ ചേർത്തു ***
- * *** ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ സ്റ്റൈൽ ചേർത്തു ***
+ * *** "More Links" എന്നതിന് പുതിയ സ്റ്റൈലുകൾ ചേർത്തു ***
  */
 
 /* --- 1. Root Variables (നിറങ്ങൾ) --- */
@@ -274,7 +273,8 @@ textarea {
     resize: vertical;
     min-height: 100px;
 }
-/* --- 7. Image Preview --- */
+
+/* --- 7. ഇമേജ് & ലിങ്ക് അപ്‌ലോഡർ സ്റ്റൈലുകൾ --- */
 .image-preview {
     display: flex;
     flex-wrap: wrap;
@@ -289,14 +289,17 @@ textarea {
     border: 2px solid var(--border-color);
 }
 
-.image-url-list {
+.image-url-list,
+.link-url-list {
     display: flex;
     flex-direction: column;
     gap: 1rem;
     margin-bottom: 1rem;
 }
-.image-url-item {
+.image-url-item,
+.link-url-item {
     display: flex;
+    flex-wrap: wrap; /* മൊബൈലിന് വേണ്ടി */
     gap: 10px;
     align-items: center;
 }
@@ -311,7 +314,15 @@ textarea {
     border: 1px solid var(--border-color);
     background-color: #333;
 }
-.image-url-item .btn-remove-image {
+
+/* *** പുതിയത്: "More Links" ഇൻപുട്ടുകൾ *** */
+.link-url-item input[type="text"] {
+    flex: 1;
+    min-width: 200px; /* വല്ലാതെ ചുരുങ്ങാതിരിക്കാൻ */
+}
+
+.image-url-item .btn-remove-image,
+.link-url-item .btn-remove-link {
     background-color: var(--error-red);
     color: white;
     border: none;
@@ -323,7 +334,11 @@ textarea {
     font-size: 1rem;
     padding: 0;
     line-height: 30px;
+    flex-shrink: 0; /* ചുരുങ്ങാതിരിക്കാൻ */
 }
+/* *** സ്റ്റൈലുകൾ കഴിഞ്ഞു *** */
+
+
 .btn-secondary {
     background-color: #555;
     color: var(--text-color);
@@ -358,7 +373,6 @@ textarea {
     cursor: not-allowed;
 }
 
-/* *** നിറങ്ങൾ തിരികെ ചേർത്തു *** */
 .btn-edit {
     display: inline-block;
     background-color: #3498db;
@@ -521,7 +535,6 @@ textarea {
     cursor: pointer;
 }
 
-/* *** പുതിയത്: ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ *** */
 .confirm-buttons {
     display: flex;
     justify-content: flex-end;
@@ -585,5 +598,18 @@ textarea {
     .btn-delete,
     .btn-logout {
         width: auto;
+    }
+
+    /* *** പുതിയത്: മൊബൈലിൽ ലിങ്ക് ഇൻപുട്ടുകൾ ഒന്നിന് താഴെ ഒന്നായി *** */
+    .link-url-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .link-url-item input[type="text"] {
+        min-width: 100%;
+    }
+    .link-url-item .btn-remove-link {
+        width: 100%;
+        border-radius: 5px;
     }
 }
