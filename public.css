@@ -1,6 +1,7 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
    *** ഡിസ്ക്രിപ്ഷനിലെ ലിങ്കുകൾക്ക് നീല നിറം നൽകി ***
    *** പുതിയത്: "Paid Promotion" ലിങ്കിന് സ്റ്റൈൽ ചേർത്തു ***
+   *** ഒപ്പം: ഗാലറിയുടെ പൊസിഷൻ ശരിയാക്കി ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -865,6 +866,7 @@ img {
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 1rem;
+    position: relative; /* *** ഈ ലൈൻ ഞാൻ ഇപ്പോൾ ചേർത്തു *** */
 }
 .product-gallery-swiper .swiper-slide img {
     width: 100%;
