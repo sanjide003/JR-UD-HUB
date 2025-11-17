@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. 
-  *** തലക്കെട്ടിന് ID ചേർത്തു ***
+  *** "More Links" എന്ന പുതിയ ഫീച്ചർ ചേർത്തു ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -39,7 +39,6 @@
     <!-- 2. അഡ്മിൻ പാനൽ (ലോഗിൻ ചെയ്ത ശേഷം മാത്രം) -->
     <section id="admin-panel">
 
-        <!-- *** ഹെഡർ (മെനു ഐക്കൺ ഇടതുവശത്ത്) *** -->
         <header class="admin-main-header">
             <div class="admin-header-left">
                 <button id="admin-nav-open-btn" aria-label="Open Menu">
@@ -49,7 +48,6 @@
                         <line x1="3" y1="18" x2="21" y2="18"></line>
                     </svg>
                 </button>
-                <!-- *** പുതിയത്: തലക്കെട്ടിന് ID നൽകി *** -->
                 <h1 id="admin-panel-title">Al Ambar - Admin</h1>
             </div>
             <div class="admin-header-right">
@@ -57,7 +55,6 @@
             </div>
         </header>
 
-        <!-- *** സൈഡ് മെനു (ഇടതുവശത്ത് നിന്ന്) *** -->
         <nav class="admin-side-nav" id="admin-side-nav">
             <div class="admin-nav-header">
                 <h2>Menu</h2>
@@ -77,7 +74,6 @@
         </nav>
         <div class="admin-nav-overlay" id="admin-nav-overlay"></div>
 
-        <!-- *** ടാബ് ഉള്ളടക്കം *** -->
         <div class="container">
             <div id="admin-status" class="status-message"></div>
 
@@ -124,6 +120,16 @@
                             </div>
                             <button type="button" id="add-image-url-btn" class="btn btn-secondary">Add Image URL</button>
                         </div>
+
+                        <!-- *** പുതിയത്: "More Links" സെക്ഷൻ *** -->
+                        <div class="form-group full-width">
+                            <label>More Links (e.g., YouTube Review, Paid Promotion)</label>
+                            <div id="product-more-links-container" class="link-url-list">
+                                <!-- 'admin.js' വഴി ലിങ്ക് ഇൻപുട്ടുകൾ ഇവിടെ വരും -->
+                            </div>
+                            <button type="button" id="add-more-link-btn" class="btn btn-secondary">Add Link</button>
+                        </div>
+                        <!-- *** "More Links" സെക്ഷൻ കഴിഞ്ഞു *** -->
 
                     </div>
                     <button type="submit" class="btn" id="add-product-button">
@@ -372,7 +378,7 @@
             </div>
         </div>
 
-        <!-- *** ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ *** -->
+        <!-- ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ -->
         <div id="confirm-modal" class="modal-overlay">
             <div class="modal-content" style="max-width: 400px;">
                 <div class="modal-header">
