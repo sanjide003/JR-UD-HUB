@@ -1,6 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** ഡിസ്ക്രിപ്ഷനിലെ ലിങ്കുകൾ ഓട്ടോമാറ്റിക്കായി ക്ലിക്ക് ചെയ്യാൻ കഴിയുന്നതാക്കി ***
-// *** പുതിയത്: "More Links" (Paid Promotion) ഗാലറിക്ക് മുകളിൽ ചേർത്തു ***
+// *** 'You May Also Like' സെക്ഷനിലെ 'Buy' ബട്ടൺ മാറ്റി 'View' (ലിങ്ക്) ആക്കി ***
 
 import { 
     collection, 
@@ -55,8 +54,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 /**
  * URL-ൽ നിന്ന് ID എടുത്ത് ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ കാണിക്കുന്നു
- * *** ഡിസ്ക്രിപ്ഷനിൽ ലിങ്കുകൾ കാണിക്കാൻ അപ്ഡേറ്റ് ചെയ്തു ***
- * *** "More Links" ഗാലറിയിലേക്ക് ചേർത്തു ***
  */
 async function loadProductDetails() {
     if (!productDetailContent) return;
@@ -106,12 +103,11 @@ async function loadProductDetails() {
             priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
         }
 
-        // *** പുതിയത്: "More Links" (Paid Promotion) కోసం HTML ***
+        // "More Links" (Paid Promotion) HTML
         let moreLinksHTML = '';
         if (product.moreLinks && product.moreLinks.length > 0) {
             moreLinksHTML = '<div class="product-more-links">';
             product.moreLinks.forEach(link => {
-                // നിങ്ങൾ ആവശ്യപ്പെട്ട പ്രകാരം ടൈറ്റിൽ മാത്രം കാണിക്കുന്നു
                 moreLinksHTML += `
                     <a href="${link.url}" class="product-promotion-link" target="_blank" rel="noopener noreferrer">
                         <span>${link.title}</span>
@@ -123,7 +119,6 @@ async function loadProductDetails() {
             });
             moreLinksHTML += '</div>';
         }
-        // *** മാറ്റം കഴിഞ്ഞു ***
 
         let galleryHTML = '';
         if (product.images && product.images.length > 0) {
@@ -141,7 +136,7 @@ async function loadProductDetails() {
                         ${slidesHTML}
                     </div>
                     <div class="swiper-pagination"></div>
-                    ${moreLinksHTML} <!-- *** പുതിയ ലിങ്കുകൾ ഗാലറിക്കുള്ളിൽ ചേർത്തു *** -->
+                    ${moreLinksHTML}
                 </div>
             `;
         } else {
@@ -152,17 +147,15 @@ async function loadProductDetails() {
                             <img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image" alt="${product.name}">
                         </div>
                     </div>
-                    ${moreLinksHTML} <!-- *** പുതിയ ലിങ്കുകൾ ഗാലറിക്കുള്ളിൽ ചേർത്തു *** -->
+                    ${moreLinksHTML}
                 </div>
             `;
         }
 
-        // *** പുതിയത്: ഡിസ്ക്രിപ്ഷൻ ലിങ്കാക്കുന്നു ***
+        // ഡിസ്ക്രിപ്ഷൻ ലിങ്കാക്കുന്നു
         let descriptionHTML = 'No description available.';
         if (product.description) {
-            // 1. ആദ്യം ലിങ്കുകൾ കണ്ടെത്തുന്നു
             let linkifiedText = linkify(product.description);
-            // 2. ശേഷം പുതിയ വരികൾ <br> ആക്കുന്നു
             descriptionHTML = linkifiedText.replace(/\n/g, '<br>');
         }
 
@@ -175,13 +168,11 @@ async function loadProductDetails() {
                 <div class="price-container large">
                     ${priceHTML}
                 </div>
-                <!-- *** ഡിസ്ക്രിപ്ഷൻ ഇവിടെ അപ്ഡേറ്റ് ചെയ്തു *** -->
                 <div class="product-description">
                     ${descriptionHTML}
                 </div>
                 
                 <div class="product-actions-grid">
-                    <!-- ബട്ടൺ 1: Add to Cart (പുതിയ ഡിസൈൻ) -->
                     <button class="btn-secondary-new" id="add-to-cart-btn">
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -191,12 +182,11 @@ async function loadProductDetails() {
                         Add to Cart
                     </button>
                     
-                    <!-- ബട്ടൺ 2: Buy on WhatsApp (ഐക്കൺ നീക്കം ചെയ്തു) -->
                     <a class="btn-primary-new" id="buy-on-whatsapp-btn" href="#">
                         Buy on WhatsApp
                     </a>
                 </div>
-                <div id="add-to-cart-feedback" style="display: none;"></div>
+                <div id="add-to-cart-feedback"></div>
             </div>
         `;
 
@@ -291,6 +281,7 @@ function setupProductActionButtons() {
 
 /**
  * ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (പുതിയ സ്ലൈഡർ രൂപത്തിൽ)
+ * *** 'Buy' ബട്ടൺ മാറ്റി 'View' (ലിങ്ക്) ആക്കി ***
  */
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
@@ -339,13 +330,11 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                             </svg>
                             <span>Cart</span>
                         </button>
-                        <button class="btn btn-primary-new btn-buy-whatsapp-related"
-                            data-id="${productId}"
-                            data-name="${product.name}"
-                            data-price="${price}"
-                            data-size="${product.size || ''}">
-                            <span>Buy</span>
-                        </button>
+                        
+                        <!-- *** 'Buy' ബട്ടൺ മാറ്റി 'View' ലിങ്ക് ആക്കി *** -->
+                        <a href="product.html?id=${productId}" class="btn btn-primary-new">
+                            <span>View</span>
+                        </a>
                     </div>
                 </div>
             `;
@@ -374,7 +363,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
 // 'You May Also Like' സെക്ഷനിലെ ബട്ടണുകൾ
 relatedProductsGrid.addEventListener('click', (e) => {
     const cartButton = e.target.closest('.btn-add-to-cart');
-    const buyButton = e.target.closest('.btn-buy-whatsapp-related'); 
+    // const buyButton = e.target.closest('.btn-buy-whatsapp-related'); // *** ഈ വരി നീക്കം ചെയ്തു ***
 
     if (cartButton) {
         e.preventDefault();
@@ -402,29 +391,5 @@ relatedProductsGrid.addEventListener('click', (e) => {
             cartButton.disabled = false;
         }, 2000);
     } 
-    else if (buyButton) {
-        e.preventDefault();
-        if (!whatsappNumber) {
-            console.error("WhatsApp number not found.");
-            return;
-        }
-        
-        const id = buyButton.dataset.id;
-        const name = buyButton.dataset.name;
-        const price = parseFloat(buyButton.dataset.price);
-        const size = buyButton.dataset.size; 
-        
-        const productLink = `${window.location.origin}/product.html?id=${id}`;
-        
-        let message = `Hi, I'm interested in this product:\n\n`;
-        message += `*${name}*\n`;
-        if(size) {
-            message += `*Size: ${size}*\n`; 
-        }
-        message += `*Price: ₹${price.toFixed(2)}*\n\n`;
-        message += `Product Link:\n${productLink}`;
-        
-        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-        window.open(whatsappUrl, '_blank');
-    }
+    // *** 'Buy' ബട്ടന്റെ ലോജിക് നീക്കം ചെയ്തു ***
 });
