@@ -1,5 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// *** "Add to Cart" ബട്ടൺ ടോഗിൾ ആക്കി മാറ്റി ***
+// *** Image Optimization & Lazy Loading നടപ്പിലാക്കി ***
 
 import {
     collection,
@@ -14,8 +14,7 @@ import {
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db } from './firebase-config.js';
-import { loadSiteSettings } from './common.js';
-// *** isItemInCart, removeFromCart എന്നിവ import ചെയ്തു ***
+import { loadSiteSettings, optimizeImage } from './common.js'; // *** optimizeImage ഇറക്കുമതി ചെയ്തു ***
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
 setLogLevel('Debug');
@@ -51,31 +50,25 @@ document.addEventListener("DOMContentLoaded", async () => {
     startLoadingProducts(currentCategoryId); 
 });
 
-/**
- * WhatsApp നമ്പർ ഫയർബേസിൽ നിന്ന് എടുക്കുന്നു
- */
 async function loadWhatsappNumber() {
     try {
+        // ... (പഴയതുപോലെ തന്നെ) ...
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists() && docSnap.data().whatsapp) {
             whatsappNumber = docSnap.data().whatsapp;
-        } else {
-            console.log("WhatsApp number not found in settings.");
         }
-    } catch (error) {
-        console.error("Error fetching WhatsApp number: ", error);
-    }
+    } catch (error) { console.error("Error fetching WhatsApp number: ", error); }
 }
 
 /**
- * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു
+ * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു (ഒപ്റ്റിമൈസ് ചെയ്ത ചിത്രങ്ങൾ)
  */
 async function loadCategoryList() {
-    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     if (!categoryNavDesktop || !categoryNavMobile) return;
 
     try {
+        // കാഷെയിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കാം (ലളിതമാക്കാൻ ഇപ്പോൾ നേരിട്ട് വിളിക്കുന്നു)
         const q = query(collection(db, "categories"), orderBy("name"));
         const catSnapshot = await getDocs(q);
 
@@ -94,10 +87,14 @@ async function loadCategoryList() {
         
         catSnapshot.forEach((doc) => {
             const category = doc.data();
+            // *** കാറ്റഗറി ഐക്കൺ ഒപ്റ്റിമൈസ് ചെയ്യുന്നു (വളരെ ചെറിയ വലിപ്പം മതി - 150px) ***
+            const rawImage = category.imageUrl || 'https://placehold.co/80x80/333/D4AF37?text=C';
+            const optimizedIcon = optimizeImage(rawImage, 150);
+
             navHtml += `
                 <a href="#" class="category-grid-item" data-id="${doc.id}">
                     <div class="category-grid-image-box">
-                        <img src="${category.imageUrl || 'https://placehold.co/80x80/333/D4AF37?text=C'}" alt="${category.name}" class="category-grid-image">
+                        <img src="${optimizedIcon}" alt="${category.name}" class="category-grid-image" loading="lazy">
                     </div>
                     <span class="category-grid-name">${category.name}</span>
                 </a>
@@ -115,24 +112,16 @@ async function loadCategoryList() {
     } catch (error) {
         console.error("Error loading categories: ", error);
         categoryNavDesktop.innerHTML = '<p class="loading-placeholder">Error loading categories.</p>';
-        categoryNavMobile.innerHTML = '<p class="loading-placeholder">Error loading categories.</p>';
     }
 }
 
-/**
- * 2. കാറ്റഗറി ലിങ്കുകൾക്ക് ക്ലിക്ക് ഇവന്റുകൾ ചേർക്കുന്നു
- */
 function addNavClickListeners(navElement) {
-    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     navElement.addEventListener('click', (e) => {
         const link = e.target.closest('.category-grid-item');
         if (!link) return;
-        
         e.preventDefault();
         const categoryId = link.dataset.id;
-        
         if (categoryId === currentCategoryId) return; 
-
         currentCategoryId = categoryId;
         startLoadingProducts(categoryId);
         
@@ -145,13 +134,8 @@ function addNavClickListeners(navElement) {
     });
 }
 
-/**
- * 3. പുതിയ കാറ്റഗറി തിരഞ്ഞെടുക്കുമ്പോൾ ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യാൻ തുടങ്ങുന്നു
- */
 async function startLoadingProducts(categoryId) {
-    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     if (!productGrid) return;
-
     isLoading = false;
     productGrid.innerHTML = ''; 
     lastVisible = null; 
@@ -166,15 +150,12 @@ async function startLoadingProducts(categoryId) {
     window.history.pushState({}, '', url);
 
     const productsRef = collection(db, "products");
-
     if (categoryId === 'all') {
         currentQuery = query(productsRef, orderBy("name"));
     } else {
         try {
-            currentQuery = query(productsRef, 
-                where("categoryId", "==", categoryId)
-            );
-        } catch (e) { console.error("Error fetching category name", e); }
+            currentQuery = query(productsRef, where("categoryId", "==", categoryId));
+        } catch (e) { console.error("Error query", e); }
     }
     
     updateActiveCategoryUI(categoryId);
@@ -182,8 +163,7 @@ async function startLoadingProducts(categoryId) {
 }
 
 /**
- * 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (ഇൻഫിനിറ്റ് സ്ക്രോൾ)
- * *** ബട്ടൺ ടോഗിൾ ലോജിക് ചേർത്തു ***
+ * 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (Image Optimization + Lazy Loading)
  */
 async function loadProducts() {
     if (isLoading || !currentQuery) return;
@@ -192,7 +172,6 @@ async function loadProducts() {
 
     try {
         let q;
-        
         if (lastVisible) {
             q = query(currentQuery, startAfter(lastVisible), limit(productsPerPage));
         } else {
@@ -220,31 +199,30 @@ async function loadProducts() {
 
             const price = product.price || 0;
             const mrp = product.mrp || 0;
-            const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
+            
+            // *** ഇമേജ് ഒപ്റ്റിമൈസേഷൻ (400px മതി) ***
+            const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
+            const imageUrl = optimizeImage(rawImage, 400, 80);
 
             let priceHTML = `<span class="price-main">₹${price}</span>`;
             if (mrp > price) {
                 priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
             }
 
-            // *** കാർട്ടിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു ***
             const isInCart = isItemInCart(productId);
             const buttonText = isInCart ? "Remove" : "Cart";
             const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new";
 
             card.innerHTML = `
                 <a href="product.html?id=${productId}" class="cat-product-image-link">
-                    <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
+                    <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" loading="lazy" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
                 </a>
                 <div class="cat-product-content">
                     <h3 class="cat-product-title">${product.name}</h3>
-                    
                     <div class="price-container">
                         ${priceHTML}
                     </div>
-
                     <div class="cat-product-buttons">
-                        <!-- *** ബട്ടൺ HTML അപ്ഡേറ്റ് ചെയ്തു *** -->
                         <button class="btn ${buttonClass} btn-add-to-cart"
                             data-id="${productId}"
                             data-name="${product.name}"
@@ -259,7 +237,6 @@ async function loadProducts() {
                             </svg>
                             <span>${buttonText}</span>
                         </button>
-                        
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">
                             <span>View</span>
                         </a>
@@ -278,11 +255,7 @@ async function loadProducts() {
     }
 }
 
-/**
- * 5. ആക്ടീവ് കാറ്റഗറി ലിങ്ക് ഹൈലൈറ്റ് ചെയ്യുന്നു
- */
 function updateActiveCategoryUI(categoryId) {
-    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     const allLinks = document.querySelectorAll('.category-grid-item'); 
     allLinks.forEach(link => {
         link.classList.remove('active');
@@ -292,28 +265,19 @@ function updateActiveCategoryUI(categoryId) {
     });
 }
 
-/**
- * 6. "Add to Cart" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
- * *** ടോഗിൾ ലോജിക് ആക്കി മാറ്റി ***
- */
 productGrid.addEventListener('click', (e) => {
     const cartButton = e.target.closest('.btn-add-to-cart');
-
     if (cartButton) {
         e.preventDefault();
-        
         const id = cartButton.dataset.id;
         const buttonText = cartButton.querySelector('span');
-
         if (cartButton.classList.contains('added-to-cart')) {
-            // കാർട്ടിൽ ഉണ്ട്, അതിനാൽ നീക്കം ചെയ്യുന്നു
             removeFromCart(id);
             cartButton.classList.remove('added-to-cart');
             cartButton.classList.remove('btn-primary-new');
             cartButton.classList.add('btn-secondary-new');
             if (buttonText) buttonText.textContent = 'Cart';
         } else {
-            // കാർട്ടിൽ ഇല്ല, അതിനാൽ ചേർക്കുന്നു
             const product = {
                 id: id, 
                 name: cartButton.dataset.name,
@@ -328,21 +292,13 @@ productGrid.addEventListener('click', (e) => {
             cartButton.classList.remove('btn-secondary-new');
             if (buttonText) buttonText.textContent = 'Remove';
         }
-    }
+    } 
 });
 
-/**
- * 7. ഇൻഫിനിറ്റ് സ്ക്രോൾ നിരീക്ഷകൻ (Observer)
- */
 const observer = new IntersectionObserver((entries) => {
-    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     if (entries[0].isIntersecting && !isLoading && lastVisible) { 
         loadProducts();
     }
-}, {
-    rootMargin: '200px'
-});
+}, { rootMargin: '200px' });
 
-if (loader) {
-    observer.observe(loader);
-}
+if (loader) { observer.observe(loader); }
