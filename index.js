@@ -1,17 +1,17 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** Video Autoplay Fix & Image Restore ***
+// *** Video Resume Logic Update (No Reset on Scroll) ***
 
 import { db } from './firebase-config.js';
 import { 
     collection, 
-    getDocs,
-    doc,
-    getDoc,
-    query,
-    where,
-    limit,
-    orderBy,
-    setLogLevel
+    getDocs, 
+    doc, 
+    getDoc, 
+    query, 
+    where, 
+    limit, 
+    orderBy, 
+    setLogLevel 
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
@@ -53,7 +53,7 @@ async function loadHomeBanner() {
 
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ (വീഡിയോ ഓട്ടോപ്ലേ ഫിക്സ്)
+ * 1. ഹീറോ സ്ലൈഡർ
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -86,6 +86,7 @@ async function loadHeroSlider() {
                 }
 
                 if (videoId) {
+                    // enablejsapi=1 നിർബന്ധമാണ്
                     embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1`;
                 }
 
@@ -94,12 +95,13 @@ async function loadHeroSlider() {
                     slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
                 }
                 else if (isVideo && embedUrl) {
-                    slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="encrypted-media" allowfullscreen></iframe>`;
+                    // YouTube iframe
+                    slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 }
                 else if (isVideo) {
-                    // *** മാറ്റം: autoplay ആട്രിബ്യൂട്ട് തിരികെ കൊണ്ടുവന്നു ***
-                    // ബ്രൗസർ പോളിസി കാരണം ഓട്ടോപ്ലേ വർക്ക് ആവാൻ 'muted' നിർബന്ധമാണ്.
-                    slideEl.innerHTML = `<video class="hero-video-element" src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>`;
+                    // Direct Video (MP4)
+                    // പേജ് ലോഡ് ചെയ്യുമ്പോൾ തുടക്കം മുതൽ കാണിക്കാൻ 'autoplay' ഇടാം, പക്ഷെ സ്ക്രോൾ ഒബ്സർവർ അത് നിയന്ത്രിക്കും.
+                    slideEl.innerHTML = `<video class="hero-video-element" src="${slide.url}" muted loop playsinline preload="metadata"></video>`;
                 }
                 
                 sliderWrapper.appendChild(slideEl);
@@ -118,28 +120,46 @@ async function loadHeroSlider() {
             },
         });
 
-        // സ്ക്രോൾ ചെയ്യുമ്പോൾ വീഡിയോ പോസ് ചെയ്യാനുള്ള കോഡ്
+        // *** വീഡിയോ കൺട്രോൾ ***
         setupSmartVideoAutoplay();
 
     } catch (error) { console.error("Error loading hero slider: ", error); }
 }
 
+/**
+ * വീഡിയോ സ്ക്രീനിൽ വരുമ്പോൾ നിർത്തിയിടത്തുനിന്ന് പ്ലേ ചെയ്യും (Resume).
+ * സ്ക്രീനിൽ നിന്ന് മാറുമ്പോൾ പോസ് ചെയ്യും.
+ */
 function setupSmartVideoAutoplay() {
-    const videos = document.querySelectorAll('.hero-video-element');
+    const videos = document.querySelectorAll('.hero-video-element, .hero-video-iframe');
     
     const observerOptions = {
         root: null,
         rootMargin: '0px',
-        threshold: 0.5 
+        threshold: 0.4 // 40% വീഡിയോ സ്ക്രീനിൽ വന്നാൽ പ്രവർത്തിക്കും
     };
 
     const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            const video = entry.target;
+            const element = entry.target;
+            const isYouTube = element.tagName === 'IFRAME';
+
             if (entry.isIntersecting) {
-                video.play().catch(e => console.log("Autoplay prevented:", e));
+                // സ്ക്രീനിൽ ഉണ്ട് -> പ്ലേ ചെയ്യുക (Resume)
+                // ഇവിടെ സമയം റീസെറ്റ് ചെയ്യുന്ന കോഡ് നീക്കം ചെയ്തു.
+                
+                if (isYouTube) {
+                    element.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                } else {
+                    element.play().catch(e => console.log("Autoplay prevented:", e));
+                }
             } else {
-                video.pause();
+                // സ്ക്രീനിൽ ഇല്ല -> പോസ് ചെയ്യുക
+                if (isYouTube) {
+                    element.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                } else {
+                    element.pause();
+                }
             }
         });
     }, observerOptions);
