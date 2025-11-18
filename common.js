@@ -1,8 +1,5 @@
 // ഇതാണ് 'common.js' ഫയൽ.
-// *** ഫ്ലോട്ടിംഗ് WhatsApp ഐക്കൺ SVG അപ്ഡേറ്റ് ചെയ്തു ***
-// *** സൈഡ് മെനുവിൽ "Explore" ടാബ് ചേർത്തു ***
-// *** ഫൂട്ടർ ലിങ്കുകൾ നിങ്ങളുടെ നിർദ്ദേശപ്രകാരം പൂർണ്ണമായും മാറ്റി ***
-// *** ഹോട്ട്ഫിക്സ്: 'Promise.all' മാറ്റി, സുരക്ഷിതമായ ലോഡിംഗിനായി 'try...catch' ചേർത്തു ***
+// *** ഫ്ലോട്ടിംഗ് ബട്ടണിൽ നിന്ന് കാർട്ട് നീക്കം ചെയ്തു ***
 
 import { db, auth } from './firebase-config.js';
 import { 
@@ -319,7 +316,7 @@ function setupFooterAccordion() {
 
 /**
  * 4. പുതിയ ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ നിർമ്മിക്കുന്നു
- * *** യഥാർത്ഥ WhatsApp ലോഗോ ചേർത്തു ***
+ * *** കാർട്ട് ബട്ടൺ നീക്കം ചെയ്തു ***
  */
 async function buildFloatingButtons() {
     const settings = await fetchSiteSettings();
@@ -338,16 +335,7 @@ async function buildFloatingButtons() {
         `;
     }
 
-    // കാർട്ട് ബട്ടൺ
-    html += `
-        <a href="cart.html" class="float-btn cart" aria-label="View Cart">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <path d="M16 10a4 4 0 0 1-8 0"></path>
-            </svg>
-        </a>
-    `;
+    // *** കാർട്ട് ബട്ടൺ കോഡ് നീക്കം ചെയ്തു ***
     
     container.innerHTML = html;
 }
