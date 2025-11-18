@@ -1,4 +1,6 @@
 /* ഇത് കാറ്റഗറി പേജിന് (categories.html) മാത്രമുള്ള CSS ഫയലാണ്.
+   *** കാറ്റഗറി നാവിഗേഷൻ പുതിയ ഗ്രിഡ് സ്റ്റൈലിലേക്ക് മാറ്റി ***
+   *** മൊബൈലിൽ പ്രൊഡക്റ്റ് ഗ്രിഡ് 3 കോളം ആക്കി ***
 */
 
 /* --- 1. കാറ്റഗറി പേജ് ലേഔട്ട് --- */
@@ -8,50 +10,68 @@
     gap: 1.5rem;
 }
 
-/* 1.1 മൊബൈൽ നാവിഗേഷൻ (മുകളിൽ) */
-.category-nav-mobile {
-    display: flex;
-    overflow-x: auto;
-    gap: 0.5rem;
+/* 1.1 മൊബൈൽ കാറ്റഗറി ഗ്രിഡ് (മുകളിൽ) */
+.category-grid-mobile {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* 4+ കോളം */
+    gap: 1rem;
     padding-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
 }
-.category-nav-mobile::-webkit-scrollbar { display: none; }
-.category-nav-mobile { -ms-overflow-style: none; scrollbar-width: none; }
 
-/* 1.2 ഡെസ്ക്ടോപ്പ് നാവിഗേഷൻ (വശത്ത്) */
-.category-nav-desktop {
-    display: none; 
+/* 1.2 ഡെസ്ക്ടോപ്പ് കാറ്റഗറി ഗ്രിഡ് (മുകളിൽ) */
+.category-grid-desktop {
+    display: none; /* ഡെസ്ക്ടോപ്പിൽ ഇത് മറയ്ക്കുന്നു (മൊബൈൽ ലേഔട്ട് മാത്രം) */
 }
 
-/* 1.3 നാവിഗേഷൻ ലിങ്കുകൾ (രണ്ടിനും) */
-.category-nav-link {
+/* 1.3 പുതിയ കാറ്റഗറി ഗ്രിഡ് ഐറ്റം സ്റ്റൈലുകൾ */
+.category-grid-item {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.75rem;
-    padding: 0.5rem 1rem;
-    border-radius: 8px;
+    gap: 0.5rem;
     text-decoration: none;
     color: var(--text-muted);
     font-weight: 500;
     flex-shrink: 0;
-    border: 1px solid var(--border-color);
+    padding: 0.25rem;
 }
-.category-nav-link:hover {
-    color: var(--text-color);
-    background-color: var(--card-bg);
+.category-grid-image-box {
+    width: 70px;
+    height: 70px;
+    border-radius: 16px; 
+    background-color: rgba(233, 213, 255, 0.1); /* ചിത്രത്തിലേതുപോലത്തെ ലൈറ്റ് പർപ്പിൾ ടിന്റ് */
+    border: 1px solid rgba(233, 213, 255, 0.2);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: border-color 0.3s ease;
 }
-.category-nav-link.active {
+.category-grid-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    color: var(--primary-gold); 
+}
+.category-grid-name {
+    font-size: 0.8rem;
+    text-align: center;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+}
+
+/* 1.4 പുതിയ ആക്ടീവ്/ഹോവർ സ്റ്റൈലുകൾ */
+.category-grid-item:hover .category-grid-name,
+.category-grid-item.active .category-grid-name {
     color: var(--primary-gold);
+}
+.category-grid-item:hover .category-grid-image-box,
+.category-grid-item.active .category-grid-image-box {
     border-color: var(--primary-gold);
-    background-color: var(--card-bg);
 }
-.category-nav-icon {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    object-fit: cover;
-}
+
 
 /* --- 2. പ്രൊഡക്റ്റ് ഗ്രിഡ് --- */
 .category-page-content {
@@ -59,8 +79,9 @@
 }
 .category-product-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
+    /* *** മൊബൈലിൽ 3 കോളം ആക്കി *** */
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem; /* *** ഗ്യാപ്പ് കുറച്ചു *** */
 }
 .loader-container {
     display: none;
@@ -74,7 +95,6 @@
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid var(--border-color);
     transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
@@ -86,7 +106,7 @@
 .cat-product-image-link {
     display: block;
     width: 100%;
-    height: 180px;
+    height: 120px; /* *** 3 കോളം ആക്കിയതുകൊണ്ട് ഉയരം കുറച്ചു *** */
     overflow: hidden;
 }
 .cat-product-image {
@@ -100,60 +120,107 @@
     transform: scale(1.1);
 }
 .cat-product-content {
-    padding: 1rem;
+    padding: 0.75rem; /* *** പാഡിംഗ് കുറച്ചു *** */
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 .cat-product-title {
-    font-size: 1rem;
+    font-size: 0.85rem; /* *** അക്ഷരവലിപ്പം കുറച്ചു *** */
     color: var(--text-color); 
     font-weight: 500;
-    margin-bottom: 1rem;
-    min-height: 40px;
+    margin-bottom: 0.25rem;
+    min-height: 30px; /* *** ഉയരം കുറച്ചു *** */
 }
+.cat-product-content .price-container {
+    margin-bottom: 0.5rem; /* *** മാർജിൻ കുറച്ചു *** */
+}
+.cat-product-content .price-main {
+    font-size: 1rem; /* *** അക്ഷരവലിപ്പം കുറച്ചു *** */
+}
+.cat-product-content .price-mrp {
+    font-size: 0.8rem; /* *** അക്ഷരവലിപ്പം കുറച്ചു *** */
+}
+
+
 .cat-product-buttons {
     display: grid;
-    grid-template-columns: auto 1fr; /* ഐക്കൺ + 'View' ബട്ടണ് വേണ്ടി */
-    gap: 0.5rem;
+    grid-template-columns: 1fr 1fr; 
+    gap: 0.25rem; /* *** ഗ്യാപ്പ് കുറച്ചു *** */
     margin-top: auto;
 }
-/* 'You May Also Like' സെക്ഷനിലെ ബട്ടണുകൾ */
-.related-buttons {
-    grid-template-columns: 1fr 1fr;
+/* *** 3 കോളം ആയതുകൊണ്ട് ബട്ടണിലെ അക്ഷരവലിപ്പം കുറച്ചു *** */
+.cat-product-buttons .btn-primary-new,
+.cat-product-buttons .btn-secondary-new {
+    font-size: 0.7rem;
+    padding: 0.5rem 0.25rem;
+    gap: 0.25rem;
+}
+.cat-product-buttons .btn-secondary-new svg.icon-btn {
+    width: 14px; /* *** ഐക്കൺ ചെറുതാക്കി *** */
+    height: 14px;
 }
 
 
 /* --- 3. റെസ്പോൺസീവ് (Responsive) --- */
 @media (max-width: 768px) {
-    .category-nav-desktop {
+    /* മൊബൈലിൽ ഡെസ്ക്ടോപ്പ് ഗ്രിഡ് മറയ്ക്കുന്നു */
+    .category-grid-desktop {
         display: none; 
-    }
-    .category-page-content {
-        flex-grow: 1;
     }
 }
 
-/* ടാബ്ലെറ്റ് & ചെറിയ ഡെസ്ക്ടോപ്പ് */
 @media (min-width: 769px) {
-    .category-page-layout {
-        flex-direction: row;
-        gap: 2.5rem;
-    }
-    .category-nav-mobile {
+    /* ഡെസ്ക്ടോപ്പിൽ മൊബൈൽ ഗ്രിഡ് മറയ്ക്കുന്നു */
+    .category-grid-mobile {
         display: none; 
     }
-    .category-nav-desktop {
-        display: flex;
-        flex-direction: column;
-        width: 280px;
-        flex-shrink: 0;
+    /* ഡെസ്ക്ടോപ്പിൽ കാറ്റഗറി ഗ്രിഡ് മുകളിൽ കാണിക്കുന്നു */
+    .category-grid-desktop {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+        gap: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    /* ഡെസ്ക്ടോപ്പിൽ പ്രൊഡക്റ്റ് ഗ്രിഡ് 2 കോളം ആക്കുന്നു */
+    .category-page-layout {
+        flex-direction: column; /* ലേഔട്ട് ഇപ്പോഴും മുകളിൽ നിന്ന് താഴേക്ക് */
+    }
+
+    .category-product-grid {
+        grid-template-columns: repeat(4, 1fr); /* ഡെസ്ക്ടോപ്പിൽ 4 കോളം */
+        gap: 1rem; /* ഗ്യാപ്പ് തിരികെ കൊണ്ടുവന്നു */
+    }
+    /* കാർഡ് സ്റ്റൈലുകൾ ഡെസ്ക്ടോപ്പിനായി തിരികെ കൊണ്ടുവരുന്നു */
+    .cat-product-image-link {
+        height: 180px;
+    }
+    .cat-product-content {
+        padding: 1rem;
+    }
+    .cat-product-title {
+        font-size: 1rem;
+        min-height: 40px;
+    }
+    .cat-product-content .price-main {
+        font-size: 1.3rem;
+    }
+    .cat-product-content .price-mrp {
+        font-size: 1rem;
+    }
+    .cat-product-buttons {
         gap: 0.5rem;
     }
-    .category-page-content {
-        flex-grow: 1;
+    .cat-product-buttons .btn-primary-new,
+    .cat-product-buttons .btn-secondary-new {
+        font-size: 0.9rem;
+        padding: 0.75rem 1rem;
+        gap: 0.5rem;
     }
-    .category-product-grid {
-        grid-template-columns: repeat(3, 1fr);
+    .cat-product-buttons .btn-secondary-new svg.icon-btn {
+        width: 16px;
+        height: 16px;
     }
 }
