@@ -1,16 +1,14 @@
 /* ഇതാണ് പുതിയ 'explore.html' പേജിന് മാത്രമായുള്ള CSS ഫയൽ.
-  ഇത് നമ്മുടെ ബ്ലാക്ക് & ഗോൾഡ് തീം ഉപയോഗിക്കുന്നു.
-  *** അപ്ഡേറ്റ്: ഇമേജ് ഡോട്ടുകളും താഴെയുള്ള ബട്ടണുകളും നീക്കം ചെയ്തു ***
-  *** അപ്ഡേറ്റ്: ബുക്ക്മാർക്ക് ഐക്കണിന് 'added' സ്റ്റൈൽ ചേർത്തു ***
+  *** ഷെയർ ബട്ടൺ ഫീഡ്ബാക്ക് സ്റ്റൈലുകൾ ചേർത്തു ***
 */
 
 /* --- 1. ഫീഡ് കണ്ടെയ്നർ --- */
 .explore-feed-container {
-    max-width: 700px; /* ഫീഡിന് ഒരു പരമാവധി വീതി (ഇൻസ്റ്റാഗ്രാം പോലെ) */
-    margin: 0 auto; /* നടുക്ക് വരാൻ */
+    max-width: 700px; 
+    margin: 0 auto; 
     display: flex;
     flex-direction: column;
-    gap: 2rem; /* ഓരോ പ്രൊഡക്റ്റ് കാർഡിനും ഇടയിൽ സ്പേസ് */
+    gap: 2rem; 
 }
 
 /* --- 2. പ്രൊഡക്റ്റ് കാർഡ് (പ്രധാനപ്പെട്ടത്) --- */
@@ -48,7 +46,7 @@
 /* 2.2 പ്രൊഡക്റ്റ് ഇമേജ് (സ്ലൈഡർ) */
 .explore-image-swiper {
     width: 100%;
-    aspect-ratio: 1 / 1; /* സമചതുരം */
+    aspect-ratio: 1 / 1; 
     background-color: #000;
 }
 .explore-image-swiper .swiper-slide img {
@@ -56,9 +54,6 @@
     height: 100%;
     object-fit: cover;
 }
-
-/* *** നീക്കം ചെയ്തു: ഇമേജ് ഡോട്ടുകളുടെ (Pagination) സ്റ്റൈലുകൾ *** */
-
 
 /* 2.3 പ്രൊഡക്റ്റ് വിവരങ്ങൾ (കാർഡിന് താഴെ) */
 .explore-card-content {
@@ -69,7 +64,7 @@
 .explore-action-icons {
     display: flex;
     align-items: center;
-    gap: 1.25rem; /* ഐക്കണുകൾ തമ്മിൽ അകലം */
+    gap: 1.25rem; 
     margin-bottom: 1rem;
 }
 .explore-action-icons button {
@@ -77,8 +72,8 @@
     border: none;
     cursor: pointer;
     padding: 0;
-    color: var(--text-color); /* വെള്ള ഐക്കൺ */
-    transition: color 0.2s ease, transform 0.2s ease; /* *** പുതിയത്: ട്രാൻസിഷൻ *** */
+    color: var(--text-color); 
+    transition: color 0.2s ease, transform 0.2s ease; 
 }
 .explore-action-icons button svg {
     width: 24px;
@@ -90,16 +85,15 @@
     stroke-linejoin: round;
 }
 .explore-action-icons button.bookmark-btn {
-    margin-left: auto; /* ബുക്ക്മാർക്ക് ഐക്കൺ വലതുവശത്തേക്ക് നീക്കാൻ */
+    margin-left: auto; 
 }
 .explore-action-icons button:hover {
     color: var(--text-muted);
 }
 
-/* *** പുതിയത്: കാർട്ടിലേക്ക് ആഡ് ചെയ്യുമ്പോൾ ബുക്ക്മാർക്ക് ഐക്കൺ സ്വർണ്ണ നിറമാവുന്നു *** */
 .explore-action-icons button.bookmark-btn.added-to-cart {
-    color: var(--primary-gold); /* സ്വർണ്ണ നിറം */
-    transform: scale(1.2); /* ചെറുതായി വലുതാവുന്നു */
+    color: var(--primary-gold); 
+    transform: scale(1.2); 
 }
 
 /* 2.5 പ്രൊഡക്റ്റ് പേരും വിലയും */
@@ -132,9 +126,8 @@
     margin-left: 5px;
 }
 
-/* *** നീക്കം ചെയ്തു: "Add to Cart", "Buy" ബട്ടണുകളുടെ സ്റ്റൈൽ *** */
 .explore-product-buttons {
-    display: none; /* ബട്ടണുകൾ പൂർണ്ണമായും മറയ്ക്കുന്നു */
+    display: none; 
 }
 
 
@@ -148,4 +141,21 @@
     display: none;
     justify-content: center;
     padding: 2rem;
+}
+
+/* --- 4. പുതിയത്: ഷെയർ ബട്ടൺ ഫീഡ്ബാക്ക് --- */
+.explore-action-icons button.share-btn.shared-success {
+    color: var(--success-green);
+    transform: scale(1.2);
+}
+.explore-action-icons button.share-btn.shared-success svg {
+    stroke: var(--success-green);
+}
+
+.explore-action-icons button.share-btn.shared-fail {
+    color: var(--error-red);
+    transform: scale(1.2);
+}
+.explore-action-icons button.share-btn.shared-fail svg {
+    stroke: var(--error-red);
 }
