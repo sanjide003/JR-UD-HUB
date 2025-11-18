@@ -1,6 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
 // *** ബട്ടൺ ലേഔട്ട് മാറ്റി (ഐക്കൺ മാത്രം + 'View') ***
-// *** പുതിയത്: സ്ക്രീൻഷോട്ടിലേതുപോലെ വിലയും പുതിയ ബട്ടണുകളും ചേർത്തു ***
 
 import {
     collection,
@@ -159,7 +158,7 @@ async function startLoadingProducts(categoryId) {
 
 /**
  * 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (ഇൻഫിനിറ്റ് സ്ക്രോൾ)
- * *** പുതിയത്: വിലയും പുതിയ ബട്ടണുകളും ചേർത്തു ***
+ * *** ബട്ടണുകൾ മാറ്റി (ഐക്കൺ + 'View') ***
  */
 async function loadProducts() {
     if (isLoading || !currentQuery) return;
@@ -198,29 +197,15 @@ async function loadProducts() {
             const mrp = product.mrp || 0;
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
-            // *** പുതിയത്: വിലയുടെ HTML ***
-            let priceHTML = `<span class="price-main">₹${price}</span>`;
-            if (mrp > price) {
-                const discount = Math.round(((mrp - price) / mrp) * 100);
-                priceHTML += `<span class="price-mrp"><del>₹${mrp}</del></span>`;
-                priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
-            }
-
             card.innerHTML = `
                 <a href="product.html?id=${productId}" class="cat-product-image-link">
                     <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
                 </a>
                 <div class="cat-product-content">
                     <h3 class="cat-product-title">${product.name}</h3>
-                    
-                    <!-- *** പുതിയത്: വില ചേർത്തു *** -->
-                    <div class="price-container">
-                        ${priceHTML}
-                    </div>
-
-                    <!-- *** പുതിയത്: ബട്ടണുകൾ മാറ്റി *** -->
                     <div class="cat-product-buttons">
-                        <button class="btn btn-secondary-new btn-add-to-cart"
+                        <!-- *** 'Add to Cart' എഴുത്ത് നീക്കം ചെയ്തു *** -->
+                        <button class="btn btn-secondary-icon btn-add-to-cart"
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${price}"
@@ -232,10 +217,10 @@ async function loadProducts() {
                                 <line x1="3" y1="6" x2="21" y2="6"></line>
                                 <path d="M16 10a4 4 0 0 1-8 0"></path>
                             </svg>
-                            <span>Cart</span>
                         </button>
+                        <!-- *** 'View Details' എന്നതിനെ 'View' എന്നാക്കി *** -->
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">
-                            <span>Buy</span>
+                            <span>View</span>
                         </a>
                     </div>
                 </div>
@@ -267,7 +252,7 @@ function updateActiveCategoryUI(categoryId) {
 
 /**
  * 6. "Add to Cart" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
- * *** പുതിയത്: ബട്ടൺ ടെക്സ്റ്റ് ശരിയാക്കി ***
+ * *** ബട്ടണിൽ നിന്ന് എഴുത്ത് നീക്കം ചെയ്തു (setTimeout-ൽ നിന്നും) ***
  */
 productGrid.addEventListener('click', (e) => {
     const button = e.target.closest('.btn-add-to-cart');
@@ -289,14 +274,13 @@ productGrid.addEventListener('click', (e) => {
     button.innerHTML = 'Added!';
     button.disabled = true;
     setTimeout(() => {
-        // *** 'Add to Cart' എന്നതിലേക്ക് ടെക്സ്റ്റും ഐക്കണും തിരികെ കൊണ്ടുവന്നു ***
+        // *** 'Add to Cart' എഴുത്ത് നീക്കം ചെയ്തു ***
         button.innerHTML = `
             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                 <line x1="3" y1="6" x2="21" y2="6"></line>
                 <path d="M16 10a4 4 0 0 1-8 0"></path>
             </svg>
-            <span>Cart</span>
         `;
         button.disabled = false;
     }, 2000);
@@ -316,4 +300,3 @@ const observer = new IntersectionObserver((entries) => {
 if (loader) {
     observer.observe(loader);
 }
-```EOF
