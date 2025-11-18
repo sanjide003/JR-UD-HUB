@@ -1,6 +1,5 @@
 // ഇതാണ് ഷോപ്പിംഗ് കാർട്ടിന്റെ "തലച്ചോർ" (cart.js).
-// *** 'id', 'size' എന്നിവ കൂടി സേവ് ചെയ്യുന്നു ***
-// *** ആകെ MRP കണക്കാക്കാൻ പുതിയ ഫംഗ്ഷൻ ചേർത്തു ***
+// *** 'isItemInCart' എന്ന പുതിയ ഫംഗ്ഷൻ ചേർത്തു ***
 
 // കാർട്ട് ഡാറ്റ 'localStorage'-ൽ നിന്ന് എടുക്കുന്നു
 function getCart() {
@@ -15,19 +14,26 @@ function saveCart(cart) {
     window.dispatchEvent(new CustomEvent('cartUpdated'));
 }
 
+/**
+ * *** പുതിയ ഫംഗ്ഷൻ ***
+ * ഒരു പ്രൊഡക്റ്റ് കാർട്ടിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു
+ * @param {string} productId - പരിശോധിക്കേണ്ട പ്രൊഡക്റ്റ് ID
+ * @returns {boolean} - കാർട്ടിൽ ഉണ്ടെങ്കിൽ true, അല്ലെങ്കിൽ false
+ */
+export function isItemInCart(productId) {
+    const cart = getCart();
+    return cart.hasOwnProperty(productId);
+}
+
 // ഒരു ഉൽപ്പന്നം കാർട്ടിലേക്ക് ചേർക്കുന്നു
 export function addToCart(productId, productDetails) {
     const cart = getCart();
     
-    // *** 'productId' ഉപയോഗിക്കുന്നത് ഉറപ്പാക്കുന്നു ***
     const key = productId; 
 
     if (cart[key]) {
-        // ഉൽപ്പന്നം കാർട്ടിൽ ഉണ്ടെങ്കിൽ, എണ്ണം 1 കൂട്ടുന്നു
         cart[key].quantity += 1;
     } else {
-        // ഇല്ലെങ്കിൽ, പുതിയ ഉൽപ്പന്നമായി ചേർക്കുന്നു
-        // 'productDetails'-ൽ ഇപ്പോൾ 'id', 'size' എന്നിവയുണ്ട്
         cart[key] = {
             ...productDetails,
             quantity: 1
@@ -43,10 +49,8 @@ export function updateQuantity(productId, newQuantity) {
     
     if (cart[productId]) {
         if (newQuantity <= 0) {
-            // എണ്ണം 0 അല്ലെങ്കിൽ കുറവാണെങ്കിൽ, ഉൽപ്പന്നം കാർട്ടിൽ നിന്ന് നീക്കം ചെയ്യുന്നു
             delete cart[productId];
         } else {
-            // അല്ലെങ്കിൽ, പുതിയ എണ്ണം അപ്ഡേറ്റ് ചെയ്യുന്നു
             cart[productId].quantity = newQuantity;
         }
         saveCart(cart);
@@ -83,13 +87,12 @@ export function getCartTotal() {
     return total;
 }
 
-// *** പുതിയ ഫംഗ്ഷൻ: ആകെ MRP കണക്കാക്കുന്നു ***
+// ആകെ MRP കണക്കാക്കുന്നു
 export function getCartTotalMRP() {
     const cart = getCart();
     let totalMRP = 0;
     for (const id in cart) {
         const item = cart[id];
-        // MRP ഉണ്ടെങ്കിൽ അത്, അല്ലെങ്കിൽ സാധാരണ വില
         const mrp = (item.mrp && item.mrp > item.price) ? item.mrp : item.price;
         totalMRP += mrp * item.quantity;
     }
