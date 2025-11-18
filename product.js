@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** 'You May Also Like' സെക്ഷനിലെ കാർഡുകളുടെ ഡിസൈൻ മാറ്റി (വില ചേർത്തു) ***
+// *** "Add to Cart" ബട്ടൺ ടോഗിൾ ആക്കി മാറ്റി ***
 
 import { 
     collection, 
@@ -13,19 +13,21 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db } from './firebase-config.js';
 import { loadSiteSettings } from './common.js';
-import { addToCart } from './cart.js';
+// *** isItemInCart, removeFromCart എന്നിവ import ചെയ്തു ***
+import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
 setLogLevel('Debug');
 
 const productDetailContent = document.getElementById('product-detail-content');
 const relatedProductsGrid = document.getElementById('related-products-grid');
 let currentProduct = null;
-let whatsappNumber = ''; // WhatsApp നമ്പർ സേവ് ചെയ്യാൻ
+let whatsappNumber = ''; 
 
 /**
  * ടെക്സ്റ്റിലെ ലിങ്കുകൾ ക്ലിക്ക് ചെയ്യാൻ
  */
 function linkify(text) {
+    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     if (!text) return '';
     const urlRegex = /(\b(https|http|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])|(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
     
@@ -44,6 +46,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 /**
  * URL-ൽ നിന്ന് ID എടുത്ത് ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ കാണിക്കുന്നു
+ * *** പ്രധാന "Add to Cart" ബട്ടൺ അപ്ഡേറ്റ് ചെയ്തു ***
  */
 async function loadProductDetails() {
     if (!productDetailContent) return;
@@ -95,6 +98,7 @@ async function loadProductDetails() {
 
         // "More Links" (Paid Promotion) HTML
         let moreLinksHTML = '';
+        // ... (ഈ ഭാഗത്ത് മാറ്റമില്ല) ...
         if (product.moreLinks && product.moreLinks.length > 0) {
             moreLinksHTML = '<div class="product-more-links">';
             product.moreLinks.forEach(link => {
@@ -111,6 +115,7 @@ async function loadProductDetails() {
         }
 
         let galleryHTML = '';
+        // ... (ഈ ഭാഗത്ത് മാറ്റമില്ല) ...
         if (product.images && product.images.length > 0) {
             let slidesHTML = '';
             product.images.forEach((imgUrl) => {
@@ -144,10 +149,16 @@ async function loadProductDetails() {
 
         // ഡിസ്ക്രിപ്ഷൻ ലിങ്കാക്കുന്നു
         let descriptionHTML = 'No description available.';
+        // ... (ഈ ഭാഗത്ത് മാറ്റമില്ല) ...
         if (product.description) {
             let linkifiedText = linkify(product.description);
             descriptionHTML = linkifiedText.replace(/\n/g, '<br>');
         }
+
+        // *** പ്രധാന "Add to Cart" ബട്ടൺ അപ്ഡേറ്റ് ചെയ്തു ***
+        const isInCart = isItemInCart(productIdStr);
+        const cartButtonText = isInCart ? "Remove from Cart" : "Add to Cart";
+        const cartButtonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new";
 
         const infoHTML = `
             <div class="product-info">
@@ -163,16 +174,17 @@ async function loadProductDetails() {
                 </div>
                 
                 <div class="product-actions-grid">
-                    <button class="btn-secondary-new" id="add-to-cart-btn">
+                    <!-- *** ബട്ടൺ HTML അപ്ഡേറ്റ് ചെയ്തു *** -->
+                    <button class="btn ${cartButtonClass}" id="add-to-cart-btn">
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                             <line x1="3" y1="6" x2="21" y2="6"></line>
                             <path d="M16 10a4 4 0 0 1-8 0"></path>
                         </svg>
-                        Add to Cart
+                        <span>${cartButtonText}</span>
                     </button>
                     
-                    <a class="btn-primary-new" id="buy-on-whatsapp-btn" href="#">
+                    <a class="btn btn-primary-new" id="buy-on-whatsapp-btn" href="#">
                         Buy on WhatsApp
                     </a>
                 </div>
@@ -183,6 +195,7 @@ async function loadProductDetails() {
         productDetailContent.innerHTML = galleryHTML + infoHTML;
         
         new Swiper('.product-gallery-swiper', {
+            // ... (Swiper കോഡിൽ മാറ്റമില്ല) ...
             loop: true,
             autoplay: {
                 delay: 3000,
@@ -211,38 +224,41 @@ async function loadProductDetails() {
 
 /**
  * "Add to Cart", "Buy on WhatsApp" ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
+ * *** "Add to Cart" ടോഗിൾ ലോജിക് ആക്കി മാറ്റി ***
  */
 function setupProductActionButtons() {
     const cartButton = document.getElementById('add-to-cart-btn');
     const whatsappButton = document.getElementById('buy-on-whatsapp-btn');
-    const feedback = document.getElementById('add-to-cart-feedback');
+    const feedback = document.getElementById('add-to-cart-feedback'); // *** ഇത് ഇപ്പോൾ ഉപയോഗിക്കുന്നില്ല, പക്ഷെ അവിടെ നിൽക്കട്ടെ ***
     
     if (cartButton) {
         cartButton.addEventListener('click', () => {
-            if (currentProduct) {
-                addToCart(currentProduct.id, currentProduct);
-                feedback.textContent = `${currentProduct.name} has been added to your cart.`;
-                feedback.style.display = 'block';
-                feedback.style.color = 'var(--success-green)';
-                cartButton.innerHTML = 'Added!';
-                cartButton.disabled = true;
-                setTimeout(() => {
-                    cartButton.innerHTML = `
-                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <path d="M16 10a4 4 0 0 1-8 0"></path>
-                        </svg>
-                        Add to Cart
-                    `;
-                    cartButton.disabled = false;
-                    feedback.style.display = 'none';
-                }, 2500);
+            if (!currentProduct) return;
+
+            const buttonText = cartButton.querySelector('span');
+            const id = currentProduct.id;
+
+            if (cartButton.classList.contains('added-to-cart')) {
+                // കാർട്ടിൽ ഉണ്ട്, അതിനാൽ നീക്കം ചെയ്യുന്നു
+                removeFromCart(id);
+                cartButton.classList.remove('added-to-cart');
+                cartButton.classList.remove('btn-primary-new');
+                cartButton.classList.add('btn-secondary-new');
+                if (buttonText) buttonText.textContent = 'Add to Cart';
+
+            } else {
+                // കാർട്ടിൽ ഇല്ല, അതിനാൽ ചേർക്കുന്നു
+                addToCart(id, currentProduct);
+                cartButton.classList.add('added-to-cart');
+                cartButton.classList.add('btn-primary-new');
+                cartButton.classList.remove('btn-secondary-new');
+                if (buttonText) buttonText.textContent = 'Remove from Cart';
             }
         });
     }
     
     if (whatsappButton) {
+        // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
         if (!whatsappNumber) {
             whatsappButton.style.display = 'none';
             return;
@@ -271,7 +287,7 @@ function setupProductActionButtons() {
 
 /**
  * ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
- * *** കാർഡ് ഡിസൈൻ കാറ്റഗറി പേജിന് തുല്യമാക്കി (വില ചേർത്തു) ***
+ * *** ബട്ടൺ ടോഗിൾ ലോജിക് ചേർത്തു ***
  */
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
@@ -293,20 +309,22 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
             const product = doc.data();
             const productId = doc.id;
             const card = document.createElement('div');
-            // *** പ്രധാന ക്ലാസ്സ് പേര് മാറ്റി ***
             card.className = 'swiper-slide category-product-card'; 
             
             const price = product.price || 0;
             const mrp = product.mrp || 0;
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
-            // *** വിലയുടെ HTML (ഡിസ്കൗണ്ട് ശതമാനം ഇല്ലാതെ) ***
             let priceHTML = `<span class="price-main">₹${price}</span>`;
             if (mrp > price) {
                 priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
             }
 
-            // *** കാർഡ് HTML കാറ്റഗറി പേജിന് തുല്യമാക്കി ***
+            // *** കാർട്ടിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു ***
+            const isInCart = isItemInCart(productId);
+            const buttonText = isInCart ? "Remove" : "Cart";
+            const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new";
+
             card.innerHTML = `
                 <a href="product.html?id=${productId}" class="cat-product-image-link">
                     <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
@@ -319,7 +337,8 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                     </div>
 
                     <div class="cat-product-buttons">
-                        <button class="btn btn-secondary-new btn-add-to-cart"
+                        <!-- *** ബട്ടൺ HTML അപ്ഡേറ്റ് ചെയ്തു *** -->
+                        <button class="btn ${buttonClass} btn-add-to-cart"
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${price}"
@@ -331,7 +350,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                                 <line x1="3" y1="6" x2="21" y2="6"></line>
                                 <path d="M16 10a4 4 0 0 1-8 0"></path>
                             </svg>
-                            <span>Cart</span>
+                            <span>${buttonText}</span>
                         </button>
                         
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">
@@ -348,6 +367,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
             relatedProductsGrid.innerHTML = '<p class="loading-placeholder">No related products found.</p>';
         } else {
             new Swiper('.related-products-swiper', {
+                // ... (Swiper കോഡിൽ മാറ്റമില്ല) ...
                 loop: false,
                 slidesPerView: 2.2,
                 spaceBetween: 15,
@@ -363,33 +383,38 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
 }
 
 // 'You May Also Like' സെക്ഷനിലെ ബട്ടണുകൾ
+// *** ടോഗിൾ ലോജിക് ആക്കി മാറ്റി ***
 relatedProductsGrid.addEventListener('click', (e) => {
     const cartButton = e.target.closest('.btn-add-to-cart');
 
     if (cartButton) {
         e.preventDefault();
+        
         const id = cartButton.dataset.id;
-        const product = {
-            id: id, 
-            name: cartButton.dataset.name,
-            price: parseFloat(cartButton.dataset.price),
-            mrp: parseFloat(cartButton.dataset.mrp),
-            image: cartButton.dataset.image,
-            size: cartButton.dataset.size 
-        };
-        addToCart(id, product);
-        cartButton.innerHTML = 'Added!';
-        cartButton.disabled = true;
-        setTimeout(() => {
-            cartButton.innerHTML = `
-                <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 0 1-8 0"></path>
-                </svg>
-                <span>Cart</span>
-            `;
-            cartButton.disabled = false;
-        }, 2000);
+        const buttonText = cartButton.querySelector('span');
+
+        if (cartButton.classList.contains('added-to-cart')) {
+            // കാർട്ടിൽ ഉണ്ട്, അതിനാൽ നീക്കം ചെയ്യുന്നു
+            removeFromCart(id);
+            cartButton.classList.remove('added-to-cart');
+            cartButton.classList.remove('btn-primary-new');
+            cartButton.classList.add('btn-secondary-new');
+            if (buttonText) buttonText.textContent = 'Cart';
+        } else {
+            // കാർട്ടിൽ ഇല്ല, അതിനാൽ ചേർക്കുന്നു
+            const product = {
+                id: id, 
+                name: cartButton.dataset.name,
+                price: parseFloat(cartButton.dataset.price),
+                mrp: parseFloat(cartButton.dataset.mrp),
+                image: cartButton.dataset.image,
+                size: cartButton.dataset.size 
+            };
+            addToCart(id, product);
+            cartButton.classList.add('added-to-cart');
+            cartButton.classList.add('btn-primary-new');
+            cartButton.classList.remove('btn-secondary-new');
+            if (buttonText) buttonText.textContent = 'Remove';
+        }
     } 
 });
