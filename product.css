@@ -1,0 +1,162 @@
+/* ഇത് പ്രൊഡക്റ്റ് പേജിന് (product.html) മാത്രമുള്ള CSS ഫയലാണ്.
+*/
+
+/* --- 1. പ്രധാന ലേഔട്ട് --- */
+.product-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Swiper) --- */
+.product-gallery-swiper {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    margin-bottom: 1rem;
+    position: relative;
+}
+.product-gallery-swiper .swiper-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.product-gallery-swiper .swiper-pagination {
+    position: absolute;
+    bottom: 10px;
+}
+.product-gallery-swiper .swiper-pagination-bullet {
+    background-color: rgba(255, 255, 255, 0.7);
+    opacity: 0.8;
+}
+.product-gallery-swiper .swiper-pagination-bullet-active {
+    background-color: var(--primary-gold);
+    opacity: 1;
+}
+
+/* --- 3. "Paid Promotion" ലിങ്കുകൾ (ഗാലറിക്ക് മുകളിൽ) --- */
+.product-more-links {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 5px;
+}
+.product-promotion-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.3rem 0.6rem;
+    background-color: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: var(--text-color);
+    font-size: 0.75rem;
+    font-weight: 500;
+    border-radius: 15px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+}
+.product-promotion-link:hover {
+    background-color: rgba(0, 0, 0, 0.7);
+}
+.product-promotion-link svg {
+    width: 12px;
+    height: 12px;
+    fill: currentColor;
+}
+
+/* --- 4. പ്രൊഡക്റ്റ് വിവരങ്ങൾ (വലതുവശം) --- */
+.product-info { 
+    padding-top: 1rem; 
+}
+.product-info .price-container.large { 
+    margin-bottom: 1.5rem; 
+}
+.product-info .price-container.large .price-main { 
+    font-size: 2rem;
+    color: var(--primary-gold);
+}
+.product-info .price-container.large .price-mrp { 
+    font-size: 1.25rem;
+    color: var(--text-muted);
+}
+.product-description {
+    margin-bottom: 1.5rem;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-wrap: break-word;
+    word-wrap: break-word; 
+    word-break: break-all;
+}
+/* ഡിസ്ക്രിപ്ഷനിലെ ലിങ്കുകൾക്ക് നീല നിറം */
+.product-description a {
+    color: #3498db;
+    text-decoration: underline;
+}
+.product-description a:hover {
+    color: #5dade2;
+}
+
+.product-size {
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+}
+.product-actions-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem;
+    max-width: 400px;
+    margin-bottom: 1rem;
+}
+.product-actions-grid .btn-primary-new svg.icon-btn {
+    fill: var(--bg-color);
+    stroke: var(--bg-color);
+}
+.product-actions-grid .btn-primary-new {
+    gap: 0;
+}
+#add-to-cart-feedback {
+    margin-top: 1rem;
+    color: var(--success-green);
+    font-weight: 500;
+    display: none; /* JS വഴി കാണിക്കും */
+}
+
+/* --- 5. 'You May Also Like' സെക്ഷൻ --- */
+.related-products-section {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+.related-products-section .product-grid-new {
+    width: 100%;
+    overflow: hidden;
+}
+
+/* --- 6. റെസ്പോൺസീവ് (Responsive) --- */
+@media (max-width: 768px) {
+    .product-title {
+        font-size: 2rem;
+    }
+    .product-actions-grid {
+        max-width: 100%; 
+    }
+}
+
+@media (min-width: 769px) {
+    .product-detail-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    .product-actions-grid {
+        max-width: 400px;
+    }
+}
