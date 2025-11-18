@@ -1,6 +1,7 @@
 // ഇതാണ് 'index.js' ഫയൽ.
 // *** 'SHOP BY CATEGORY' സ്ലൈഡർ മാറ്റി വെർട്ടിക്കൽ ലിസ്റ്റ് ആക്കി ***
 // *** പുതിയത്: ഹോം പേജ് ബാനർ ലോഡ് ചെയ്യാനുള്ള കോഡ് ചേർത്തു ***
+// *** പുതിയത്: കാറ്റഗറികൾ ഓരോ പേജ് റീഫ്രഷിലും റീ-ഓർഡർ ചെയ്യും ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -21,10 +22,10 @@ setLogLevel('Debug');
 
 document.addEventListener("DOMContentLoaded", () => {
     loadSiteSettings();
-    loadHomeBanner(); // *** പുതിയ ഫംഗ്ഷൻ കോൾ ***
+    loadHomeBanner(); 
     loadHeroSlider();
     loadTopSellers();
-    loadHomeCategories();
+    loadHomeCategories(); // *** ഈ ഫംഗ്ഷൻ നമ്മൾ അപ്ഡേറ്റ് ചെയ്തു ***
 });
 
 /**
@@ -255,46 +256,80 @@ async function loadTopSellers() {
     } catch (error) { console.error("Error loading top sellers: ", error); grid.innerHTML = '<p>Error loading products.</p>'; }
 }
 
+
 /**
  * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു
- * *** സ്ലൈഡർ കോഡ് നീക്കം ചെയ്തു, വെർട്ടിക്കൽ ലിസ്റ്റ് ആക്കി ***
+ * *** പുതിയത്: 8 മണിക്കൂർ കാഷെ നീക്കം ചെയ്തു. ഓരോ റീഫ്രഷിലും റീ-ഓർഡർ ചെയ്യും ***
  */
 async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
+
+    const CATEGORIES_TO_SHOW = 3; // ഒരേ സമയം 3 എണ്ണം കാണിക്കും
+
     try {
-        const catQuery = query(collection(db, "categories"), orderBy("name"), limit(8));
-        
+        // കാഷെ (Cache) പരിശോധിക്കാതെ നേരെ ഫയർബേസിൽ നിന്ന് ഡാറ്റ എടുക്കുന്നു
+        console.log("Fetching and shuffling categories from Firebase...");
+        const catQuery = query(collection(db, "categories"));
         const catSnapshot = await getDocs(catQuery); 
 
         if (catSnapshot.empty) {
-            grid.innerHTML = '<p>No categories to show.</p>'; return;
+            grid.innerHTML = '<p>No categories to show.</p>'; 
+            return;
         }
-        grid.innerHTML = '';
+
+        let allCategories = [];
         catSnapshot.forEach((doc) => {
-            const category = doc.data();
-            const catId = doc.id;
-            const card = document.createElement('a');
-            // *** 'swiper-slide' ക്ലാസ്സ് നീക്കം ചെയ്തു ***
-            card.className = 'category-card-home-new';
-            card.href = `categories.html?filter=${catId}`;
-            
-            const imageUrl = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
-            card.style.backgroundImage = `url('${imageUrl}')`;
-            
-            card.innerHTML = `
-                <h3>${category.name}</h3>
-            `;
-            grid.appendChild(card);
+            allCategories.push({
+                id: doc.id,
+                ...doc.data()
+            });
         });
-        
-        // *** Swiper കോഡ് പൂർണ്ണമായും നീക്കം ചെയ്തു ***
+
+        // ഫിഷർ-യേറ്റ്സ് ഷഫിൾ (Fisher-Yates Shuffle) അൽഗോരിതം ഉപയോഗിച്ച് കാറ്റഗറികൾ റീ-ഓർഡർ ചെയ്യുന്നു
+        for (let i = allCategories.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [allCategories[i], allCategories[j]] = [allCategories[j], allCategories[i]];
+        }
+
+        // ആദ്യത്തെ 3 എണ്ണം എടുക്കുന്നു
+        const categoriesToShow = allCategories.slice(0, CATEGORIES_TO_SHOW);
+
+        // പേജിൽ കാണിക്കുന്നു
+        renderCategories(grid, categoriesToShow);
 
     } catch (error) { 
         console.error("Error loading home categories: ", error); 
-        grid.innerHTML = '<p>Error loading categories.</p>'; // പിശക് ഇവിടെ കാണിക്കും
+        grid.innerHTML = '<p>Error loading categories.</p>';
     }
 }
+
+/**
+ * (പുതിയ ഫംഗ്ഷൻ) കാറ്റഗറികൾ HTML ആക്കി പേജിൽ കാണിക്കുന്നു
+ */
+function renderCategories(grid, categories) {
+    grid.innerHTML = '';
+    if (categories.length === 0) {
+        grid.innerHTML = '<p>No categories to show.</p>';
+        return;
+    }
+    
+    categories.forEach((category) => {
+        const catId = category.id;
+        const card = document.createElement('a');
+        card.className = 'category-card-home-new';
+        card.href = `categories.html?filter=${catId}`;
+        
+        const imageUrl = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
+        card.style.backgroundImage = `url('${imageUrl}')`;
+        
+        card.innerHTML = `
+            <h3>${category.name}</h3>
+        `;
+        grid.appendChild(card);
+    });
+}
+
 
 /**
  * 4. "Add to Cart" ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
