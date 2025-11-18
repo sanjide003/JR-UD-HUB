@@ -1,7 +1,5 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** 'SHOP BY CATEGORY' സ്ലൈഡർ മാറ്റി വെർട്ടിക്കൽ ലിസ്റ്റ് ആക്കി ***
-// *** പുതിയത്: ഹോം പേജ് ബാനർ ലോഡ് ചെയ്യാനുള്ള കോഡ് ചേർത്തു ***
-// *** പുതിയത്: കാറ്റഗറികൾ ഓരോ പേജ് റീഫ്രഷിലും റീ-ഓർഡർ ചെയ്യും ***
+// *** "Add to Cart" ബട്ടൺ ടോഗിൾ ആക്കി മാറ്റി ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -16,7 +14,8 @@ import {
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadSiteSettings } from './common.js';
-import { addToCart } from './cart.js';
+// *** isItemInCart, removeFromCart എന്നിവ import ചെയ്തു ***
+import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
 setLogLevel('Debug');
 
@@ -25,11 +24,11 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHomeBanner(); 
     loadHeroSlider();
     loadTopSellers();
-    loadHomeCategories(); // *** ഈ ഫംഗ്ഷൻ നമ്മൾ അപ്ഡേറ്റ് ചെയ്തു ***
+    loadHomeCategories();
 });
 
 /**
- * *** പുതിയ ഫംഗ്ഷൻ: ഹോം പേജ് ബാനർ ലോഡ് ചെയ്യുന്നു ***
+ * ഹോം പേജ് ബാനർ ലോഡ് ചെയ്യുന്നു
  */
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
@@ -51,13 +50,13 @@ async function loadHomeBanner() {
         bannerContainer.style.display = 'none';
     }
 }
-// *** മാറ്റം കഴിഞ്ഞു ***
 
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ ലോഡ് ചെയ്യുന്നു (Mute ബട്ടൺ ഇല്ലാതെ)
+ * 1. ഹീറോ സ്ലൈഡർ ലോഡ് ചെയ്യുന്നു
  */
 async function loadHeroSlider() {
+    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
     if (!sliderWrapper) return;
     
@@ -149,7 +148,7 @@ async function loadHeroSlider() {
 
 /**
  * 2. "Top Sellers" കറൗസൽ ലോഡ് ചെയ്യുന്നു
- * *** പുതിയ ആനിമേറ്റഡ് ഡോട്ടുകൾ ചേർത്തു ***
+ * *** ബട്ടൺ ടോഗിൾ ലോജിക് ചേർത്തു ***
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
@@ -168,6 +167,11 @@ async function loadTopSellers() {
             card.className = 'swiper-slide';
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
             
+            // *** കാർട്ടിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു ***
+            const isInCart = isItemInCart(productId);
+            const buttonText = isInCart ? "Remove" : "Cart";
+            const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new"; // *** 'btn-secondary-icon' മാറ്റി 'btn-secondary-new' ആക്കി ***
+            
             card.innerHTML = `
                 <a href="product.html?id=${productId}">
                     <img src="${imageUrl}" 
@@ -179,7 +183,8 @@ async function loadTopSellers() {
                     <div class="top-sellers-product-name">${product.name} ${product.size ? `(${product.size})` : ''}</div>
                     <div class="top-sellers-product-price">₹${product.price || 0} /-</div>
                     <div class="top-sellers-buttons">
-                        <button class="btn btn-secondary-icon btn-add-to-cart"
+                        <!-- *** ബട്ടൺ HTML അപ്ഡേറ്റ് ചെയ്തു *** -->
+                        <button class="btn ${buttonClass} btn-add-to-cart"
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${product.price}"
@@ -191,7 +196,7 @@ async function loadTopSellers() {
                                 <line x1="3" y1="6" x2="21" y2="6"></line>
                                 <path d="M16 10a4 4 0 0 1-8 0"></path>
                             </svg>
-                            <span>ADD TO CART</span>
+                            <span>${buttonText}</span>
                         </button>
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">
                             <span>View Details</span>
@@ -205,6 +210,7 @@ async function loadTopSellers() {
         const autoplayDelay = 4000; 
 
         new Swiper('.top-sellers-swiper-new', {
+            // ... (Swiper കോഡിൽ മാറ്റമില്ല) ...
             loop: true,
             autoplay: { 
                 delay: autoplayDelay, 
@@ -259,16 +265,15 @@ async function loadTopSellers() {
 
 /**
  * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു
- * *** പുതിയത്: 8 മണിക്കൂർ കാഷെ നീക്കം ചെയ്തു. ഓരോ റീഫ്രഷിലും റീ-ഓർഡർ ചെയ്യും ***
  */
 async function loadHomeCategories() {
+    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
 
-    const CATEGORIES_TO_SHOW = 3; // ഒരേ സമയം 3 എണ്ണം കാണിക്കും
+    const CATEGORIES_TO_SHOW = 3; 
 
     try {
-        // കാഷെ (Cache) പരിശോധിക്കാതെ നേരെ ഫയർബേസിൽ നിന്ന് ഡാറ്റ എടുക്കുന്നു
         console.log("Fetching and shuffling categories from Firebase...");
         const catQuery = query(collection(db, "categories"));
         const catSnapshot = await getDocs(catQuery); 
@@ -286,16 +291,13 @@ async function loadHomeCategories() {
             });
         });
 
-        // ഫിഷർ-യേറ്റ്സ് ഷഫിൾ (Fisher-Yates Shuffle) അൽഗോരിതം ഉപയോഗിച്ച് കാറ്റഗറികൾ റീ-ഓർഡർ ചെയ്യുന്നു
         for (let i = allCategories.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [allCategories[i], allCategories[j]] = [allCategories[j], allCategories[i]];
         }
 
-        // ആദ്യത്തെ 3 എണ്ണം എടുക്കുന്നു
         const categoriesToShow = allCategories.slice(0, CATEGORIES_TO_SHOW);
 
-        // പേജിൽ കാണിക്കുന്നു
         renderCategories(grid, categoriesToShow);
 
     } catch (error) { 
@@ -303,11 +305,8 @@ async function loadHomeCategories() {
         grid.innerHTML = '<p>Error loading categories.</p>';
     }
 }
-
-/**
- * (പുതിയ ഫംഗ്ഷൻ) കാറ്റഗറികൾ HTML ആക്കി പേജിൽ കാണിക്കുന്നു
- */
 function renderCategories(grid, categories) {
+    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     grid.innerHTML = '';
     if (categories.length === 0) {
         grid.innerHTML = '<p>No categories to show.</p>';
@@ -333,7 +332,7 @@ function renderCategories(grid, categories) {
 
 /**
  * 4. "Add to Cart" ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
- * *** ഐക്കൺ മാറ്റി ***
+ * *** ടോഗിൾ ലോജിക് ആക്കി മാറ്റി ***
  */
 const topSellersGrid = document.getElementById("top-sellers-grid");
 if (topSellersGrid) {
@@ -341,28 +340,32 @@ if (topSellersGrid) {
         const button = e.target.closest('.btn-add-to-cart');
         if (!button) return;
         e.preventDefault(); 
+        
         const id = button.dataset.id;
-        const product = {
-            id: id, 
-            name: button.dataset.name,
-            price: parseFloat(button.dataset.price),
-            mrp: parseFloat(button.dataset.mrp),
-            image: button.dataset.image,
-            size: button.dataset.size 
-        };
-        addToCart(id, product);
-        button.innerHTML = 'ADDED!';
-        button.disabled = true;
-        setTimeout(() => {
-            button.innerHTML = `
-                <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 0 1-8 0"></path>
-                </svg>
-                <span>ADD TO CART</span>
-            `;
-            button.disabled = false;
-        }, 2000);
+        const buttonText = button.querySelector('span');
+
+        if (button.classList.contains('added-to-cart')) {
+            // കാർട്ടിൽ ഉണ്ട്, അതിനാൽ നീക്കം ചെയ്യുന്നു
+            removeFromCart(id);
+            button.classList.remove('added-to-cart');
+            button.classList.remove('btn-primary-new');
+            button.classList.add('btn-secondary-new'); // *** 'btn-secondary-icon' മാറ്റി 'btn-secondary-new' ആക്കി ***
+            if (buttonText) buttonText.textContent = 'Cart';
+        } else {
+            // കാർട്ടിൽ ഇല്ല, അതിനാൽ ചേർക്കുന്നു
+            const product = {
+                id: id, 
+                name: button.dataset.name,
+                price: parseFloat(button.dataset.price),
+                mrp: parseFloat(button.dataset.mrp),
+                image: button.dataset.image,
+                size: button.dataset.size 
+            };
+            addToCart(id, product);
+            button.classList.add('added-to-cart');
+            button.classList.add('btn-primary-new');
+            button.classList.remove('btn-secondary-new'); // *** 'btn-secondary-icon' മാറ്റി 'btn-secondary-new' ആക്കി ***
+            if (buttonText) buttonText.textContent = 'Remove';
+        }
     });
 }
