@@ -1,8 +1,5 @@
 // ഇതാണ് പുതിയ 'explore.js' ഫയൽ.
-// എല്ലാ പ്രൊഡക്ടുകളും കാറ്റഗറി വിവരങ്ങളും സഹിതം ഇവിടെ ലോഡ് ചെയ്യും.
-// *** അപ്ഡേറ്റ്: ഇമേജ് ഡോട്ടുകൾ നീക്കം ചെയ്തു ***
-// *** അപ്ഡേറ്റ്: താഴെയുള്ള ബട്ടണുകൾ നീക്കം ചെയ്തു ***
-// *** അപ്ഡേറ്റ്: ബുക്ക്മാർക്ക് ഐക്കണിൽ "Add to Cart" പ്രവർത്തനം ചേർത്തു ***
+// *** ഷെയർ ബട്ടൺ (Web Share API) പ്രവർത്തിപ്പിച്ചു ***
 
 import {
     collection,
@@ -26,16 +23,16 @@ const feedContainer = document.getElementById("explore-feed");
 const loader = document.getElementById("explore-scroll-loader");
 
 // --- State ---
-let categoriesMap = new Map(); // കാറ്റഗറി വിവരങ്ങൾ സേവ് ചെയ്യാൻ
+let categoriesMap = new Map(); 
 let lastVisible = null;
 let isLoading = false;
-const productsPerPage = 5; // ഒരു സമയം 5 എണ്ണം ലോഡ് ചെയ്യാം
+const productsPerPage = 5; 
 
 // --- പേജ് ലോഡ് ആവുമ്പോൾ ---
 document.addEventListener("DOMContentLoaded", async () => {
-    await loadSiteSettings(); // ഹെഡർ, ഫൂട്ടർ ലോഡ് ചെയ്യാൻ
-    await loadCategories();   // പ്രൊഡക്റ്റ് ലോഡ് ചെയ്യുന്നതിന് മുൻപ് കാറ്റഗറികൾ എടുക്കുന്നു
-    await loadProducts();     // പ്രൊഡക്ടുകൾ ലോഡ് ചെയ്യാൻ തുടങ്ങുന്നു
+    await loadSiteSettings(); 
+    await loadCategories();   
+    await loadProducts();     
 });
 
 /**
@@ -64,7 +61,7 @@ async function loadProducts() {
     if (isLoading) return;
     isLoading = true;
     if (loader) loader.style.display = 'flex';
-    if (lastVisible === null) feedContainer.innerHTML = ''; // ആദ്യത്തെ ലോഡ് ആണെങ്കിൽ ക്ലിയർ ചെയ്യുക
+    if (lastVisible === null) feedContainer.innerHTML = ''; 
 
     try {
         const productsRef = collection(db, "products");
@@ -83,7 +80,7 @@ async function loadProducts() {
                 feedContainer.innerHTML = '<p class="loading-placeholder-full">No products found.</p>';
             }
             if (loader) loader.style.display = 'none';
-            lastVisible = null; // ഇനി ലോഡ് ചെയ്യാൻ ഒന്നുമില്ല
+            lastVisible = null; 
             return;
         }
 
@@ -95,7 +92,6 @@ async function loadProducts() {
             const card = document.createElement('div');
             card.className = 'explore-card';
             
-            // കാർഡ് നിർമ്മിക്കുന്നു
             card.innerHTML = `
                 ${buildCategoryHeader(product.categoryId)}
                 ${buildImageSlider(productId, product.images, product.name)}
@@ -105,10 +101,8 @@ async function loadProducts() {
             feedContainer.appendChild(card);
         });
         
-        // പുതിയതായി ചേർത്ത സ്ലൈഡറുകൾ പ്രവർത്തിപ്പിക്കുന്നു
         new Swiper('.explore-image-swiper', {
             loop: false,
-            // *** നീക്കം ചെയ്തു: pagination (ഡോട്ടുകൾ) ***
             allowTouchMove: true,
         });
 
@@ -127,7 +121,7 @@ async function loadProducts() {
 function buildCategoryHeader(categoryId) {
     const category = categoriesMap.get(categoryId);
     if (!category) {
-        return ''; // കാറ്റഗറി ഇല്ലെങ്കിൽ ഈ ഭാഗം കാണിക്കില്ല
+        return ''; 
     }
     
     const categoryLink = `categories.html?filter=${categoryId}`;
@@ -142,8 +136,7 @@ function buildCategoryHeader(categoryId) {
 }
 
 /**
- * 4. ഇമേജ് സ്ലൈഡർ നിർമ്മിക്കുന്നു (പ്രൊഡക്റ്റ് പേജിലേക്ക് ലിങ്ക് സഹിതം)
- * *** നീക്കം ചെയ്തു: pagination div ***
+ * 4. ഇമേജ് സ്ലൈഡർ നിർമ്മിക്കുന്നു
  */
 function buildImageSlider(productId, images, productName) {
     const productLink = `product.html?id=${productId}`;
@@ -160,7 +153,6 @@ function buildImageSlider(productId, images, productName) {
             `;
         });
     } else {
-        // ഇമേജ് ഇല്ലെങ്കിൽ
         slidesHTML = `
             <div class="swiper-slide">
                 <a href="${productLink}">
@@ -175,15 +167,13 @@ function buildImageSlider(productId, images, productName) {
             <div class="swiper-wrapper">
                 ${slidesHTML}
             </div>
-            <!-- *** നീക്കം ചെയ്തു: <div class="swiper-pagination"></div> *** -->
         </div>
     `;
 }
 
 /**
  * 5. കാർഡിന്റെ താഴത്തെ ഭാഗം (വിവരണം, ബട്ടണുകൾ) നിർമ്മിക്കുന്നു
- * *** അപ്ഡേറ്റ്: ബുക്ക്മാർക്ക് ഐക്കണിൽ "data-" ആട്രിബ്യൂട്ടുകൾ ചേർത്തു ***
- * *** നീക്കം ചെയ്തു: താഴെയുള്ള ബട്ടണുകൾ ***
+ * *** ഷെയർ ബട്ടണിൽ ഡാറ്റ ആട്രിബ്യൂട്ടുകൾ ചേർത്തു ***
  */
 function buildCardContent(productId, product) {
     const price = product.price || 0;
@@ -195,7 +185,6 @@ function buildCardContent(productId, product) {
         priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
     }
 
-    // വിവരണം (Description) ചെറുതാക്കുന്നു
     let descriptionHTML = '';
     if (product.description) {
         if (product.description.length > 100) {
@@ -209,7 +198,6 @@ function buildCardContent(productId, product) {
 
     return `
         <div class="explore-card-content">
-            <!-- ഐക്കണുകൾ (ലൈക്ക്, കമന്റ്...) -->
             <div class="explore-action-icons">
                 <button title="Like" class="like-btn">
                     <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
@@ -217,11 +205,15 @@ function buildCardContent(productId, product) {
                 <button title="Comment" class="comment-btn">
                     <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                 </button>
-                <button title="Share" class="share-btn">
+                
+                <!-- *** ഷെയർ ബട്ടണിൽ ഡാറ്റ ചേർത്തു *** -->
+                <button title="Share" class="share-btn"
+                    data-id="${productId}"
+                    data-name="${product.name}"
+                    data-price="${price}">
                     <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>
                 
-                <!-- *** പുതിയത്: ബുക്ക്മാർക്ക് ബട്ടണിൽ Add to Cart ഡാറ്റ ചേർത്തു *** -->
                 <button title="Add to Cart" class="bookmark-btn"
                     data-id="${productId}"
                     data-name="${product.name}"
@@ -233,18 +225,14 @@ function buildCardContent(productId, product) {
                 </button>
             </div>
 
-            <!-- പേരും വിലയും -->
             <h3 class="explore-product-title">${product.name}</h3>
             <div class="price-container">
                 ${priceHTML}
             </div>
 
-            <!-- വിവരണം -->
             <div class="explore-product-description" data-full-text="${product.description || ''}">
                 ${descriptionHTML}
             </div>
-            
-            <!-- *** നീക്കം ചെയ്തു: താഴെയുള്ള ബട്ടണുകൾ *** -->
         </div>
     `;
 }
@@ -257,7 +245,7 @@ const observer = new IntersectionObserver((entries) => {
         loadProducts();
     }
 }, {
-    rootMargin: '400px' // സ്ക്രീനിന്റെ അടിയിൽ എത്തുന്നതിന് 400px മുൻപ് ലോഡ് ചെയ്യുക
+    rootMargin: '400px'
 });
 
 if (loader) {
@@ -265,43 +253,93 @@ if (loader) {
 }
 
 /**
- * 7. "Add to Cart", "Show More" ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
- * *** അപ്ഡേറ്റ്: 'btn-add-to-cart' എന്നതിന് പകരം 'bookmark-btn' ആക്കി ***
+ * 7. "Add to Cart", "Show More", "Share" ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
+ * *** 'async' ചേർത്തു, ഷെയർ ബട്ടൺ ലോജിക് ചേർത്തു ***
  */
-feedContainer.addEventListener('click', (e) => {
+feedContainer.addEventListener('click', async (e) => { // *** async ആക്കി ***
     const target = e.target;
-
+    const bookmarkButton = target.closest('.bookmark-btn');
+    const shareButton = target.closest('.share-btn'); // *** ഷെയർ ബട്ടൺ കണ്ടെത്തി ***
+    
     // "Add to Cart" (ബുക്ക്മാർക്ക് ഐക്കണിൽ)
-    if (target.closest('.bookmark-btn')) {
-        const button = target.closest('.bookmark-btn');
+    if (bookmarkButton && !bookmarkButton.disabled) {
         e.preventDefault();
         
-        // ബട്ടൺ ഓൾറെഡി ക്ലിക്ക് ചെയ്തതാണെങ്കിൽ വീണ്ടും ചെയ്യരുത്
-        if (button.classList.contains('added-to-cart')) return;
+        if (bookmarkButton.classList.contains('added-to-cart')) return;
 
-        const id = button.dataset.id;
+        const id = bookmarkButton.dataset.id;
         const product = {
             id: id, 
-            name: button.dataset.name,
-            price: parseFloat(button.dataset.price),
-            mrp: parseFloat(button.dataset.mrp),
-            image: button.dataset.image,
-            size: button.dataset.size 
+            name: bookmarkButton.dataset.name,
+            price: parseFloat(bookmarkButton.dataset.price),
+            mrp: parseFloat(bookmarkButton.dataset.mrp),
+            image: bookmarkButton.dataset.image,
+            size: bookmarkButton.dataset.size 
         };
 
         addToCart(id, product);
         
-        // ഫീഡ്ബാക്ക് നൽകുന്നു (സ്വർണ്ണ നിറം + പൾസ്)
-        button.classList.add('added-to-cart');
+        bookmarkButton.classList.add('added-to-cart');
         setTimeout(() => {
-            button.classList.remove('added-to-cart');
-        }, 1500); // 1.5 സെക്കൻഡിന് ശേഷം സാധാരണ നിലയിലാവും
+            bookmarkButton.classList.remove('added-to-cart');
+        }, 1500); 
+    }
+
+    // *** പുതിയത്: ഷെയർ ബട്ടൺ ലോജിക് ***
+    if (shareButton) {
+        e.preventDefault();
+        
+        // 1. Web Share API ബ്രൗസറിൽ ലഭ്യമാണോ എന്ന് പരിശോധിക്കുന്നു
+        if (!navigator.share) {
+            // ലഭ്യമല്ലെങ്കിൽ ഫീഡ്‌ബാക്ക് നൽകുന്നു
+            const originalIcon = shareButton.innerHTML;
+            shareButton.innerHTML = 'Not Supported';
+            setTimeout(() => { shareButton.innerHTML = originalIcon; }, 2000);
+            return;
+        }
+
+        // 2. ഷെയർ ചെയ്യാനുള്ള ഡാറ്റ തയ്യാറാക്കുന്നു
+        const id = shareButton.dataset.id;
+        const name = shareButton.dataset.name;
+        const price = shareButton.dataset.price;
+        const productLink = `${window.location.origin}/product.html?id=${id}`;
+
+        const shareData = {
+            title: name,
+            text: `Check out ${name}!\nPrice: ₹${price}\n`,
+            url: productLink
+        };
+
+        // 3. ഷെയർ ഡയലോഗ് തുറക്കുന്നു
+        try {
+            await navigator.share(shareData);
+            
+            // വിജയകരമായി ഷെയർ ചെയ്താൽ
+            const originalIcon = shareButton.innerHTML;
+            shareButton.innerHTML = '<svg viewBox="0 0 24 24" style="stroke: var(--success-green);"><path d="M20 6 9 17l-5-5"></path></svg>'; // ശരി (Tick)
+            shareButton.classList.add('shared-success');
+            setTimeout(() => {
+                shareButton.innerHTML = originalIcon;
+                shareButton.classList.remove('shared-success');
+            }, 2000);
+
+        } catch (err) {
+            console.error('Error sharing:', err);
+            // യൂസർ ക്യാൻസൽ ചെയ്താൽ
+            const originalIcon = shareButton.innerHTML;
+            shareButton.innerHTML = '<svg viewBox="0 0 24 24" style="stroke: var(--error-red);"><path d="M18 6 6 18M6 6l12 12"></path></svg>'; // തെറ്റ് (X)
+            shareButton.classList.add('shared-fail');
+            setTimeout(() => {
+                shareButton.innerHTML = originalIcon;
+                shareButton.classList.remove('shared-fail');
+            }, 2000);
+        }
     }
 
     // "Show More" ബട്ടൺ (വിവരണം മുഴുവൻ കാണിക്കാൻ)
     if (target.classList.contains('read-more-btn')) {
         const descriptionDiv = target.closest('.explore-product-description');
-        const fullText = descriptionDiv.dataset.fullText.replace(/\n/g, '<br>'); // പുതിയ വരികൾ ചേർക്കാൻ
+        const fullText = descriptionDiv.dataset.fullText.replace(/\n/g, '<br>'); 
         descriptionDiv.innerHTML = fullText;
     }
 });
