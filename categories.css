@@ -1,6 +1,5 @@
 /* ഇത് കാറ്റഗറി പേജിന് (categories.html) മാത്രമുള്ള CSS ഫയലാണ്.
-   *** കാറ്റഗറി നാവിഗേഷൻ പുതിയ ഗ്രിഡ് സ്റ്റൈലിലേക്ക് മാറ്റി ***
-   *** മൊബൈലിൽ പ്രൊഡക്റ്റ് ഗ്രിഡ് 3 കോളം ആക്കി ***
+   *** കാറ്റഗറി ഗ്രിഡ് 2 വരിയാക്കി, സ്വൈപ്പ് ചെയ്യാവുന്നതാക്കി ***
 */
 
 /* --- 1. കാറ്റഗറി പേജ് ലേഔട്ട് --- */
@@ -10,21 +9,32 @@
     gap: 1.5rem;
 }
 
-/* 1.1 മൊബൈൽ കാറ്റഗറി ഗ്രിഡ് (മുകളിൽ) */
-.category-grid-mobile {
+/* 1.1 കാറ്റഗറി ഗ്രിഡ് (മൊബൈൽ & ഡെസ്ക്ടോപ്പ്) (*** 2 വരിയാക്കി, സ്വൈപ്പ് ചെയ്യാവുന്നതാക്കി ***) */
+.category-grid-mobile,
+.category-grid-desktop {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); /* 4+ കോളം */
-    gap: 1rem;
-    padding-bottom: 1rem;
+    grid-template-rows: repeat(2, auto); /* 2 വരികൾ */
+    grid-auto-flow: column; /* നിരകൾ നിറയ്ക്കുക, ശേഷം തിരശ്ചീനമായി നീങ്ങുക */
+    overflow-x: auto; /* തിരശ്ചീനമായി സ്ക്രോൾ ചെയ്യാം */
+    overflow-y: hidden; /* ലംബമായ സ്ക്രോൾ വേണ്ട */
+    gap: 0.5rem; /* ചെറിയ ഗ്യാപ്പ് */
+    padding: 0.5rem;
     border-bottom: 1px solid var(--border-color);
 }
 
-/* 1.2 ഡെസ്ക്ടോപ്പ് കാറ്റഗറി ഗ്രിഡ് (മുകളിൽ) */
+/* സ്ക്രോൾബാർ മറയ്ക്കുന്നു */
+.category-grid-mobile::-webkit-scrollbar,
+.category-grid-desktop::-webkit-scrollbar {
+    display: none;
+}
+.category-grid-mobile,
 .category-grid-desktop {
-    display: none; /* ഡെസ്ക്ടോപ്പിൽ ഇത് മറയ്ക്കുന്നു (മൊബൈൽ ലേഔട്ട് മാത്രം) */
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
 
-/* 1.3 പുതിയ കാറ്റഗറി ഗ്രിഡ് ഐറ്റം സ്റ്റൈലുകൾ */
+
+/* 1.3 കാറ്റഗറി ഗ്രിഡ് ഐറ്റം സ്റ്റൈലുകൾ */
 .category-grid-item {
     display: flex;
     flex-direction: column;
@@ -33,14 +43,14 @@
     text-decoration: none;
     color: var(--text-muted);
     font-weight: 500;
-    flex-shrink: 0;
+    width: 80px; /* ഐറ്റങ്ങൾക്ക് ഒരു നിശ്ചിത വീതി നൽകുന്നു */
     padding: 0.25rem;
 }
 .category-grid-image-box {
     width: 70px;
     height: 70px;
     border-radius: 16px; 
-    background-color: rgba(233, 213, 255, 0.1); /* ചിത്രത്തിലേതുപോലത്തെ ലൈറ്റ് പർപ്പിൾ ടിന്റ് */
+    background-color: rgba(233, 213, 255, 0.1); 
     border: 1px solid rgba(233, 213, 255, 0.2);
     padding: 10px;
     display: flex;
@@ -62,7 +72,7 @@
     transition: color 0.3s ease;
 }
 
-/* 1.4 പുതിയ ആക്ടീവ്/ഹോവർ സ്റ്റൈലുകൾ */
+/* 1.4 ആക്ടീവ്/ഹോവർ സ്റ്റൈലുകൾ */
 .category-grid-item:hover .category-grid-name,
 .category-grid-item.active .category-grid-name {
     color: var(--primary-gold);
@@ -79,9 +89,8 @@
 }
 .category-product-grid {
     display: grid;
-    /* *** മൊബൈലിൽ 3 കോളം ആക്കി *** */
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem; /* *** ഗ്യാപ്പ് കുറച്ചു *** */
+    gap: 0.5rem;
 }
 .loader-container {
     display: none;
@@ -106,7 +115,7 @@
 .cat-product-image-link {
     display: block;
     width: 100%;
-    height: 120px; /* *** 3 കോളം ആക്കിയതുകൊണ്ട് ഉയരം കുറച്ചു *** */
+    height: 120px;
     overflow: hidden;
 }
 .cat-product-image {
@@ -120,36 +129,35 @@
     transform: scale(1.1);
 }
 .cat-product-content {
-    padding: 0.75rem; /* *** പാഡിംഗ് കുറച്ചു *** */
+    padding: 0.75rem;
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 .cat-product-title {
-    font-size: 0.85rem; /* *** അക്ഷരവലിപ്പം കുറച്ചു *** */
+    font-size: 0.85rem;
     color: var(--text-color); 
     font-weight: 500;
     margin-bottom: 0.25rem;
-    min-height: 30px; /* *** ഉയരം കുറച്ചു *** */
+    min-height: 30px;
 }
 .cat-product-content .price-container {
-    margin-bottom: 0.5rem; /* *** മാർജിൻ കുറച്ചു *** */
+    margin-bottom: 0.5rem;
 }
 .cat-product-content .price-main {
-    font-size: 1rem; /* *** അക്ഷരവലിപ്പം കുറച്ചു *** */
+    font-size: 1rem;
 }
 .cat-product-content .price-mrp {
-    font-size: 0.8rem; /* *** അക്ഷരവലിപ്പം കുറച്ചു *** */
+    font-size: 0.8rem;
 }
 
 
 .cat-product-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr; 
-    gap: 0.25rem; /* *** ഗ്യാപ്പ് കുറച്ചു *** */
+    gap: 0.25rem;
     margin-top: auto;
 }
-/* *** 3 കോളം ആയതുകൊണ്ട് ബട്ടണിലെ അക്ഷരവലിപ്പം കുറച്ചു *** */
 .cat-product-buttons .btn-primary-new,
 .cat-product-buttons .btn-secondary-new {
     font-size: 0.7rem;
@@ -157,41 +165,40 @@
     gap: 0.25rem;
 }
 .cat-product-buttons .btn-secondary-new svg.icon-btn {
-    width: 14px; /* *** ഐക്കൺ ചെറുതാക്കി *** */
+    width: 14px;
     height: 14px;
 }
 
 
 /* --- 3. റെസ്പോൺസീവ് (Responsive) --- */
 @media (max-width: 768px) {
-    /* മൊബൈലിൽ ഡെസ്ക്ടോപ്പ് ഗ്രിഡ് മറയ്ക്കുന്നു */
     .category-grid-desktop {
         display: none; 
     }
 }
 
 @media (min-width: 769px) {
-    /* ഡെസ്ക്ടോപ്പിൽ മൊബൈൽ ഗ്രിഡ് മറയ്ക്കുന്നു */
     .category-grid-mobile {
         display: none; 
     }
-    /* ഡെസ്ക്ടോപ്പിൽ കാറ്റഗറി ഗ്രിഡ് മുകളിൽ കാണിക്കുന്നു */
     .category-grid-desktop {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-        gap: 1.5rem;
-        padding-bottom: 1.5rem;
-        border-bottom: 1px solid var(--border-color);
+        display: grid; /* ഡെസ്ക്ടോപ്പിലും സ്വൈപ്പ് ചെയ്യാവുന്ന ഗ്രിഡ് */
+        grid-template-rows: repeat(2, auto);
+        grid-auto-flow: column;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 1rem; /* ഡെസ്ക്ടോപ്പിൽ ഗ്യാപ്പ് കൂട്ടി */
+    }
+    .category-grid-desktop .category-grid-item {
+        width: 90px; /* ഡെസ്ക്ടോപ്പിൽ ഐറ്റം വീതി കൂട്ടി */
     }
     
-    /* ഡെസ്ക്ടോപ്പിൽ പ്രൊഡക്റ്റ് ഗ്രിഡ് 2 കോളം ആക്കുന്നു */
     .category-page-layout {
-        flex-direction: column; /* ലേഔട്ട് ഇപ്പോഴും മുകളിൽ നിന്ന് താഴേക്ക് */
+        flex-direction: column;
     }
-
     .category-product-grid {
-        grid-template-columns: repeat(4, 1fr); /* ഡെസ്ക്ടോപ്പിൽ 4 കോളം */
-        gap: 1rem; /* ഗ്യാപ്പ് തിരികെ കൊണ്ടുവന്നു */
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
     }
     /* കാർഡ് സ്റ്റൈലുകൾ ഡെസ്ക്ടോപ്പിനായി തിരികെ കൊണ്ടുവരുന്നു */
     .cat-product-image-link {
