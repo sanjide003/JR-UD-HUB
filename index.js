@@ -1,5 +1,5 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** Video Resume Logic Update (No Reset on Scroll) ***
+// *** Force Autoplay on Load Fixed ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -100,8 +100,8 @@ async function loadHeroSlider() {
                 }
                 else if (isVideo) {
                     // Direct Video (MP4)
-                    // പേജ് ലോഡ് ചെയ്യുമ്പോൾ തുടക്കം മുതൽ കാണിക്കാൻ 'autoplay' ഇടാം, പക്ഷെ സ്ക്രോൾ ഒബ്സർവർ അത് നിയന്ത്രിക്കും.
-                    slideEl.innerHTML = `<video class="hero-video-element" src="${slide.url}" muted loop playsinline preload="metadata"></video>`;
+                    // *** playsinline, autoplay, muted, loop നിർബന്ധം ***
+                    slideEl.innerHTML = `<video class="hero-video-element" src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>`;
                 }
                 
                 sliderWrapper.appendChild(slideEl);
@@ -118,17 +118,47 @@ async function loadHeroSlider() {
                 el: '.hero-pagination-dots',
                 clickable: true,
             },
+            // *** സ്ലൈഡ് മാറുമ്പോൾ വീഡിയോ പ്ലേ ചെയ്യാൻ ***
+            on: {
+                slideChangeTransitionEnd: function (swiper) {
+                    playActiveSlideVideo(swiper.slides[swiper.activeIndex]);
+                }
+            }
         });
 
-        // *** വീഡിയോ കൺട്രോൾ ***
+        // *** പേജ് ലോഡ് ആയാലുടൻ ആദ്യത്തെ സ്ലൈഡിലെ വീഡിയോ പ്ലേ ചെയ്യുന്നു ***
+        setTimeout(() => {
+             const activeSlide = document.querySelector('.swiper-slide-active');
+             if (activeSlide) playActiveSlideVideo(activeSlide);
+        }, 500); // ചെറിയ ഡിലേ നൽകുന്നു
+
+        // സ്ക്രോൾ ചെയ്യുമ്പോൾ നിയന്ത്രിക്കാൻ
         setupSmartVideoAutoplay();
 
     } catch (error) { console.error("Error loading hero slider: ", error); }
 }
 
 /**
- * വീഡിയോ സ്ക്രീനിൽ വരുമ്പോൾ നിർത്തിയിടത്തുനിന്ന് പ്ലേ ചെയ്യും (Resume).
- * സ്ക്രീനിൽ നിന്ന് മാറുമ്പോൾ പോസ് ചെയ്യും.
+ * ഒരു സ്ലൈഡിലെ വീഡിയോ പ്ലേ ചെയ്യാനുള്ള ഫംഗ്ഷൻ
+ */
+function playActiveSlideVideo(slideElement) {
+    if (!slideElement) return;
+
+    const video = slideElement.querySelector('video');
+    const iframe = slideElement.querySelector('iframe');
+
+    if (video) {
+        video.muted = true; // ഉറപ്പുവരുത്തുന്നു
+        video.play().catch(err => console.log("Force play failed:", err));
+    }
+    if (iframe) {
+        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+    }
+}
+
+
+/**
+ * സ്ക്രോൾ കൺട്രോൾ (Scroll Resume Logic)
  */
 function setupSmartVideoAutoplay() {
     const videos = document.querySelectorAll('.hero-video-element, .hero-video-iframe');
@@ -136,7 +166,7 @@ function setupSmartVideoAutoplay() {
     const observerOptions = {
         root: null,
         rootMargin: '0px',
-        threshold: 0.4 // 40% വീഡിയോ സ്ക്രീനിൽ വന്നാൽ പ്രവർത്തിക്കും
+        threshold: 0.2 // 20% കണ്ടാൽ തന്നെ പ്ലേ ആകും (പെട്ടെന്ന് സ്റ്റാർട്ട് ചെയ്യാൻ)
     };
 
     const videoObserver = new IntersectionObserver((entries) => {
@@ -145,9 +175,7 @@ function setupSmartVideoAutoplay() {
             const isYouTube = element.tagName === 'IFRAME';
 
             if (entry.isIntersecting) {
-                // സ്ക്രീനിൽ ഉണ്ട് -> പ്ലേ ചെയ്യുക (Resume)
-                // ഇവിടെ സമയം റീസെറ്റ് ചെയ്യുന്ന കോഡ് നീക്കം ചെയ്തു.
-                
+                // സ്ക്രീനിൽ ഉണ്ട് -> പ്ലേ ചെയ്യുക
                 if (isYouTube) {
                     element.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
                 } else {
