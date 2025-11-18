@@ -1,5 +1,5 @@
 // ഇതാണ് പുതിയ 'explore.js' ഫയൽ.
-// *** ഷെയർ ബട്ടൺ (Web Share API) പ്രവർത്തിപ്പിച്ചു ***
+// *** "Add to Cart" ബട്ടൺ ടോഗിൾ (Toggle) ആക്കി മാറ്റി ***
 
 import {
     collection,
@@ -14,7 +14,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db } from './firebase-config.js';
 import { loadSiteSettings } from './common.js';
-import { addToCart } from './cart.js';
+// *** isItemInCart, removeFromCart എന്നിവ import ചെയ്തു ***
+import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
 setLogLevel('Debug');
 
@@ -92,6 +93,7 @@ async function loadProducts() {
             const card = document.createElement('div');
             card.className = 'explore-card';
             
+            // *** കാർഡ് നിർമ്മിക്കുമ്പോൾ തന്നെ കാർട്ടിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു ***
             card.innerHTML = `
                 ${buildCategoryHeader(product.categoryId)}
                 ${buildImageSlider(productId, product.images, product.name)}
@@ -173,7 +175,7 @@ function buildImageSlider(productId, images, productName) {
 
 /**
  * 5. കാർഡിന്റെ താഴത്തെ ഭാഗം (വിവരണം, ബട്ടണുകൾ) നിർമ്മിക്കുന്നു
- * *** ഷെയർ ബട്ടണിൽ ഡാറ്റ ആട്രിബ്യൂട്ടുകൾ ചേർത്തു ***
+ * *** കാർട്ടിൽ ഉണ്ടോ എന്ന് പരിശോധിച്ച് ബട്ടൺ സ്റ്റൈൽ സെറ്റ് ചെയ്യുന്നു ***
  */
 function buildCardContent(productId, product) {
     const price = product.price || 0;
@@ -195,6 +197,12 @@ function buildCardContent(productId, product) {
     }
 
     const imageUrl = product.images && product.images[0] ? product.images[0] : '';
+    
+    // *** കാർട്ടിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു ***
+    const isInCart = isItemInCart(productId);
+    const activeClass = isInCart ? 'added-to-cart' : '';
+    const svgFill = isInCart ? 'style="fill: var(--primary-gold); color: var(--primary-gold);"' : ''; // *** നിറം സ്വർണ്ണമാക്കുന്നു ***
+    const buttonTitle = isInCart ? 'Remove from Cart' : 'Add to Cart';
 
     return `
         <div class="explore-card-content">
@@ -206,7 +214,6 @@ function buildCardContent(productId, product) {
                     <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                 </button>
                 
-                <!-- *** ഷെയർ ബട്ടണിൽ ഡാറ്റ ചേർത്തു *** -->
                 <button title="Share" class="share-btn"
                     data-id="${productId}"
                     data-name="${product.name}"
@@ -214,14 +221,15 @@ function buildCardContent(productId, product) {
                     <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
                 </button>
                 
-                <button title="Add to Cart" class="bookmark-btn"
+                <!-- *** ബട്ടൺ സ്റ്റൈൽ ഡൈനാമിക് ആക്കി *** -->
+                <button title="${buttonTitle}" class="bookmark-btn ${activeClass}"
                     data-id="${productId}"
                     data-name="${product.name}"
                     data-price="${price}"
                     data-mrp="${mrp}"
                     data-image="${imageUrl}"
                     data-size="${product.size || ''}">
-                    <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                    <svg viewBox="0 0 24 24" ${svgFill}><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
                 </button>
             </div>
 
@@ -254,51 +262,57 @@ if (loader) {
 
 /**
  * 7. "Add to Cart", "Show More", "Share" ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
- * *** 'async' ചേർത്തു, ഷെയർ ബട്ടൺ ലോജിക് ചേർത്തു ***
+ * *** "Add to Cart" ലോജിക് ടോഗിൾ (Toggle) ആക്കി മാറ്റി ***
  */
-feedContainer.addEventListener('click', async (e) => { // *** async ആക്കി ***
+feedContainer.addEventListener('click', async (e) => { 
     const target = e.target;
     const bookmarkButton = target.closest('.bookmark-btn');
-    const shareButton = target.closest('.share-btn'); // *** ഷെയർ ബട്ടൺ കണ്ടെത്തി ***
+    const shareButton = target.closest('.share-btn'); 
     
-    // "Add to Cart" (ബുക്ക്മാർക്ക് ഐക്കണിൽ)
-    if (bookmarkButton && !bookmarkButton.disabled) {
+    // "Add to Cart" / "Remove from Cart" ടോഗിൾ
+    if (bookmarkButton) {
         e.preventDefault();
         
-        if (bookmarkButton.classList.contains('added-to-cart')) return;
-
         const id = bookmarkButton.dataset.id;
-        const product = {
-            id: id, 
-            name: bookmarkButton.dataset.name,
-            price: parseFloat(bookmarkButton.dataset.price),
-            mrp: parseFloat(bookmarkButton.dataset.mrp),
-            image: bookmarkButton.dataset.image,
-            size: bookmarkButton.dataset.size 
-        };
+        const svg = bookmarkButton.querySelector('svg');
 
-        addToCart(id, product);
-        
-        bookmarkButton.classList.add('added-to-cart');
-        setTimeout(() => {
+        // *** കാർട്ടിൽ ഉണ്ടോ എന്ന് ക്ലാസ്സ് നോക്കി മനസ്സിലാക്കുന്നു ***
+        if (bookmarkButton.classList.contains('added-to-cart')) {
+            // കാർട്ടിൽ ഉണ്ട്, അതിനാൽ നീക്കം ചെയ്യുന്നു
+            removeFromCart(id);
             bookmarkButton.classList.remove('added-to-cart');
-        }, 1500); 
+            if (svg) svg.style.fill = 'none'; // *** നിറം നീക്കം ചെയ്യുന്നു ***
+            bookmarkButton.title = 'Add to Cart';
+        } else {
+            // കാർട്ടിൽ ഇല്ല, അതിനാൽ ചേർക്കുന്നു
+            const product = {
+                id: id,
+                name: bookmarkButton.dataset.name,
+                price: parseFloat(bookmarkButton.dataset.price),
+                mrp: parseFloat(bookmarkButton.dataset.mrp),
+                image: bookmarkButton.dataset.image,
+                size: bookmarkButton.dataset.size 
+            };
+            addToCart(id, product);
+            bookmarkButton.classList.add('added-to-cart');
+            if (svg) svg.style.fill = 'var(--primary-gold)'; // *** സ്വർണ്ണ നിറം നൽകുന്നു ***
+            bookmarkButton.title = 'Remove from Cart';
+        }
+        
+        // പഴയ setTimeout ലോജിക് നീക്കം ചെയ്തു
     }
 
-    // *** പുതിയത്: ഷെയർ ബട്ടൺ ലോജിക് ***
+    // ഷെയർ ബട്ടൺ ലോജിക്
     if (shareButton) {
         e.preventDefault();
         
-        // 1. Web Share API ബ്രൗസറിൽ ലഭ്യമാണോ എന്ന് പരിശോധിക്കുന്നു
         if (!navigator.share) {
-            // ലഭ്യമല്ലെങ്കിൽ ഫീഡ്‌ബാക്ക് നൽകുന്നു
             const originalIcon = shareButton.innerHTML;
             shareButton.innerHTML = 'Not Supported';
             setTimeout(() => { shareButton.innerHTML = originalIcon; }, 2000);
             return;
         }
 
-        // 2. ഷെയർ ചെയ്യാനുള്ള ഡാറ്റ തയ്യാറാക്കുന്നു
         const id = shareButton.dataset.id;
         const name = shareButton.dataset.name;
         const price = shareButton.dataset.price;
@@ -310,13 +324,11 @@ feedContainer.addEventListener('click', async (e) => { // *** async ആക്ക
             url: productLink
         };
 
-        // 3. ഷെയർ ഡയലോഗ് തുറക്കുന്നു
         try {
             await navigator.share(shareData);
             
-            // വിജയകരമായി ഷെയർ ചെയ്താൽ
             const originalIcon = shareButton.innerHTML;
-            shareButton.innerHTML = '<svg viewBox="0 0 24 24" style="stroke: var(--success-green);"><path d="M20 6 9 17l-5-5"></path></svg>'; // ശരി (Tick)
+            shareButton.innerHTML = '<svg viewBox="0 0 24 24" style="stroke: var(--success-green);"><path d="M20 6 9 17l-5-5"></path></svg>'; 
             shareButton.classList.add('shared-success');
             setTimeout(() => {
                 shareButton.innerHTML = originalIcon;
@@ -325,9 +337,8 @@ feedContainer.addEventListener('click', async (e) => { // *** async ആക്ക
 
         } catch (err) {
             console.error('Error sharing:', err);
-            // യൂസർ ക്യാൻസൽ ചെയ്താൽ
             const originalIcon = shareButton.innerHTML;
-            shareButton.innerHTML = '<svg viewBox="0 0 24 24" style="stroke: var(--error-red);"><path d="M18 6 6 18M6 6l12 12"></path></svg>'; // തെറ്റ് (X)
+            shareButton.innerHTML = '<svg viewBox="0 0 24 24" style="stroke: var(--error-red);"><path d="M18 6 6 18M6 6l12 12"></path></svg>'; 
             shareButton.classList.add('shared-fail');
             setTimeout(() => {
                 shareButton.innerHTML = originalIcon;
@@ -336,7 +347,7 @@ feedContainer.addEventListener('click', async (e) => { // *** async ആക്ക
         }
     }
 
-    // "Show More" ബട്ടൺ (വിവരണം മുഴുവൻ കാണിക്കാൻ)
+    // "Show More" ബട്ടൺ
     if (target.classList.contains('read-more-btn')) {
         const descriptionDiv = target.closest('.explore-product-description');
         const fullText = descriptionDiv.dataset.fullText.replace(/\n/g, '<br>'); 
