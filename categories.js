@@ -20,7 +20,6 @@ import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 setLogLevel('Debug');
 
 // --- DOM Elements ---
-const pageTitle = document.getElementById("page-title"); 
 const productGrid = document.getElementById("category-product-grid");
 const categoryNavDesktop = document.getElementById("category-nav-desktop");
 const categoryNavMobile = document.getElementById("category-nav-mobile");
@@ -52,7 +51,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadWhatsappNumber() {
     try {
-        // ... (പഴയതുപോലെ തന്നെ) ...
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists() && docSnap.data().whatsapp) {
@@ -68,7 +66,6 @@ async function loadCategoryList() {
     if (!categoryNavDesktop || !categoryNavMobile) return;
 
     try {
-        // കാഷെയിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കാം (ലളിതമാക്കാൻ ഇപ്പോൾ നേരിട്ട് വിളിക്കുന്നു)
         const q = query(collection(db, "categories"), orderBy("name"));
         const catSnapshot = await getDocs(q);
 
@@ -151,11 +148,9 @@ async function startLoadingProducts(categoryId) {
 
     const productsRef = collection(db, "products");
     if (categoryId === 'all') {
-        currentQuery = query(productsRef, orderBy("name"));
+        currentQuery = query(productsRef, orderBy("createdAt", "desc"));
     } else {
-        try {
-            currentQuery = query(productsRef, where("categoryId", "==", categoryId));
-        } catch (e) { console.error("Error query", e); }
+        currentQuery = query(productsRef, where("categoryId", "==", categoryId));
     }
     
     updateActiveCategoryUI(categoryId);
