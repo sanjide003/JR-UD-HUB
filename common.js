@@ -1,5 +1,5 @@
 // ഇതാണ് 'common.js' ഫയൽ.
-// *** Image Optimization & Data Caching നടപ്പിലാക്കി ***
+// *** Image Optimization പിശക് പരിഹരിച്ചു ***
 
 import { db, auth } from './firebase-config.js';
 import { 
@@ -19,25 +19,13 @@ let siteSettings = null;
 let authPromise = null;
 
 /**
- * *** പുതിയത്: ചിത്രങ്ങളുടെ വലിപ്പം കുറയ്ക്കാനുള്ള മാന്ത്രിക വിദ്യ ***
- * 'wsrv.nl' എന്ന സൗജന്യ സേവനം ഉപയോഗിച്ച് ചിത്രങ്ങൾ ചെറുതാക്കുന്നു.
- * @param {string} url - ഒറിജിനൽ ഇമേജ് ലിങ്ക്
- * @param {number} width - നമുക്ക് ആവശ്യമുള്ള വീതി (px)
- * @param {number} quality - ക്വാളിറ്റി (1-100), default 80
+ * *** മാറ്റം വരുത്തിയത്: Image Optimization തൽക്കാലം ഒഴിവാക്കുന്നു ***
+ * ചിത്രങ്ങൾ കാണാത്ത പ്രശ്നം പരിഹരിക്കാൻ ഒറിജിനൽ URL തന്നെ തിരികെ നൽകുന്നു.
  */
 export function optimizeImage(url, width = 800, quality = 80) {
     if (!url) return 'https://placehold.co/100x100/1e1e1e/D4AF37?text=No+Image';
-    
-    // ഇതിനകം ഒപ്റ്റിമൈസ് ചെയ്തതാണെങ്കിൽ അല്ലെങ്കിൽ ഡാറ്റാ URL ആണെങ്കിൽ മാറ്റം വരുത്തണ്ട
-    if (url.includes('wsrv.nl') || url.startsWith('data:') || url.includes('blob:')) {
-        return url;
-    }
-
-    // wsrv.nl വഴി ഇമേജ് റീസൈസ് ചെയ്യുന്നു (WebP ഫോർമാറ്റിലേക്ക് മാറ്റുന്നു)
-    // output=webp: വലിപ്പം വളരെ കുറയ്ക്കും
-    // w={width}: ആവശ്യത്തിനുള്ള വീതി മാത്രം മതി
-    // q={quality}: ക്വാളിറ്റി കുറച്ച് ഡാറ്റ ലാഭിക്കുന്നു
-    return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${width}&q=${quality}&output=webp`;
+    // wsrv.nl തൽക്കാലം ഉപയോഗിക്കുന്നില്ല, കാരണം അത് ചിലപ്പോൾ ഇമേജുകളെ ബ്ലോക്ക് ചെയ്യുന്നു.
+    return url; 
 }
 
 /**
@@ -48,7 +36,6 @@ function authenticateUser() {
 
     authPromise = new Promise(async (resolve, reject) => {
         try {
-            // നേരത്തെ ലോഗിൻ ചെയ്തിട്ടുണ്ടോ എന്ന് നോക്കുന്നു
             if (auth.currentUser) {
                 resolve(auth.currentUser);
                 return;
@@ -65,22 +52,19 @@ function authenticateUser() {
 }
 
 /**
- * സൈറ്റ് സെറ്റിംഗ്സ് എടുക്കുന്നു (Caching ഉൾപ്പെടെ)
- * *** പുതിയത്: ലോക്കൽ സ്റ്റോറേജിൽ നിന്ന് ആദ്യം എടുക്കും (ഡാറ്റ ലാഭിക്കാൻ) ***
+ * സൈറ്റ് സെറ്റിംഗ്സ് എടുക്കുന്നു
  */
 export async function fetchSiteSettings() {
     if (siteSettings) return siteSettings;
 
-    // 1. ലോക്കൽ സ്റ്റോറേജിൽ ഉണ്ടോ എന്ന് നോക്കുന്നു
+    // ലോക്കൽ സ്റ്റോറേജിൽ ഉണ്ടോ എന്ന് നോക്കുന്നു
     const cachedSettings = localStorage.getItem('siteSettings');
     if (cachedSettings) {
         siteSettings = JSON.parse(cachedSettings);
-        // ബാക്ക്ഗ്രൗണ്ടിൽ പുതിയത് അപ്ഡേറ്റ് ചെയ്യാൻ ശ്രമിക്കാം (User അനുഭവം മെച്ചപ്പെടുത്താൻ)
         refreshSettingsBackground(); 
         return siteSettings;
     }
 
-    // 2. ഇല്ലെങ്കിൽ ഫയർബേസിൽ നിന്ന് എടുക്കുന്നു
     return await refreshSettingsBackground();
 }
 
@@ -92,7 +76,6 @@ async function refreshSettingsBackground() {
         
         if (docSnap.exists()) {
             siteSettings = docSnap.data();
-            // പുതിയ വിവരം ലോക്കൽ സ്റ്റോറേജിൽ സേവ് ചെയ്യുന്നു
             localStorage.setItem('siteSettings', JSON.stringify(siteSettings));
             return siteSettings;
         }
@@ -110,8 +93,7 @@ async function buildHeader() {
     const headerElement = document.getElementById('main-header');
     if (!headerElement) return;
 
-    // ലോഗോ ഒപ്റ്റിമൈസ് ചെയ്യുന്നു (ചെറിയ വലിപ്പം മതി)
-    const logoUrl = optimizeImage(settings.logoImageUrl, 150); 
+    const logoUrl = settings.logoImageUrl || ''; 
     const logoImg = settings.logoImageUrl ? `<img src="${logoUrl}" alt="Logo" class="header-logo-img">` : '';
     const logoText = settings.logoText ? `<span class="header-logo-text">${settings.logoText}</span>` : '';
     const logoSubtitle = settings.logoSubtitle ? `<span class="header-logo-subtitle">${settings.logoSubtitle}</span>` : '';
@@ -144,23 +126,20 @@ async function buildHeader() {
 }
 
 /**
- * 2. സൈഡ് മെനു (Caching ഉപയോഗിച്ച്)
+ * 2. സൈഡ് മെനു
  */
 async function buildSideNav() {
     const settings = await fetchSiteSettings();
     const navElement = document.getElementById('side-nav');
     if (!navElement) return;
 
-    // കാറ്റഗറികൾ ലോക്കൽ സ്റ്റോറേജിൽ നിന്ന് എടുക്കുന്നു (ഡാറ്റ ലാഭിക്കാൻ)
     let categoryLinks = '<li><a href="categories.html?filter=all" class="nav-category-link">All Products</a></li>';
     
     try {
-        // ആദ്യം കാഷെ നോക്കുന്നു
         const cachedCats = localStorage.getItem('cachedCategoriesNav');
         if (cachedCats) {
             categoryLinks = cachedCats;
         } else {
-            // ഇല്ലെങ്കിൽ മാത്രം ഡൗൺലോഡ് ചെയ്യുന്നു
             const q = query(collection(db, "categories"), orderBy("name"));
             const catSnapshot = await getDocs(q);
             let links = '<li><a href="categories.html?filter=all" class="nav-category-link">All Products</a></li>';
@@ -169,18 +148,13 @@ async function buildSideNav() {
                 links += `<li><a href="categories.html?filter=${doc.id}" class="nav-category-link">${category.name}</a></li>`;
             });
             categoryLinks = links;
-            localStorage.setItem('cachedCategoriesNav', links); // സേവ് ചെയ്യുന്നു
+            localStorage.setItem('cachedCategoriesNav', links);
         }
     } catch (error) {
         console.error("Error loading categories:", error);
     }
 
-    // ... (ബാക്കി സോഷ്യൽ ലിങ്ക് കോഡുകൾ പഴയതുപോലെ തന്നെ) ...
-    // കോഡ് ചുരുക്കാൻ വേണ്ടി ബാക്കി ഭാഗം അതേപടി നിലനിർത്തുന്നു, logicൽ മാറ്റമില്ല.
-    
     let socialLinksHTML = '';
-    // (സോഷ്യൽ ലിങ്കുകൾ ജനറേറ്റ് ചെയ്യുന്ന കോഡ് ഇവിടെ വരും - പഴയ common.js ലേത് പോലെ)
-    // ലളിതമാക്കാൻ, അത് buildFooter-ൽ നിന്ന് കോപ്പി ചെയ്യാവുന്നതാണ്.
     if (settings.followWhatsapp) socialLinksHTML += `<a href="${settings.followWhatsapp}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg></a>`;
     if (settings.instagramUrl) socialLinksHTML += `<a href="${settings.instagramUrl}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.225 1.664 4.771 4.919-4.919C8.333 2.175 8.741 2.163 12 2.163m0-2.163C8.741 0 8.333.014 7.053.072 2.748.27 0 3.018 0 7.053c-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.202 4.305 2.949 7.053 7.053 7.053 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c4.305-.202 7.053-2.949 7.053-7.053.058-1.28.072 1.688.072-4.947s-.014-3.667-.072-4.947C21.725 2.748 19.227 0 15.028.072 13.748.014 13.34 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg></a>`;
     if (settings.facebookUrl) socialLinksHTML += `<a href="${settings.facebookUrl}" target="_blank"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.9V12h2.538v-2.245c0-2.508 1.493-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.465l-1.26.001c-1.243 0-1.63.771-1.63 1.562V12h2.771l-.443 2.89H13.63v6.988C18.343 21.128 22 16.991 22 12z"/></svg></a>`;
@@ -215,8 +189,6 @@ async function buildSideNav() {
     setupNavEvents();
 }
 
-// ... (buildFooter, buildFloatingButtons, setupNavEvents എന്നിവയിൽ വലിയ മാറ്റമില്ല, പക്ഷെ optimizeImage ഉപയോഗിക്കാൻ മറക്കരുത്) ...
-
 /**
  * 3. ഫൂട്ടർ നിർമ്മിക്കുന്നു
  */
@@ -227,9 +199,7 @@ async function buildFooter() {
     
     footerElement.className = 'main-footer-new';
 
-    // സോഷ്യൽ ലിങ്കുകൾ (അഡ്മിൻ പാനലിൽ നിന്ന്)
     let socialLinksHTML = '';
-    // (കോഡ് ചുരുക്കുന്നു - പഴയത് പോലെ തന്നെ)
     if (settings.followWhatsapp) socialLinksHTML += `<a href="${settings.followWhatsapp}" target="_blank" aria-label="WhatsApp"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg></a>`;
     if (settings.instagramUrl) socialLinksHTML += `<a href="${settings.instagramUrl}" target="_blank" aria-label="Instagram"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.225 1.664 4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.741 0 8.333.014 7.053.072 2.748.27 0 3.018 0 7.053c-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.202 4.305 2.949 7.053 7.053 7.053 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c4.305-.202 7.053-2.949 7.053-7.053.058-1.28.072 1.688.072-4.947s-.014-3.667-.072-4.947C21.725 2.748 19.227 0 15.028.072 13.748.014 13.34 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg></a>`;
     if (settings.facebookUrl) socialLinksHTML += `<a href="${settings.facebookUrl}" target="_blank" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.9V12h2.538v-2.245c0-2.508 1.493-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.465l-1.26.001c-1.243 0-1.63.771-1.63 1.562V12h2.771l-.443 2.89H13.63v6.988C18.343 21.128 22 16.991 22 12z"/></svg></a>`;
@@ -377,7 +347,6 @@ export async function loadSiteSettings() {
         const settings = await fetchSiteSettings();
         
         if (preloaderLogo && settings.logoImageUrl) {
-            // പ്രീലോഡറിൽ ഒപ്റ്റിമൈസ് ചെയ്ത ലോഗോ കാണിക്കുന്നു
             preloaderLogo.src = optimizeImage(settings.logoImageUrl, 150);
             preloaderLogo.style.display = 'block';
         }
