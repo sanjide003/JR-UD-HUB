@@ -1,6 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// *** വിലയിൽ നിന്ന് ഡിസ്കൗണ്ട് ശതമാനം നീക്കം ചെയ്തു ***
-// *** "All Products"-ന് പുതിയ ഐക്കൺ നൽകി ***
+// *** "Add to Cart" ബട്ടൺ ടോഗിൾ ആക്കി മാറ്റി ***
 
 import {
     collection,
@@ -16,7 +15,8 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db } from './firebase-config.js';
 import { loadSiteSettings } from './common.js';
-import { addToCart } from './cart.js';
+// *** isItemInCart, removeFromCart എന്നിവ import ചെയ്തു ***
+import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
 setLogLevel('Debug');
 
@@ -69,9 +69,10 @@ async function loadWhatsappNumber() {
 }
 
 /**
- * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു (*** "All Products"-ന് പുതിയ ഐക്കൺ ***)
+ * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു
  */
 async function loadCategoryList() {
+    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     if (!categoryNavDesktop || !categoryNavMobile) return;
 
     try {
@@ -80,7 +81,6 @@ async function loadCategoryList() {
 
         let navHtml = '';
         
-        // *** "All Products" ബട്ടണ് പുതിയ ഗ്രിഡ് ഐക്കൺ നൽകി ***
         navHtml += `
             <a href="#" class="category-grid-item" data-id="all">
                 <div class="category-grid-image-box">
@@ -92,7 +92,6 @@ async function loadCategoryList() {
             </a>
         `;
         
-        // മറ്റ് കാറ്റഗറികൾ
         catSnapshot.forEach((doc) => {
             const category = doc.data();
             navHtml += `
@@ -124,6 +123,7 @@ async function loadCategoryList() {
  * 2. കാറ്റഗറി ലിങ്കുകൾക്ക് ക്ലിക്ക് ഇവന്റുകൾ ചേർക്കുന്നു
  */
 function addNavClickListeners(navElement) {
+    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     navElement.addEventListener('click', (e) => {
         const link = e.target.closest('.category-grid-item');
         if (!link) return;
@@ -149,6 +149,7 @@ function addNavClickListeners(navElement) {
  * 3. പുതിയ കാറ്റഗറി തിരഞ്ഞെടുക്കുമ്പോൾ ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യാൻ തുടങ്ങുന്നു
  */
 async function startLoadingProducts(categoryId) {
+    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     if (!productGrid) return;
 
     isLoading = false;
@@ -182,7 +183,7 @@ async function startLoadingProducts(categoryId) {
 
 /**
  * 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (ഇൻഫിനിറ്റ് സ്ക്രോൾ)
- * *** വിലയിൽ നിന്ന് ഡിസ്കൗണ്ട് ശതമാനം നീക്കം ചെയ്തു ***
+ * *** ബട്ടൺ ടോഗിൾ ലോജിക് ചേർത്തു ***
  */
 async function loadProducts() {
     if (isLoading || !currentQuery) return;
@@ -221,13 +222,15 @@ async function loadProducts() {
             const mrp = product.mrp || 0;
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
-            // *** വിലയുടെ HTML (ഡിസ്കൗണ്ട് ശതമാനം ഇല്ലാതെ) ***
             let priceHTML = `<span class="price-main">₹${price}</span>`;
             if (mrp > price) {
-                // const discount = Math.round(((mrp - price) / mrp) * 100); // ഈ വരി നീക്കം ചെയ്തു
                 priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
-                // priceHTML += `<span class="price-discount">${discount}% OFF</span>`; // ഈ വരി നീക്കം ചെയ്തു
             }
+
+            // *** കാർട്ടിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു ***
+            const isInCart = isItemInCart(productId);
+            const buttonText = isInCart ? "Remove" : "Cart";
+            const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new";
 
             card.innerHTML = `
                 <a href="product.html?id=${productId}" class="cat-product-image-link">
@@ -241,7 +244,8 @@ async function loadProducts() {
                     </div>
 
                     <div class="cat-product-buttons">
-                        <button class="btn btn-secondary-new btn-add-to-cart"
+                        <!-- *** ബട്ടൺ HTML അപ്ഡേറ്റ് ചെയ്തു *** -->
+                        <button class="btn ${buttonClass} btn-add-to-cart"
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${price}"
@@ -253,7 +257,7 @@ async function loadProducts() {
                                 <line x1="3" y1="6" x2="21" y2="6"></line>
                                 <path d="M16 10a4 4 0 0 1-8 0"></path>
                             </svg>
-                            <span>Cart</span>
+                            <span>${buttonText}</span>
                         </button>
                         
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">
@@ -278,6 +282,7 @@ async function loadProducts() {
  * 5. ആക്ടീവ് കാറ്റഗറി ലിങ്ക് ഹൈലൈറ്റ് ചെയ്യുന്നു
  */
 function updateActiveCategoryUI(categoryId) {
+    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     const allLinks = document.querySelectorAll('.category-grid-item'); 
     allLinks.forEach(link => {
         link.classList.remove('active');
@@ -289,37 +294,40 @@ function updateActiveCategoryUI(categoryId) {
 
 /**
  * 6. "Add to Cart" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
+ * *** ടോഗിൾ ലോജിക് ആക്കി മാറ്റി ***
  */
 productGrid.addEventListener('click', (e) => {
     const cartButton = e.target.closest('.btn-add-to-cart');
 
     if (cartButton) {
         e.preventDefault();
+        
         const id = cartButton.dataset.id;
-        const product = {
-            id: id, 
-            name: cartButton.dataset.name,
-            price: parseFloat(cartButton.dataset.price),
-            mrp: parseFloat(cartButton.dataset.mrp),
-            image: cartButton.dataset.image,
-            size: cartButton.dataset.size 
-        };
+        const buttonText = cartButton.querySelector('span');
 
-        addToCart(id, product);
-
-        cartButton.innerHTML = 'Added!';
-        cartButton.disabled = true;
-        setTimeout(() => {
-            cartButton.innerHTML = `
-                <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <path d="M16 10a4 4 0 0 1-8 0"></path>
-                </svg>
-                <span>Cart</span>
-            `;
-            cartButton.disabled = false;
-        }, 2000);
+        if (cartButton.classList.contains('added-to-cart')) {
+            // കാർട്ടിൽ ഉണ്ട്, അതിനാൽ നീക്കം ചെയ്യുന്നു
+            removeFromCart(id);
+            cartButton.classList.remove('added-to-cart');
+            cartButton.classList.remove('btn-primary-new');
+            cartButton.classList.add('btn-secondary-new');
+            if (buttonText) buttonText.textContent = 'Cart';
+        } else {
+            // കാർട്ടിൽ ഇല്ല, അതിനാൽ ചേർക്കുന്നു
+            const product = {
+                id: id, 
+                name: cartButton.dataset.name,
+                price: parseFloat(cartButton.dataset.price),
+                mrp: parseFloat(cartButton.dataset.mrp),
+                image: cartButton.dataset.image,
+                size: cartButton.dataset.size 
+            };
+            addToCart(id, product);
+            cartButton.classList.add('added-to-cart');
+            cartButton.classList.add('btn-primary-new');
+            cartButton.classList.remove('btn-secondary-new');
+            if (buttonText) buttonText.textContent = 'Remove';
+        }
     }
 });
 
@@ -327,6 +335,7 @@ productGrid.addEventListener('click', (e) => {
  * 7. ഇൻഫിനിറ്റ് സ്ക്രോൾ നിരീക്ഷകൻ (Observer)
  */
 const observer = new IntersectionObserver((entries) => {
+    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     if (entries[0].isIntersecting && !isLoading && lastVisible) { 
         loadProducts();
     }
