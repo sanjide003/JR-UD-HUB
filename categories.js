@@ -1,5 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// *** ബട്ടൺ ലേഔട്ട് മാറ്റി (ഐക്കൺ മാത്രം + 'View') ***
+// *** 'Buy' ബട്ടൺ മാറ്റി 'View' (ലിങ്ക്) ആക്കി ***
 
 import {
     collection,
@@ -26,16 +26,18 @@ const categoryNavDesktop = document.getElementById("category-nav-desktop");
 const categoryNavMobile = document.getElementById("category-nav-mobile");
 const loader = document.getElementById("infinite-scroll-loader");
 
-// --- Pagination State ---
+// --- State ---
 let lastVisible = null; 
 let isLoading = false; 
 let currentCategoryId = 'all'; 
 const productsPerPage = 12; 
 let currentQuery = null;
+// let whatsappNumber = ''; // 'Buy' ബട്ടൺ നീക്കം ചെയ്തതുകൊണ്ട് ഇതിന്റെ ആവശ്യമില്ല
 
 // --- പേജ് ലോഡ് ആവുമ്പോൾ ---
-document.addEventListener("DOMContentLoaded", () => {
-    loadSiteSettings(); 
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadSiteSettings(); // ഹെഡർ, ഫൂട്ടർ ലോഡ് ചെയ്യാൻ
+    // await loadWhatsappNumber(); // 'Buy' ബട്ടൺ നീക്കം ചെയ്തതുകൊണ്ട് ഇതിന്റെ ആവശ്യമില്ല
     loadCategoryList(); 
     
     const urlParams = new URLSearchParams(window.location.search);
@@ -47,6 +49,10 @@ document.addEventListener("DOMContentLoaded", () => {
     
     startLoadingProducts(currentCategoryId); 
 });
+
+/**
+ * WhatsApp നമ്പർ ലോഡ് ചെയ്യുന്ന ഫംഗ്ഷൻ നീക്കം ചെയ്തു
+ */
 
 /**
  * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു
@@ -158,7 +164,7 @@ async function startLoadingProducts(categoryId) {
 
 /**
  * 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (ഇൻഫിനിറ്റ് സ്ക്രോൾ)
- * *** ബട്ടണുകൾ മാറ്റി (ഐക്കൺ + 'View') ***
+ * *** 'Buy' ബട്ടൺ മാറ്റി 'View' (ലിങ്ക്) ആക്കി ***
  */
 async function loadProducts() {
     if (isLoading || !currentQuery) return;
@@ -197,15 +203,27 @@ async function loadProducts() {
             const mrp = product.mrp || 0;
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
+            // വിലയുടെ HTML ഉണ്ടാക്കുന്നു
+            let priceHTML = `<span class="price-main">₹${price}</span>`;
+            if (mrp > price) {
+                const discount = Math.round(((mrp - price) / mrp) * 100);
+                priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
+                priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
+            }
+
             card.innerHTML = `
                 <a href="product.html?id=${productId}" class="cat-product-image-link">
                     <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
                 </a>
                 <div class="cat-product-content">
                     <h3 class="cat-product-title">${product.name}</h3>
+                    
+                    <div class="price-container">
+                        ${priceHTML}
+                    </div>
+
                     <div class="cat-product-buttons">
-                        <!-- *** 'Add to Cart' എഴുത്ത് നീക്കം ചെയ്തു *** -->
-                        <button class="btn btn-secondary-icon btn-add-to-cart"
+                        <button class="btn btn-secondary-new btn-add-to-cart"
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${price}"
@@ -217,8 +235,10 @@ async function loadProducts() {
                                 <line x1="3" y1="6" x2="21" y2="6"></line>
                                 <path d="M16 10a4 4 0 0 1-8 0"></path>
                             </svg>
+                            <span>Cart</span>
                         </button>
-                        <!-- *** 'View Details' എന്നതിനെ 'View' എന്നാക്കി *** -->
+                        
+                        <!-- *** 'Buy' ബട്ടൺ മാറ്റി 'View' ലിങ്ക് ആക്കി *** -->
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">
                             <span>View</span>
                         </a>
@@ -252,38 +272,42 @@ function updateActiveCategoryUI(categoryId) {
 
 /**
  * 6. "Add to Cart" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
- * *** ബട്ടണിൽ നിന്ന് എഴുത്ത് നീക്കം ചെയ്തു (setTimeout-ൽ നിന്നും) ***
+ * *** 'Buy' ബട്ടന്റെ ലോജിക് നീക്കം ചെയ്തു ***
  */
 productGrid.addEventListener('click', (e) => {
-    const button = e.target.closest('.btn-add-to-cart');
-    if (!button) return;
+    const cartButton = e.target.closest('.btn-add-to-cart');
 
-    e.preventDefault();
-    const id = button.dataset.id;
-    const product = {
-        id: id, 
-        name: button.dataset.name,
-        price: parseFloat(button.dataset.price),
-        mrp: parseFloat(button.dataset.mrp),
-        image: button.dataset.image,
-        size: button.dataset.size 
-    };
+    // "Add to Cart" ബട്ടൺ
+    if (cartButton) {
+        e.preventDefault();
+        const id = cartButton.dataset.id;
+        const product = {
+            id: id, 
+            name: cartButton.dataset.name,
+            price: parseFloat(cartButton.dataset.price),
+            mrp: parseFloat(cartButton.dataset.mrp),
+            image: cartButton.dataset.image,
+            size: cartButton.dataset.size 
+        };
 
-    addToCart(id, product);
+        addToCart(id, product);
 
-    button.innerHTML = 'Added!';
-    button.disabled = true;
-    setTimeout(() => {
-        // *** 'Add to Cart' എഴുത്ത് നീക്കം ചെയ്തു ***
-        button.innerHTML = `
-            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                <line x1="3" y1="6" x2="21" y2="6"></line>
-                <path d="M16 10a4 4 0 0 1-8 0"></path>
-            </svg>
-        `;
-        button.disabled = false;
-    }, 2000);
+        cartButton.innerHTML = 'Added!';
+        cartButton.disabled = true;
+        setTimeout(() => {
+            cartButton.innerHTML = `
+                <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <path d="M16 10a4 4 0 0 1-8 0"></path>
+                </svg>
+                <span>Cart</span>
+            `;
+            cartButton.disabled = false;
+        }, 2000);
+    }
+    
+    // *** 'Buy on WhatsApp' ബട്ടന്റെ ലോജിക് നീക്കം ചെയ്തു ***
 });
 
 /**
