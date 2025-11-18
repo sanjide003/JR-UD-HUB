@@ -1,5 +1,5 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** Force Autoplay on Load Fixed ***
+// *** Video Autoplay & Resume Fixed (Force Start on Load) ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -53,7 +53,7 @@ async function loadHomeBanner() {
 
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ
+ * 1. ഹീറോ സ്ലൈഡർ (ശരിയായ ഓട്ടോപ്ലേ സെറ്റിംഗ്സ്)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -86,8 +86,7 @@ async function loadHeroSlider() {
                 }
 
                 if (videoId) {
-                    // enablejsapi=1 നിർബന്ധമാണ്
-                    embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1`;
+                    embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1&autoplay=1`;
                 }
 
                 if (slide.type === 'image') {
@@ -100,8 +99,8 @@ async function loadHeroSlider() {
                 }
                 else if (isVideo) {
                     // Direct Video (MP4)
-                    // *** playsinline, autoplay, muted, loop നിർബന്ധം ***
-                    slideEl.innerHTML = `<video class="hero-video-element" src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>`;
+                    // *** preload="auto" കൊടുത്തു, വേഗത്തിൽ ലോഡ് ആവാൻ ***
+                    slideEl.innerHTML = `<video class="hero-video-element" src="${slide.url}" autoplay muted loop playsinline preload="auto"></video>`;
                 }
                 
                 sliderWrapper.appendChild(slideEl);
@@ -118,47 +117,25 @@ async function loadHeroSlider() {
                 el: '.hero-pagination-dots',
                 clickable: true,
             },
-            // *** സ്ലൈഡ് മാറുമ്പോൾ വീഡിയോ പ്ലേ ചെയ്യാൻ ***
-            on: {
-                slideChangeTransitionEnd: function (swiper) {
-                    playActiveSlideVideo(swiper.slides[swiper.activeIndex]);
-                }
-            }
         });
 
-        // *** പേജ് ലോഡ് ആയാലുടൻ ആദ്യത്തെ സ്ലൈഡിലെ വീഡിയോ പ്ലേ ചെയ്യുന്നു ***
-        setTimeout(() => {
-             const activeSlide = document.querySelector('.swiper-slide-active');
-             if (activeSlide) playActiveSlideVideo(activeSlide);
-        }, 500); // ചെറിയ ഡിലേ നൽകുന്നു
+        // *** വീഡിയോ പ്ലേ ചെയ്യാനുള്ള നിർദ്ദേശം ***
+        
+        // 1. ആദ്യം തന്നെ വീഡിയോ പ്ലേ ചെയ്യാൻ ശ്രമിക്കുന്നു (Force Start)
+        const firstSlideVideo = document.querySelector('.hero-video-element');
+        if (firstSlideVideo) {
+            firstSlideVideo.muted = true; // മ്യൂട്ട് ആണെന്ന് ഉറപ്പിക്കുന്നു
+            firstSlideVideo.play().catch(e => console.log("Initial play failed, waiting for user interaction/scroll:", e));
+        }
 
-        // സ്ക്രോൾ ചെയ്യുമ്പോൾ നിയന്ത്രിക്കാൻ
+        // 2. സ്ക്രോൾ ചെയ്യുമ്പോൾ നിയന്ത്രിക്കാൻ ഒബ്സർവർ സെറ്റ് ചെയ്യുന്നു
         setupSmartVideoAutoplay();
 
     } catch (error) { console.error("Error loading hero slider: ", error); }
 }
 
 /**
- * ഒരു സ്ലൈഡിലെ വീഡിയോ പ്ലേ ചെയ്യാനുള്ള ഫംഗ്ഷൻ
- */
-function playActiveSlideVideo(slideElement) {
-    if (!slideElement) return;
-
-    const video = slideElement.querySelector('video');
-    const iframe = slideElement.querySelector('iframe');
-
-    if (video) {
-        video.muted = true; // ഉറപ്പുവരുത്തുന്നു
-        video.play().catch(err => console.log("Force play failed:", err));
-    }
-    if (iframe) {
-        iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-    }
-}
-
-
-/**
- * സ്ക്രോൾ കൺട്രോൾ (Scroll Resume Logic)
+ * വീഡിയോ സ്ക്രീനിൽ വരുമ്പോൾ Resume ചെയ്യുക, മാറുമ്പോൾ Pause ചെയ്യുക
  */
 function setupSmartVideoAutoplay() {
     const videos = document.querySelectorAll('.hero-video-element, .hero-video-iframe');
@@ -166,7 +143,7 @@ function setupSmartVideoAutoplay() {
     const observerOptions = {
         root: null,
         rootMargin: '0px',
-        threshold: 0.2 // 20% കണ്ടാൽ തന്നെ പ്ലേ ആകും (പെട്ടെന്ന് സ്റ്റാർട്ട് ചെയ്യാൻ)
+        threshold: 0.25 // 25% വീഡിയോ സ്ക്രീനിൽ വന്നാൽ പ്ലേ ആകും
     };
 
     const videoObserver = new IntersectionObserver((entries) => {
@@ -175,14 +152,15 @@ function setupSmartVideoAutoplay() {
             const isYouTube = element.tagName === 'IFRAME';
 
             if (entry.isIntersecting) {
-                // സ്ക്രീനിൽ ഉണ്ട് -> പ്ലേ ചെയ്യുക
+                // *** സ്ക്രീനിൽ ഉണ്ട് -> പ്ലേ ചെയ്യുക (Resume) ***
                 if (isYouTube) {
                     element.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
                 } else {
-                    element.play().catch(e => console.log("Autoplay prevented:", e));
+                    // സാധാരണ വീഡിയോ പ്ലേ ചെയ്യുന്നു (Resume)
+                    element.play().catch(e => console.log("Autoplay prevented via observer:", e));
                 }
             } else {
-                // സ്ക്രീനിൽ ഇല്ല -> പോസ് ചെയ്യുക
+                // *** സ്ക്രീനിൽ ഇല്ല -> പോസ് ചെയ്യുക (Stop) ***
                 if (isYouTube) {
                     element.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
                 } else {
