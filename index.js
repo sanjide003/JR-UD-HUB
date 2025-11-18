@@ -1,5 +1,5 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** "Add to Cart" ബട്ടൺ ടോഗിൾ ആക്കി മാറ്റി ***
+// *** Smart Video Autoplay & Image Optimization നടപ്പിലാക്കി ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -13,8 +13,7 @@ import {
     orderBy,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { loadSiteSettings } from './common.js';
-// *** isItemInCart, removeFromCart എന്നിവ import ചെയ്തു ***
+import { loadSiteSettings, optimizeImage } from './common.js'; // *** optimizeImage ഇറക്കുമതി ചെയ്തു ***
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
 setLogLevel('Debug');
@@ -28,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
- * ഹോം പേജ് ബാനർ ലോഡ് ചെയ്യുന്നു
+ * ഹോം പേജ് ബാനർ (ഒപ്റ്റിമൈസ് ചെയ്തത്)
  */
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
@@ -40,7 +39,9 @@ async function loadHomeBanner() {
 
         if (docSnap.exists() && docSnap.data().homeBannerUrl) {
             const bannerUrl = docSnap.data().homeBannerUrl;
-            bannerContainer.innerHTML = `<img src="${bannerUrl}" alt="Special Offer Banner">`;
+            // *** ബാനർ ഇമേജ് 1200px വീതിയിൽ ഒപ്റ്റിമൈസ് ചെയ്യുന്നു ***
+            const optimizedUrl = optimizeImage(bannerUrl, 1200, 85);
+            bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Special Offer Banner" loading="lazy">`;
             bannerContainer.style.display = 'block';
         } else {
             bannerContainer.style.display = 'none';
@@ -53,10 +54,9 @@ async function loadHomeBanner() {
 
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ ലോഡ് ചെയ്യുന്നു
+ * 1. ഹീറോ സ്ലൈഡർ (സ്മാർട്ട് വീഡിയോ പ്ലേയർ സഹിതം)
  */
 async function loadHeroSlider() {
-    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
     if (!sliderWrapper) return;
     
@@ -73,10 +73,12 @@ async function loadHeroSlider() {
                 const slideEl = document.createElement('div');
                 slideEl.className = 'swiper-slide';
 
-                let embedUrl = '';
+                // വീഡിയോ ആണോ എന്ന് പരിശോധിക്കുന്നു
                 let isVideo = slide.type === 'video';
                 let videoId = '';
+                let embedUrl = '';
 
+                // YouTube ലിങ്കാണെങ്കിൽ
                 if (slide.url.includes('youtube.com/watch?v=')) {
                     videoId = new URL(slide.url).searchParams.get('v');
                     isVideo = true;
@@ -86,26 +88,35 @@ async function loadHeroSlider() {
                     isVideo = true;
                 }
 
+                // YouTube Embed URL നിർമ്മിക്കുന്നു (Autoplay ഒഴിവാക്കി)
                 if (videoId) {
-                    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&iv_load_policy=3&showinfo=0&playsinline=1`;
+                    // enablejsapi=1 എന്നത് വീഡിയോയെ JS വഴി നിയന്ത്രിക്കാൻ സഹായിക്കും
+                    embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1`;
                 }
 
                 if (slide.type === 'image') {
-                    slideEl.innerHTML = `<img src="${slide.url}" alt="Hero Image">`;
+                    // *** ഇമേജ് ഒപ്റ്റിമൈസേഷൻ (800px മതിയാകും, ക്വാളിറ്റി 85) ***
+                    const optimizedHeroImg = optimizeImage(slide.url, 800, 85);
+                    slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
                 }
                 else if (isVideo && embedUrl) {
-                    slideEl.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                    // YouTube iframe
+                    slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="encrypted-media" allowfullscreen></iframe>`;
                 }
                 else if (isVideo) {
-                    slideEl.innerHTML = `<video src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>`;
+                    // Direct Video (MP4)
+                    // *** Autoplay നീക്കം ചെയ്തു, പകരം 'playsinline' മാത്രം ***
+                    // preload="metadata" മാത്രം നൽകുന്നു (ഡാറ്റ ലാഭിക്കാൻ)
+                    slideEl.innerHTML = `<video class="hero-video-element" src="${slide.url}" muted loop playsinline preload="metadata"></video>`;
                 }
                 
                 sliderWrapper.appendChild(slideEl);
             });
         }
 
+        // Swiper സെറ്റപ്പ്
         const heroSwiper = new Swiper('.hero-slider-new', {
-            loop: true,
+            loop: false, // വീഡിയോ ഉള്ളതുകൊണ്ട് ലൂപ്പ് ഒഴിവാക്കുന്നത് നല്ലതാണ്
             effect: 'fade',
             fadeEffect: { crossFade: true },
             allowTouchMove: true,
@@ -115,40 +126,47 @@ async function loadHeroSlider() {
                 clickable: true,
             },
         });
-        
-        heroSwiper.on('slideChange', function () {
-            const allIframes = sliderWrapper.querySelectorAll('iframe');
-            allIframes.forEach(iframe => {
-                iframe.src = iframe.src; 
-            });
-            
-            const allVideos = sliderWrapper.querySelectorAll('video');
-            allVideos.forEach(video => {
-                video.pause();
-                if (video.closest('.swiper-slide-active')) {
-                   video.muted = true; 
-                   video.play();
-                }
-            });
-        });
 
-        heroSwiper.on('touchStart', function(swiper, event) {
-            const target = event.target;
-            if (target.tagName === 'IFRAME') {
-                swiper.allowTouchMove = false;
-            }
-        });
-        heroSwiper.on('touchEnd', function(swiper) {
-             swiper.allowTouchMove = true;
-        });
+        // *** സ്മാർട്ട് വീഡിയോ പ്ലേയർ (Intersection Observer) ***
+        // സ്ക്രീനിൽ കാണുമ്പോൾ മാത്രം പ്ലേ ചെയ്യാനുള്ള സംവിധാനം
+        setupSmartVideoAutoplay();
 
     } catch (error) { console.error("Error loading hero slider: ", error); }
 }
 
+/**
+ * വീഡിയോ സ്ക്രീനിൽ വരുമ്പോൾ മാത്രം പ്ലേ ചെയ്യാനുള്ള ഫംഗ്ഷൻ
+ */
+function setupSmartVideoAutoplay() {
+    const videos = document.querySelectorAll('.hero-video-element');
+    
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.5 // 50% വീഡിയോ സ്ക്രീനിൽ വന്നാൽ മാത്രം പ്ലേ ചെയ്യുക
+    };
+
+    const videoObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const video = entry.target;
+            if (entry.isIntersecting) {
+                // സ്ക്രീനിൽ ഉണ്ട് -> പ്ലേ ചെയ്യുക
+                video.play().catch(e => console.log("Autoplay prevented:", e));
+            } else {
+                // സ്ക്രീനിൽ ഇല്ല -> പോസ് ചെയ്യുക (ഡാറ്റ ലാഭം!)
+                video.pause();
+            }
+        });
+    }, observerOptions);
+
+    videos.forEach(video => {
+        videoObserver.observe(video);
+    });
+}
+
 
 /**
- * 2. "Top Sellers" കറൗസൽ ലോഡ് ചെയ്യുന്നു
- * *** ബട്ടൺ ടോഗിൾ ലോജിക് ചേർത്തു ***
+ * 2. "For You" (Top Sellers) ലോഡ് ചെയ്യുന്നു (Image Optimization സഹിതം)
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
@@ -165,25 +183,28 @@ async function loadTopSellers() {
             const productId = doc.id;
             const card = document.createElement('div');
             card.className = 'swiper-slide';
-            const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
             
-            // *** കാർട്ടിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു ***
+            // *** ഇമേജ് ഒപ്റ്റിമൈസേഷൻ (400px മതി, ക്വാളിറ്റി 80) ***
+            const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
+            const imageUrl = optimizeImage(rawImage, 400, 80);
+            
             const isInCart = isItemInCart(productId);
             const buttonText = isInCart ? "Remove" : "Cart";
-            const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new"; // *** 'btn-secondary-icon' മാറ്റി 'btn-secondary-new' ആക്കി ***
+            const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new"; 
             
+            // loading="lazy" ചേർത്തു
             card.innerHTML = `
                 <a href="product.html?id=${productId}">
                     <img src="${imageUrl}" 
                          alt="${product.name}" 
                          class="top-sellers-product-image"
+                         loading="lazy" 
                          onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
                 </a>
                 <div class="top-sellers-product-info">
                     <div class="top-sellers-product-name">${product.name} ${product.size ? `(${product.size})` : ''}</div>
                     <div class="top-sellers-product-price">₹${product.price || 0} /-</div>
                     <div class="top-sellers-buttons">
-                        <!-- *** ബട്ടൺ HTML അപ്ഡേറ്റ് ചെയ്തു *** -->
                         <button class="btn ${buttonClass} btn-add-to-cart"
                             data-id="${productId}"
                             data-name="${product.name}"
@@ -207,10 +228,9 @@ async function loadTopSellers() {
             grid.appendChild(card);
         });
 
+        // ... (Swiper കോഡിൽ മാറ്റമില്ല) ...
         const autoplayDelay = 4000; 
-
         new Swiper('.top-sellers-swiper-new', {
-            // ... (Swiper കോഡിൽ മാറ്റമില്ല) ...
             loop: true,
             autoplay: { 
                 delay: autoplayDelay, 
@@ -264,17 +284,17 @@ async function loadTopSellers() {
 
 
 /**
- * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു
+ * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു (Image Optimization സഹിതം)
  */
 async function loadHomeCategories() {
-    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
 
     const CATEGORIES_TO_SHOW = 3; 
 
     try {
-        console.log("Fetching and shuffling categories from Firebase...");
+        // കാഷെയിൽ (LocalStorage) ഉണ്ടോ എന്ന് ആദ്യം നോക്കാം - common.js-ൽ എഴുതിയത് പോലെ ഇവിടെയും ചെയ്യാം
+        // ലളിതമാക്കാൻ ഇപ്പോൾ നേരിട്ട് വിളിക്കുന്നു, പക്ഷെ ഇമേജ് ഒപ്റ്റിമൈസ് ചെയ്യുന്നു
         const catQuery = query(collection(db, "categories"));
         const catSnapshot = await getDocs(catQuery); 
 
@@ -305,8 +325,8 @@ async function loadHomeCategories() {
         grid.innerHTML = '<p>Error loading categories.</p>';
     }
 }
+
 function renderCategories(grid, categories) {
-    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
     grid.innerHTML = '';
     if (categories.length === 0) {
         grid.innerHTML = '<p>No categories to show.</p>';
@@ -319,7 +339,10 @@ function renderCategories(grid, categories) {
         card.className = 'category-card-home-new';
         card.href = `categories.html?filter=${catId}`;
         
-        const imageUrl = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
+        // *** ഇമേജ് ഒപ്റ്റിമൈസേഷൻ (400px മതി) ***
+        const rawImage = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
+        const imageUrl = optimizeImage(rawImage, 400, 80);
+        
         card.style.backgroundImage = `url('${imageUrl}')`;
         
         card.innerHTML = `
@@ -329,11 +352,7 @@ function renderCategories(grid, categories) {
     });
 }
 
-
-/**
- * 4. "Add to Cart" ബട്ടണുകൾ പ്രവർത്തിപ്പിക്കുന്നു
- * *** ടോഗിൾ ലോജിക് ആക്കി മാറ്റി ***
- */
+// ... (Add to Cart logic - പഴയതുപോലെ തന്നെ) ...
 const topSellersGrid = document.getElementById("top-sellers-grid");
 if (topSellersGrid) {
     topSellersGrid.addEventListener('click', (e) => {
@@ -345,14 +364,12 @@ if (topSellersGrid) {
         const buttonText = button.querySelector('span');
 
         if (button.classList.contains('added-to-cart')) {
-            // കാർട്ടിൽ ഉണ്ട്, അതിനാൽ നീക്കം ചെയ്യുന്നു
             removeFromCart(id);
             button.classList.remove('added-to-cart');
             button.classList.remove('btn-primary-new');
-            button.classList.add('btn-secondary-new'); // *** 'btn-secondary-icon' മാറ്റി 'btn-secondary-new' ആക്കി ***
+            button.classList.add('btn-secondary-new'); 
             if (buttonText) buttonText.textContent = 'Cart';
         } else {
-            // കാർട്ടിൽ ഇല്ല, അതിനാൽ ചേർക്കുന്നു
             const product = {
                 id: id, 
                 name: button.dataset.name,
@@ -364,7 +381,7 @@ if (topSellersGrid) {
             addToCart(id, product);
             button.classList.add('added-to-cart');
             button.classList.add('btn-primary-new');
-            button.classList.remove('btn-secondary-new'); // *** 'btn-secondary-icon' മാറ്റി 'btn-secondary-new' ആക്കി ***
+            button.classList.remove('btn-secondary-new'); 
             if (buttonText) buttonText.textContent = 'Remove';
         }
     });
