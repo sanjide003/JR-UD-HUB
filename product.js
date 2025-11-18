@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** 'You May Also Like' സെക്ഷനിലെ 'Buy' ബട്ടൺ മാറ്റി 'View' (ലിങ്ക്) ആക്കി ***
+// *** 'You May Also Like' സെക്ഷനിലെ കാർഡുകളുടെ ഡിസൈൻ മാറ്റി (വില ചേർത്തു) ***
 
 import { 
     collection, 
@@ -22,25 +22,15 @@ const relatedProductsGrid = document.getElementById('related-products-grid');
 let currentProduct = null;
 let whatsappNumber = ''; // WhatsApp നമ്പർ സേവ് ചെയ്യാൻ
 
-// *** പുതിയ ഫംഗ്ഷൻ: ടെക്സ്റ്റിലെ ലിങ്കുകൾ ക്ലിക്ക് ചെയ്യാൻ ***
 /**
- * Finds URLs in a string and converts them to clickable <a> tags.
- * @param {string} text - The text to parse.
- * @returns {string} - The text with HTML links.
+ * ടെക്സ്റ്റിലെ ലിങ്കുകൾ ക്ലിക്ക് ചെയ്യാൻ
  */
 function linkify(text) {
     if (!text) return '';
-    // http, https, ftp, അല്ലെങ്കിൽ www എന്ന് തുടങ്ങുന്ന ലിങ്കുകൾ
     const urlRegex = /(\b(https|http|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])|(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
     
     return text.replace(urlRegex, function(url, p1, p2, p3) {
-        // p1 = https://... (ഫുൾ ലിങ്ക്)
-        // p3 = www... (www എന്ന് തുടങ്ങുന്ന ലിങ്ക്)
-        
-        // 'www' എന്ന് തുടങ്ങുന്ന ലിങ്കാണെങ്കിൽ 'http://' മുന്നിൽ ചേർക്കുന്നു
         const href = p3 ? 'http://' + p3 : p1;
-        
-        // പുതിയ ടാബിൽ തുറക്കാൻ ലിങ്ക് ഉണ്ടാക്കുന്നു
         return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
 }
@@ -186,7 +176,7 @@ async function loadProductDetails() {
                         Buy on WhatsApp
                     </a>
                 </div>
-                <div id="add-to-cart-feedback"></div>
+                <div id="add-to-cart-feedback" style="display: none;"></div>
             </div>
         `;
 
@@ -280,8 +270,8 @@ function setupProductActionButtons() {
 }
 
 /**
- * ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (പുതിയ സ്ലൈഡർ രൂപത്തിൽ)
- * *** 'Buy' ബട്ടൺ മാറ്റി 'View' (ലിങ്ക്) ആക്കി ***
+ * ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു
+ * *** കാർഡ് ഡിസൈൻ കാറ്റഗറി പേജിന് തുല്യമാക്കി (വില ചേർത്തു) ***
  */
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
@@ -303,19 +293,32 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
             const product = doc.data();
             const productId = doc.id;
             const card = document.createElement('div');
-            card.className = 'swiper-slide category-product-card';
+            // *** പ്രധാന ക്ലാസ്സ് പേര് മാറ്റി ***
+            card.className = 'swiper-slide category-product-card'; 
             
             const price = product.price || 0;
             const mrp = product.mrp || 0;
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
+            // *** വിലയുടെ HTML (ഡിസ്കൗണ്ട് ശതമാനം ഇല്ലാതെ) ***
+            let priceHTML = `<span class="price-main">₹${price}</span>`;
+            if (mrp > price) {
+                priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
+            }
+
+            // *** കാർഡ് HTML കാറ്റഗറി പേജിന് തുല്യമാക്കി ***
             card.innerHTML = `
                 <a href="product.html?id=${productId}" class="cat-product-image-link">
                     <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
                 </a>
                 <div class="cat-product-content">
                     <h3 class="cat-product-title">${product.name}</h3>
-                    <div class="product-actions-grid related-buttons">
+                    
+                    <div class="price-container">
+                        ${priceHTML}
+                    </div>
+
+                    <div class="cat-product-buttons">
                         <button class="btn btn-secondary-new btn-add-to-cart"
                             data-id="${productId}"
                             data-name="${product.name}"
@@ -331,7 +334,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                             <span>Cart</span>
                         </button>
                         
-                        <!-- *** 'Buy' ബട്ടൺ മാറ്റി 'View' ലിങ്ക് ആക്കി *** -->
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">
                             <span>View</span>
                         </a>
@@ -363,7 +365,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
 // 'You May Also Like' സെക്ഷനിലെ ബട്ടണുകൾ
 relatedProductsGrid.addEventListener('click', (e) => {
     const cartButton = e.target.closest('.btn-add-to-cart');
-    // const buyButton = e.target.closest('.btn-buy-whatsapp-related'); // *** ഈ വരി നീക്കം ചെയ്തു ***
 
     if (cartButton) {
         e.preventDefault();
@@ -391,5 +392,4 @@ relatedProductsGrid.addEventListener('click', (e) => {
             cartButton.disabled = false;
         }, 2000);
     } 
-    // *** 'Buy' ബട്ടന്റെ ലോജിക് നീക്കം ചെയ്തു ***
 });
