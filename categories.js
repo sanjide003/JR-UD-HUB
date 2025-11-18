@@ -1,5 +1,6 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// *** 'Buy' ബട്ടൺ മാറ്റി 'View' (ലിങ്ക്) ആക്കി ***
+// *** മുകളിലെ തലക്കെട്ട് (h1) നീക്കം ചെയ്തു ***
+// *** കാറ്റഗറി ലിസ്റ്റ് പുതിയ ഗ്രിഡ് രൂപത്തിലാക്കി ***
 
 import {
     collection,
@@ -20,7 +21,7 @@ import { addToCart } from './cart.js';
 setLogLevel('Debug');
 
 // --- DOM Elements ---
-const pageTitle = document.getElementById("page-title");
+const pageTitle = document.getElementById("page-title"); // *** ഇത് ഇപ്പോൾ null ആയിരിക്കും, പക്ഷെ കുഴപ്പമില്ല ***
 const productGrid = document.getElementById("category-product-grid");
 const categoryNavDesktop = document.getElementById("category-nav-desktop");
 const categoryNavMobile = document.getElementById("category-nav-mobile");
@@ -32,12 +33,12 @@ let isLoading = false;
 let currentCategoryId = 'all'; 
 const productsPerPage = 12; 
 let currentQuery = null;
-// let whatsappNumber = ''; // 'Buy' ബട്ടൺ നീക്കം ചെയ്തതുകൊണ്ട് ഇതിന്റെ ആവശ്യമില്ല
+let whatsappNumber = ''; 
 
 // --- പേജ് ലോഡ് ആവുമ്പോൾ ---
 document.addEventListener("DOMContentLoaded", async () => {
-    await loadSiteSettings(); // ഹെഡർ, ഫൂട്ടർ ലോഡ് ചെയ്യാൻ
-    // await loadWhatsappNumber(); // 'Buy' ബട്ടൺ നീക്കം ചെയ്തതുകൊണ്ട് ഇതിന്റെ ആവശ്യമില്ല
+    await loadSiteSettings(); 
+    await loadWhatsappNumber();
     loadCategoryList(); 
     
     const urlParams = new URLSearchParams(window.location.search);
@@ -51,11 +52,24 @@ document.addEventListener("DOMContentLoaded", async () => {
 });
 
 /**
- * WhatsApp നമ്പർ ലോഡ് ചെയ്യുന്ന ഫംഗ്ഷൻ നീക്കം ചെയ്തു
+ * WhatsApp നമ്പർ ഫയർബേസിൽ നിന്ന് എടുക്കുന്നു
  */
+async function loadWhatsappNumber() {
+    try {
+        const docRef = doc(db, "settings", "global");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists() && docSnap.data().whatsapp) {
+            whatsappNumber = docSnap.data().whatsapp;
+        } else {
+            console.log("WhatsApp number not found in settings.");
+        }
+    } catch (error) {
+        console.error("Error fetching WhatsApp number: ", error);
+    }
+}
 
 /**
- * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു
+ * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു (പുതിയ ഗ്രിഡ് രൂപത്തിൽ)
  */
 async function loadCategoryList() {
     if (!categoryNavDesktop || !categoryNavMobile) return;
@@ -66,23 +80,30 @@ async function loadCategoryList() {
 
         let navHtml = '';
         
+        // "All Products" ബട്ടൺ പുതിയ സ്റ്റൈലിൽ
         navHtml += `
-            <a href="#" class="category-nav-link" data-id="all">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5.5c0 .28-.22.5-.5.5h-4.3c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm-15 0c0 .28-.22.5-.5.5H3.2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm10 9c0 .28-.22.5-.5.5h-4.3c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm-10 0c0 .28-.22.5-.5.5H3.2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm10-4.5c0 .28-.22.5-.5.5h-4.3c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm-10 0c0 .28-.22.5-.5.5H3.2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5z"/></svg>
-                <span>All Products</span>
+            <a href="#" class="category-grid-item" data-id="all">
+                <div class="category-grid-image-box">
+                    <svg class="category-grid-image" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5.5c0 .28-.22.5-.5.5h-4.3c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm-15 0c0 .28-.22.5-.5.5H3.2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm10 9c0 .28-.22.5-.5.5h-4.3c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm-10 0c0 .28-.22.5-.5.5H3.2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm10-4.5c0 .28-.22.5-.5.5h-4.3c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm-10 0c0 .28-.22.5-.5.5H3.2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5z"/></svg>
+                </div>
+                <span class="category-grid-name">All Products</span>
             </a>
         `;
         
+        // മറ്റ് കാറ്റഗറികൾ
         catSnapshot.forEach((doc) => {
             const category = doc.data();
             navHtml += `
-                <a href="#" class="category-nav-link" data-id="${doc.id}">
-                    <img src="${category.imageUrl || 'https://placehold.co/40x40/333/D4AF37?text=C'}" alt="${category.name}" class="category-nav-icon">
-                    <span>${category.name}</span>
+                <a href="#" class="category-grid-item" data-id="${doc.id}">
+                    <div class="category-grid-image-box">
+                        <img src="${category.imageUrl || 'https://placehold.co/80x80/333/D4AF37?text=C'}" alt="${category.name}" class="category-grid-image">
+                    </div>
+                    <span class="category-grid-name">${category.name}</span>
                 </a>
             `;
         });
 
+        // *** ഒരേ HTML മൊബൈലിലും ഡെസ്ക്ടോപ്പിലും കാണിക്കുന്നു ***
         categoryNavDesktop.innerHTML = navHtml;
         categoryNavMobile.innerHTML = navHtml;
 
@@ -94,6 +115,7 @@ async function loadCategoryList() {
     } catch (error) {
         console.error("Error loading categories: ", error);
         categoryNavDesktop.innerHTML = '<p class="loading-placeholder">Error loading categories.</p>';
+        categoryNavMobile.innerHTML = '<p class="loading-placeholder">Error loading categories.</p>';
     }
 }
 
@@ -102,7 +124,7 @@ async function loadCategoryList() {
  */
 function addNavClickListeners(navElement) {
     navElement.addEventListener('click', (e) => {
-        const link = e.target.closest('.category-nav-link');
+        const link = e.target.closest('.category-grid-item');
         if (!link) return;
         
         e.preventDefault();
@@ -124,9 +146,10 @@ function addNavClickListeners(navElement) {
 
 /**
  * 3. പുതിയ കാറ്റഗറി തിരഞ്ഞെടുക്കുമ്പോൾ ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യാൻ തുടങ്ങുന്നു
+ * *** തലക്കെട്ട് (h1) അപ്ഡേറ്റ് ചെയ്യുന്നത് നീക്കം ചെയ്തു ***
  */
 async function startLoadingProducts(categoryId) {
-    if (!productGrid || !pageTitle) return;
+    if (!productGrid) return;
 
     isLoading = false;
     productGrid.innerHTML = ''; 
@@ -144,14 +167,14 @@ async function startLoadingProducts(categoryId) {
     const productsRef = collection(db, "products");
 
     if (categoryId === 'all') {
-        pageTitle.textContent = "All Products";
+        // pageTitle.textContent = "All Products"; // *** ഈ വരി നീക്കം ചെയ്തു ***
         currentQuery = query(productsRef, orderBy("name"));
     } else {
         try {
-            const catDoc = await getDoc(doc(db, "categories", categoryId));
-            if (catDoc.exists()) {
-                pageTitle.textContent = catDoc.data().name;
-            }
+            // const catDoc = await getDoc(doc(db, "categories", categoryId));
+            // if (catDoc.exists()) {
+                // pageTitle.textContent = catDoc.data().name; // *** ഈ വരി നീക്കം ചെയ്തു ***
+            // }
             currentQuery = query(productsRef, 
                 where("categoryId", "==", categoryId)
             );
@@ -164,7 +187,6 @@ async function startLoadingProducts(categoryId) {
 
 /**
  * 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (ഇൻഫിനിറ്റ് സ്ക്രോൾ)
- * *** 'Buy' ബട്ടൺ മാറ്റി 'View' (ലിങ്ക്) ആക്കി ***
  */
 async function loadProducts() {
     if (isLoading || !currentQuery) return;
@@ -203,7 +225,6 @@ async function loadProducts() {
             const mrp = product.mrp || 0;
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
-            // വിലയുടെ HTML ഉണ്ടാക്കുന്നു
             let priceHTML = `<span class="price-main">₹${price}</span>`;
             if (mrp > price) {
                 const discount = Math.round(((mrp - price) / mrp) * 100);
@@ -238,7 +259,6 @@ async function loadProducts() {
                             <span>Cart</span>
                         </button>
                         
-                        <!-- *** 'Buy' ബട്ടൺ മാറ്റി 'View' ലിങ്ക് ആക്കി *** -->
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">
                             <span>View</span>
                         </a>
@@ -261,7 +281,7 @@ async function loadProducts() {
  * 5. ആക്ടീവ് കാറ്റഗറി ലിങ്ക് ഹൈലൈറ്റ് ചെയ്യുന്നു
  */
 function updateActiveCategoryUI(categoryId) {
-    const allLinks = document.querySelectorAll('.category-nav-link');
+    const allLinks = document.querySelectorAll('.category-grid-item'); 
     allLinks.forEach(link => {
         link.classList.remove('active');
         if (link.dataset.id === categoryId) {
@@ -272,12 +292,10 @@ function updateActiveCategoryUI(categoryId) {
 
 /**
  * 6. "Add to Cart" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
- * *** 'Buy' ബട്ടന്റെ ലോജിക് നീക്കം ചെയ്തു ***
  */
 productGrid.addEventListener('click', (e) => {
     const cartButton = e.target.closest('.btn-add-to-cart');
 
-    // "Add to Cart" ബട്ടൺ
     if (cartButton) {
         e.preventDefault();
         const id = cartButton.dataset.id;
@@ -306,8 +324,6 @@ productGrid.addEventListener('click', (e) => {
             cartButton.disabled = false;
         }, 2000);
     }
-    
-    // *** 'Buy on WhatsApp' ബട്ടന്റെ ലോജിക് നീക്കം ചെയ്തു ***
 });
 
 /**
