@@ -1,5 +1,5 @@
 /* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും.
-   *** എല്ലാ പേജുകൾക്കും മാത്രമുള്ള സ്റ്റൈലുകൾ നീക്കം ചെയ്തു ***
+   *** ഫ്ലോട്ടിംഗ് ബട്ടണിൽ നിന്ന് കാർട്ട് നീക്കം ചെയ്തു ***
 */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
@@ -576,14 +576,11 @@ img {
 #floating-action-buttons {
     position: fixed;
     bottom: 15px;
-    left: 0;
-    right: 0;
-    width: 100%;
-    padding: 0 15px; 
+    right: 15px; /* *** മാറ്റി: വലതുവശത്തേക്ക് മാത്രമാക്കി *** */
     z-index: 900;
     display: flex;
     flex-direction: row; 
-    justify-content: space-between; 
+    justify-content: flex-end; /* *** മാറ്റി: ഒന്നിനെ വലതുവശത്തേക്ക് നീക്കാൻ *** */
     pointer-events: none; 
 }
 .float-btn {
@@ -611,14 +608,10 @@ img {
 .float-btn.whatsapp svg {
     fill: #FFFFFF; 
 }
-.float-btn.cart {
-    /* കാർട്ട് ബട്ടൺ സ്റ്റൈൽ */
-}
-.float-btn.cart svg {
-    stroke: var(--primary-gold); 
-    fill: none;
-    stroke-width: 2;
-}
+
+/* *** കാർട്ട് ബട്ടണിന്റെ സ്റ്റൈൽ നീക്കം ചെയ്തു *** */
+/* .float-btn.cart ... (നീക്കം ചെയ്തു) */
+
 .float-btn svg {
     width: 32px; 
     height: 32px; 
@@ -656,7 +649,7 @@ img {
     
     #floating-action-buttons {
         bottom: 15px;
-        padding: 0 15px;
+        right: 15px; /* *** മാറ്റി *** */
     }
     .float-btn {
         width: 50px; 
