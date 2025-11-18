@@ -1,8 +1,6 @@
- // ഇതാണ് 'common.js' ഫയൽ.
+// ഇതാണ് 'common.js' ഫയൽ.
 // *** ഫ്ലോട്ടിംഗ് WhatsApp ഐക്കൺ SVG അപ്ഡേറ്റ് ചെയ്തു ***
-// *** സൈഡ് മെനുവിൽ "Explore" ടാബ് ചേർത്തു ***
-// *** ഫൂട്ടർ ലിങ്കുകൾ നിങ്ങളുടെ നിർദ്ദേശപ്രകാരം പൂർണ്ണമായും മാറ്റി ***
-// *** ഹോട്ട്ഫിക്സ്: ഫൂട്ടർ അക്കോർഡിയൻ ക്രാഷ് ആവാതിരിക്കാൻ ഒരു ചെക്ക് ചേർത്തു ***
+// *** പുതിയത്: സൈഡ് മെനുവിൽ "Explore" ടാബ് ചേർത്തു ***
 
 import { db, auth } from './firebase-config.js';
 import { 
@@ -113,7 +111,7 @@ async function buildHeader() {
 /**
  * 2. വശത്തുള്ള മെനു (Side Nav) നിർമ്മിക്കുന്നു
  * *** സോഷ്യൽ മീഡിയ ലിങ്കുകൾ അപ്ഡേറ്റ് ചെയ്തു ***
- * *** "Explore" ടാബ് ചേർത്തു ***
+ * *** പുതിയത്: "Explore" ടാബ് ചേർത്തു ***
  */
 async function buildSideNav() {
     const settings = await fetchSiteSettings();
@@ -174,6 +172,7 @@ async function buildSideNav() {
         <ul class="side-nav-links">
             <li><a href="index.html">Home</a></li>
             
+            <!-- *** പുതിയത്: Explore ടാബ് *** -->
             <li><a href="explore.html">Explore</a></li>
             
             <li class="catalog-item">
@@ -198,7 +197,7 @@ async function buildSideNav() {
 
 /**
  * 3. പുതിയ അക്കോർഡിയൻ ഫൂട്ടർ നിർമ്മിക്കുന്നു
- * *** ഫൂട്ടർ ലിങ്കുകൾ നിങ്ങളുടെ നിർദ്ദേശപ്രകാരം മാറ്റി ***
+ * *** സോഷ്യൽ ലിങ്കുകളും 'Powered by' വരിയും അപ്ഡേറ്റ് ചെയ്തു ***
  */
 async function buildFooter() {
     const settings = await fetchSiteSettings();
@@ -218,7 +217,7 @@ async function buildFooter() {
     if (settings.instagramUrl) {
         socialLinksHTML += `
             <a href="${settings.instagramUrl || '#'}" target="_blank" aria-label="Instagram">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.225 1.664 4.771 4.919-4.919C8.416 2.175 8.796 2.163 12 2.163m0-2.163C8.741 0 8.333.014 7.053.072 2.748.27 0 3.018 0 7.053c-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.202 4.305 2.949 7.053 7.053 7.053 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c4.305-.202 7.053-2.949 7.053-7.053.058-1.28.072 1.688.072-4.947s-.014-3.667-.072-4.947C21.725 2.748 19.227 0 15.028.072 13.748.014 13.34 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.225 1.664 4.771 4.919-4.919C8.333 2.175 8.741 2.163 12 2.163m0-2.163C8.741 0 8.333.014 7.053.072 2.748.27 0 3.018 0 7.053c-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.202 4.305 2.949 7.053 7.053 7.053 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c4.305-.202 7.053-2.949 7.053-7.053.058-1.28.072 1.688.072-4.947s-.014-3.667-.072-4.947C21.725 2.748 19.227 0 15.028.072 13.748.014 13.34 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
             </a>`;
     }
     if (settings.facebookUrl) {
@@ -236,17 +235,29 @@ async function buildFooter() {
 
     footerElement.innerHTML = `
         <div class="footer-container-new">
-            <!-- *** മാറ്റം 1: "ABOUT OUDARABIA" -> "ABOUT" *** -->
-            <!-- *** "Our Story" നീക്കം ചെയ്തു, പോളിസികൾ ചേർത്തു *** -->
+            <!-- ഐറ്റം 1: About -->
             <div class="footer-accordion-item">
                 <button class="footer-accordion-toggle" data-target="footer-content-1">
-                    <span>ABOUT</span>
+                    <span>ABOUT OUDARABIA</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 11.293l-4.646-4.647a.5.5 0 0 1 .708-.708L8 9.879l4.939-4.939a.5.5 0 0 1 .708.708L8 11.293z"></path></svg>
                 </button>
                 <div class="footer-accordion-content" id="footer-content-1">
                     <ul>
+                        <li><a href="#">Our Story</a></li>
                         <li><a href="contact.html">Contact Us</a></li>
                         <li><a href="#">Store Locator</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- ഐറ്റം 2: Customer Care -->
+            <div class="footer-accordion-item">
+                <button class="footer-accordion-toggle" data-target="footer-content-2">
+                    <span>CUSTOMER CARE</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 11.293l-4.646-4.647a.5.5 0 0 1 .708-.708L8 9.879l4.939-4.939a.5.5 0 0 1 .708.708L8 11.293z"></path></svg>
+                </button>
+                <div class="footer-accordion-content" id="footer-content-2">
+                    <ul>
                         <li><a href="#">Shipping Policy</a></li>
                         <li><a href="#">Privacy Policy</a></li>
                         <li><a href="#">Terms of Service</a></li>
@@ -254,9 +265,7 @@ async function buildFooter() {
                 </div>
             </div>
             
-            <!-- *** മാറ്റം 2: "CUSTOMER CARE" സെക്ഷൻ നീക്കം ചെയ്തു *** -->
-            
-            <!-- *** മാറ്റം 3: "QUICK LINKS" അപ്ഡേറ്റ് ചെയ്തു *** -->
+            <!-- ഐറ്റം 3: Quick Links -->
             <div class="footer-accordion-item">
                 <button class="footer-accordion-toggle" data-target="footer-content-3">
                     <span>QUICK LINKS</span>
@@ -265,10 +274,8 @@ async function buildFooter() {
                 <div class="footer-accordion-content" id="footer-content-3">
                     <ul>
                         <li><a href="index.html">Home</a></li>
-                        <li><a href="explore.html">Explore</a></li>
-                        <li><a href="categories.html">Catalog</a></li>
+                        <li><a href="categories.html">Perfumes</a></li>
                         <li><a href="cart.html">Cart</a></li>
-                        <li><a href="contact.html">Contact</a></li>
                     </ul>
                 </div>
             </div>
@@ -291,7 +298,6 @@ async function buildFooter() {
 
 /**
  * ഫൂട്ടർ അക്കോർഡിയൻ പ്രവർത്തിപ്പിക്കുന്നു
- * *** ഹോട്ട്ഫിക്സ്: 'content' null ആണോ എന്ന് പരിശോധിക്കുന്നു ***
  */
 function setupFooterAccordion() {
     const toggles = document.querySelectorAll('.footer-accordion-toggle');
@@ -300,12 +306,6 @@ function setupFooterAccordion() {
             const targetId = toggle.dataset.target;
             const content = document.getElementById(targetId);
             
-            // *** ഹോട്ട്ഫിക്സ് ഇവിടെ ചേർത്തു ***
-            if (!content) {
-                console.error(`Footer content with ID '${targetId}' not found.`);
-                return; // എറർ ഒഴിവാക്കാൻ ഇവിടെ നിർത്തുന്നു
-            }
-
             if (content.style.maxHeight) {
                 content.style.maxHeight = null;
                 toggle.classList.remove('active');
@@ -384,7 +384,6 @@ function setupNavEvents() {
     const catalogToggle = document.getElementById('catalog-toggle-btn');
     const categoryList = document.getElementById('nav-category-list');
     
-    // *** ഹോട്ട്ഫിക്സ്: null ആണോ എന്ന് പരിശോധിക്കുന്നു ***
     if (catalogToggle && categoryList) {
         catalogToggle.addEventListener('click', () => {
             const isOpen = categoryList.classList.toggle('open');
@@ -455,9 +454,3 @@ export async function loadSiteSettings() {
     }
 }
 ```EOF
-
-ഞാൻ `common.js` ഫയൽ അപ്ഡേറ്റ് ചെയ്തിട്ടുണ്ട്.
-
-`setupFooterAccordion` എന്ന ഫംഗ്ഷനിൽ, നിങ്ങൾ നീക്കം ചെയ്ത ടാബുകൾ കാരണം എറർ വരാതിരിക്കാൻ ഞാൻ ഒരു `if (!content)` എന്ന ചെക്ക് ചേർത്തിട്ടുണ്ട്.
-
-ദയവായി ഈ ഫയൽ Vercel-ൽ അപ്‌ലോഡ് ചെയ്ത് നോക്കൂ. ഇപ്പോൾ പേജ് ശരിയായി ലോഡ് ആവേണ്ടതാണ്.
