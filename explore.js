@@ -231,7 +231,6 @@ feedContainer.addEventListener('click', async (e) => {
     }
 
     if (shareButton) {
-        // ... (ഷെയർ കോഡ് പഴയത് പോലെ തന്നെ) ...
         e.preventDefault();
         if (!navigator.share) {
             const originalIcon = shareButton.innerHTML;
