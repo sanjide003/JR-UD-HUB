@@ -1,5 +1,5 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** Smart Video Autoplay & Image Optimization നടപ്പിലാക്കി ***
+// *** Video Autoplay Fix & Image Restore ***
 
 import { db } from './firebase-config.js';
 import { 
@@ -13,7 +13,7 @@ import {
     orderBy,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { loadSiteSettings, optimizeImage } from './common.js'; // *** optimizeImage ഇറക്കുമതി ചെയ്തു ***
+import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
 setLogLevel('Debug');
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
- * ഹോം പേജ് ബാനർ (ഒപ്റ്റിമൈസ് ചെയ്തത്)
+ * ഹോം പേജ് ബാനർ
  */
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
@@ -39,7 +39,6 @@ async function loadHomeBanner() {
 
         if (docSnap.exists() && docSnap.data().homeBannerUrl) {
             const bannerUrl = docSnap.data().homeBannerUrl;
-            // *** ബാനർ ഇമേജ് 1200px വീതിയിൽ ഒപ്റ്റിമൈസ് ചെയ്യുന്നു ***
             const optimizedUrl = optimizeImage(bannerUrl, 1200, 85);
             bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Special Offer Banner" loading="lazy">`;
             bannerContainer.style.display = 'block';
@@ -54,7 +53,7 @@ async function loadHomeBanner() {
 
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ (സ്മാർട്ട് വീഡിയോ പ്ലേയർ സഹിതം)
+ * 1. ഹീറോ സ്ലൈഡർ (വീഡിയോ ഓട്ടോപ്ലേ ഫിക്സ്)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -73,12 +72,10 @@ async function loadHeroSlider() {
                 const slideEl = document.createElement('div');
                 slideEl.className = 'swiper-slide';
 
-                // വീഡിയോ ആണോ എന്ന് പരിശോധിക്കുന്നു
                 let isVideo = slide.type === 'video';
                 let videoId = '';
                 let embedUrl = '';
 
-                // YouTube ലിങ്കാണെങ്കിൽ
                 if (slide.url.includes('youtube.com/watch?v=')) {
                     videoId = new URL(slide.url).searchParams.get('v');
                     isVideo = true;
@@ -88,35 +85,29 @@ async function loadHeroSlider() {
                     isVideo = true;
                 }
 
-                // YouTube Embed URL നിർമ്മിക്കുന്നു (Autoplay ഒഴിവാക്കി)
                 if (videoId) {
-                    // enablejsapi=1 എന്നത് വീഡിയോയെ JS വഴി നിയന്ത്രിക്കാൻ സഹായിക്കും
                     embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1`;
                 }
 
                 if (slide.type === 'image') {
-                    // *** ഇമേജ് ഒപ്റ്റിമൈസേഷൻ (800px മതിയാകും, ക്വാളിറ്റി 85) ***
                     const optimizedHeroImg = optimizeImage(slide.url, 800, 85);
                     slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
                 }
                 else if (isVideo && embedUrl) {
-                    // YouTube iframe
                     slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="encrypted-media" allowfullscreen></iframe>`;
                 }
                 else if (isVideo) {
-                    // Direct Video (MP4)
-                    // *** Autoplay നീക്കം ചെയ്തു, പകരം 'playsinline' മാത്രം ***
-                    // preload="metadata" മാത്രം നൽകുന്നു (ഡാറ്റ ലാഭിക്കാൻ)
-                    slideEl.innerHTML = `<video class="hero-video-element" src="${slide.url}" muted loop playsinline preload="metadata"></video>`;
+                    // *** മാറ്റം: autoplay ആട്രിബ്യൂട്ട് തിരികെ കൊണ്ടുവന്നു ***
+                    // ബ്രൗസർ പോളിസി കാരണം ഓട്ടോപ്ലേ വർക്ക് ആവാൻ 'muted' നിർബന്ധമാണ്.
+                    slideEl.innerHTML = `<video class="hero-video-element" src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>`;
                 }
                 
                 sliderWrapper.appendChild(slideEl);
             });
         }
 
-        // Swiper സെറ്റപ്പ്
         const heroSwiper = new Swiper('.hero-slider-new', {
-            loop: false, // വീഡിയോ ഉള്ളതുകൊണ്ട് ലൂപ്പ് ഒഴിവാക്കുന്നത് നല്ലതാണ്
+            loop: false, 
             effect: 'fade',
             fadeEffect: { crossFade: true },
             allowTouchMove: true,
@@ -127,33 +118,27 @@ async function loadHeroSlider() {
             },
         });
 
-        // *** സ്മാർട്ട് വീഡിയോ പ്ലേയർ (Intersection Observer) ***
-        // സ്ക്രീനിൽ കാണുമ്പോൾ മാത്രം പ്ലേ ചെയ്യാനുള്ള സംവിധാനം
+        // സ്ക്രോൾ ചെയ്യുമ്പോൾ വീഡിയോ പോസ് ചെയ്യാനുള്ള കോഡ്
         setupSmartVideoAutoplay();
 
     } catch (error) { console.error("Error loading hero slider: ", error); }
 }
 
-/**
- * വീഡിയോ സ്ക്രീനിൽ വരുമ്പോൾ മാത്രം പ്ലേ ചെയ്യാനുള്ള ഫംഗ്ഷൻ
- */
 function setupSmartVideoAutoplay() {
     const videos = document.querySelectorAll('.hero-video-element');
     
     const observerOptions = {
         root: null,
         rootMargin: '0px',
-        threshold: 0.5 // 50% വീഡിയോ സ്ക്രീനിൽ വന്നാൽ മാത്രം പ്ലേ ചെയ്യുക
+        threshold: 0.5 
     };
 
     const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const video = entry.target;
             if (entry.isIntersecting) {
-                // സ്ക്രീനിൽ ഉണ്ട് -> പ്ലേ ചെയ്യുക
                 video.play().catch(e => console.log("Autoplay prevented:", e));
             } else {
-                // സ്ക്രീനിൽ ഇല്ല -> പോസ് ചെയ്യുക (ഡാറ്റ ലാഭം!)
                 video.pause();
             }
         });
@@ -166,7 +151,7 @@ function setupSmartVideoAutoplay() {
 
 
 /**
- * 2. "For You" (Top Sellers) ലോഡ് ചെയ്യുന്നു (Image Optimization സഹിതം)
+ * 2. "For You" (Top Sellers)
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
@@ -184,7 +169,6 @@ async function loadTopSellers() {
             const card = document.createElement('div');
             card.className = 'swiper-slide';
             
-            // *** ഇമേജ് ഒപ്റ്റിമൈസേഷൻ (400px മതി, ക്വാളിറ്റി 80) ***
             const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
             const imageUrl = optimizeImage(rawImage, 400, 80);
             
@@ -192,7 +176,6 @@ async function loadTopSellers() {
             const buttonText = isInCart ? "Remove" : "Cart";
             const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new"; 
             
-            // loading="lazy" ചേർത്തു
             card.innerHTML = `
                 <a href="product.html?id=${productId}">
                     <img src="${imageUrl}" 
@@ -228,7 +211,6 @@ async function loadTopSellers() {
             grid.appendChild(card);
         });
 
-        // ... (Swiper കോഡിൽ മാറ്റമില്ല) ...
         const autoplayDelay = 4000; 
         new Swiper('.top-sellers-swiper-new', {
             loop: true,
@@ -284,7 +266,7 @@ async function loadTopSellers() {
 
 
 /**
- * 3. ഹോം പേജിലെ കാറ്റഗറികൾ ലോഡ് ചെയ്യുന്നു (Image Optimization സഹിതം)
+ * 3. ഹോം പേജിലെ കാറ്റഗറികൾ
  */
 async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
@@ -293,8 +275,6 @@ async function loadHomeCategories() {
     const CATEGORIES_TO_SHOW = 3; 
 
     try {
-        // കാഷെയിൽ (LocalStorage) ഉണ്ടോ എന്ന് ആദ്യം നോക്കാം - common.js-ൽ എഴുതിയത് പോലെ ഇവിടെയും ചെയ്യാം
-        // ലളിതമാക്കാൻ ഇപ്പോൾ നേരിട്ട് വിളിക്കുന്നു, പക്ഷെ ഇമേജ് ഒപ്റ്റിമൈസ് ചെയ്യുന്നു
         const catQuery = query(collection(db, "categories"));
         const catSnapshot = await getDocs(catQuery); 
 
@@ -339,7 +319,6 @@ function renderCategories(grid, categories) {
         card.className = 'category-card-home-new';
         card.href = `categories.html?filter=${catId}`;
         
-        // *** ഇമേജ് ഒപ്റ്റിമൈസേഷൻ (400px മതി) ***
         const rawImage = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
         const imageUrl = optimizeImage(rawImage, 400, 80);
         
@@ -352,7 +331,6 @@ function renderCategories(grid, categories) {
     });
 }
 
-// ... (Add to Cart logic - പഴയതുപോലെ തന്നെ) ...
 const topSellersGrid = document.getElementById("top-sellers-grid");
 if (topSellersGrid) {
     topSellersGrid.addEventListener('click', (e) => {
