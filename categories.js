@@ -1,6 +1,6 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// *** മുകളിലെ തലക്കെട്ട് (h1) നീക്കം ചെയ്തു ***
-// *** കാറ്റഗറി ലിസ്റ്റ് പുതിയ ഗ്രിഡ് രൂപത്തിലാക്കി ***
+// *** വിലയിൽ നിന്ന് ഡിസ്കൗണ്ട് ശതമാനം നീക്കം ചെയ്തു ***
+// *** "All Products"-ന് പുതിയ ഐക്കൺ നൽകി ***
 
 import {
     collection,
@@ -21,7 +21,7 @@ import { addToCart } from './cart.js';
 setLogLevel('Debug');
 
 // --- DOM Elements ---
-const pageTitle = document.getElementById("page-title"); // *** ഇത് ഇപ്പോൾ null ആയിരിക്കും, പക്ഷെ കുഴപ്പമില്ല ***
+const pageTitle = document.getElementById("page-title"); 
 const productGrid = document.getElementById("category-product-grid");
 const categoryNavDesktop = document.getElementById("category-nav-desktop");
 const categoryNavMobile = document.getElementById("category-nav-mobile");
@@ -69,7 +69,7 @@ async function loadWhatsappNumber() {
 }
 
 /**
- * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു (പുതിയ ഗ്രിഡ് രൂപത്തിൽ)
+ * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു (*** "All Products"-ന് പുതിയ ഐക്കൺ ***)
  */
 async function loadCategoryList() {
     if (!categoryNavDesktop || !categoryNavMobile) return;
@@ -80,11 +80,13 @@ async function loadCategoryList() {
 
         let navHtml = '';
         
-        // "All Products" ബട്ടൺ പുതിയ സ്റ്റൈലിൽ
+        // *** "All Products" ബട്ടണ് പുതിയ ഗ്രിഡ് ഐക്കൺ നൽകി ***
         navHtml += `
             <a href="#" class="category-grid-item" data-id="all">
                 <div class="category-grid-image-box">
-                    <svg class="category-grid-image" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M19 5.5c0 .28-.22.5-.5.5h-4.3c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm-15 0c0 .28-.22.5-.5.5H3.2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm10 9c0 .28-.22.5-.5.5h-4.3c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm-10 0c0 .28-.22.5-.5.5H3.2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm10-4.5c0 .28-.22.5-.5.5h-4.3c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5zm-10 0c0 .28-.22.5-.5.5H3.2c-.28 0-.5-.22-.5-.5s.22-.5.5-.5h4.3c.28 0 .5.22.5.5z"/></svg>
+                    <svg class="category-grid-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zM13 3h8v8h-8V3zm0 10h8v8h-8v-8z"/>
+                    </svg>
                 </div>
                 <span class="category-grid-name">All Products</span>
             </a>
@@ -103,7 +105,6 @@ async function loadCategoryList() {
             `;
         });
 
-        // *** ഒരേ HTML മൊബൈലിലും ഡെസ്ക്ടോപ്പിലും കാണിക്കുന്നു ***
         categoryNavDesktop.innerHTML = navHtml;
         categoryNavMobile.innerHTML = navHtml;
 
@@ -146,7 +147,6 @@ function addNavClickListeners(navElement) {
 
 /**
  * 3. പുതിയ കാറ്റഗറി തിരഞ്ഞെടുക്കുമ്പോൾ ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യാൻ തുടങ്ങുന്നു
- * *** തലക്കെട്ട് (h1) അപ്ഡേറ്റ് ചെയ്യുന്നത് നീക്കം ചെയ്തു ***
  */
 async function startLoadingProducts(categoryId) {
     if (!productGrid) return;
@@ -167,14 +167,9 @@ async function startLoadingProducts(categoryId) {
     const productsRef = collection(db, "products");
 
     if (categoryId === 'all') {
-        // pageTitle.textContent = "All Products"; // *** ഈ വരി നീക്കം ചെയ്തു ***
         currentQuery = query(productsRef, orderBy("name"));
     } else {
         try {
-            // const catDoc = await getDoc(doc(db, "categories", categoryId));
-            // if (catDoc.exists()) {
-                // pageTitle.textContent = catDoc.data().name; // *** ഈ വരി നീക്കം ചെയ്തു ***
-            // }
             currentQuery = query(productsRef, 
                 where("categoryId", "==", categoryId)
             );
@@ -187,6 +182,7 @@ async function startLoadingProducts(categoryId) {
 
 /**
  * 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (ഇൻഫിനിറ്റ് സ്ക്രോൾ)
+ * *** വിലയിൽ നിന്ന് ഡിസ്കൗണ്ട് ശതമാനം നീക്കം ചെയ്തു ***
  */
 async function loadProducts() {
     if (isLoading || !currentQuery) return;
@@ -225,11 +221,12 @@ async function loadProducts() {
             const mrp = product.mrp || 0;
             const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
 
+            // *** വിലയുടെ HTML (ഡിസ്കൗണ്ട് ശതമാനം ഇല്ലാതെ) ***
             let priceHTML = `<span class="price-main">₹${price}</span>`;
             if (mrp > price) {
-                const discount = Math.round(((mrp - price) / mrp) * 100);
+                // const discount = Math.round(((mrp - price) / mrp) * 100); // ഈ വരി നീക്കം ചെയ്തു
                 priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
-                priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
+                // priceHTML += `<span class="price-discount">${discount}% OFF</span>`; // ഈ വരി നീക്കം ചെയ്തു
             }
 
             card.innerHTML = `
