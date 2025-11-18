@@ -1,7 +1,7 @@
 <!-- 
   ഇതാണ് കാറ്റഗറി പേജ്. 
-  *** പുതിയ പേജ് ലോഡർ ചേർത്തു ***
-  *** പുതിയത്: categories.css എന്ന പുതിയ സ്റ്റൈൽഷീറ്റ് ചേർത്തു ***
+  *** മുകളിലെ തലക്കെട്ട് (h1) നീക്കം ചെയ്തു ***
+  *** കാറ്റഗറി ലിസ്റ്റ് മുകളിൽ ഗ്രിഡ് ആയി മാറ്റി ***
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -10,14 +10,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Products - Al Ambar Perfumes</title>
     <link rel="stylesheet" href="public.css">
-    <link rel="stylesheet" href="categories.css"> <!-- *** പുതിയ ഫയൽ ഇവിടെ ചേർത്തു *** -->
+    <link rel="stylesheet" href="categories.css"> 
 </head>
 <body>
 
     <!-- 0. പേജ് ലോഡർ -->
     <div id="preloader">
         <div class="loader-logo-container">
-            <!-- ലോഗോയും സ്പിന്നറും common.js & public.css വഴി വരും -->
             <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
             <div class="loader-ring"></div>
         </div>
@@ -32,39 +31,34 @@
 
     <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main class="container page-container">
-        <!-- പേജിന്റെ തലക്കെട്ട് (categories.js ഉപയോഗിക്കും) -->
-        <div class="page-header-bar">
-            <h1 id="page-title">All Products</h1>
-        </div>
+        
+        <!-- *** പേജിന്റെ തലക്കെട്ട് (h1) നീക്കം ചെയ്തു *** -->
+        <!-- <div class="page-header-bar"> ... </div> -->
 
         <!-- കാറ്റഗറി പേജ് ലേഔട്ട് -->
         <div class="category-page-layout">
             
             <!-- 
-              3.1 കാറ്റഗറി ലിസ്റ്റ്
+              3.1 കാറ്റഗറി ഗ്രിഡ്
+              *** പഴയ 'nav' മാറ്റി പുതിയ 'div' ആക്കി. JS ഇത് പൂരിപ്പിക്കും ***
             -->
-            
-            <!-- മൊബൈലിന് മുകളിലുള്ള ബാർ (public.css ഇത് ഡെസ്ക്ടോപ്പിൽ മറയ്ക്കും) -->
-            <nav class="category-nav-mobile" id="category-nav-mobile">
+            <div class="category-grid-mobile" id="category-nav-mobile">
                 <!-- 'categories.js' വഴി കാറ്റഗറികൾ ഇവിടെ വരും -->
                 <span class="loading-placeholder">Loading categories...</span>
-            </nav>
+            </div>
             
-            <!-- ഡെസ്ക്ടോപ്പിന് ഇടതുവശത്തുള്ള സൈഡ്ബാർ (public.css ഇത് മൊബൈലിൽ മറയ്ക്കും) -->
-            <nav class="category-nav-desktop" id="category-nav-desktop">
+            <div class="category-grid-desktop" id="category-nav-desktop">
                 <!-- 'categories.js' വഴി കാറ്റഗറികൾ ഇവിടെ വരും -->
                 <span class="loading-placeholder">Loading categories...</span>
-            </nav>
+            </div>
 
             <!-- 3.2 ഉൽപ്പന്നങ്ങൾ കാണിക്കുന്ന ഗ്രിഡ് -->
             <div class="category-page-content">
-                <!-- 'categories.js' ഈ ID ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ നിറയ്ക്കും -->
                 <div class="category-product-grid" id="category-product-grid">
                     <!-- 'categories.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
                     <div class="loading-placeholder-full">Loading products...</div>
                 </div>
                 
-                <!-- ഇൻഫിനിറ്റ് സ്ക്രോൾ ലോഡർ -->
                 <div class="loader-container" id="infinite-scroll-loader" style="display: none;">
                     <div class="loader-small"></div>
                 </div>
