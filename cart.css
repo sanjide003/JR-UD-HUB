@@ -1,0 +1,202 @@
+/* ഇത് കാർട്ട് പേജിന് (cart.html) മാത്രമുള്ള CSS ഫയലാണ്.
+*/
+
+/* --- 1. കാർട്ട് പേജ് ലേഔട്ട് --- */
+.cart-page-layout-new {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* --- 2. ഉൽപ്പന്നങ്ങളുടെ ലിസ്റ്റ് (ഇടതുവശം) --- */
+.cart-items-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+.cart-item-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.cart-item-main {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+}
+.cart-item-link {
+    text-decoration: none;
+    color: var(--text-color);
+    display: block; 
+}
+.cart-item-link:hover {
+    color: var(--primary-gold);
+}
+.cart-item-image {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    flex-shrink: 0;
+}
+.cart-item-info {
+    flex-grow: 1;
+}
+.cart-item-info h3 {
+    font-size: 1.1rem;
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: var(--text-color); 
+}
+.cart-item-info .cart-item-price {
+    font-size: 1rem;
+    color: var(--primary-gold);
+    margin-bottom: 0.25rem;
+}
+.cart-item-info .cart-item-size {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+
+/* എണ്ണം നിയന്ത്രിക്കാൻ (Quantity Control) */
+.quantity-control {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    max-width: 120px;
+}
+.quantity-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0.25rem 0.75rem;
+}
+.quantity-input {
+    width: 40px;
+    text-align: center;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    border-left: 1px solid var(--border-color);
+    border-right: 1px solid var(--border-color);
+    padding: 0.5rem 0;
+    -moz-appearance: textfield;
+}
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* കാർഡിലെ ബട്ടണുകൾ (Remove, Buy) */
+.cart-item-actions {
+    display: flex;
+    border-top: 1px solid var(--border-color);
+}
+.cart-item-actions button {
+    flex: 1;
+    background: none;
+    border: none;
+    padding: 0.85rem 1rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+}
+.cart-item-actions button:hover {
+    color: var(--text-color);
+    background-color: #222;
+}
+.cart-item-actions .remove-btn {
+    border-right: 1px solid var(--border-color);
+    color: var(--error-red);
+}
+.cart-item-actions .buy-now-btn {
+    color: var(--primary-gold);
+}
+
+/* --- 3. വിലവിവരപ്പട്ടിക (വലതുവശം) --- */
+.cart-summary-container {
+    position: sticky;
+    top: calc(var(--header-height) + 1.5rem);
+}
+.cart-summary-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+.summary-row {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1rem;
+    font-size: 1.1rem;
+}
+.summary-row.discount span:last-child {
+    color: var(--success-green);
+}
+.summary-row.total {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-color);
+    border-top: 1px solid var(--border-color);
+    padding-top: 1rem;
+}
+.summary-savings {
+    font-weight: 700;
+    color: var(--success-green);
+    text-align: center;
+    margin-top: 1.5rem;
+    font-size: 1.1rem;
+    display: none; /* JS വഴി കാണിക്കും */
+}
+
+/* 'Place Order' ബട്ടൺ */
+.btn-checkout-full {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+}
+
+/* --- 4. മറ്റ് സ്റ്റൈലുകൾ --- */
+.empty-cart-message {
+    text-align: center;
+    padding: 3rem 1rem;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+.cart-error {
+    color: var(--error-red);
+    background-color: rgba(231, 76, 60, 0.1);
+    border: 1px solid var(--error-red);
+    padding: 0.75rem;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 0.95rem;
+    margin-top: 1rem;
+    display: none; /* JS വഴി കാണിക്കും */
+}
+
+/* --- 5. റെസ്പോൺസീവ് (Responsive) --- */
+@media (max-width: 768px) {
+    .cart-summary-container {
+        position: relative; 
+        top: 0;
+    }
+}
+
+@media (min-width: 769px) {
+    .cart-page-layout-new {
+        display: grid; /* ഗ്രിഡ് ആക്കുന്നു */
+        grid-template-columns: 2fr 1fr;
+        align-items: flex-start;
+    }
+}
