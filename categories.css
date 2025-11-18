@@ -1,348 +1,233 @@
-// ഇതാണ് 'categories.js' ഫയൽ.
-// *** "Add to Cart" ബട്ടൺ ടോഗിൾ ആക്കി മാറ്റി ***
+/* ഇത് കാറ്റഗറി പേജിന് (categories.html) മാത്രമുള്ള CSS ഫയലാണ്.
+   *** കാറ്റഗറി ഗ്രിഡ് 2 വരിയാക്കി, സ്വൈപ്പ് ചെയ്യാവുന്നതാക്കി ***
+*/
 
-import {
-    collection,
-    getDocs,
-    doc,
-    getDoc,
-    query,
-    where,
-    limit,
-    startAfter,
-    orderBy,
-    setLogLevel
-} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { db } from './firebase-config.js';
-import { loadSiteSettings } from './common.js';
-// *** isItemInCart, removeFromCart എന്നിവ import ചെയ്തു ***
-import { addToCart, isItemInCart, removeFromCart } from './cart.js';
+/* --- 1. കാറ്റഗറി പേജ് ലേഔട്ട് --- */
+.category-page-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
 
-setLogLevel('Debug');
+/* 1.1 കാറ്റഗറി ഗ്രിഡ് (മൊബൈൽ & ഡെസ്ക്ടോപ്പ്) (*** 2 വരിയാക്കി, സ്വൈപ്പ് ചെയ്യാവുന്നതാക്കി ***) */
+.category-grid-mobile,
+.category-grid-desktop {
+    display: grid;
+    grid-template-rows: repeat(2, auto); /* 2 വരികൾ */
+    grid-auto-flow: column; /* നിരകൾ നിറയ്ക്കുക, ശേഷം തിരശ്ചീനമായി നീങ്ങുക */
+    overflow-x: auto; /* തിരശ്ചീനമായി സ്ക്രോൾ ചെയ്യാം */
+    overflow-y: hidden; /* ലംബമായ സ്ക്രോൾ വേണ്ട */
+    gap: 0.5rem; /* ചെറിയ ഗ്യാപ്പ് */
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
 
-// --- DOM Elements ---
-const pageTitle = document.getElementById("page-title"); 
-const productGrid = document.getElementById("category-product-grid");
-const categoryNavDesktop = document.getElementById("category-nav-desktop");
-const categoryNavMobile = document.getElementById("category-nav-mobile");
-const loader = document.getElementById("infinite-scroll-loader");
+/* സ്ക്രോൾബാർ മറയ്ക്കുന്നു */
+.category-grid-mobile::-webkit-scrollbar,
+.category-grid-desktop::-webkit-scrollbar {
+    display: none;
+}
+.category-grid-mobile,
+.category-grid-desktop {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
 
-// --- State ---
-let lastVisible = null; 
-let isLoading = false; 
-let currentCategoryId = 'all'; 
-const productsPerPage = 12; 
-let currentQuery = null;
-let whatsappNumber = ''; 
 
-// --- പേജ് ലോഡ് ആവുമ്പോൾ ---
-document.addEventListener("DOMContentLoaded", async () => {
-    await loadSiteSettings(); 
-    await loadWhatsappNumber();
-    loadCategoryList(); 
+/* 1.3 കാറ്റഗറി ഗ്രിഡ് ഐറ്റം സ്റ്റൈലുകൾ */
+.category-grid-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    width: 80px; /* ഐറ്റങ്ങൾക്ക് ഒരു നിശ്ചിത വീതി നൽകുന്നു */
+    padding: 0.25rem;
+}
+.category-grid-image-box {
+    width: 70px;
+    height: 70px;
+    border-radius: 16px; 
+    background-color: rgba(233, 213, 255, 0.1); 
+    border: 1px solid rgba(233, 213, 255, 0.2);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: border-color 0.3s ease;
+}
+.category-grid-image {
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    color: var(--primary-gold); 
+}
+.category-grid-name {
+    font-size: 0.8rem;
+    text-align: center;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+}
+
+/* 1.4 ആക്ടീവ്/ഹോവർ സ്റ്റൈലുകൾ */
+.category-grid-item:hover .category-grid-name,
+.category-grid-item.active .category-grid-name {
+    color: var(--primary-gold);
+}
+.category-grid-item:hover .category-grid-image-box,
+.category-grid-item.active .category-grid-image-box {
+    border-color: var(--primary-gold);
+}
+
+
+/* --- 2. പ്രൊഡക്റ്റ് ഗ്രിഡ് --- */
+.category-page-content {
+    flex-grow: 1;
+}
+.category-product-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+}
+.loader-container {
+    display: none;
+    justify-content: center;
+    padding: 2rem;
+}
+
+/* 2.1 പ്രൊഡക്റ്റ് കാർഡ് (കാറ്റഗറി പേജ്) */
+.category-product-card {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+.category-product-card:hover {
+    border-color: var(--secondary-gold);
+    transform: translateY(-5px);
+}
+.cat-product-image-link {
+    display: block;
+    width: 100%;
+    height: 120px;
+    overflow: hidden;
+}
+.cat-product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    background-color: #333;
+    transition: transform 0.4s ease;
+}
+.category-product-card:hover .cat-product-image {
+    transform: scale(1.1);
+}
+.cat-product-content {
+    padding: 0.75rem;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+.cat-product-title {
+    font-size: 0.85rem;
+    color: var(--text-color); 
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    min-height: 30px;
+}
+.cat-product-content .price-container {
+    margin-bottom: 0.5rem;
+}
+.cat-product-content .price-main {
+    font-size: 1rem;
+}
+.cat-product-content .price-mrp {
+    font-size: 0.8rem;
+}
+
+
+.cat-product-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr; 
+    gap: 0.25rem;
+    margin-top: auto;
+}
+.cat-product-buttons .btn-primary-new,
+.cat-product-buttons .btn-secondary-new {
+    font-size: 0.7rem;
+    padding: 0.5rem 0.25rem;
+    gap: 0.25rem;
+}
+.cat-product-buttons .btn-secondary-new svg.icon-btn {
+    width: 14px;
+    height: 14px;
+}
+
+
+/* --- 3. റെസ്പോൺസീവ് (Responsive) --- */
+@media (max-width: 768px) {
+    .category-grid-desktop {
+        display: none; 
+    }
+}
+
+@media (min-width: 769px) {
+    .category-grid-mobile {
+        display: none; 
+    }
+    .category-grid-desktop {
+        display: grid; /* ഡെസ്ക്ടോപ്പിലും സ്വൈപ്പ് ചെയ്യാവുന്ന ഗ്രിഡ് */
+        grid-template-rows: repeat(2, auto);
+        grid-auto-flow: column;
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 1rem; /* ഡെസ്ക്ടോപ്പിൽ ഗ്യാപ്പ് കൂട്ടി */
+    }
+    .category-grid-desktop .category-grid-item {
+        width: 90px; /* ഡെസ്ക്ടോപ്പിൽ ഐറ്റം വീതി കൂട്ടി */
+    }
     
-    const urlParams = new URLSearchParams(window.location.search);
-    const categoryIdFromUrl = urlParams.get('filter');
-    
-    if (categoryIdFromUrl) {
-        currentCategoryId = categoryIdFromUrl;
+    .category-page-layout {
+        flex-direction: column;
     }
-    
-    startLoadingProducts(currentCategoryId); 
-});
-
-/**
- * WhatsApp നമ്പർ ഫയർബേസിൽ നിന്ന് എടുക്കുന്നു
- */
-async function loadWhatsappNumber() {
-    try {
-        const docRef = doc(db, "settings", "global");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().whatsapp) {
-            whatsappNumber = docSnap.data().whatsapp;
-        } else {
-            console.log("WhatsApp number not found in settings.");
-        }
-    } catch (error) {
-        console.error("Error fetching WhatsApp number: ", error);
+    .category-product-grid {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1rem;
     }
-}
-
-/**
- * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു
- */
-async function loadCategoryList() {
-    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
-    if (!categoryNavDesktop || !categoryNavMobile) return;
-
-    try {
-        const q = query(collection(db, "categories"), orderBy("name"));
-        const catSnapshot = await getDocs(q);
-
-        let navHtml = '';
-        
-        navHtml += `
-            <a href="#" class="category-grid-item" data-id="all">
-                <div class="category-grid-image-box">
-                    <svg class="category-grid-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zM13 3h8v8h-8V3zm0 10h8v8h-8v-8z"/>
-                    </svg>
-                </div>
-                <span class="category-grid-name">All Products</span>
-            </a>
-        `;
-        
-        catSnapshot.forEach((doc) => {
-            const category = doc.data();
-            navHtml += `
-                <a href="#" class="category-grid-item" data-id="${doc.id}">
-                    <div class="category-grid-image-box">
-                        <img src="${category.imageUrl || 'https://placehold.co/80x80/333/D4AF37?text=C'}" alt="${category.name}" class="category-grid-image">
-                    </div>
-                    <span class="category-grid-name">${category.name}</span>
-                </a>
-            `;
-        });
-
-        categoryNavDesktop.innerHTML = navHtml;
-        categoryNavMobile.innerHTML = navHtml;
-
-        addNavClickListeners(categoryNavDesktop);
-        addNavClickListeners(categoryNavMobile);
-        
-        updateActiveCategoryUI(currentCategoryId);
-
-    } catch (error) {
-        console.error("Error loading categories: ", error);
-        categoryNavDesktop.innerHTML = '<p class="loading-placeholder">Error loading categories.</p>';
-        categoryNavMobile.innerHTML = '<p class="loading-placeholder">Error loading categories.</p>';
+    /* കാർഡ് സ്റ്റൈലുകൾ ഡെസ്ക്ടോപ്പിനായി തിരികെ കൊണ്ടുവരുന്നു */
+    .cat-product-image-link {
+        height: 180px;
     }
-}
-
-/**
- * 2. കാറ്റഗറി ലിങ്കുകൾക്ക് ക്ലിക്ക് ഇവന്റുകൾ ചേർക്കുന്നു
- */
-function addNavClickListeners(navElement) {
-    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
-    navElement.addEventListener('click', (e) => {
-        const link = e.target.closest('.category-grid-item');
-        if (!link) return;
-        
-        e.preventDefault();
-        const categoryId = link.dataset.id;
-        
-        if (categoryId === currentCategoryId) return; 
-
-        currentCategoryId = categoryId;
-        startLoadingProducts(categoryId);
-        
-        const sideNav = document.getElementById('side-nav');
-        const navOverlay = document.getElementById('nav-overlay');
-        if (sideNav && sideNav.classList.contains('open')) {
-            sideNav.classList.remove('open');
-            navOverlay.classList.remove('open');
-        }
-    });
-}
-
-/**
- * 3. പുതിയ കാറ്റഗറി തിരഞ്ഞെടുക്കുമ്പോൾ ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യാൻ തുടങ്ങുന്നു
- */
-async function startLoadingProducts(categoryId) {
-    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
-    if (!productGrid) return;
-
-    isLoading = false;
-    productGrid.innerHTML = ''; 
-    lastVisible = null; 
-    window.scrollTo(0, 0); 
-    
-    const url = new URL(window.location);
-    if (categoryId === 'all') {
-        url.searchParams.delete('filter');
-    } else {
-        url.searchParams.set('filter', categoryId);
+    .cat-product-content {
+        padding: 1rem;
     }
-    window.history.pushState({}, '', url);
-
-    const productsRef = collection(db, "products");
-
-    if (categoryId === 'all') {
-        currentQuery = query(productsRef, orderBy("name"));
-    } else {
-        try {
-            currentQuery = query(productsRef, 
-                where("categoryId", "==", categoryId)
-            );
-        } catch (e) { console.error("Error fetching category name", e); }
+    .cat-product-title {
+        font-size: 1rem;
+        min-height: 40px;
     }
-    
-    updateActiveCategoryUI(categoryId);
-    await loadProducts();
-}
-
-/**
- * 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (ഇൻഫിനിറ്റ് സ്ക്രോൾ)
- * *** ബട്ടൺ ടോഗിൾ ലോജിക് ചേർത്തു ***
- */
-async function loadProducts() {
-    if (isLoading || !currentQuery) return;
-    isLoading = true;
-    if (loader) loader.style.display = 'flex';
-
-    try {
-        let q;
-        
-        if (lastVisible) {
-            q = query(currentQuery, startAfter(lastVisible), limit(productsPerPage));
-        } else {
-            q = query(currentQuery, limit(productsPerPage));
-        }
-
-        const documentSnapshots = await getDocs(q);
-
-        if (documentSnapshots.empty) {
-            if (productGrid.innerHTML === '') {
-                productGrid.innerHTML = '<p class="loading-placeholder-full">No products found in this category.</p>';
-            }
-            if (loader) loader.style.display = 'none';
-            lastVisible = null; 
-            return; 
-        }
-
-        lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
-
-        documentSnapshots.forEach((doc) => {
-            const product = doc.data();
-            const productId = doc.id;
-            const card = document.createElement('div');
-            card.className = 'category-product-card';
-
-            const price = product.price || 0;
-            const mrp = product.mrp || 0;
-            const imageUrl = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
-
-            let priceHTML = `<span class="price-main">₹${price}</span>`;
-            if (mrp > price) {
-                priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
-            }
-
-            // *** കാർട്ടിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു ***
-            const isInCart = isItemInCart(productId);
-            const buttonText = isInCart ? "Remove" : "Cart";
-            const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new";
-
-            card.innerHTML = `
-                <a href="product.html?id=${productId}" class="cat-product-image-link">
-                    <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
-                </a>
-                <div class="cat-product-content">
-                    <h3 class="cat-product-title">${product.name}</h3>
-                    
-                    <div class="price-container">
-                        ${priceHTML}
-                    </div>
-
-                    <div class="cat-product-buttons">
-                        <!-- *** ബട്ടൺ HTML അപ്ഡേറ്റ് ചെയ്തു *** -->
-                        <button class="btn ${buttonClass} btn-add-to-cart"
-                            data-id="${productId}"
-                            data-name="${product.name}"
-                            data-price="${price}"
-                            data-mrp="${mrp}"
-                            data-image="${imageUrl}"
-                            data-size="${product.size || ''}">
-                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                                <line x1="3" y1="6" x2="21" y2="6"></line>
-                                <path d="M16 10a4 4 0 0 1-8 0"></path>
-                            </svg>
-                            <span>${buttonText}</span>
-                        </button>
-                        
-                        <a href="product.html?id=${productId}" class="btn btn-primary-new">
-                            <span>View</span>
-                        </a>
-                    </div>
-                </div>
-            `;
-            productGrid.appendChild(card);
-        });
-
-    } catch (error) {
-        console.error("Error loading products: ", error);
-        productGrid.innerHTML = '<p class="loading-placeholder-full">Error loading products.</p>';
-    } finally {
-        isLoading = false;
-        if (loader) loader.style.display = 'none';
+    .cat-product-content .price-main {
+        font-size: 1.3rem;
     }
-}
-
-/**
- * 5. ആക്ടീവ് കാറ്റഗറി ലിങ്ക് ഹൈലൈറ്റ് ചെയ്യുന്നു
- */
-function updateActiveCategoryUI(categoryId) {
-    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
-    const allLinks = document.querySelectorAll('.category-grid-item'); 
-    allLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.dataset.id === categoryId) {
-            link.classList.add('active');
-        }
-    });
-}
-
-/**
- * 6. "Add to Cart" ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ
- * *** ടോഗിൾ ലോജിക് ആക്കി മാറ്റി ***
- */
-productGrid.addEventListener('click', (e) => {
-    const cartButton = e.target.closest('.btn-add-to-cart');
-
-    if (cartButton) {
-        e.preventDefault();
-        
-        const id = cartButton.dataset.id;
-        const buttonText = cartButton.querySelector('span');
-
-        if (cartButton.classList.contains('added-to-cart')) {
-            // കാർട്ടിൽ ഉണ്ട്, അതിനാൽ നീക്കം ചെയ്യുന്നു
-            removeFromCart(id);
-            cartButton.classList.remove('added-to-cart');
-            cartButton.classList.remove('btn-primary-new');
-            cartButton.classList.add('btn-secondary-new');
-            if (buttonText) buttonText.textContent = 'Cart';
-        } else {
-            // കാർട്ടിൽ ഇല്ല, അതിനാൽ ചേർക്കുന്നു
-            const product = {
-                id: id, 
-                name: cartButton.dataset.name,
-                price: parseFloat(cartButton.dataset.price),
-                mrp: parseFloat(cartButton.dataset.mrp),
-                image: cartButton.dataset.image,
-                size: cartButton.dataset.size 
-            };
-            addToCart(id, product);
-            cartButton.classList.add('added-to-cart');
-            cartButton.classList.add('btn-primary-new');
-            cartButton.classList.remove('btn-secondary-new');
-            if (buttonText) buttonText.textContent = 'Remove';
-        }
+    .cat-product-content .price-mrp {
+        font-size: 1rem;
     }
-});
-
-/**
- * 7. ഇൻഫിനിറ്റ് സ്ക്രോൾ നിരീക്ഷകൻ (Observer)
- */
-const observer = new IntersectionObserver((entries) => {
-    // ... (ഈ ഫംഗ്ഷനിൽ മാറ്റമില്ല) ...
-    if (entries[0].isIntersecting && !isLoading && lastVisible) { 
-        loadProducts();
+    .cat-product-buttons {
+        gap: 0.5rem;
     }
-}, {
-    rootMargin: '200px'
-});
-
-if (loader) {
-    observer.observe(loader);
+    .cat-product-buttons .btn-primary-new,
+    .cat-product-buttons .btn-secondary-new {
+        font-size: 0.9rem;
+        padding: 0.75rem 1rem;
+        gap: 0.5rem;
+    }
+    .cat-product-buttons .btn-secondary-new svg.icon-btn {
+        width: 16px;
+        height: 16px;
+    }
 }
