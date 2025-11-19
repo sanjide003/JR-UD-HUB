@@ -1,5 +1,5 @@
 // ഇതാണ് പുതിയ 'explore.js' ഫയൽ.
-// *** Image Optimization & Lazy Loading നടപ്പിലാക്കി ***
+
 
 import {
     collection,
