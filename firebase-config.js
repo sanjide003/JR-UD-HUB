@@ -6,8 +6,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebas
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// --- Vercel/GitHub-ൽ ഹോസ്റ്റ് ചെയ്യുമ്പോൾ ഈ കോൺഫിഗറേഷൻ ഉപയോഗിക്കും ---
-// (Canvas-ന് വേണ്ടിയുള്ള കോഡ് നീക്കം ചെയ്തു)
+// --- Vercel/GitHub-ൽ ഹോസ്റ്റ് ചെയ്യുമ്പോൾ ഈ കോൺഫിഗറേഷൻ ഉപയോഗിക്കും
 const firebaseConfig = {
     apiKey: "AIzaSyCePcVE_BTiFuYXAApNmbMKHdkhQ9Ay_F4",
     authDomain: "al-ambar-perfume-company.firebaseapp.com",
