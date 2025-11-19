@@ -1,6 +1,4 @@
 // ഇതാണ് 'admin.js' ഫയൽ.
-// *** "More Links" എന്ന പുതിയ ഫീച്ചർ ചേർത്തു ***
-// *** പുതിയത്: ഹോം പേജ് ബാനർ ഇമേജ് സെറ്റിംഗ് ചേർത്തു ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
