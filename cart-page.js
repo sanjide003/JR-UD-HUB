@@ -1,5 +1,4 @@
 // ഇതാണ് 'cart-page.js' ഫയൽ.
-// *** Image Optimization നടപ്പിലാക്കി ***
 
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
