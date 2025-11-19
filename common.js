@@ -1,5 +1,4 @@
 // ഇതാണ് 'common.js' ഫയൽ.
-// *** Image Optimization പിശക് പരിഹരിച്ചു ***
 
 import { db, auth } from './firebase-config.js';
 import { 
