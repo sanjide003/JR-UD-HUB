@@ -1,5 +1,4 @@
 // ഇതാണ് 'index.js' ഫയൽ.
-// *** Video Autoplay & Resume Fixed (Force Start on Load) ***
 
 import { db } from './firebase-config.js';
 import { 
