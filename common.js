@@ -72,7 +72,7 @@ async function refreshSettingsBackground() {
     return siteSettings || {};
 }
 
-// *** അപ്‌ഡേറ്റ് ചെയ്ത ഹെഡർ (സൈഡ് മെനു ബട്ടൺ ഇല്ല, ഡെസ്ക്ടോപ്പ് ലിങ്കുകൾ ഉണ്ട്) ***
+// *** അപ്‌ഡേറ്റ് ചെയ്ത ഹെഡർ (ഹാംബർഗർ മെനു നീക്കം ചെയ്തു) ***
 async function buildHeader() {
     const settings = await fetchSiteSettings();
     const headerElement = document.getElementById('main-header');
@@ -84,16 +84,18 @@ async function buildHeader() {
     const logoSubtitle = settings.logoSubtitle ? `<span class="header-logo-subtitle">${settings.logoSubtitle}</span>` : '';
 
     headerElement.innerHTML = `
-        <!-- ഇടതുവശം: ലോഗോ -->
-        <a href="index.html" class="header-logo">
-            ${logoImg}
-            <div class="header-logo-content">
-                ${logoText}
-                ${logoSubtitle}
-            </div>
-        </a>
+        <!-- ഇടതുവശം: ലോഗോ (Grid Column 1) -->
+        <div class="header-left-section">
+            <a href="index.html" class="header-logo">
+                ${logoImg}
+                <div class="header-logo-content">
+                    ${logoText}
+                    ${logoSubtitle}
+                </div>
+            </a>
+        </div>
 
-        <!-- നടുക്ക്: ഡെസ്ക്ടോപ്പ് നാവിഗേഷൻ (മൊബൈലിൽ മറഞ്ഞിരിക്കും) -->
+        <!-- നടുക്ക്: ഡെസ്ക്ടോപ്പ് നാവിഗേഷൻ (Grid Column 2 - മൊബൈലിൽ കാണില്ല) -->
         <nav class="header-nav-desktop">
             <ul>
                 <li><a href="index.html">Home</a></li>
@@ -103,8 +105,8 @@ async function buildHeader() {
             </ul>
         </nav>
 
-        <!-- വലതുവശം: കാർട്ട് -->
-        <div class="header-right">
+        <!-- വലതുവശം: കാർട്ട് (Grid Column 3) -->
+        <div class="header-right-section">
             <a href="cart.html" class="header-icon-btn cart-icon-wrapper" aria-label="Shopping Cart">
                 <svg class="icon-cart" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -215,7 +217,7 @@ async function buildFloatingButtons() {
     container.innerHTML = html;
 }
 
-// *** ബോട്ടം നാവിഗേഷൻ ബാർ (അഡ്മിൻ ലിങ്ക് ഇല്ലാത്തത്) ***
+// *** ബോട്ടം നാവിഗേഷൻ ബാർ (അഡ്മിൻ ലിങ്ക് ഇല്ല) ***
 function buildBottomNav() {
     if (window.innerWidth > 768) return;
 
@@ -244,7 +246,7 @@ function buildBottomNav() {
         </button>
     </nav>
 
-    <!-- User Menu Overlay (Admin Link REMOVED) -->
+    <!-- User Menu Overlay (No Admin Link) -->
     <div class="user-menu-overlay" id="user-menu-overlay">
         <div class="user-menu-content">
             <div class="user-menu-header">
@@ -328,7 +330,7 @@ export async function loadSiteSettings() {
         }
 
         try { await buildHeader(); } catch (e) { console.error("Error building header:", e); }
-        // buildSideNav() പൂർണ്ണമായും ഒഴിവാക്കി
+        // buildSideNav() നീക്കം ചെയ്തു
         try { await buildFooter(); } catch (e) { console.error("Error building footer:", e); }
         try { await buildFloatingButtons(); } catch (e) { console.error("Error building floating buttons:", e); }
         try { buildBottomNav(); } catch (e) { console.error("Error building bottom nav:", e); }
