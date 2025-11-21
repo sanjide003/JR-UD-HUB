@@ -1,0 +1,109 @@
+<!-- 
+  ഇതാണ് About Us & Policies പേജ്. about.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About & Policies - JR-UD-HUB</title>
+    <!-- പൊതുവായ ഡിസൈൻ ഫയൽ -->
+    <link rel="stylesheet" href="public.css">
+    <link rel="stylesheet" href="about.css"> <!-- *** പുതിയ ഡിസൈൻ ഫയൽ *** -->
+</head>
+<body>
+
+    <!-- 0. പേജ് ലോഡർ -->
+    <div id="preloader">
+        <div class="loader-logo-container">
+            <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
+            <div class="loader-ring"></div>
+        </div>
+    </div>
+
+    <!-- 1. ഹെഡർ -->
+    <header class="main-header" id="main-header"></header>
+    
+    <!-- 2. സൈഡ് മെനു (ഇല്ല, കോമൺ ഫയലിൽ ലോജിക് ഉണ്ട്) -->
+    <nav class="side-nav" id="side-nav"></nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+
+    <!-- 3. പ്രധാന ഉള്ളടക്കം -->
+    <main class="container page-container">
+        <div class="page-header-bar">
+            <h1>About Us & Policies</h1>
+        </div>
+
+        <div class="about-page-layout">
+            
+            <!-- 3.1 Store Locator -->
+            <section id="store-locator" class="policy-section">
+                <h2 class="policy-title">Store Locator</h2>
+                <div class="store-card">
+                    <div class="store-info">
+                        <h3>Al Ambar Perfumes (Main Branch)</h3>
+                        <p>123, Perfume Street, Market Road,<br>Kochi, Kerala, India - 682001</p>
+                        <p><strong>Phone:</strong> +91 98765 43210</p>
+                        <p><strong>Hours:</strong> 10:00 AM - 9:00 PM</p>
+                        <a href="https://maps.google.com" target="_blank" class="btn btn-secondary-new btn-sm">Get Directions</a>
+                    </div>
+                    <div class="store-map-placeholder">
+                        <!-- ഗൂഗിൾ മാപ്പ് ഐഫ്രെയിം ഇവിടെ നൽകാം -->
+                        <span>Map View Placeholder</span>
+                    </div>
+                </div>
+            </section>
+
+            <hr class="policy-divider">
+
+            <!-- 3.2 Shipping Policy -->
+            <section id="shipping-policy" class="policy-section">
+                <h2 class="policy-title">Shipping Policy</h2>
+                <div class="policy-content">
+                    <p>We are committed to delivering your order accurately, in good condition, and always on time.</p>
+                    <ul>
+                        <li>We ship to all major cities in India.</li>
+                        <li>Orders are typically processed within 1-2 business days.</li>
+                        <li>Delivery time varies between 3-7 business days depending on your location.</li>
+                        <li>Free shipping on orders above ₹999.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <hr class="policy-divider">
+
+            <!-- 3.3 Privacy Policy -->
+            <section id="privacy-policy" class="policy-section">
+                <h2 class="policy-title">Privacy Policy</h2>
+                <div class="policy-content">
+                    <p>Your privacy is important to us. This privacy statement provides information about the personal information that we collect, and the ways in which we use that personal information.</p>
+                    <p>We do not sell, trade, or otherwise transfer to outside parties your personally identifiable information.</p>
+                </div>
+            </section>
+
+            <hr class="policy-divider">
+
+            <!-- 3.4 Terms of Service -->
+            <section id="terms-of-service" class="policy-section">
+                <h2 class="policy-title">Terms of Service</h2>
+                <div class="policy-content">
+                    <p>By accessing this website, you agree to be bound by these Terms and Conditions of Use, all applicable laws and regulations, and agree that you are responsible for compliance with any applicable local laws.</p>
+                    <p>All products are subject to availability. We reserve the right to discontinue any product at any time.</p>
+                </div>
+            </section>
+
+        </div>
+    </main>
+
+    <!-- 4. ഫൂട്ടർ -->
+    <footer class="main-footer-new" id="main-footer"></footer>
+
+    <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ -->
+    <div id="floating-action-buttons"></div>
+
+    <!-- JS ഫയലുകൾ -->
+    <script type="module" src="firebase-config.js"></script>
+    <script type="module" src="cart.js"></script>
+    <script type="module" src="common.js"></script>
+</body>
+</html>
