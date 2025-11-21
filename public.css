@@ -1,6 +1,451 @@
-/* ... (മുകളിലുള്ള പഴയ കോഡുകൾ നിലനിർത്തുക: Root variables, Preloader, General Styles, Header, Side Nav, Footer) ... */
+/* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും. */
 
-/* --- 6. മൊബൈൽ ബോട്ടം നാവിഗേഷൻ (Mobile Bottom Nav) --- */
+
+/* --- 1. പ്രധാന വേരിയബിളുകൾ (Global Variables) & ഫോണ്ടുകൾ --- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+    --bg-color: #000000;
+    --primary-gold: #D4AF37;
+    --secondary-gold: #B8860B;
+    --text-color: #FFFFFF;
+    --text-muted: #aaa;
+    --card-bg: #111111;
+    --border-color: #333;
+    --error-red: #e74c3c;
+    --success-green: #2ecc71;
+    
+    --font-main: 'Inter', sans-serif;
+    --font-heading: 'Inter', sans-serif; 
+    
+    --header-height: 70px;
+    --bottom-nav-height: 65px; /* പുതിയ വേരിയബിൾ */
+}
+
+/* --- 0. പുതിയ പേജ് ലോഡർ --- */
+#preloader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--bg-color); 
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 0.5s ease-out;
+    opacity: 1;
+}
+.loader-logo-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+#preloader-logo {
+    width: 70px;
+    height: 70px;
+    object-fit: contain;
+    border-radius: 50%;
+}
+.loader-ring {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    border: 4px solid var(--border-color);
+    border-top-color: var(--primary-gold); 
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* --- 2. പൊതുവായ സ്റ്റൈലുകൾ (General Styles) --- */
+body {
+    font-family: var(--font-main);
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    margin: 0;
+    padding: 0;
+    padding-top: var(--header-height);
+    /* മൊബൈലിൽ താഴെ ബാർ വരുമ്പോൾ ഫൂട്ടർ മറയാതിരിക്കാൻ */
+    padding-bottom: 0; 
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6, .section-title-new, .product-title, .page-header-bar h1, .cart-summary-card h2, .header-logo-text {
+    font-family: var(--font-heading);
+    font-weight: 600; 
+    color: var(--primary-gold); 
+}
+.section-title-new {
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-align: center; 
+    margin-bottom: 2rem; 
+}
+.page-header-bar h1, .product-title {
+    font-weight: 700;
+}
+.header-logo-text {
+     font-weight: 700;
+}
+
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+}
+
+a {
+    color: var(--primary-gold);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--secondary-gold);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* --- 3. ഹെഡർ (Main Header) - സെന്റർ ലേഔട്ട് --- */
+.main-header {
+    background-color: var(--bg-color);
+    padding: 0 1.5rem;
+    height: var(--header-height);
+    display: grid; 
+    grid-template-columns: 1fr auto 1fr; 
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1000;
+}
+.header-logo {
+    display: flex;
+    align-items: center;
+    text-decoration: none;
+    gap: 10px;
+}
+.header-logo-img {
+    height: 40px;
+    width: auto;
+}
+.header-logo-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.header-logo-subtitle {
+    font-family: var(--font-main);
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+    margin-left: 2px;
+}
+
+.header-grid-left {
+    justify-self: start; 
+}
+.header-grid-center {
+    justify-self: center; 
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.header-grid-center .header-logo-content {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.header-grid-right {
+    justify-self: end; 
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.header-icon-btn {
+    background: none;
+    border: none;
+    color: var(--text-color) !important; 
+    cursor: pointer;
+    position: relative;
+    padding: 5px;
+}
+.header-icon-btn svg {
+    stroke: var(--text-color) !important; 
+    fill: none;
+}
+.header-icon-btn svg.icon-cart {
+    width: 24px;
+    height: 24px;
+    stroke-width: 2;
+}
+
+.header-icon-btn .hamburger-icon {
+    font-size: 28px; 
+    color: var(--text-color);
+    line-height: 1;
+}
+
+.cart-icon-wrapper {
+    position: relative;
+    color: var(--text-color); 
+}
+.cart-icon-wrapper svg {
+    stroke: var(--text-color) !important;
+}
+.cart-item-count {
+    position: absolute;
+    top: -5px;
+    right: -10px;
+    background-color: var(--primary-gold);
+    color: var(--bg-color);
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* --- 4. വശത്തുള്ള മെനു (Side Nav) --- */
+/* ഡെസ്ക്ടോപ്പിൽ മാത്രം കാണിച്ചാൽ മതിയാകും, മൊബൈലിൽ താഴെ ബാർ വരും */
+.side-nav {
+    position: fixed;
+    top: 0;
+    left: -100vw; 
+    width: auto; 
+    min-width: 250px; 
+    max-width: 80vw; 
+    height: 100%;
+    background-color: var(--bg-color);
+    border-right: 1px solid var(--border-color); 
+    z-index: 1002;
+    transition: left 0.4s ease; 
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+}
+.side-nav.open { left: 0; } 
+.nav-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1001;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.4s ease;
+}
+.nav-overlay.open { opacity: 1; visibility: visible; }
+.side-nav-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.side-nav-close-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    cursor: pointer;
+}
+.side-nav-close-btn svg { width: 28px; height: 28px; stroke: var(--text-color) !important; }
+.side-nav-links {
+    list-style: none;
+    margin-top: 1.5rem;
+    flex-grow: 1;
+    white-space: nowrap; 
+}
+.side-nav-links li { 
+    border-bottom: 1px solid var(--border-color); 
+}
+.side-nav-links a {
+    display: block;
+    padding: 1rem 0;
+    color: var(--text-color);
+    text-decoration: none;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+.side-nav-links a:hover { color: var(--primary-gold); }
+
+.catalog-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 1rem 0;
+    color: var(--text-color);
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: var(--font-main);
+}
+.catalog-toggle:hover {
+    color: var(--primary-gold);
+}
+.dropdown-icon {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    transition: transform 0.3s ease;
+    margin-left: 1rem;
+}
+.catalog-toggle.open .dropdown-icon {
+    transform: rotate(180deg);
+}
+.category-dropdown-list {
+    list-style: none;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    padding-left: 1rem; 
+    border-top: 1px solid var(--border-color);
+}
+.nav-category-link {
+    font-size: 1rem !important;
+    font-weight: 400 !important;
+    color: var(--text-muted) !important;
+    padding: 0.75rem 0 !important;
+    border-bottom: 1px solid #222;
+}
+.category-dropdown-list li:last-child .nav-category-link {
+    border-bottom: none;
+}
+.nav-category-link:hover {
+    color: var(--primary-gold) !important;
+}
+
+.side-nav-social {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+.side-nav-social a { color: var(--text-muted); }
+.side-nav-social a svg { width: 24px; height: 24px; }
+
+
+/* --- 5. ഫൂട്ടർ (Main Footer) --- */
+.main-footer-new {
+    background-color: var(--bg-color);
+    color: var(--text-muted);
+    padding: 3rem 1.5rem;
+    margin-top: 3rem;
+    border-top: 1px solid var(--border-color);
+}
+.footer-container-new {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.footer-accordion-item {
+    border-bottom: 1px solid var(--border-color);
+}
+.footer-accordion-toggle {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    padding: 1.5rem 0;
+    font-family: var(--font-main);
+    font-size: 1rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+}
+.footer-accordion-toggle svg {
+    transition: transform 0.3s ease;
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+}
+.footer-accordion-toggle.active svg {
+    transform: rotate(180deg);
+}
+.footer-accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+}
+.footer-accordion-content ul {
+    list-style: none;
+    padding: 0 0 1.5rem 0;
+}
+.footer-accordion-content li {
+    margin-bottom: 0.75rem;
+}
+.footer-accordion-content a {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+}
+.footer-social-new {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    padding: 2rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+.footer-social-new a {
+    color: var(--text-color);
+}
+.footer-social-new a svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+}
+.footer-bottom-new {
+    text-align: center;
+    font-size: 0.9rem;
+    padding-top: 1.5rem;
+}
+.footer-powered-by {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    opacity: 0.7;
+    margin-top: 0.5rem;
+}
+
+/* --- 6. മൊബൈൽ ബോട്ടം നാവിഗേഷൻ (Mobile Bottom Nav) & യൂസർ മെനു --- */
 .bottom-nav {
     display: none; /* ഡെസ്ക്ടോപ്പിൽ മറയ്ക്കുന്നു */
 }
@@ -52,12 +497,19 @@
 .user-menu-header h3 {
     margin: 0;
     color: var(--primary-gold);
+    font-weight: 600;
+    font-size: 1.2rem;
 }
 .user-menu-close-btn {
     background: none;
     border: none;
     color: var(--text-muted);
     cursor: pointer;
+}
+.user-menu-close-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
 }
 
 .user-menu-list {
@@ -66,7 +518,7 @@
     margin: 0;
 }
 .user-menu-list li {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
 }
 .user-menu-link {
     display: flex;
@@ -78,14 +530,15 @@
     border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.03);
     transition: background-color 0.3s ease;
+    font-weight: 500;
 }
 .user-menu-link:hover {
     background-color: rgba(212, 175, 55, 0.1);
     color: var(--primary-gold);
 }
 .user-menu-link svg {
-    width: 20px;
-    height: 20px;
+    width: 22px;
+    height: 22px;
     stroke: currentColor;
     fill: none;
     stroke-width: 2;
@@ -106,7 +559,7 @@
         left: 0;
         width: 100%;
         height: var(--bottom-nav-height);
-        background-color: rgba(10, 10, 10, 0.95);
+        background-color: rgba(10, 10, 10, 0.98);
         border-top: 1px solid var(--border-color);
         backdrop-filter: blur(10px);
         z-index: 1001;
@@ -129,6 +582,7 @@
         background: none;
         border: none;
         cursor: pointer;
+        padding: 0;
     }
 
     .bottom-nav-item svg {
@@ -151,10 +605,223 @@
         transform: translateY(-2px);
     }
     
+    /* എക്സ്പ്ലോർ ഐക്കൺ (Binoculars) അല്പം വലുതാക്കാം */
     .bottom-nav-item svg.icon-binoculars {
         width: 26px;
         height: 26px;
     }
+
+    /* സൈഡ് മെനു ബട്ടൺ ഹെഡറിൽ നിന്ന് നീക്കം ചെയ്യാം (വേണമെങ്കിൽ) */
+    /* .header-grid-left { display: none; } */
 }
 
-/* ... (ബാക്കി കോഡുകൾ: Floating Icons, Media Queries etc.) ... */
+/* --- 7. പൊതുവായ പേജ് സ്റ്റൈലുകൾ --- */
+.page-container { margin-top: 1rem; }
+.page-header-bar {
+    text-align: center;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.loader-container {
+    display: none;
+    justify-content: center;
+    padding: 2rem;
+}
+.related-buttons {
+    grid-template-columns: 1fr 1fr;
+}
+
+.price-container {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+    min-height: 24px;
+}
+.price-main {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--primary-gold);
+}
+.price-mrp {
+    font-size: 1rem;
+    color: var(--text-muted);
+}
+.product-mrp-red del {
+    color: var(--error-red);
+}
+.price-discount {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--success-green);
+    background-color: rgba(46, 204, 113, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+.btn-primary-new,
+.btn-primary-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: var(--primary-gold);
+    border: 2px solid var(--primary-gold);
+    color: var(--bg-color);
+    transition: all 0.3s ease;
+}
+.btn-primary-new:hover,
+.btn-primary-icon:hover {
+    background-color: var(--secondary-gold);
+    border-color: var(--secondary-gold);
+}
+.btn-secondary-new,
+.btn-secondary-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    font-weight: 700;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+    background-color: transparent;
+    border: 2px solid var(--primary-gold);
+    color: var(--primary-gold);
+    transition: all 0.3s ease;
+}
+.btn-secondary-new:hover,
+.btn-secondary-icon:hover {
+    background-color: var(--primary-gold);
+    color: var(--bg-color);
+}
+.btn-primary-new {
+    gap: 0;
+}
+.btn-primary-icon svg.icon-btn,
+.btn-secondary-icon svg.icon-btn,
+.btn-primary-new svg.icon-btn,
+.btn-secondary-new svg.icon-btn {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
+    stroke: currentColor; 
+    stroke-width: 2;
+}
+
+.btn-secondary-new svg.icon-btn,
+.btn-secondary-icon svg.icon-btn {
+    stroke: var(--text-color); 
+    fill: none;
+    transition: stroke 0.3s ease;
+}
+.btn-secondary-new:hover svg.icon-btn,
+.btn-secondary-icon:hover svg.icon-btn {
+    stroke: var(--bg-color); 
+}
+
+/* --- 13. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ --- */
+#floating-action-buttons {
+    position: fixed;
+    bottom: 80px; /* *** മാറ്റി: ബോട്ടം ബാറിന് മുകളിൽ വരാൻ *** */
+    right: 15px; 
+    z-index: 900;
+    display: flex;
+    flex-direction: row; 
+    justify-content: flex-end; 
+    pointer-events: none; 
+}
+.float-btn {
+    width: 56px; 
+    height: 56px; 
+    border-radius: 50%;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    pointer-events: auto; 
+}
+.float-btn:hover {
+    transform: scale(1.1);
+    border-color: var(--primary-gold);
+}
+.float-btn.whatsapp {
+    background-color: #25D366; 
+    border: 1px solid #25D366; 
+}
+.float-btn.whatsapp svg {
+    fill: #FFFFFF; 
+}
+
+.float-btn svg {
+    width: 32px; 
+    height: 32px; 
+}
+
+/* --- 14. മൊബൈൽ റെസ്പോൺസീവ് --- */
+@media (max-width: 768px) {
+    .container {
+        padding: 2rem 1rem;
+    }
+    .main-header {
+        padding: 0 1rem;
+        grid-template-columns: 50px auto 50px; 
+    }
+    .header-logo-text {
+        display: block; 
+        font-size: 1.2rem; 
+    }
+    .header-logo-subtitle {
+        font-size: 0.7rem;
+    }
+    .header-grid-right {
+        gap: 1rem;
+    }
+    .section-title-new {
+        font-size: 1.2rem;
+    }
+    
+    .btn-primary-new, .btn-secondary-new,
+    .btn-primary-icon, .btn-secondary-icon {
+        font-size: 0.75rem;
+        padding: 0.6rem 0.5rem;
+    }
+    
+    #floating-action-buttons {
+        bottom: 80px; /* ബോട്ടം ബാറിന് മുകളിൽ */
+        right: 15px; 
+    }
+    .float-btn {
+        width: 50px; 
+        height: 50px; 
+    }
+    .float-btn svg {
+        width: 28px; 
+        height: 28px; 
+    }
+}
+
+@media (min-width: 769px) {
+    .main-header {
+        grid-template-columns: 1fr auto 1fr; 
+    }
+    .header-logo {
+        gap: 10px;
+    }
+    .header-logo-text {
+        display: block; 
+    }
+}
