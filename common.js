@@ -17,8 +17,26 @@ import { getCartItemCount } from './cart.js';
 let siteSettings = null;
 let authPromise = null;
 
+/**
+ * ഗൂഗിൾ ഡ്രൈവ് ലിങ്കുകളെ നേരിട്ടുള്ള ലിങ്കുകളാക്കി മാറ്റുന്നു
+ * ഒപ്പം ഇമേജ് ഒപ്റ്റിമൈസേഷനും ചെയ്യുന്നു
+ */
 export function optimizeImage(url, width = 800, quality = 80) {
     if (!url) return 'https://placehold.co/100x100/1e1e1e/D4AF37?text=No+Image';
+
+    // Google Drive Link Detection & Conversion
+    if (url.includes('drive.google.com') && url.includes('/d/')) {
+        try {
+            // ലിങ്കിൽ നിന്ന് ID വേർതിരിച്ചെടുക്കുന്നു
+            const id = url.split('/d/')[1].split('/')[0];
+            // നേരിട്ടുള്ള ഡൗൺലോഡ് ലിങ്ക് ആക്കുന്നു
+            return `https://drive.google.com/uc?export=view&id=${id}`;
+        } catch (e) {
+            console.error("Error converting Drive URL", e);
+            return url;
+        }
+    }
+
     return url; 
 }
 
@@ -79,7 +97,8 @@ async function buildHeader() {
     if (!headerElement) return;
 
     const logoUrl = settings.logoImageUrl || ''; 
-    const logoImg = settings.logoImageUrl ? `<img src="${logoUrl}" alt="Logo" class="header-logo-img">` : '';
+    // Logo URL-നും ഡ്രൈവ് സപ്പോർട്ട് കിട്ടാൻ optimizeImage വിളിക്കുന്നു
+    const logoImg = settings.logoImageUrl ? `<img src="${optimizeImage(logoUrl, 150)}" alt="Logo" class="header-logo-img">` : '';
     const logoText = settings.logoText ? `<span class="header-logo-text">${settings.logoText}</span>` : '';
     const logoSubtitle = settings.logoSubtitle ? `<span class="header-logo-subtitle">${settings.logoSubtitle}</span>` : '';
 
@@ -217,7 +236,7 @@ async function buildFloatingButtons() {
     container.innerHTML = html;
 }
 
-// *** ബോട്ടം നാവിഗേഷൻ ബാർ (പുതിയ ഐക്കണും ആനിമേഷനും) ***
+// *** ബോട്ടം നാവിഗേഷൻ ബാർ ***
 function buildBottomNav() {
     if (window.innerWidth > 768) return;
 
@@ -253,7 +272,7 @@ function buildBottomNav() {
         </button>
     </nav>
 
-    <!-- User Menu Overlay (Your Orders links to cart.html) -->
+    <!-- User Menu Overlay -->
     <div class="user-menu-overlay" id="user-menu-overlay">
         <div class="user-menu-content">
             <div class="user-menu-header">
