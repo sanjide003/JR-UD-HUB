@@ -3,10 +3,10 @@
 import { db, auth } from './firebase-config.js';
 import { 
     doc, 
-    getDoc,
-    collection,
-    getDocs,
-    query,
+    getDoc, 
+    collection, 
+    getDocs, 
+    query, 
     orderBy 
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { 
@@ -18,18 +18,17 @@ let siteSettings = null;
 let authPromise = null;
 
 /**
- * ഗൂഗിൾ ഡ്രൈവ് ലിങ്കുകളെ നേരിട്ടുള്ള ലിങ്കുകളാക്കി മാറ്റുന്നു
- * ഒപ്പം ഇമേജ് ഒപ്റ്റിമൈസേഷനും ചെയ്യുന്നു
+ * *** മാറ്റം: ഗൂഗിൾ ഡ്രൈവ് ലിങ്കുകളെ ഇമേജ് ലിങ്കായി മാറ്റുന്നു ***
  */
 export function optimizeImage(url, width = 800, quality = 80) {
     if (!url) return 'https://placehold.co/100x100/1e1e1e/D4AF37?text=No+Image';
 
-    // Google Drive Link Detection & Conversion
+    // Google Drive Link Detection
     if (url.includes('drive.google.com') && url.includes('/d/')) {
         try {
-            // ലിങ്കിൽ നിന്ന് ID വേർതിരിച്ചെടുക്കുന്നു
+            // ലിങ്കിൽ നിന്ന് ID എടുക്കുന്നു
             const id = url.split('/d/')[1].split('/')[0];
-            // നേരിട്ടുള്ള ഡൗൺലോഡ് ലിങ്ക് ആക്കുന്നു
+            // view ലിങ്ക് ആക്കി മാറ്റുന്നു
             return `https://drive.google.com/uc?export=view&id=${id}`;
         } catch (e) {
             console.error("Error converting Drive URL", e);
@@ -103,7 +102,6 @@ async function buildHeader() {
     const logoSubtitle = settings.logoSubtitle ? `<span class="header-logo-subtitle">${settings.logoSubtitle}</span>` : '';
 
     headerElement.innerHTML = `
-        <!-- ഇടതുവശം: ലോഗോ -->
         <div class="header-left-section">
             <a href="index.html" class="header-logo">
                 ${logoImg}
@@ -114,7 +112,6 @@ async function buildHeader() {
             </a>
         </div>
 
-        <!-- നടുക്ക്: ഡെസ്ക്ടോപ്പ് നാവിഗേഷൻ -->
         <nav class="header-nav-desktop">
             <ul>
                 <li><a href="index.html">Home</a></li>
@@ -124,7 +121,6 @@ async function buildHeader() {
             </ul>
         </nav>
 
-        <!-- വലതുവശം: കാർട്ട് -->
         <div class="header-right-section">
             <a href="cart.html" class="header-icon-btn cart-icon-wrapper" aria-label="Shopping Cart">
                 <svg class="icon-cart" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -236,7 +232,6 @@ async function buildFloatingButtons() {
     container.innerHTML = html;
 }
 
-// *** ബോട്ടം നാവിഗേഷൻ ബാർ ***
 function buildBottomNav() {
     if (window.innerWidth > 768) return;
 
@@ -250,7 +245,6 @@ function buildBottomNav() {
             <span>Home</span>
         </a>
         <a href="explore.html" class="bottom-nav-item ${page === 'explore.html' ? 'active' : ''}">
-            <!-- Telescope Icon -->
             <svg class="icon-binoculars" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44" />
                 <path d="m13.56 11.749 4.332-.924" />
@@ -261,7 +255,6 @@ function buildBottomNav() {
             </svg>
             <span>Explore</span>
         </a>
-        <!-- Catalog Icon with Animation Class 'catalog-anim' -->
         <a href="categories.html" class="bottom-nav-item catalog-anim ${page === 'categories.html' ? 'active' : ''}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             <span>Catalog</span>
@@ -272,7 +265,6 @@ function buildBottomNav() {
         </button>
     </nav>
 
-    <!-- User Menu Overlay -->
     <div class="user-menu-overlay" id="user-menu-overlay">
         <div class="user-menu-content">
             <div class="user-menu-header">
