@@ -233,7 +233,12 @@ function buildBottomNav() {
         <a href="explore.html" class="bottom-nav-item ${page === 'explore.html' ? 'active' : ''}">
             <!-- Telescope Icon -->
             <svg class="icon-binoculars" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44"/><path d="m13.56 11.749 4.332-.924"/><path d="m16 21-3.105-6.21"/><path d="m16.485 5.94 4.415 1.472a.934.934 0 0 1 .612 1.172l-.537 2.15a1.07 1.07 0 0 1-1.265.723l-6.18-1.318"/><path d="m9 18-4.866-4.866"/><path d="m20 21-3-6"/>
+                <path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44" />
+                <path d="m13.56 11.749 4.332-.924" />
+                <path d="m16 21-3.105-6.21" />
+                <path d="m16.485 5.94 4.415 1.472a.934.934 0 0 1 .612 1.172l-.537 2.15a1.07 1.07 0 0 1-1.265.723l-6.18-1.318" />
+                <path d="m9 18-4.866-4.866" />
+                <path d="m20 21-3-6" />
             </svg>
             <span>Explore</span>
         </a>
