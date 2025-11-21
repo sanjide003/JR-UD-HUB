@@ -51,7 +51,7 @@ async function loadHomeBanner() {
 }
 
 /**
- * ഹീറോ സ്ലൈഡർ (ഡ്രൈവ് വീഡിയോ സപ്പോർട്ട് ഉൾപ്പെടെ)
+ * 1. ഹീറോ സ്ലൈഡർ (വീഡിയോ/ഡ്രൈവ് സപ്പോർട്ട്)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -75,9 +75,10 @@ async function loadHeroSlider() {
                 let embedUrl = '';
                 let finalUrl = slide.url;
 
-                // ഡ്രൈവ് വീഡിയോ ലിങ്ക് ആണോ എന്ന് പരിശോധിക്കുന്നു
+                // *** ഡ്രൈവ് വീഡിയോ ലിങ്ക് ഡിറ്റക്ഷൻ ***
                 if (isVideo && slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
                     try {
+                        // ഡ്രൈവ് ലിങ്കിൽ നിന്ന് ID എടുത്ത് download ലിങ്ക് ആക്കുന്നു (വീഡിയോ പ്ലേ ചെയ്യാൻ)
                         const id = slide.url.split('/d/')[1].split('/')[0];
                         finalUrl = `https://drive.google.com/uc?export=download&id=${id}`;
                     } catch(e) {}
@@ -125,10 +126,11 @@ async function loadHeroSlider() {
             },
         });
 
+        // ആദ്യത്തെ സ്ലൈഡിൽ വീഡിയോ ഉണ്ടെങ്കിൽ അത് പ്ലേ ചെയ്യാൻ ശ്രമിക്കുന്നു
         const firstSlideVideo = document.querySelector('.hero-video-element');
         if (firstSlideVideo) {
             firstSlideVideo.muted = true; 
-            firstSlideVideo.play().catch(e => console.log("Initial play failed:", e));
+            firstSlideVideo.play().catch(e => console.log("Initial play failed, waiting for interaction:", e));
         }
 
         setupSmartVideoAutoplay();
@@ -136,9 +138,17 @@ async function loadHeroSlider() {
     } catch (error) { console.error("Error loading hero slider: ", error); }
 }
 
+/**
+ * വീഡിയോ സ്ക്രീനിൽ വരുമ്പോൾ Resume ചെയ്യുക, മാറുമ്പോൾ Pause ചെയ്യുക
+ */
 function setupSmartVideoAutoplay() {
     const videos = document.querySelectorAll('.hero-video-element, .hero-video-iframe');
-    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.25 };
+    
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.25 
+    };
 
     const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -146,12 +156,14 @@ function setupSmartVideoAutoplay() {
             const isYouTube = element.tagName === 'IFRAME';
 
             if (entry.isIntersecting) {
+                // *** സ്ക്രീനിൽ ഉണ്ട് -> പ്ലേ ചെയ്യുക ***
                 if (isYouTube) {
                     element.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
                 } else {
                     element.play().catch(e => console.log("Autoplay prevented:", e));
                 }
             } else {
+                // *** സ്ക്രീനിൽ ഇല്ല -> പോസ് ചെയ്യുക ***
                 if (isYouTube) {
                     element.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
                 } else {
@@ -161,11 +173,15 @@ function setupSmartVideoAutoplay() {
         });
     }, observerOptions);
 
-    videos.forEach(video => { videoObserver.observe(video); });
+    videos.forEach(video => {
+        videoObserver.observe(video);
+    });
 }
 
-// ... (Top Sellers & Categories Functions are the same) ...
 
+/**
+ * 2. "For You" (Top Sellers)
+ */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
@@ -277,6 +293,10 @@ async function loadTopSellers() {
     } catch (error) { console.error("Error loading top sellers: ", error); grid.innerHTML = '<p>Error loading products.</p>'; }
 }
 
+
+/**
+ * 3. ഹോം പേജിലെ കാറ്റഗറികൾ
+ */
 async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
