@@ -19,6 +19,7 @@
     --font-heading: 'Inter', sans-serif; 
     
     --header-height: 70px;
+    --bottom-nav-height: 65px; /* പുതിയ വേരിയബിൾ */
 }
 
 /* --- 0. പുതിയ പേജ് ലോഡർ --- */
@@ -76,6 +77,8 @@ body {
     margin: 0;
     padding: 0;
     padding-top: var(--header-height);
+    /* മൊബൈലിൽ താഴെ ബാർ വരുമ്പോൾ ഫൂട്ടർ മറയാതിരിക്കാൻ */
+    padding-bottom: 0; 
 }
 
 * {
@@ -125,7 +128,7 @@ img {
     display: block;
 }
 
-/* --- 3. ഹെഡർ (Main Header) - സെന്റർ ലേഔട്ട് *** --- */
+/* --- 3. ഹെഡർ (Main Header) - സെന്റർ ലേഔട്ട് --- */
 .main-header {
     background-color: var(--bg-color);
     padding: 0 1.5rem;
@@ -163,7 +166,6 @@ img {
     margin-left: 2px;
 }
 
-/* *** പുതിയ ഹെഡർ ഗ്രിഡ് സ്റ്റൈലുകൾ *** */
 .header-grid-left {
     justify-self: start; 
 }
@@ -205,7 +207,6 @@ img {
     stroke-width: 2;
 }
 
-/* *** പുതിയ ഹാംബർഗർ ഐക്കൺ സ്റ്റൈൽ (SVG മാറ്റി) *** */
 .header-icon-btn .hamburger-icon {
     font-size: 28px; 
     color: var(--text-color);
@@ -236,7 +237,8 @@ img {
     line-height: 1;
 }
 
-/* --- 4. വശത്തുള്ള മെനു (Side Nav) - ഇടതുവശത്തേക്ക് മാറ്റി *** */
+/* --- 4. വശത്തുള്ള മെനു (Side Nav) --- */
+/* ഡെസ്ക്ടോപ്പിൽ മാത്രം കാണിച്ചാൽ മതിയാകും, മൊബൈലിൽ താഴെ ബാർ വരും */
 .side-nav {
     position: fixed;
     top: 0;
@@ -300,7 +302,6 @@ img {
 }
 .side-nav-links a:hover { color: var(--primary-gold); }
 
-/* *** പുതിയ കാറ്റഗറി ഡ്രോപ്പ്ഡൗൺ സ്റ്റൈലുകൾ *** */
 .catalog-toggle {
     display: flex;
     justify-content: space-between;
@@ -336,9 +337,6 @@ img {
     padding-left: 1rem; 
     border-top: 1px solid var(--border-color);
 }
-.category-dropdown-list.open {
-    /* 'max-height' JS വഴി സെറ്റ് ചെയ്യും */
-}
 .nav-category-link {
     font-size: 1rem !important;
     font-weight: 400 !important;
@@ -352,8 +350,6 @@ img {
 .nav-category-link:hover {
     color: var(--primary-gold) !important;
 }
-/* *** ഡ്രോപ്പ്ഡൗൺ സ്റ്റൈലുകൾ കഴിഞ്ഞു *** */
-
 
 .side-nav-social {
     display: flex;
@@ -366,7 +362,7 @@ img {
 .side-nav-social a svg { width: 24px; height: 24px; }
 
 
-/* --- 5. ഫൂട്ടർ (Main Footer) - പുതിയ അക്കോർഡിയൻ സ്റ്റൈൽ --- */
+/* --- 5. ഫൂട്ടർ (Main Footer) --- */
 .main-footer-new {
     background-color: var(--bg-color);
     color: var(--text-muted);
@@ -442,7 +438,6 @@ img {
     font-size: 0.9rem;
     padding-top: 1.5rem;
 }
-/* *** 'Powered by' വരിക്ക് വേണ്ടിയുള്ള സ്റ്റൈൽ *** */
 .footer-powered-by {
     font-size: 0.8rem;
     color: var(--text-muted);
@@ -450,8 +445,79 @@ img {
     margin-top: 0.5rem;
 }
 
+/* --- 6. *** പുതിയത്: മൊബൈൽ ബോട്ടം നാവിഗേഷൻ (Mobile Bottom Nav) *** --- */
+.bottom-nav {
+    display: none; /* ഡെസ്ക്ടോപ്പിൽ മറയ്ക്കുന്നു */
+}
 
-/* --- 6. പൊതുവായ പേജ് സ്റ്റൈലുകൾ --- */
+@media (max-width: 768px) {
+    /* മൊബൈലിൽ താഴെ പാഡിംഗ് നൽകുന്നു, ഫൂട്ടർ മറയാതിരിക്കാൻ */
+    body {
+        padding-bottom: var(--bottom-nav-height);
+    }
+
+    .bottom-nav {
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: var(--bottom-nav-height);
+        background-color: rgba(10, 10, 10, 0.95);
+        border-top: 1px solid var(--border-color);
+        backdrop-filter: blur(10px);
+        z-index: 1001;
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+    }
+
+    .bottom-nav-item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        color: var(--text-muted);
+        font-size: 0.7rem;
+        font-weight: 500;
+        flex: 1;
+        height: 100%;
+        gap: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .bottom-nav-item svg {
+        width: 24px;
+        height: 24px;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 2;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+        transition: all 0.3s ease;
+    }
+
+    .bottom-nav-item.active {
+        color: var(--primary-gold);
+    }
+    
+    .bottom-nav-item.active svg {
+        stroke: var(--primary-gold);
+        transform: translateY(-2px);
+    }
+    
+    /* എക്സ്പ്ലോർ ഐക്കൺ (Binoculars) അല്പം വലുതാക്കാം */
+    .bottom-nav-item svg.icon-binoculars {
+        width: 26px;
+        height: 26px;
+    }
+
+    /* സൈഡ് മെനു ബട്ടൺ ഹെഡറിൽ നിന്ന് നീക്കം ചെയ്യാം (വേണമെങ്കിൽ) */
+    /* .header-grid-left { display: none; } */
+}
+
+/* --- 7. പൊതുവായ പേജ് സ്റ്റൈലുകൾ --- */
 .page-container { margin-top: 1rem; }
 .page-header-bar {
     text-align: center;
@@ -467,7 +533,6 @@ img {
     grid-template-columns: 1fr 1fr;
 }
 
-/* പൊതുവായ വില സ്റ്റൈലുകൾ */
 .price-container {
     display: flex;
     align-items: center;
@@ -497,7 +562,6 @@ img {
     border-radius: 4px;
 }
 
-/* --- 7. ബട്ടൺ സ്റ്റൈലുകൾ (പുതിയത്, ഐക്കണുകളോട് കൂടിയത്) --- */
 .btn-primary-new,
 .btn-primary-icon {
     display: inline-flex;
@@ -542,7 +606,6 @@ img {
     background-color: var(--primary-gold);
     color: var(--bg-color);
 }
-/* 'View Details' ബട്ടൺ (ഐക്കൺ ഇല്ലാത്തത്) */
 .btn-primary-new {
     gap: 0;
 }
@@ -557,29 +620,26 @@ img {
     stroke-width: 2;
 }
 
-/* --- *** പുതിയത്: ഐക്കൺ നിറം വെള്ളയാക്കാൻ *** --- */
 .btn-secondary-new svg.icon-btn,
 .btn-secondary-icon svg.icon-btn {
-    stroke: var(--text-color); /* വെള്ള */
+    stroke: var(--text-color); 
     fill: none;
     transition: stroke 0.3s ease;
 }
 .btn-secondary-new:hover svg.icon-btn,
 .btn-secondary-icon:hover svg.icon-btn {
-    stroke: var(--bg-color); /* കറുപ്പ് (ഹോവർ ചെയ്യുമ്പോൾ) */
+    stroke: var(--bg-color); 
 }
-/* --- *** മാറ്റം കഴിഞ്ഞു *** --- */
 
-
-/* --- 13. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ (പുതിയ ഡിസൈൻ) --- */
+/* --- 13. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ --- */
 #floating-action-buttons {
     position: fixed;
-    bottom: 15px;
-    right: 15px; /* *** മാറ്റി: വലതുവശത്തേക്ക് മാത്രമാക്കി *** */
+    bottom: 80px; /* *** മാറ്റി: ബോട്ടം ബാറിന് മുകളിൽ വരാൻ *** */
+    right: 15px; 
     z-index: 900;
     display: flex;
     flex-direction: row; 
-    justify-content: flex-end; /* *** മാറ്റി: ഒന്നിനെ വലതുവശത്തേക്ക് നീക്കാൻ *** */
+    justify-content: flex-end; 
     pointer-events: none; 
 }
 .float-btn {
@@ -608,16 +668,12 @@ img {
     fill: #FFFFFF; 
 }
 
-/* *** കാർട്ട് ബട്ടണിന്റെ സ്റ്റൈൽ നീക്കം ചെയ്തു *** */
-/* .float-btn.cart ... (നീക്കം ചെയ്തു) */
-
 .float-btn svg {
     width: 32px; 
     height: 32px; 
 }
 
-
-/* --- 14. മൊബൈൽ റെസ്പോൺസീവ് (Responsive) --- */
+/* --- 14. മൊബൈൽ റെസ്പോൺസീവ് --- */
 @media (max-width: 768px) {
     .container {
         padding: 2rem 1rem;
@@ -647,8 +703,8 @@ img {
     }
     
     #floating-action-buttons {
-        bottom: 15px;
-        right: 15px; /* *** മാറ്റി *** */
+        bottom: 80px; /* ബോട്ടം ബാറിന് മുകളിൽ */
+        right: 15px; 
     }
     .float-btn {
         width: 50px; 
@@ -660,7 +716,6 @@ img {
     }
 }
 
-/* ടാബ്ലെറ്റ് & ചെറിയ ഡെസ്ക്ടോപ്പ് */
 @media (min-width: 769px) {
     .main-header {
         grid-template-columns: 1fr auto 1fr; 
