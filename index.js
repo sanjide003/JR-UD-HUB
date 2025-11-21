@@ -50,9 +50,8 @@ async function loadHomeBanner() {
     }
 }
 
-
 /**
- * 1. ഹീറോ സ്ലൈഡർ (ശരിയായ ഓട്ടോപ്ലേ സെറ്റിംഗ്സ്)
+ * ഹീറോ സ്ലൈഡർ (ഡ്രൈവ് വീഡിയോ സപ്പോർട്ട് ഉൾപ്പെടെ)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -74,8 +73,17 @@ async function loadHeroSlider() {
                 let isVideo = slide.type === 'video';
                 let videoId = '';
                 let embedUrl = '';
+                let finalUrl = slide.url;
 
-                if (slide.url.includes('youtube.com/watch?v=')) {
+                // ഡ്രൈവ് വീഡിയോ ലിങ്ക് ആണോ എന്ന് പരിശോധിക്കുന്നു
+                if (isVideo && slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
+                    try {
+                        const id = slide.url.split('/d/')[1].split('/')[0];
+                        finalUrl = `https://drive.google.com/uc?export=download&id=${id}`;
+                    } catch(e) {}
+                } 
+                // YouTube ആണോ എന്ന് പരിശോധിക്കുന്നു
+                else if (slide.url.includes('youtube.com/watch?v=')) {
                     videoId = new URL(slide.url).searchParams.get('v');
                     isVideo = true;
                 }
@@ -97,9 +105,8 @@ async function loadHeroSlider() {
                     slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 }
                 else if (isVideo) {
-                    // Direct Video (MP4)
-                    // *** preload="auto" കൊടുത്തു, വേഗത്തിൽ ലോഡ് ആവാൻ ***
-                    slideEl.innerHTML = `<video class="hero-video-element" src="${slide.url}" autoplay muted loop playsinline preload="auto"></video>`;
+                    // Direct Video (MP4 / Drive)
+                    slideEl.innerHTML = `<video class="hero-video-element" src="${finalUrl}" autoplay muted loop playsinline preload="auto"></video>`;
                 }
                 
                 sliderWrapper.appendChild(slideEl);
@@ -118,32 +125,20 @@ async function loadHeroSlider() {
             },
         });
 
-        // *** വീഡിയോ പ്ലേ ചെയ്യാനുള്ള നിർദ്ദേശം ***
-        
-        // 1. ആദ്യം തന്നെ വീഡിയോ പ്ലേ ചെയ്യാൻ ശ്രമിക്കുന്നു (Force Start)
         const firstSlideVideo = document.querySelector('.hero-video-element');
         if (firstSlideVideo) {
-            firstSlideVideo.muted = true; // മ്യൂട്ട് ആണെന്ന് ഉറപ്പിക്കുന്നു
-            firstSlideVideo.play().catch(e => console.log("Initial play failed, waiting for user interaction/scroll:", e));
+            firstSlideVideo.muted = true; 
+            firstSlideVideo.play().catch(e => console.log("Initial play failed:", e));
         }
 
-        // 2. സ്ക്രോൾ ചെയ്യുമ്പോൾ നിയന്ത്രിക്കാൻ ഒബ്സർവർ സെറ്റ് ചെയ്യുന്നു
         setupSmartVideoAutoplay();
 
     } catch (error) { console.error("Error loading hero slider: ", error); }
 }
 
-/**
- * വീഡിയോ സ്ക്രീനിൽ വരുമ്പോൾ Resume ചെയ്യുക, മാറുമ്പോൾ Pause ചെയ്യുക
- */
 function setupSmartVideoAutoplay() {
     const videos = document.querySelectorAll('.hero-video-element, .hero-video-iframe');
-    
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.25 // 25% വീഡിയോ സ്ക്രീനിൽ വന്നാൽ പ്ലേ ആകും
-    };
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.25 };
 
     const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -151,15 +146,12 @@ function setupSmartVideoAutoplay() {
             const isYouTube = element.tagName === 'IFRAME';
 
             if (entry.isIntersecting) {
-                // *** സ്ക്രീനിൽ ഉണ്ട് -> പ്ലേ ചെയ്യുക (Resume) ***
                 if (isYouTube) {
                     element.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
                 } else {
-                    // സാധാരണ വീഡിയോ പ്ലേ ചെയ്യുന്നു (Resume)
-                    element.play().catch(e => console.log("Autoplay prevented via observer:", e));
+                    element.play().catch(e => console.log("Autoplay prevented:", e));
                 }
             } else {
-                // *** സ്ക്രീനിൽ ഇല്ല -> പോസ് ചെയ്യുക (Stop) ***
                 if (isYouTube) {
                     element.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
                 } else {
@@ -169,15 +161,11 @@ function setupSmartVideoAutoplay() {
         });
     }, observerOptions);
 
-    videos.forEach(video => {
-        videoObserver.observe(video);
-    });
+    videos.forEach(video => { videoObserver.observe(video); });
 }
 
+// ... (Top Sellers & Categories Functions are the same) ...
 
-/**
- * 2. "For You" (Top Sellers)
- */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
@@ -289,10 +277,6 @@ async function loadTopSellers() {
     } catch (error) { console.error("Error loading top sellers: ", error); grid.innerHTML = '<p>Error loading products.</p>'; }
 }
 
-
-/**
- * 3. ഹോം പേജിലെ കാറ്റഗറികൾ
- */
 async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
