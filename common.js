@@ -17,19 +17,11 @@ import { getCartItemCount } from './cart.js';
 let siteSettings = null;
 let authPromise = null;
 
-/**
- * *** മാറ്റം വരുത്തിയത്: Image Optimization തൽക്കാലം ഒഴിവാക്കുന്നു ***
- * ചിത്രങ്ങൾ കാണാത്ത പ്രശ്നം പരിഹരിക്കാൻ ഒറിജിനൽ URL തന്നെ തിരികെ നൽകുന്നു.
- */
 export function optimizeImage(url, width = 800, quality = 80) {
     if (!url) return 'https://placehold.co/100x100/1e1e1e/D4AF37?text=No+Image';
-    // wsrv.nl തൽക്കാലം ഉപയോഗിക്കുന്നില്ല, കാരണം അത് ചിലപ്പോൾ ഇമേജുകളെ ബ്ലോക്ക് ചെയ്യുന്നു.
     return url; 
 }
 
-/**
- * യൂസറെ സൈൻ ഇൻ ചെയ്യിക്കുന്നു
- */
 function authenticateUser() {
     if (authPromise) return authPromise;
 
@@ -50,13 +42,9 @@ function authenticateUser() {
     return authPromise;
 }
 
-/**
- * സൈറ്റ് സെറ്റിംഗ്സ് എടുക്കുന്നു
- */
 export async function fetchSiteSettings() {
     if (siteSettings) return siteSettings;
 
-    // ലോക്കൽ സ്റ്റോറേജിൽ ഉണ്ടോ എന്ന് നോക്കുന്നു
     const cachedSettings = localStorage.getItem('siteSettings');
     if (cachedSettings) {
         siteSettings = JSON.parse(cachedSettings);
@@ -84,9 +72,6 @@ async function refreshSettingsBackground() {
     return siteSettings || {};
 }
 
-/**
- * 1. പ്രധാന ഹെഡർ നിർമ്മിക്കുന്നു
- */
 async function buildHeader() {
     const settings = await fetchSiteSettings();
     const headerElement = document.getElementById('main-header');
@@ -124,9 +109,6 @@ async function buildHeader() {
     updateCartIcon();
 }
 
-/**
- * 2. സൈഡ് മെനു
- */
 async function buildSideNav() {
     const settings = await fetchSiteSettings();
     const navElement = document.getElementById('side-nav');
@@ -180,6 +162,7 @@ async function buildSideNav() {
                 </ul>
             </li>
             <li><a href="contact.html">Contact</a></li>
+            <li><a href="admin.html" style="color: var(--primary-gold);">Admin Login</a></li>
         </ul>
         <div class="side-nav-social">
             ${socialLinksHTML}
@@ -188,9 +171,6 @@ async function buildSideNav() {
     setupNavEvents();
 }
 
-/**
- * 3. ഫൂട്ടർ നിർമ്മിക്കുന്നു
- */
 async function buildFooter() {
     const settings = await fetchSiteSettings();
     const footerElement = document.getElementById('main-footer');
@@ -234,6 +214,7 @@ async function buildFooter() {
                         <li><a href="categories.html">Catalog</a></li>
                         <li><a href="cart.html">Cart</a></li>
                         <li><a href="contact.html">Contact</a></li>
+                        <li><a href="admin.html">Admin Login</a></li>
                     </ul>
                 </div>
             </div>
@@ -286,6 +267,43 @@ async function buildFloatingButtons() {
         `;
     }
     container.innerHTML = html;
+}
+
+// *** പുതിയത്: ബോട്ടം നാവിഗേഷൻ ബാർ നിർമ്മിക്കുന്നു ***
+function buildBottomNav() {
+    // ഡെസ്ക്ടോപ്പിൽ ഇത് ലോഡ് ചെയ്യേണ്ടതില്ല
+    if (window.innerWidth > 768) return;
+
+    // പേജിന്റെ URL അനുസരിച്ച് 'active' ക്ലാസ് നൽകുന്നു
+    const path = window.location.pathname;
+    const page = path.split("/").pop() || "index.html";
+
+    const navHTML = `
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item ${page === 'index.html' ? 'active' : ''}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Home</span>
+        </a>
+        <a href="explore.html" class="bottom-nav-item ${page === 'explore.html' ? 'active' : ''}">
+            <!-- Binoculars Icon for Explore -->
+            <svg class="icon-binoculars" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 10h4"/><path d="M19 7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3"/><path d="M20 21a2 2 0 0 0 2-2v-3.851c0-1.39-2-2.962-2-4.829V8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v11a2 2 0 0 0 2 2z"/><path d="M22 16h-4"/><path d="M4 7V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3"/><path d="M9 21a2 2 0 0 0 2-2v-3.851c0-1.39-2-2.962-2-4.829V8a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v11a2 2 0 0 0 2 2z"/><path d="M2 16h4"/>
+            </svg>
+            <span>Explore</span>
+        </a>
+        <a href="categories.html" class="bottom-nav-item ${page === 'categories.html' ? 'active' : ''}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span>Catalog</span>
+        </a>
+        <!-- അക്കൗണ്ട് എന്ന് കാണിക്കും, പക്ഷെ തൽക്കാലം അഡ്മിനിലേക്ക് പോകും -->
+        <a href="admin.html" class="bottom-nav-item ${page === 'admin.html' ? 'active' : ''}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>Account</span>
+        </a>
+    </nav>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', navHTML);
 }
 
 function setupNavEvents() {
@@ -354,6 +372,9 @@ export async function loadSiteSettings() {
         try { await buildSideNav(); } catch (e) { console.error("Error building side nav:", e); }
         try { await buildFooter(); } catch (e) { console.error("Error building footer:", e); }
         try { await buildFloatingButtons(); } catch (e) { console.error("Error building floating buttons:", e); }
+        
+        // *** പുതിയത്: ബോട്ടം നാവിഗേഷൻ വിളിക്കുന്നു ***
+        try { buildBottomNav(); } catch (e) { console.error("Error building bottom nav:", e); }
         
     } catch (error) {
         console.error("Error during site initialization: ", error);
