@@ -217,7 +217,7 @@ async function buildFloatingButtons() {
     container.innerHTML = html;
 }
 
-// *** ബോട്ടം നാവിഗേഷൻ ബാർ (അഡ്മിൻ ലിങ്ക് ഇല്ല) ***
+// *** ബോട്ടം നാവിഗേഷൻ ബാർ (പുതിയ ഐക്കണും ആനിമേഷനും) ***
 function buildBottomNav() {
     if (window.innerWidth > 768) return;
 
@@ -231,12 +231,14 @@ function buildBottomNav() {
             <span>Home</span>
         </a>
         <a href="explore.html" class="bottom-nav-item ${page === 'explore.html' ? 'active' : ''}">
+            <!-- Telescope Icon -->
             <svg class="icon-binoculars" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 10h4"/><path d="M19 7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3"/><path d="M20 21a2 2 0 0 0 2-2v-3.851c0-1.39-2-2.962-2-4.829V8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v11a2 2 0 0 0 2 2z"/><path d="M22 16h-4"/><path d="M4 7V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3"/><path d="M9 21a2 2 0 0 0 2-2v-3.851c0-1.39-2-2.962-2-4.829V8a1 1 0 0 0-1-1H4a1 1 0 0 0-1 1v11a2 2 0 0 0 2 2z"/><path d="M2 16h4"/>
+                <path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44"/><path d="m13.56 11.749 4.332-.924"/><path d="m16 21-3.105-6.21"/><path d="m16.485 5.94 4.415 1.472a.934.934 0 0 1 .612 1.172l-.537 2.15a1.07 1.07 0 0 1-1.265.723l-6.18-1.318"/><path d="m9 18-4.866-4.866"/><path d="m20 21-3-6"/>
             </svg>
             <span>Explore</span>
         </a>
-        <a href="categories.html" class="bottom-nav-item ${page === 'categories.html' ? 'active' : ''}">
+        <!-- Catalog Icon with Animation Class 'catalog-anim' -->
+        <a href="categories.html" class="bottom-nav-item catalog-anim ${page === 'categories.html' ? 'active' : ''}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             <span>Catalog</span>
         </a>
@@ -269,7 +271,6 @@ function buildBottomNav() {
                     </a>
                 </li>
                 <li>
-                    <!-- *** മാറ്റം: About Us ക്ലിക്ക് ചെയ്താൽ about.html-ലേക്ക് പോകും *** -->
                     <a href="about.html" class="user-menu-link">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
                         <span>About Us</span>
