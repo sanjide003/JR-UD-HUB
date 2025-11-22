@@ -245,7 +245,9 @@ function buildBottomNav() {
     // *** 3. EXPLORE ***
     const exploreActive = pageName === 'explore' ? 'active' : '';
 
-    // *** മാറ്റം: ഇവിടെയാണ് അക്കൗണ്ട് മെനുവിന്റെ (Overlay) HTML ചേർത്തിട്ടുള്ളത് ***
+    // *** മാറ്റം 1: ബൈനോക്കുലർ (കണ്ണട) ഐക്കൺ Explore-ന് നൽകി ***
+    // *** മാറ്റം 2: Account ബട്ടണിന് 'always-white' ക്ലാസ്സ് നൽകി ***
+
     const navHTML = `
     <nav class="bottom-nav">
         <!-- 1. HOME -->
@@ -260,19 +262,16 @@ function buildBottomNav() {
             <span>Catalog</span>
         </a>
 
-        <!-- 3. EXPLORE -->
+        <!-- 3. EXPLORE (Binoculars Icon) -->
         <a href="explore.html" class="bottom-nav-item ${exploreActive}">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18.3 3.7c.8-.8 2.1-.8 2.8 0l.9.9c.8.8.8 2.1 0 2.8L12 17.4c-.8.8-2.1.8-2.8 0l-.9-.9c-.8-.8-.8-2.1 0-2.8L18.3 3.7z"></path>
-                <path d="M10.5 18.5l-3.5 3.5"></path>
-                <path d="M13.5 15.5l3.5 3.5"></path>
-                <path d="M7 22l4-4"></path>
+                <path d="M10 10h4"/><path d="M19 7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3"/><path d="M5 7V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3"/><rect x="4" y="7" width="6" height="8" rx="2"/><rect x="14" y="7" width="6" height="8" rx="2"/><path d="M6 15v4a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4"/><path d="M16 15v4a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4"/>
             </svg>
             <span>Explore</span>
         </a>
 
-        <!-- 4. ACCOUNT -->
-        <button class="bottom-nav-item" id="bottom-nav-account-btn">
+        <!-- 4. ACCOUNT (Always White) -->
+        <button class="bottom-nav-item always-white" id="bottom-nav-account-btn">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             <span>Account</span>
         </button>
