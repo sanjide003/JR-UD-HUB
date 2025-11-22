@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. admin.html
-  മാറ്റം: 'Size' ഒഴിവാക്കി 'Specification' ചേർത്തു.
+  മാറ്റം: ഇമേജ് ഇൻപുട്ടുകൾ സിംഗിൾ ലൈനിൽ ആക്കി.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -113,14 +113,11 @@
                             <input type="number" id="product-price" placeholder="e.g., 350" required>
                         </div>
                         
-                        <!-- *** മാറ്റം: Size ഒഴിവാക്കി *** -->
-
                         <div class="form-group">
                             <input type="checkbox" id="product-featured" style="width: auto; margin-right: 10px;">
                             <label for="product-featured" style="display: inline;">Featured on Home Page? (Top Seller)</label>
                         </div>
 
-                        <!-- *** പുതിയത്: Specification (Full Width) *** -->
                         <div class="form-group full-width">
                             <label for="product-specification">Specification</label>
                             <textarea id="product-specification" rows="4" placeholder="Type each point on a new line. Example:&#10;- Long Lasting&#10;- Alcohol Free"></textarea>
@@ -151,47 +148,29 @@
                 </form>
             </div>
 
-            <!-- മറ്റ് പേജുകൾ മാറ്റമില്ലാതെ തുടരുന്നു (Existing Products, Featured Products etc.) -->
-            <!-- (സ്ഥലപരിമിതി കാരണം ആവർത്തിക്കുന്നില്ല, പഴയ കോഡ് തന്നെ മതി) -->
+            <!-- Page 2 & 3 Skipped (Same as before) -->
             <div id="page-existing-products" class="page-content">
                 <div class="data-list-section">
                     <h2>Existing Products</h2>
                     <div class="form-group" style="max-width: 300px;">
                         <label for="product-filter-category">Filter by Category</label>
-                        <select id="product-filter-category">
-                            <option value="all">All Categories</option>
-                        </select>
+                        <select id="product-filter-category"><option value="all">All Categories</option></select>
                     </div>
                     <div class="data-table-wrapper">
-                        <table class="data-table">
-                            <thead>
-                                <tr>
-                                    <th>Image</th>
-                                    <th>Name</th>
-                                    <th>Price</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody id="products-list-body"></tbody>
-                        </table>
+                        <table class="data-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Actions</th></tr></thead><tbody id="products-list-body"></tbody></table>
                     </div>
                 </div>
             </div>
-            
             <div id="page-featured-products" class="page-content">
                 <div class="data-list-section">
                     <h2>Featured Products</h2>
                     <div class="data-table-wrapper">
-                        <table class="data-table">
-                            <thead>
-                                <tr><th>Image</th><th>Name</th><th>Price</th><th>Actions</th></tr>
-                            </thead>
-                            <tbody id="featured-products-list-body"></tbody>
-                        </table>
+                        <table class="data-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Actions</th></tr></thead><tbody id="featured-products-list-body"></tbody></table>
                     </div>
                 </div>
             </div>
 
+            <!-- പേജ് 4: Add New Category (മാറ്റം വരുത്തിയത്) -->
             <div id="page-add-category" class="page-content">
                 <form id="add-category-form" class="form-section">
                     <h2>Add New Category</h2>
@@ -200,10 +179,13 @@
                             <label for="category-name">Category Name <span class="required-star">*</span></label>
                             <input type="text" id="category-name" required>
                         </div>
+                        <!-- *** മാറ്റം: ഇൻലൈൻ പ്രിവ്യൂ *** -->
                         <div class="form-group">
                             <label for="category-image-url">Category Image URL <span class="required-star">*</span></label>
-                            <input type="text" class="image-url-input" id="category-image-url" required>
-                            <div class="image-preview" id="category-image-preview"></div>
+                            <div class="inline-image-input-container">
+                                <div class="image-preview-small" id="category-image-preview"></div>
+                                <input type="text" class="image-url-input" id="category-image-url" placeholder="Paste image URL" required>
+                            </div>
                         </div>
                     </div>
                     <button type="submit" class="btn" id="add-category-button">
@@ -217,10 +199,7 @@
                 <div class="data-list-section">
                     <h2>Existing Categories</h2>
                      <div class="data-table-wrapper">
-                        <table class="data-table">
-                            <thead><tr><th>Image</th><th>Name</th><th>Actions</th></tr></thead>
-                            <tbody id="categories-list-body"></tbody>
-                        </table>
+                        <table class="data-table"><thead><tr><th>Image</th><th>Name</th><th>Actions</th></tr></thead><tbody id="categories-list-body"></tbody></table>
                     </div>
                 </div>
             </div>
@@ -253,21 +232,23 @@
                 <div class="data-list-section">
                     <h2>Existing Hero Slides</h2>
                     <div class="data-table-wrapper">
-                        <table class="data-table">
-                            <thead><tr><th>Preview</th><th>Type</th><th>Order</th><th>URL</th><th>Actions</th></tr></thead>
-                            <tbody id="hero-slides-list-body"></tbody>
-                        </table>
+                        <table class="data-table"><thead><tr><th>Preview</th><th>Type</th><th>Order</th><th>URL</th><th>Actions</th></tr></thead><tbody id="hero-slides-list-body"></tbody></table>
                     </div>
                 </div>
             </div>
 
+            <!-- പേജ് 7: General Site Settings (മാറ്റം വരുത്തിയത്) -->
             <div id="page-general-settings" class="page-content">
                 <form id="general-settings-form" class="form-section">
                     <h2>General Site Settings</h2>
                     <div class="form-grid">
+                         <!-- *** മാറ്റം: ലോഗോ പ്രിവ്യൂ ചേർത്തു *** -->
                          <div class="form-group">
                             <label for="setting-logo-image-url">Logo Image URL</label>
-                            <input type="text" id="setting-logo-image-url">
+                            <div class="inline-image-input-container">
+                                <div class="image-preview-small" id="logo-preview"></div>
+                                <input type="text" id="setting-logo-image-url" placeholder="Paste logo image link here">
+                            </div>
                         </div>
                         <div class="form-group">
                             <label for="setting-logo-text">Logo Text</label>
@@ -277,9 +258,13 @@
                             <label for="setting-logo-subtitle">Logo Subtitle</label>
                             <input type="text" id="setting-logo-subtitle">
                         </div>
+                        <!-- *** മാറ്റം: ബാനർ പ്രിവ്യൂ ചേർത്തു *** -->
                         <div class="form-group">
                             <label for="setting-home-banner-url">Home Page Banner Image URL</label>
-                            <input type="text" id="setting-home-banner-url">
+                            <div class="inline-image-input-container">
+                                <div class="image-preview-small" id="banner-preview"></div>
+                                <input type="text" id="setting-home-banner-url" placeholder="Paste full-width banner image link here">
+                            </div>
                         </div>
                     </div>
                     <button type="submit" class="btn" id="save-general-settings-button">
