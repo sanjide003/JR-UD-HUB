@@ -1,5 +1,5 @@
 // ഇതാണ് പുതിയ 'admin.js' ഫയൽ.
-// ലോഗൗട്ട് ബട്ടൺ പ്രവർത്തിക്കാൻ ക്ലാസ്സ് ഉപയോഗിക്കുന്നു.
+// *** മാറ്റം: "Home Page Experience Video URL" ന്റെ ലോജിക് ഒഴിവാക്കി ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -33,7 +33,6 @@ const loginForm = document.getElementById("login-form");
 const loginButton = document.getElementById("login-button");
 const loginStatus = document.getElementById("login-status");
 
-// *** ലോഗൗട്ട് ബട്ടണുകൾ ക്ലാസ് വഴി സെലക്ട് ചെയ്യുന്നു ***
 const logoutButtons = document.querySelectorAll(".logout-action-btn");
 
 const adminStatus = document.getElementById("admin-status");
@@ -137,7 +136,6 @@ loginForm.addEventListener("submit", async (e) => {
     }
 });
 
-// *** ലോഗൗട്ട് ബട്ടണുകൾക്കായി ലൂപ്പ് ഉപയോഗിക്കുന്നു ***
 if (logoutButtons) {
     logoutButtons.forEach(btn => {
         btn.addEventListener("click", () => {
@@ -229,7 +227,7 @@ async function loadAllSettings() {
             document.getElementById("setting-logo-image-url").value = settings.logoImageUrl || '';
             document.getElementById("setting-logo-text").value = settings.logoText || '';
             document.getElementById("setting-logo-subtitle").value = settings.logoSubtitle || '';
-            document.getElementById("setting-video-url").value = settings.videoUrl || '';
+            // *** മാറ്റം: videoUrl ഇവിടെ ലോഡ് ചെയ്യുന്നില്ല ***
             document.getElementById("setting-home-banner-url").value = settings.homeBannerUrl || '';
             document.getElementById("setting-phone").value = settings.phone || '';
             document.getElementById("setting-email").value = settings.email || '';
@@ -260,7 +258,7 @@ generalSettingsForm.addEventListener("submit", async (e) => {
             logoImageUrl: document.getElementById("setting-logo-image-url").value,
             logoText: document.getElementById("setting-logo-text").value,
             logoSubtitle: document.getElementById("setting-logo-subtitle").value,
-            videoUrl: document.getElementById("setting-video-url").value,
+            // *** മാറ്റം: videoUrl ഇവിടെ സേവ് ചെയ്യുന്നില്ല ***
             homeBannerUrl: document.getElementById("setting-home-banner-url").value,
         };
         const docRef = doc(db, "settings", "global");
