@@ -1,5 +1,5 @@
 // ഇതാണ് പുതിയ 'admin.js' ഫയൽ.
-// *** മാറ്റം: അനോണിമസ് ലോഗിൻ ഉള്ളവർക്ക് അഡ്മിൻ പാനൽ കാണിക്കില്ല ***
+// ലോഗൗട്ട് ബട്ടൺ പ്രവർത്തിക്കാൻ ക്ലാസ്സ് ഉപയോഗിക്കുന്നു.
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -32,7 +32,10 @@ const adminPanel = document.getElementById("admin-panel");
 const loginForm = document.getElementById("login-form");
 const loginButton = document.getElementById("login-button");
 const loginStatus = document.getElementById("login-status");
-const logoutButton = document.getElementById("logout-button");
+
+// *** ലോഗൗട്ട് ബട്ടണുകൾ ക്ലാസ് വഴി സെലക്ട് ചെയ്യുന്നു ***
+const logoutButtons = document.querySelectorAll(".logout-action-btn");
+
 const adminStatus = document.getElementById("admin-status");
 
 const adminNavOpenBtn = document.getElementById("admin-nav-open-btn");
@@ -57,7 +60,7 @@ const productFilterCategory = document.getElementById("product-filter-category")
 const featuredProductsListBody = document.getElementById("featured-products-list-body"); 
 const productImageContainer = document.getElementById("product-image-list-container");
 
-// More Links ElementsElements
+// More Links Elements
 const productMoreLinksContainer = document.getElementById("product-more-links-container");
 
 // Hero Slide Elements
@@ -125,7 +128,6 @@ loginForm.addEventListener("submit", async (e) => {
     const password = document.getElementById("login-password").value;
     
     try {
-        // ഇമെയിൽ വഴി ലോഗിൻ ചെയ്യുന്നു. ഇത് നിലവിലുള്ള അനോണിമസ് യൂസറെ മാറ്റിക്കോളും.
         await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
         console.error("Login Error:", error);
@@ -135,13 +137,16 @@ loginForm.addEventListener("submit", async (e) => {
     }
 });
 
-logoutButton.addEventListener("click", () => {
-    signOut(auth);
-});
+// *** ലോഗൗട്ട് ബട്ടണുകൾക്കായി ലൂപ്പ് ഉപയോഗിക്കുന്നു ***
+if (logoutButtons) {
+    logoutButtons.forEach(btn => {
+        btn.addEventListener("click", () => {
+            signOut(auth);
+        });
+    });
+}
 
-// *** പ്രധാന മാറ്റം ഇവിടെയാണ് ***
 onAuthStateChanged(auth, (user) => {
-    // user ഉണ്ട്, പക്ഷെ അത് അനോണിമസ് അല്ല എന്ന് ഉറപ്പാക്കുന്നു (!user.isAnonymous)
     if (user && !user.isAnonymous) {
         loginSection.style.display = "none";
         adminPanel.style.display = "block";
@@ -163,7 +168,6 @@ onAuthStateChanged(auth, (user) => {
         }
 
     } else {
-        // ലോഗിൻ ചെയ്തിട്ടില്ല, അല്ലെങ്കിൽ അനോണിമസ് കസ്റ്റമർ ആണ്
         loginSection.style.display = "block";
         adminPanel.style.display = "none";
     }
