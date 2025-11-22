@@ -1,5 +1,5 @@
-// ഇതാണ് 'admin.js' ഫയൽ.
-// *** മാറ്റം: Settings-ൽ ഇമേജ് പ്രിവ്യൂ സെറ്റപ്പ് ചെയ്തു ***
+// ഇതാണ് പുതിയ 'admin.js' ഫയൽ.
+// *** മാറ്റം: Featured Products Search & Remove Only ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -17,6 +17,7 @@ import {
     setDoc,
     doc,
     deleteDoc,
+    updateDoc, // *** updateDoc ചേർത്തു ***
     onSnapshot, 
     query,
     where, 
@@ -77,9 +78,14 @@ const confirmBtnDelete = document.getElementById("confirm-btn-delete");
 const confirmTitle = document.getElementById("confirm-title");
 const confirmMessage = document.getElementById("confirm-message");
 
+// *** പുതിയത്: Featured Search Elements ***
+const featuredSearchInput = document.getElementById("featured-product-search");
+const featuredSearchResults = document.getElementById("featured-search-results");
+
 let currentProductsQuery = null;
 let currentFeaturedQuery = null;
 let deleteInfo = { id: null, type: null }; 
+let allProductsCache = []; // സെർച്ച് വേഗത്തിലാക്കാൻ
 
 function showStatus(element, message, isError = true) {
     element.textContent = message;
@@ -140,6 +146,7 @@ onAuthStateChanged(auth, (user) => {
         loadFeaturedProducts(); 
         loadHeroSlides(); 
         loadAllSettings();
+        cacheAllProductsForSearch(); // *** സെർച്ചിനായി പ്രൊഡക്റ്റുകൾ ലോഡ് ചെയ്യുന്നു ***
         setupImageUploader('product-image-list-container', 'add-image-url-btn');
         if (productImageContainer.children.length === 0) addImageInput('product-image-list-container');
         setupMoreLinksUploader('product-more-links-container', 'add-more-link-btn');
@@ -187,7 +194,6 @@ function setupImagePreview(inputId, previewId) {
     input.addEventListener('input', updatePreview);
     input.addEventListener('change', updatePreview);
 }
-// കാറ്റഗറിക്കും സെറ്റിംഗ്സിനും പ്രിവ്യൂ സെറ്റ് ചെയ്യുന്നു
 setupImagePreview('category-image-url', 'category-image-preview');
 setupImagePreview('setting-logo-image-url', 'logo-preview');
 setupImagePreview('setting-home-banner-url', 'banner-preview');
@@ -213,7 +219,6 @@ async function loadAllSettings() {
             const titleElement = document.getElementById("admin-panel-title");
             if (titleElement) titleElement.textContent = `${settings.logoText || 'Admin'} - Panel`;
             
-            // ട്രിഗർ പ്രിവ്യൂ അപ്ഡേറ്റ്സ് (ഡാറ്റ ലോഡ് ചെയ്ത ശേഷം)
             document.getElementById("setting-logo-image-url").dispatchEvent(new Event('input'));
             document.getElementById("setting-home-banner-url").dispatchEvent(new Event('input'));
         }
@@ -334,6 +339,80 @@ function loadProducts(categoryId = "all") {
      }, (error) => { console.error("Error loading products: ", error); showStatus(adminStatus, "Error loading products."); });
 }
 
+// *** പുതിയത്: സെർച്ചിനായി പ്രൊഡക്റ്റുകൾ കാഷ് ചെയ്യുന്നു ***
+function cacheAllProductsForSearch() {
+    const q = query(collection(db, "products"));
+    onSnapshot(q, (snapshot) => {
+        allProductsCache = [];
+        snapshot.forEach(doc => {
+            allProductsCache.push({ id: doc.id, ...doc.data() });
+        });
+    });
+}
+
+// *** പുതിയത്: സെർച്ച് ഇൻപുട്ട് ഇവന്റ് ***
+featuredSearchInput.addEventListener('input', (e) => {
+    const searchTerm = e.target.value.toLowerCase().trim();
+    featuredSearchResults.innerHTML = '';
+    
+    if (searchTerm.length < 2) {
+        featuredSearchResults.style.display = 'none';
+        return;
+    }
+
+    const filtered = allProductsCache.filter(p => 
+        !p.featured && // നിലവിൽ ഫീച്ചേർഡ് അല്ലാത്തവ മാത്രം
+        p.name.toLowerCase().includes(searchTerm)
+    );
+
+    if (filtered.length > 0) {
+        featuredSearchResults.style.display = 'block';
+        filtered.forEach(product => {
+            const img = product.images && product.images[0] ? product.images[0] : '';
+            const item = document.createElement('div');
+            item.className = 'search-result-item';
+            item.innerHTML = `
+                <img src="${img}" alt="${product.name}">
+                <div class="search-result-info">
+                    <span class="search-result-name">${product.name}</span>
+                    <span class="search-result-price">₹${product.price}</span>
+                </div>
+                <button class="search-result-add-btn">Add</button>
+            `;
+            item.addEventListener('click', () => addToFeatured(product.id));
+            featuredSearchResults.appendChild(item);
+        });
+    } else {
+        featuredSearchResults.style.display = 'none';
+    }
+});
+
+// *** പുതിയത്: Featured-ലേക്ക് ചേർക്കുന്നു ***
+async function addToFeatured(productId) {
+    try {
+        const ref = doc(db, "products", productId);
+        await updateDoc(ref, { featured: true });
+        featuredSearchInput.value = '';
+        featuredSearchResults.style.display = 'none';
+        showStatus(adminStatus, "Product added to Featured list.", false);
+    } catch (error) {
+        showStatus(adminStatus, "Error updating product.");
+    }
+}
+
+// *** പുതിയത്: Featured-ൽ നിന്ന് മാറ്റുന്നു (Remove Only) ***
+async function removeFromFeatured(productId) {
+    if(!confirm("Remove this product from Featured list? (It will not be deleted from database)")) return;
+    try {
+        const ref = doc(db, "products", productId);
+        await updateDoc(ref, { featured: false });
+        showStatus(adminStatus, "Removed from Featured list.", false);
+    } catch (error) {
+        showStatus(adminStatus, "Error removing product.");
+    }
+}
+
+// *** പുതിയത്: Featured List ലോഡ് ചെയ്യുന്നു (Remove Button Only) ***
 function loadFeaturedProducts() {
      const q = query(collection(db, "products"), where("featured", "==", true));
      if (currentFeaturedQuery) currentFeaturedQuery(); 
@@ -345,9 +424,20 @@ function loadFeaturedProducts() {
             const id = doc.id;
             const imageUrl = product.images && product.images[0] ? product.images[0] : '';
             let priceDisplay = `₹${product.price || 0}`;
-            if (product.mrp && product.mrp > product.price) priceDisplay += ` <span class="price-mrp-admin">₹${product.mrp}</span>`;
+            
             const row = document.createElement('tr');
-            row.innerHTML = `<td><img src="${imageUrl}" alt="${product.name}"></td><td>${product.name} ⭐</td><td>${priceDisplay}</td><td><button class="btn btn-edit" data-id="${id}" data-type="product">Edit</button><button class="btn btn-delete" data-id="${id}" data-type="product">Delete</button></td>`;
+            row.innerHTML = `
+                <td><img src="${imageUrl}" alt="${product.name}"></td>
+                <td>${product.name}</td>
+                <td>${priceDisplay}</td>
+                <td>
+                    <button class="btn-remove-featured" data-id="${id}">Remove</button>
+                </td>
+            `;
+            
+            // ഇവന്റ് ലിസണർ ചേർക്കുന്നു (കാരണം HTML string-ൽ onclick വർക്ക് ചെയ്യില്ല module ആയതുകൊണ്ട്)
+            row.querySelector('.btn-remove-featured').addEventListener('click', () => removeFromFeatured(id));
+            
             featuredProductsListBody.appendChild(row);
         });
      }, (error) => { console.error("Error loading featured products: ", error); featuredProductsListBody.innerHTML = '<tr><td colspan="4">Error loading featured products.</td></tr>'; });
