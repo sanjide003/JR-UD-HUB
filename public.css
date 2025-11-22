@@ -316,7 +316,7 @@ img { max-width: 100%; height: auto; display: block; }
     .bottom-nav-item {
         display: flex; flex-direction: column; align-items: center; justify-content: center;
         text-decoration: none;
-        /* *** മാറ്റം: ഡിഫോൾട്ട് നിറം ഗോൾഡ് ആക്കി *** */
+        /* *** ഡിഫോൾട്ട് കളർ ഗോൾഡ് *** */
         color: var(--primary-gold); 
         font-size: 0.7rem; font-weight: 500;
         flex: 1; height: 100%; gap: 4px; transition: all 0.3s ease;
@@ -327,12 +327,13 @@ img { max-width: 100%; height: auto; display: block; }
         stroke-linecap: round; stroke-linejoin: round; transition: all 0.3s ease;
     }
     
-    /* *** മാറ്റം: ആക്ടീവ് ഐക്കൺ & ടെക്സ്റ്റ് വെള്ള നിറം (White) *** */
+    /* *** ആക്ടീവ് ആകുമ്പോൾ വെള്ള നിറം (Force White) *** */
     .bottom-nav-item.active { 
         color: #FFFFFF !important; 
     }
     .bottom-nav-item.active svg { 
         stroke: #FFFFFF !important; 
+        fill: none; /* ഫിൽ ഉള്ള ഐക്കൺ ആണെങ്കിൽ ഇത് മാറ്റണം, ഇവിടെ എല്ലാം സ്ട്രോക്ക് ആണ് */
         transform: translateY(-2px); 
     }
     
