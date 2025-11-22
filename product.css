@@ -105,10 +105,40 @@
     color: #5dade2;
 }
 
-.product-size {
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
+/* *** പുതിയത്: Specification List Styles *** */
+.product-specification-section {
+    margin-bottom: 1.5rem;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
 }
+.product-specs-list {
+    list-style-type: none; /* ഡിഫോൾട്ട് ബുള്ളറ്റ് ഒഴിവാക്കുന്നു */
+    padding: 0;
+    margin: 0;
+}
+.product-specs-list li {
+    margin-bottom: 0.5rem;
+    color: var(--text-color);
+    position: relative;
+    padding-left: 1.5rem;
+    font-size: 1rem;
+}
+/* കസ്റ്റം ബുള്ളറ്റ് (ഗോൾഡ് കളറിൽ) */
+.product-specs-list li::before {
+    content: "•"; 
+    color: var(--primary-gold);
+    font-weight: bold;
+    font-size: 1.2rem;
+    position: absolute;
+    left: 0;
+    top: -2px;
+}
+.product-specs-list li:last-child {
+    margin-bottom: 0;
+}
+
 .product-actions-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
