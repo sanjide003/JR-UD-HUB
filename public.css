@@ -316,8 +316,8 @@ img { max-width: 100%; height: auto; display: block; }
     .bottom-nav-item {
         display: flex; flex-direction: column; align-items: center; justify-content: center;
         text-decoration: none;
-        /* *** ഡിഫോൾട്ട് കളർ ഗോൾഡ് *** */
-        color: var(--primary-gold); 
+        /* *** മാറ്റം: ഡിഫോൾട്ട് നിറം വെള്ള (White) *** */
+        color: #FFFFFF; 
         font-size: 0.7rem; font-weight: 500;
         flex: 1; height: 100%; gap: 4px; transition: all 0.3s ease;
         background: none; border: none; cursor: pointer; padding: 0;
@@ -327,22 +327,14 @@ img { max-width: 100%; height: auto; display: block; }
         stroke-linecap: round; stroke-linejoin: round; transition: all 0.3s ease;
     }
     
-    /* *** ആക്ടീവ് ആകുമ്പോൾ വെള്ള നിറം (Force White) *** */
+    /* *** മാറ്റം: ആക്ടീവ് പേജ് മാത്രം ഗോൾഡ് (Gold) *** */
     .bottom-nav-item.active { 
-        color: #FFFFFF !important; 
+        color: var(--primary-gold) !important; 
     }
     .bottom-nav-item.active svg { 
-        stroke: #FFFFFF !important; 
-        fill: none; 
+        stroke: var(--primary-gold) !important; 
         transform: translateY(-2px); 
-    }
-
-    /* *** Account Button Always White *** */
-    .bottom-nav-item.always-white {
-        color: #FFFFFF !important;
-    }
-    .bottom-nav-item.always-white svg {
-        stroke: #FFFFFF !important;
+        fill: none; 
     }
     
     /* *** കാറ്റലോഗ് ഐക്കൺ ആനിമേഷൻ (Bounce) *** */
