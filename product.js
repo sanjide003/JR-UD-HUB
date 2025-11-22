@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-
+// *** മാറ്റം: Size മാറ്റി Specification (Points) കാണിക്കുന്നു ***
 
 import { 
     collection, 
@@ -12,7 +12,7 @@ import {
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db } from './firebase-config.js';
-import { loadSiteSettings, optimizeImage } from './common.js'; // *** optimizeImage ***
+import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
 setLogLevel('Debug');
@@ -72,7 +72,8 @@ async function loadProductDetails() {
             price: product.price || 0,
             mrp: product.mrp || 0,
             image: product.images && product.images[0] ? product.images[0] : '',
-            size: product.size || ''
+            // size: ... ഒഴിവാക്കി
+            specification: product.specification || '' // പുതിയത്
         };
 
         const price = product.price || 0;
@@ -104,7 +105,6 @@ async function loadProductDetails() {
         if (product.images && product.images.length > 0) {
             let slidesHTML = '';
             product.images.forEach((imgUrl) => {
-                // *** വലിയ ചിത്രങ്ങൾ ഒപ്റ്റിമൈസ് ചെയ്യുന്നു (1000px മതി) ***
                 const optimizedUrl = optimizeImage(imgUrl, 1000, 90);
                 slidesHTML += `
                     <div class="swiper-slide">
@@ -140,6 +140,22 @@ async function loadProductDetails() {
             descriptionHTML = linkifiedText.replace(/\n/g, '<br>');
         }
 
+        // *** Specification Logic (Points List) ***
+        let specificationHTML = '';
+        if (product.specification) {
+            // പുതിയ വരികളെ (Enter) <li> ടാഗുകൾ ആക്കി മാറ്റുന്നു
+            const points = product.specification.split('\n').filter(line => line.trim() !== '');
+            if (points.length > 0) {
+                specificationHTML = '<ul class="product-specs-list">';
+                points.forEach(point => {
+                    // ഹൈഫൺ (-) ഉണ്ടെങ്കിൽ അത് നീക്കം ചെയ്ത് വൃത്തിയാക്കുന്നു
+                    const cleanPoint = point.replace(/^-\s*/, '').trim();
+                    specificationHTML += `<li>${cleanPoint}</li>`;
+                });
+                specificationHTML += '</ul>';
+            }
+        }
+
         const isInCart = isItemInCart(productIdStr);
         const cartButtonText = isInCart ? "Remove from Cart" : "Add to Cart";
         const cartButtonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new";
@@ -147,9 +163,10 @@ async function loadProductDetails() {
         const infoHTML = `
             <div class="product-info">
                 <h1 class="product-title">${product.name}</h1>
-                <div class="product-size">
-                    <strong>Size:</strong> ${product.size || 'N/A'}
-                </div>
+                
+                <!-- *** Size മാറ്റി Specification ചേർത്തു *** -->
+                ${specificationHTML ? `<div class="product-specification-section">${specificationHTML}</div>` : ''}
+
                 <div class="price-container large">
                     ${priceHTML}
                 </div>
@@ -242,7 +259,8 @@ function setupProductActionButtons() {
                 const productLink = window.location.href; 
                 let message = `Hi, I'm interested in this product:\n\n`;
                 message += `*${currentProduct.name}*\n`;
-                if(currentProduct.size) message += `*Size: ${currentProduct.size}*\n`;
+                // Specification ഉണ്ടെങ്കിൽ അതും മെസ്സേജിൽ ചേർക്കാം
+                if(currentProduct.specification) message += `*Specs: ${currentProduct.specification.replace(/\n/g, ', ')}*\n`;
                 message += `*Price: ₹${currentProduct.price.toFixed(2)}*\n\n`; 
                 message += `Product Link:\n${productLink}`;
                 const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
@@ -281,7 +299,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
             const price = product.price || 0;
             const mrp = product.mrp || 0;
             
-            // *** ഒപ്റ്റിമൈസ് ചെയ്ത ഇമേജ് (400px മതി) ***
             const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
             const imageUrl = optimizeImage(rawImage, 400);
 
