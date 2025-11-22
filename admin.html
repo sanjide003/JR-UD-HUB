@@ -1,5 +1,6 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. admin.html
+  മാറ്റം: സൈഡ് മെനുവിന്റെ (ഹാംബർഗർ മെനു) ഏറ്റവും താഴെ ലോഗൗട്ട് ബട്ടൺ ചേർത്തു.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -50,15 +51,19 @@
                 <h1 id="admin-panel-title">JR-UD-HUB - Admin</h1>
             </div>
             <div class="admin-header-right">
-                <button id="logout-button" class="btn btn-logout">Logout</button>
+                <!-- ഡെസ്ക്ടോപ്പിന് വേണ്ടിയുള്ള ലോഗൗട്ട് ബട്ടൺ (മുകളിൽ വലതുവശത്ത്) -->
+                <button class="btn btn-logout logout-action-btn header-logout-btn">Logout</button>
             </div>
         </header>
 
+        <!-- *** സൈഡ് മെനു (Side Nav) *** -->
         <nav class="admin-side-nav" id="admin-side-nav">
             <div class="admin-nav-header">
                 <h2>Menu</h2>
                 <button id="admin-nav-close-btn">&times;</button>
             </div>
+            
+            <!-- മെനു ലിങ്കുകൾ -->
             <div class="admin-nav-links">
                 <button class="nav-link active" data-page="page-add-product">Add New Product</button>
                 <button class="nav-link" data-page="page-existing-products">Existing Products</button>
@@ -69,6 +74,18 @@
                 <button class="nav-link" data-page="page-general-settings">General Site Settings</button>
                 <button class="nav-link" data-page="page-contact-details">Contact Details</button>
                 <button class="nav-link" data-page="page-follow-us">"Follow Us" Links</button>
+            </div>
+            
+            <!-- *** മാറ്റം: മെനുവിന്റെ ഏറ്റവും താഴെ ലോഗൗട്ട് ബട്ടൺ *** -->
+            <div class="admin-nav-footer">
+                <button class="btn btn-logout logout-action-btn full-width-logout">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                    Logout
+                </button>
             </div>
         </nav>
         <div class="admin-nav-overlay" id="admin-nav-overlay"></div>
@@ -120,7 +137,7 @@
                             <button type="button" id="add-image-url-btn" class="btn btn-secondary">Add Image URL</button>
                         </div>
 
-                        <!-- *** പുതിയത്: "More Links" സെക്ഷൻ *** -->
+                        <!-- *** "More Links" സെക്ഷൻ *** -->
                         <div class="form-group full-width">
                             <label>More Links (e.g., YouTube Review, Paid Promotion)</label>
                             <div id="product-more-links-container" class="link-url-list">
@@ -296,12 +313,11 @@
                             <label for="setting-video-url">Home Page Experience Video URL</label>
                             <input type="text" id="setting-video-url" placeholder="Paste YouTube or .mp4 link here">
                         </div>
-                        <!-- *** പുതിയത്: ഹോം പേജ് ബാനർ *** -->
+                        <!-- *** ഹോം പേജ് ബാനർ *** -->
                         <div class="form-group">
                             <label for="setting-home-banner-url">Home Page Banner Image URL</label>
                             <input type="text" id="setting-home-banner-url" placeholder="Paste full-width banner image link here">
                         </div>
-                        <!-- *** മാറ്റം കഴിഞ്ഞു *** -->
                     </div>
                     <button type="submit" class="btn" id="save-general-settings-button">
                         <span class="btn-text">Save General Settings</span>
