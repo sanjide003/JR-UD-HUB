@@ -124,7 +124,7 @@ body {
     z-index: 1002;
     transition: left 0.4s ease;
     display: flex;
-    flex-direction: column; /* പ്രധാന മാറ്റം: മുകളിൽ നിന്ന് താഴേക്ക് */
+    flex-direction: column; 
 }
 .admin-side-nav.open {
     left: 0;
@@ -152,7 +152,7 @@ body {
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border-color);
     height: 70px;
-    flex-shrink: 0; /* ചുരുങ്ങാതിരിക്കാൻ */
+    flex-shrink: 0; 
 }
 .admin-nav-header h2 {
     color: var(--primary-gold);
@@ -170,8 +170,8 @@ body {
 
 /* മെനു ലിങ്കുകൾ */
 .admin-nav-links {
-    flex-grow: 1; /* ബാക്കിയുള്ള സ്ഥലം മുഴുവൻ എടുക്കുന്നു */
-    overflow-y: auto; /* ലിങ്കുകൾ കൂടിയാൽ സ്ക്രോൾ വരും */
+    flex-grow: 1; 
+    overflow-y: auto; 
 }
 .nav-link {
     display: block;
@@ -197,12 +197,12 @@ body {
     background-color: #252525;
 }
 
-/* *** പുതിയത്: മെനു ഫൂട്ടർ (ലോഗൗട്ട്) *** */
+/* മെനു ഫൂട്ടർ (ലോഗൗട്ട്) */
 .admin-nav-footer {
     padding: 1.5rem;
     border-top: 1px solid var(--border-color);
     background-color: #1f1f1f;
-    flex-shrink: 0; /* ചുരുങ്ങാതിരിക്കാൻ */
+    flex-shrink: 0; 
 }
 .admin-nav-footer .btn-logout {
     width: 100%;
@@ -285,20 +285,7 @@ textarea {
     min-height: 100px;
 }
 
-/* --- 7. ഇമേജ് & ലിങ്ക് അപ്‌ലോഡർ സ്റ്റൈലുകൾ --- */
-.image-preview {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    margin-top: 10px;
-}
-.image-preview img {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 5px;
-    border: 2px solid var(--border-color);
-}
+/* --- 7. ഇമേജ് & ലിങ്ക് അപ്‌ലോഡർ സ്റ്റൈലുകൾ (SINGLE LINE FIX) --- */
 
 .image-url-list,
 .link-url-list {
@@ -307,30 +294,48 @@ textarea {
     gap: 1rem;
     margin-bottom: 1rem;
 }
+
+/* *** പ്രധാന മാറ്റം: flex-wrap: nowrap ഉപയോഗിക്കുന്നു *** */
 .image-url-item,
-.link-url-item {
+.link-url-item,
+.inline-image-input-container {
     display: flex;
-    flex-wrap: wrap; /* മൊബൈലിന് വേണ്ടി */
+    flex-wrap: nowrap; /* ഒരേ വരിയിൽ നിൽക്കാൻ */
     gap: 10px;
     align-items: center;
 }
-.image-url-item input {
+
+.image-url-item input,
+.link-url-item input[type="text"],
+.inline-image-input-container input {
     flex-grow: 1;
+    min-width: 0; /* ചെറിയ സ്ക്രീനിൽ ഇൻപുട്ട് ചുരുങ്ങാൻ */
+    width: auto;
 }
-.image-url-item .image-preview-item {
+
+/* പ്രിവ്യൂ ഇമേജ് സ്റ്റൈൽ */
+.image-url-item .image-preview-item,
+.inline-image-input-container .image-preview-small img {
     width: 40px;
     height: 40px;
     object-fit: cover;
     border-radius: 4px;
     border: 1px solid var(--border-color);
     background-color: #333;
+    flex-shrink: 0; /* ഇമേജ് ചുരുങ്ങാതിരിക്കാൻ */
+    display: block;
 }
 
-.link-url-item input[type="text"] {
-    flex: 1;
-    min-width: 200px; 
+.inline-image-input-container .image-preview-small {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    display: flex; /* ഇമേജ് ഇല്ലെങ്കിൽ സ്ഥലം പിടിക്കാൻ */
+    align-items: center;
+    justify-content: center;
 }
 
+/* റിമൂവ് ബട്ടൺ (X) സ്റ്റൈൽ */
 .image-url-item .btn-remove-image,
 .link-url-item .btn-remove-link {
     background-color: var(--error-red);
@@ -344,7 +349,14 @@ textarea {
     font-size: 1rem;
     padding: 0;
     line-height: 30px;
-    flex-shrink: 0; 
+    flex-shrink: 0; /* ബട്ടൺ ചുരുങ്ങാതിരിക്കാൻ */
+    text-align: center;
+}
+
+/* ലിങ്ക് ടൈറ്റിൽ ഇൻപുട്ടിന് */
+.link-url-item .link-title-input {
+    flex: 1;
+    min-width: 100px;
 }
 
 .btn-secondary {
@@ -608,19 +620,7 @@ textarea {
         width: auto;
     }
 
-    /* *** പുതിയത്: മൊബൈലിൽ ലിങ്ക് ഇൻപുട്ടുകൾ ഒന്നിന് താഴെ ഒന്നായി *** */
-    .link-url-item {
-        flex-direction: column;
-        align-items: stretch;
-    }
-    .link-url-item input[type="text"] {
-        min-width: 100%;
-    }
-    .link-url-item .btn-remove-link {
-        width: 100%;
-        border-radius: 5px;
-    }
-    /* മൊബൈലിൽ ഹെഡറിലെ ലോഗൗട്ട് ബട്ടൺ മറയ്ക്കുന്നു (സൈഡ് മെനുവിൽ ഉള്ളതുകൊണ്ട്) */
+    /* മൊബൈലിൽ ഹെഡറിലെ ലോഗൗട്ട് ബട്ടൺ മറയ്ക്കുന്നു */
     .header-logout-btn {
         display: none;
     }
