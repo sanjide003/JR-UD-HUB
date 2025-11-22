@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. admin.html
-  മാറ്റം: ഇമേജ് ഇൻപുട്ടുകൾ സിംഗിൾ ലൈനിൽ ആക്കി.
+  മാറ്റം: Featured Products പേജിൽ സെർച്ച് ബാർ ചേർത്തു.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -135,7 +135,7 @@
                         </div>
 
                         <div class="form-group full-width">
-                            <label>More Links (e.g., YouTube Review)</label>
+                            <label>More Links</label>
                             <div id="product-more-links-container" class="link-url-list"></div>
                             <button type="button" id="add-more-link-btn" class="btn btn-secondary">Add Link</button>
                         </div>
@@ -148,7 +148,6 @@
                 </form>
             </div>
 
-            <!-- Page 2 & 3 Skipped (Same as before) -->
             <div id="page-existing-products" class="page-content">
                 <div class="data-list-section">
                     <h2>Existing Products</h2>
@@ -161,172 +160,89 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- *** മാറ്റം: Featured Products പേജിൽ സെർച്ച് ബാർ *** -->
             <div id="page-featured-products" class="page-content">
                 <div class="data-list-section">
-                    <h2>Featured Products</h2>
+                    <h2>Featured Products (Top Sellers)</h2>
+                    
+                    <!-- സെർച്ച് ബോക്സ് -->
+                    <div class="featured-search-container">
+                        <label for="featured-product-search">Search & Add Products to Featured List</label>
+                        <div class="search-wrapper">
+                            <input type="text" id="featured-product-search" placeholder="Search product name...">
+                            <div id="featured-search-results" class="search-results-dropdown"></div>
+                        </div>
+                    </div>
+
                     <div class="data-table-wrapper">
-                        <table class="data-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Actions</th></tr></thead><tbody id="featured-products-list-body"></tbody></table>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>Image</th>
+                                    <th>Name</th>
+                                    <th>Price</th>
+                                    <th>Actions</th> <!-- ഇവിടെ Remove മാത്രം വരും -->
+                                </tr>
+                            </thead>
+                            <tbody id="featured-products-list-body">
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
 
-            <!-- പേജ് 4: Add New Category (മാറ്റം വരുത്തിയത്) -->
+            <!-- Page 4, 5, 6... Skipped (Same as before) -->
             <div id="page-add-category" class="page-content">
                 <form id="add-category-form" class="form-section">
                     <h2>Add New Category</h2>
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label for="category-name">Category Name <span class="required-star">*</span></label>
-                            <input type="text" id="category-name" required>
-                        </div>
-                        <!-- *** മാറ്റം: ഇൻലൈൻ പ്രിവ്യൂ *** -->
-                        <div class="form-group">
-                            <label for="category-image-url">Category Image URL <span class="required-star">*</span></label>
-                            <div class="inline-image-input-container">
-                                <div class="image-preview-small" id="category-image-preview"></div>
-                                <input type="text" class="image-url-input" id="category-image-url" placeholder="Paste image URL" required>
-                            </div>
-                        </div>
+                        <div class="form-group"><label for="category-name">Category Name <span class="required-star">*</span></label><input type="text" id="category-name" required></div>
+                        <div class="form-group"><label for="category-image-url">Category Image URL <span class="required-star">*</span></label><div class="inline-image-input-container"><div class="image-preview-small" id="category-image-preview"></div><input type="text" class="image-url-input" id="category-image-url" required></div></div>
                     </div>
-                    <button type="submit" class="btn" id="add-category-button">
-                        <span class="btn-text">Add Category</span>
-                        <span class="btn-loader loader-small" style="display: none;"></span>
-                    </button>
+                    <button type="submit" class="btn" id="add-category-button"><span class="btn-text">Add Category</span><span class="btn-loader loader-small" style="display: none;"></span></button>
                 </form>
             </div>
 
             <div id="page-existing-categories" class="page-content">
-                <div class="data-list-section">
-                    <h2>Existing Categories</h2>
-                     <div class="data-table-wrapper">
-                        <table class="data-table"><thead><tr><th>Image</th><th>Name</th><th>Actions</th></tr></thead><tbody id="categories-list-body"></tbody></table>
-                    </div>
-                </div>
+                <div class="data-list-section"><h2>Existing Categories</h2><div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Image</th><th>Name</th><th>Actions</th></tr></thead><tbody id="categories-list-body"></tbody></table></div></div>
             </div>
             
             <div id="page-manage-hero" class="page-content">
                 <form id="add-hero-slide-form" class="form-section">
                     <h2>Add New Hero Slide</h2>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="hero-slide-url">Media URL</label>
-                            <input type="text" id="hero-slide-url" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="hero-slide-type">Media Type</label>
-                            <select id="hero-slide-type" required>
-                                <option value="video">Video</option>
-                                <option value="image">Image</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="hero-slide-order">Order</label>
-                            <input type="number" id="hero-slide-order" value="1" required>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn" id="add-hero-slide-button">
-                        <span class="btn-text">Add Slide</span>
-                        <span class="btn-loader loader-small" style="display: none;"></span>
-                    </button>
+                    <div class="form-grid"><div class="form-group"><label for="hero-slide-url">Media URL</label><input type="text" id="hero-slide-url" required></div><div class="form-group"><label for="hero-slide-type">Media Type</label><select id="hero-slide-type" required><option value="video">Video</option><option value="image">Image</option></select></div><div class="form-group"><label for="hero-slide-order">Order</label><input type="number" id="hero-slide-order" value="1" required></div></div>
+                    <button type="submit" class="btn" id="add-hero-slide-button"><span class="btn-text">Add Slide</span><span class="btn-loader loader-small" style="display: none;"></span></button>
                 </form>
-                <div class="data-list-section">
-                    <h2>Existing Hero Slides</h2>
-                    <div class="data-table-wrapper">
-                        <table class="data-table"><thead><tr><th>Preview</th><th>Type</th><th>Order</th><th>URL</th><th>Actions</th></tr></thead><tbody id="hero-slides-list-body"></tbody></table>
-                    </div>
-                </div>
+                <div class="data-list-section"><h2>Existing Hero Slides</h2><div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Preview</th><th>Type</th><th>Order</th><th>URL</th><th>Actions</th></tr></thead><tbody id="hero-slides-list-body"></tbody></table></div></div>
             </div>
 
-            <!-- പേജ് 7: General Site Settings (മാറ്റം വരുത്തിയത്) -->
             <div id="page-general-settings" class="page-content">
                 <form id="general-settings-form" class="form-section">
                     <h2>General Site Settings</h2>
                     <div class="form-grid">
-                         <!-- *** മാറ്റം: ലോഗോ പ്രിവ്യൂ ചേർത്തു *** -->
-                         <div class="form-group">
-                            <label for="setting-logo-image-url">Logo Image URL</label>
-                            <div class="inline-image-input-container">
-                                <div class="image-preview-small" id="logo-preview"></div>
-                                <input type="text" id="setting-logo-image-url" placeholder="Paste logo image link here">
-                            </div>
-                        </div>
-                        <div class="form-group">
-                            <label for="setting-logo-text">Logo Text</label>
-                            <input type="text" id="setting-logo-text">
-                        </div>
-                         <div class="form-group">
-                            <label for="setting-logo-subtitle">Logo Subtitle</label>
-                            <input type="text" id="setting-logo-subtitle">
-                        </div>
-                        <!-- *** മാറ്റം: ബാനർ പ്രിവ്യൂ ചേർത്തു *** -->
-                        <div class="form-group">
-                            <label for="setting-home-banner-url">Home Page Banner Image URL</label>
-                            <div class="inline-image-input-container">
-                                <div class="image-preview-small" id="banner-preview"></div>
-                                <input type="text" id="setting-home-banner-url" placeholder="Paste full-width banner image link here">
-                            </div>
-                        </div>
+                         <div class="form-group"><label for="setting-logo-image-url">Logo Image URL</label><div class="inline-image-input-container"><div class="image-preview-small" id="logo-preview"></div><input type="text" id="setting-logo-image-url"></div></div>
+                        <div class="form-group"><label for="setting-logo-text">Logo Text</label><input type="text" id="setting-logo-text"></div>
+                         <div class="form-group"><label for="setting-logo-subtitle">Logo Subtitle</label><input type="text" id="setting-logo-subtitle"></div>
+                        <div class="form-group"><label for="setting-home-banner-url">Home Page Banner Image URL</label><div class="inline-image-input-container"><div class="image-preview-small" id="banner-preview"></div><input type="text" id="setting-home-banner-url"></div></div>
                     </div>
-                    <button type="submit" class="btn" id="save-general-settings-button">
-                        <span class="btn-text">Save General Settings</span>
-                        <span class="btn-loader loader-small" style="display: none;"></span>
-                    </button>
+                    <button type="submit" class="btn" id="save-general-settings-button"><span class="btn-text">Save General Settings</span><span class="btn-loader loader-small" style="display: none;"></span></button>
                 </form>
             </div>
 
             <div id="page-contact-details" class="page-content">
                 <form id="contact-settings-form" class="form-section">
                     <h2>Contact Details</h2>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="setting-phone">Contact Phone</label>
-                            <input type="text" id="setting-phone">
-                        </div>
-                        <div class="form-group">
-                            <label for="setting-email">Contact Email</label>
-                            <input type="email" id="setting-email">
-                        </div>
-                         <div class="form-group">
-                            <label for="setting-address">Contact Address</label>
-                            <input type="text" id="setting-address">
-                        </div>
-                         <div class="form-group">
-                            <label for="setting-whatsapp">Order WhatsApp Number</label>
-                            <input type="text" id="setting-whatsapp">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn" id="save-contact-settings-button">
-                        <span class="btn-text">Save Contact Details</span>
-                        <span class="btn-loader loader-small" style="display: none;"></span>
-                    </button>
+                    <div class="form-grid"><div class="form-group"><label for="setting-phone">Contact Phone</label><input type="text" id="setting-phone"></div><div class="form-group"><label for="setting-email">Contact Email</label><input type="email" id="setting-email"></div><div class="form-group"><label for="setting-address">Contact Address</label><input type="text" id="setting-address"></div><div class="form-group"><label for="setting-whatsapp">Order WhatsApp Number</label><input type="text" id="setting-whatsapp"></div></div>
+                    <button type="submit" class="btn" id="save-contact-settings-button"><span class="btn-text">Save Contact Details</span><span class="btn-loader loader-small" style="display: none;"></span></button>
                 </form>
             </div>
 
             <div id="page-follow-us" class="page-content">
                 <form id="follow-settings-form" class="form-section">
                     <h2>"Follow Us" Links</h2>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="setting-follow-whatsapp">"Follow Us" WhatsApp Link</label>
-                            <input type="text" id="setting-follow-whatsapp">
-                        </div>
-                         <div class="form-group">
-                            <label for="setting-facebook-url">Facebook URL</label>
-                            <input type="text" id="setting-facebook-url">
-                        </div>
-                        <div class="form-group">
-                            <label for="setting-instagram-url">Instagram URL</label>
-                            <input type="text" id="setting-instagram-url">
-                        </div>
-                        <div class="form-group">
-                            <label for="setting-youtube-url">YouTube URL</label>
-                            <input type="text" id="setting-youtube-url">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn" id="save-follow-settings-button">
-                        <span class="btn-text">Save "Follow Us" Links</span>
-                        <span class="btn-loader loader-small" style="display: none;"></span>
-                    </button>
+                    <div class="form-grid"><div class="form-group"><label for="setting-follow-whatsapp">"Follow Us" WhatsApp Link</label><input type="text" id="setting-follow-whatsapp"></div><div class="form-group"><label for="setting-facebook-url">Facebook URL</label><input type="text" id="setting-facebook-url"></div><div class="form-group"><label for="setting-instagram-url">Instagram URL</label><input type="text" id="setting-instagram-url"></div><div class="form-group"><label for="setting-youtube-url">YouTube URL</label><input type="text" id="setting-youtube-url"></div></div>
+                    <button type="submit" class="btn" id="save-follow-settings-button"><span class="btn-text">Save "Follow Us" Links</span><span class="btn-loader loader-small" style="display: none;"></span></button>
                 </form>
             </div>
 
