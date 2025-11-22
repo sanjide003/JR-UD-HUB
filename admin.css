@@ -12,6 +12,7 @@
     --card-bg: #1e1e1e;
     --error-red: #e74c3c;
     --success-green: #2ecc71;
+    --warning-orange: #f39c12; /* Remove ബട്ടണിന് */
     --border-color: #333;
     --font-main: 'Inter', sans-serif;
 }
@@ -295,17 +296,16 @@ textarea {
     margin-bottom: 1rem;
 }
 
-/* ഒറ്റ വരിയിൽ (Single Line) കാണിക്കേണ്ടവ */
+/* ഒറ്റ വരിയിൽ (Single Line) */
 .image-url-item,
 .link-url-item,
 .inline-image-input-container {
     display: flex;
-    flex-wrap: nowrap; /* ഡിഫോൾട്ട് ആയി ഒറ്റ വരി */
+    flex-wrap: nowrap; 
     gap: 10px;
     align-items: center;
 }
 
-/* ഇൻപുട്ടുകൾക്ക് സ്ഥലം നൽകുന്നു */
 .image-url-item input,
 .link-url-item input[type="text"],
 .inline-image-input-container input {
@@ -354,10 +354,8 @@ textarea {
     text-align: center;
 }
 
-/* "More Links" ലെ ഇൻപുട്ടുകൾക്ക് മിനിമം വീതി നൽകുന്നത് ഒഴിവാക്കി (Mobile fix) */
 .link-url-item .link-title-input {
     flex: 1;
-    /* min-width: 200px; - ഈ വരി ഒഴിവാക്കി, ഇത് കാരണമാണ് മൊബൈലിൽ പ്രശ്നം വന്നത് */
 }
 
 .btn-secondary {
@@ -412,6 +410,22 @@ textarea {
     padding: 0.4rem 0.8rem;
 }
 .btn-delete:hover { background-color: #c0392b; }
+
+/* *** പുതിയത്: Remove From Featured ബട്ടൺ (മഞ്ഞ/ഓറഞ്ച് നിറം) *** */
+.btn-remove-featured {
+    display: inline-block;
+    background-color: var(--warning-orange);
+    color: #fff;
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.btn-remove-featured:hover {
+    background-color: #e67e22;
+}
 
 /* --- 9. Status Messages & Loader --- */
 .status-message {
@@ -511,6 +525,87 @@ textarea {
     font-size: 0.9em;
     margin-left: 5px;
 }
+
+/* *** പുതിയത്: Featured Search Styles *** */
+.featured-search-container {
+    background-color: var(--card-bg);
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+.featured-search-container label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+    color: var(--primary-gold);
+}
+.search-wrapper {
+    position: relative;
+}
+.search-wrapper input {
+    width: 100%;
+    padding: 0.85rem;
+    background-color: #333;
+    border: 1px solid #555;
+    color: var(--text-color);
+    border-radius: 5px;
+    font-family: var(--font-main);
+}
+.search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #252525;
+    border: 1px solid var(--border-color);
+    border-radius: 0 0 5px 5px;
+    max-height: 300px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none; /* JS വഴി കാണിക്കും */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+}
+.search-result-item {
+    padding: 10px;
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: background 0.2s;
+}
+.search-result-item:hover {
+    background-color: #333;
+}
+.search-result-item img {
+    width: 40px;
+    height: 40px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.search-result-info {
+    flex-grow: 1;
+}
+.search-result-name {
+    font-weight: 500;
+    display: block;
+}
+.search-result-price {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
+.search-result-add-btn {
+    background-color: var(--success-green);
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8rem;
+}
+
+
 /* --- 11. Modal (for Editing) --- */
 .modal-overlay {
     position: fixed;
@@ -626,20 +721,18 @@ textarea {
         display: none;
     }
 
-    /* *** പുതിയത്: മൊബൈൽ ഫിക്സ് *** */
-    /* "More Links" സെക്ഷൻ മാത്രം മൊബൈലിൽ താഴെ താഴെയായി (Stack) കാണിക്കുന്നു */
+    /* മൊബൈൽ ഫിക്സ് */
     .link-url-item {
         flex-wrap: wrap; 
     }
     .link-url-item input[type="text"] {
-        min-width: 100%; /* ഫുൾ വിഡ്ത്ത് എടുക്കുന്നു */
+        min-width: 100%; 
     }
     .link-url-item .btn-remove-link {
         width: 100%;
         border-radius: 5px;
     }
     
-    /* എന്നാൽ Image URL (ഒരേ വരിയിൽ) മാറ്റമില്ലാതെ തുടരും */
     .image-url-item, .inline-image-input-container {
         flex-wrap: nowrap; 
     }
