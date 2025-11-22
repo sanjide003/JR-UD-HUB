@@ -235,25 +235,17 @@ async function buildFloatingButtons() {
 function buildBottomNav() {
     if (window.innerWidth > 768) return;
 
-    // *** URL-ൽ നിന്ന് '.html' നീക്കം ചെയ്ത് പേജ് കണ്ടുപിടിക്കുന്നു ***
     const path = window.location.pathname;
     const pageName = path.split("/").pop().replace('.html', '') || "index";
 
-    // *** 1. HOME (Active condition checked against 'index') ***
+    // *** 1. HOME ***
     const homeActive = pageName === 'index' ? 'active' : '';
-    
-    // *** 2. CATALOG (Active condition checked against 'categories') ***
+    // *** 2. CATALOG ***
     const catalogActive = pageName === 'categories' ? 'active' : '';
-    
-    // *** 3. EXPLORE (Active condition checked against 'explore') ***
+    // *** 3. EXPLORE ***
     const exploreActive = pageName === 'explore' ? 'active' : '';
 
-    // *** 4. ACCOUNT (ഇത് സാധാരണ പോലെ ഇരിക്കുന്നു) ***
-    // Account ബട്ടൺ ക്ലിക്ക് ചെയ്യുമ്പോൾ മെനു വരികയാണ് ചെയ്യുന്നത്, അതിനാൽ ഇതിന് 'Active' സ്റ്റേറ്റ് ആവശ്യമില്ലായിരിക്കാം.
-    // എന്നാലും, 'cart' അല്ലെങ്കിൽ 'contact' പേജുകളിൽ ആണെങ്കിൽ ഇതിനെ ആക്ടീവ് ആക്കാം.
-    // let accountActive = (pageName === 'cart' || pageName === 'contact' || pageName === 'about') ? 'active' : '';
-    // എന്നാൽ താങ്കൾ 'Account' ബട്ടൺ പഴയത് പോലെ തന്നെ വേണമെന്ന് പറഞ്ഞതുകൊണ്ട്, അത് അങ്ങനെ തന്നെ നിലനിർത്തുന്നു.
-
+    // *** മാറ്റം: ഇവിടെയാണ് അക്കൗണ്ട് മെനുവിന്റെ (Overlay) HTML ചേർത്തിട്ടുള്ളത് ***
     const navHTML = `
     <nav class="bottom-nav">
         <!-- 1. HOME -->
@@ -268,20 +260,55 @@ function buildBottomNav() {
             <span>Catalog</span>
         </a>
 
-        <!-- 3. EXPLORE (New Binoculars Icon) -->
+        <!-- 3. EXPLORE -->
         <a href="explore.html" class="bottom-nav-item ${exploreActive}">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 10h4"/><path d="M19 7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3"/><path d="M5 7V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3"/><rect x="4" y="7" width="6" height="8" rx="2"/><rect x="14" y="7" width="6" height="8" rx="2"/><path d="M6 15v4a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4"/><path d="M16 15v4a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4"/>
+                <path d="M18.3 3.7c.8-.8 2.1-.8 2.8 0l.9.9c.8.8.8 2.1 0 2.8L12 17.4c-.8.8-2.1.8-2.8 0l-.9-.9c-.8-.8-.8-2.1 0-2.8L18.3 3.7z"></path>
+                <path d="M10.5 18.5l-3.5 3.5"></path>
+                <path d="M13.5 15.5l3.5 3.5"></path>
+                <path d="M7 22l4-4"></path>
             </svg>
             <span>Explore</span>
         </a>
 
-        <!-- 4. ACCOUNT (Old Logic) -->
+        <!-- 4. ACCOUNT -->
         <button class="bottom-nav-item" id="bottom-nav-account-btn">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             <span>Account</span>
         </button>
     </nav>
+
+    <!-- Account Menu Overlay -->
+    <div class="user-menu-overlay" id="user-menu-overlay">
+        <div class="user-menu-content">
+            <div class="user-menu-header">
+                <h3>My Account</h3>
+                <button class="user-menu-close-btn" id="user-menu-close-btn">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <ul class="user-menu-list">
+                <li>
+                    <a href="cart.html" class="user-menu-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        <span>Your Orders</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="contact.html" class="user-menu-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                        <span>Contact Us</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="about.html" class="user-menu-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                        <span>About Us</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
     `;
 
     document.body.insertAdjacentHTML('beforeend', navHTML);
