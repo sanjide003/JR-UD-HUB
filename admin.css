@@ -285,7 +285,7 @@ textarea {
     min-height: 100px;
 }
 
-/* --- 7. ഇമേജ് & ലിങ്ക് അപ്‌ലോഡർ സ്റ്റൈലുകൾ (SINGLE LINE FIX) --- */
+/* --- 7. ഇമേജ് & ലിങ്ക് അപ്‌ലോഡർ സ്റ്റൈലുകൾ --- */
 
 .image-url-list,
 .link-url-list {
@@ -295,21 +295,22 @@ textarea {
     margin-bottom: 1rem;
 }
 
-/* *** പ്രധാന മാറ്റം: flex-wrap: nowrap ഉപയോഗിക്കുന്നു *** */
+/* ഒറ്റ വരിയിൽ (Single Line) കാണിക്കേണ്ടവ */
 .image-url-item,
 .link-url-item,
 .inline-image-input-container {
     display: flex;
-    flex-wrap: nowrap; /* ഒരേ വരിയിൽ നിൽക്കാൻ */
+    flex-wrap: nowrap; /* ഡിഫോൾട്ട് ആയി ഒറ്റ വരി */
     gap: 10px;
     align-items: center;
 }
 
+/* ഇൻപുട്ടുകൾക്ക് സ്ഥലം നൽകുന്നു */
 .image-url-item input,
 .link-url-item input[type="text"],
 .inline-image-input-container input {
     flex-grow: 1;
-    min-width: 0; /* ചെറിയ സ്ക്രീനിൽ ഇൻപുട്ട് ചുരുങ്ങാൻ */
+    min-width: 0; 
     width: auto;
 }
 
@@ -322,7 +323,7 @@ textarea {
     border-radius: 4px;
     border: 1px solid var(--border-color);
     background-color: #333;
-    flex-shrink: 0; /* ഇമേജ് ചുരുങ്ങാതിരിക്കാൻ */
+    flex-shrink: 0;
     display: block;
 }
 
@@ -330,7 +331,7 @@ textarea {
     width: 40px;
     height: 40px;
     flex-shrink: 0;
-    display: flex; /* ഇമേജ് ഇല്ലെങ്കിൽ സ്ഥലം പിടിക്കാൻ */
+    display: flex;
     align-items: center;
     justify-content: center;
 }
@@ -349,14 +350,14 @@ textarea {
     font-size: 1rem;
     padding: 0;
     line-height: 30px;
-    flex-shrink: 0; /* ബട്ടൺ ചുരുങ്ങാതിരിക്കാൻ */
+    flex-shrink: 0; 
     text-align: center;
 }
 
-/* ലിങ്ക് ടൈറ്റിൽ ഇൻപുട്ടിന് */
+/* "More Links" ലെ ഇൻപുട്ടുകൾക്ക് മിനിമം വീതി നൽകുന്നത് ഒഴിവാക്കി (Mobile fix) */
 .link-url-item .link-title-input {
     flex: 1;
-    min-width: 100px;
+    /* min-width: 200px; - ഈ വരി ഒഴിവാക്കി, ഇത് കാരണമാണ് മൊബൈലിൽ പ്രശ്നം വന്നത് */
 }
 
 .btn-secondary {
@@ -623,5 +624,23 @@ textarea {
     /* മൊബൈലിൽ ഹെഡറിലെ ലോഗൗട്ട് ബട്ടൺ മറയ്ക്കുന്നു */
     .header-logout-btn {
         display: none;
+    }
+
+    /* *** പുതിയത്: മൊബൈൽ ഫിക്സ് *** */
+    /* "More Links" സെക്ഷൻ മാത്രം മൊബൈലിൽ താഴെ താഴെയായി (Stack) കാണിക്കുന്നു */
+    .link-url-item {
+        flex-wrap: wrap; 
+    }
+    .link-url-item input[type="text"] {
+        min-width: 100%; /* ഫുൾ വിഡ്ത്ത് എടുക്കുന്നു */
+    }
+    .link-url-item .btn-remove-link {
+        width: 100%;
+        border-radius: 5px;
+    }
+    
+    /* എന്നാൽ Image URL (ഒരേ വരിയിൽ) മാറ്റമില്ലാതെ തുടരും */
+    .image-url-item, .inline-image-input-container {
+        flex-wrap: nowrap; 
     }
 }
