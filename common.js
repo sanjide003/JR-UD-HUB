@@ -238,27 +238,36 @@ function buildBottomNav() {
     const path = window.location.pathname;
     const page = path.split("/").pop() || "index.html";
 
+    // *** മാറ്റം: ക്രമം (Order): HOME, CATALOG, EXPLORE, ACCOUNT ***
+    // *** മാറ്റം: Explore ഐക്കൺ ടെലിസ്കോപ്പ് ആക്കി ***
+    // *** മാറ്റം: Account ബട്ടൺ തിരികെ കൊണ്ടുവന്നു (പഴയ കോഡ് പോലെ തന്നെ) ***
+
     const navHTML = `
     <nav class="bottom-nav">
+        <!-- 1. HOME -->
         <a href="index.html" class="bottom-nav-item ${page === 'index.html' ? 'active' : ''}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
             <span>Home</span>
         </a>
-        <a href="explore.html" class="bottom-nav-item ${page === 'explore.html' ? 'active' : ''}">
-            <svg class="icon-binoculars" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="m10.065 12.493-6.18 1.318a.934.934 0 0 1-1.108-.702l-.537-2.15a1.07 1.07 0 0 1 .691-1.265l13.504-4.44" />
-                <path d="m13.56 11.749 4.332-.924" />
-                <path d="m16 21-3.105-6.21" />
-                <path d="m16.485 5.94 4.415 1.472a.934.934 0 0 1 .612 1.172l-.537 2.15a1.07 1.07 0 0 1-1.265.723l-6.18-1.318" />
-                <path d="m9 18-4.866-4.866" />
-                <path d="m20 21-3-6" />
-            </svg>
-            <span>Explore</span>
-        </a>
+
+        <!-- 2. CATALOG -->
         <a href="categories.html" class="bottom-nav-item catalog-anim ${page === 'categories.html' ? 'active' : ''}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             <span>Catalog</span>
         </a>
+
+        <!-- 3. EXPLORE (Telescope Icon) -->
+        <a href="explore.html" class="bottom-nav-item ${page === 'explore.html' ? 'active' : ''}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M18.3 3.7c.8-.8 2.1-.8 2.8 0l.9.9c.8.8.8 2.1 0 2.8L12 17.4c-.8.8-2.1.8-2.8 0l-.9-.9c-.8-.8-.8-2.1 0-2.8L18.3 3.7z"></path>
+                <path d="M10.5 18.5l-3.5 3.5"></path>
+                <path d="M13.5 15.5l3.5 3.5"></path>
+                <path d="M7 22l4-4"></path>
+            </svg>
+            <span>Explore</span>
+        </a>
+
+        <!-- 4. ACCOUNT (പഴയത് പോലെ മെനു തുറക്കുന്നു) -->
         <button class="bottom-nav-item" id="bottom-nav-account-btn">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             <span>Account</span>
