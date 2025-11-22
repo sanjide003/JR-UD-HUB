@@ -238,12 +238,16 @@ function buildBottomNav() {
     const path = window.location.pathname;
     const pageName = path.split("/").pop().replace('.html', '') || "index";
 
-    // *** പേജുകൾ തിരിച്ചറിയാനുള്ള ലോജിക് ***
+    // *** 1. HOME ***
     const homeActive = pageName === 'index' ? 'active' : '';
-    // കാറ്റഗറീസും പ്രൊഡക്റ്റും കാറ്റലോഗിന്റെ ഭാഗം
+    
+    // *** 2. CATALOG (Fix: Now works correctly like others) ***
     const catalogActive = (pageName === 'categories' || pageName === 'product') ? 'active' : '';
+    
+    // *** 3. EXPLORE ***
     const exploreActive = pageName === 'explore' ? 'active' : '';
-    // കാർട്ട്, കോൺടാക്റ്റ്, എബൗട്ട് എന്നിവ അക്കൗണ്ട് മെനുവിന്റെ ഭാഗമായതിനാൽ അവയ്ക്ക് 'active' നൽകുന്നു
+
+    // *** 4. ACCOUNT (Highlighted for Cart, Contact, About) ***
     const accountActive = (pageName === 'cart' || pageName === 'contact' || pageName === 'about') ? 'active' : '';
 
     const navHTML = `
@@ -254,13 +258,13 @@ function buildBottomNav() {
             <span>Home</span>
         </a>
 
-        <!-- 2. CATALOG -->
+        <!-- 2. CATALOG (Catalog Active Logic Fixed) -->
         <a href="categories.html" class="bottom-nav-item catalog-anim ${catalogActive}">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
             <span>Catalog</span>
         </a>
 
-        <!-- 3. EXPLORE (Binoculars/Glasses Icon) -->
+        <!-- 3. EXPLORE -->
         <a href="explore.html" class="bottom-nav-item ${exploreActive}">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M10 10h4"/><path d="M19 7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3"/><path d="M5 7V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3"/><rect x="4" y="7" width="6" height="8" rx="2"/><rect x="14" y="7" width="6" height="8" rx="2"/><path d="M6 15v4a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4"/><path d="M16 15v4a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4"/>
@@ -268,7 +272,7 @@ function buildBottomNav() {
             <span>Explore</span>
         </a>
 
-        <!-- 4. ACCOUNT (Highlighted for Cart, Contact, About) -->
+        <!-- 4. ACCOUNT (Highlighted for Account Pages) -->
         <button class="bottom-nav-item ${accountActive}" id="bottom-nav-account-btn">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
             <span>Account</span>
