@@ -1,5 +1,5 @@
 /* * =======================================
- *  ADMIN STYLESHEET (admin.css)
+ * ADMIN STYLESHEET (admin.css)
  * =========================================
  */
 
@@ -112,6 +112,7 @@ body {
     width: auto;
 }
 
+/* --- Side Navigation --- */
 .admin-side-nav {
     position: fixed;
     top: 0;
@@ -123,7 +124,7 @@ body {
     z-index: 1002;
     transition: left 0.4s ease;
     display: flex;
-    flex-direction: column;
+    flex-direction: column; /* പ്രധാന മാറ്റം: മുകളിൽ നിന്ന് താഴേക്ക് */
 }
 .admin-side-nav.open {
     left: 0;
@@ -151,6 +152,7 @@ body {
     padding: 1rem 1.5rem;
     border-bottom: 1px solid var(--border-color);
     height: 70px;
+    flex-shrink: 0; /* ചുരുങ്ങാതിരിക്കാൻ */
 }
 .admin-nav-header h2 {
     color: var(--primary-gold);
@@ -165,9 +167,11 @@ body {
     font-size: 2rem;
     cursor: pointer;
 }
+
+/* മെനു ലിങ്കുകൾ */
 .admin-nav-links {
-    flex-grow: 1;
-    overflow-y: auto;
+    flex-grow: 1; /* ബാക്കിയുള്ള സ്ഥലം മുഴുവൻ എടുക്കുന്നു */
+    overflow-y: auto; /* ലിങ്കുകൾ കൂടിയാൽ സ്ക്രോൾ വരും */
 }
 .nav-link {
     display: block;
@@ -192,14 +196,22 @@ body {
     color: var(--primary-gold);
     background-color: #252525;
 }
+
+/* *** പുതിയത്: മെനു ഫൂട്ടർ (ലോഗൗട്ട്) *** */
 .admin-nav-footer {
     padding: 1.5rem;
     border-top: 1px solid var(--border-color);
+    background-color: #1f1f1f;
+    flex-shrink: 0; /* ചുരുങ്ങാതിരിക്കാൻ */
 }
 .admin-nav-footer .btn-logout {
     width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
+/* പേജ് കണ്ടന്റ് */
 .page-content {
     display: none;
     background-color: var(--card-bg);
@@ -314,10 +326,9 @@ textarea {
     background-color: #333;
 }
 
-/* *** പുതിയത്: "More Links" ഇൻപുട്ടുകൾ *** */
 .link-url-item input[type="text"] {
     flex: 1;
-    min-width: 200px; /* വല്ലാതെ ചുരുങ്ങാതിരിക്കാൻ */
+    min-width: 200px; 
 }
 
 .image-url-item .btn-remove-image,
@@ -333,10 +344,8 @@ textarea {
     font-size: 1rem;
     padding: 0;
     line-height: 30px;
-    flex-shrink: 0; /* ചുരുങ്ങാതിരിക്കാൻ */
+    flex-shrink: 0; 
 }
-/* *** സ്റ്റൈലുകൾ കഴിഞ്ഞു *** */
-
 
 .btn-secondary {
     background-color: #555;
@@ -610,5 +619,9 @@ textarea {
     .link-url-item .btn-remove-link {
         width: 100%;
         border-radius: 5px;
+    }
+    /* മൊബൈലിൽ ഹെഡറിലെ ലോഗൗട്ട് ബട്ടൺ മറയ്ക്കുന്നു (സൈഡ് മെനുവിൽ ഉള്ളതുകൊണ്ട്) */
+    .header-logout-btn {
+        display: none;
     }
 }
