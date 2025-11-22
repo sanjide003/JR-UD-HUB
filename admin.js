@@ -1,5 +1,5 @@
-// ഇതാണ് പുതിയ 'admin.js' ഫയൽ.
-// *** മാറ്റം: Size ഒഴിവാക്കി, Specification ചേർത്തു ***
+// ഇതാണ് 'admin.js' ഫയൽ.
+// *** മാറ്റം: Settings-ൽ ഇമേജ് പ്രിവ്യൂ സെറ്റപ്പ് ചെയ്തു ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -187,7 +187,10 @@ function setupImagePreview(inputId, previewId) {
     input.addEventListener('input', updatePreview);
     input.addEventListener('change', updatePreview);
 }
+// കാറ്റഗറിക്കും സെറ്റിംഗ്സിനും പ്രിവ്യൂ സെറ്റ് ചെയ്യുന്നു
 setupImagePreview('category-image-url', 'category-image-preview');
+setupImagePreview('setting-logo-image-url', 'logo-preview');
+setupImagePreview('setting-home-banner-url', 'banner-preview');
 
 async function loadAllSettings() {
     try {
@@ -209,6 +212,10 @@ async function loadAllSettings() {
             document.getElementById("setting-youtube-url").value = settings.youtubeUrl || '';
             const titleElement = document.getElementById("admin-panel-title");
             if (titleElement) titleElement.textContent = `${settings.logoText || 'Admin'} - Panel`;
+            
+            // ട്രിഗർ പ്രിവ്യൂ അപ്ഡേറ്റ്സ് (ഡാറ്റ ലോഡ് ചെയ്ത ശേഷം)
+            document.getElementById("setting-logo-image-url").dispatchEvent(new Event('input'));
+            document.getElementById("setting-home-banner-url").dispatchEvent(new Event('input'));
         }
     } catch (error) { console.error("Error loading settings: ", error); showStatus(adminStatus, "Error loading site settings."); }
 }
@@ -357,14 +364,12 @@ addProductForm.addEventListener("submit", async (e) => {
         if (imageUrls.length === 0 || imageUrls[0] === '') throw new Error("Please add at least one image URL.");
         const moreLinks = getMoreLinksFromUploader('product-more-links-container');
 
-        // *** പുതിയത്: Specification എടുക്കുന്നു ***
         const specification = document.getElementById("product-specification").value;
 
         const product = {
             categoryId: productCategorySelect.value,
             name: document.getElementById("product-name").value,
-            // size: ... ഒഴിവാക്കി
-            specification: specification, // പുതിയ ഫീൽഡ്
+            specification: specification,
             mrp: Number(document.getElementById("product-mrp").value) || 0,
             price: Number(document.getElementById("product-price").value) || 0,
             description: document.getElementById("product-description").value,
@@ -474,12 +479,11 @@ async function openEditModal(id, type) {
         modalTitle.textContent = `Edit ${type}`;
         
         if (type === 'category') {
-            modalForm.innerHTML = `<input type="hidden" id="modal-item-id" value="${id}"><input type="hidden" id="modal-item-type" value="category"><div class="form-group"><label for="modal-category-name">Category Name <span class="required-star">*</span></label><input type="text" id="modal-category-name" value="${data.name}" required></div><div class="form-group"><label for="modal-category-image-url">Category Image URL <span class="required-star">*</span></label><input type="text" class="image-url-input" id="modal-category-image-url" value="${data.imageUrl}" required><div class="image-preview" id="modal-category-image-preview"></div></div><button type="submit" class="btn" id="modal-save-button"><span class="btn-text">Save Changes</span><span class="btn-loader loader-small" style="display: none;"></span></button>`;
+            modalForm.innerHTML = `<input type="hidden" id="modal-item-id" value="${id}"><input type="hidden" id="modal-item-type" value="category"><div class="form-group"><label for="modal-category-name">Category Name <span class="required-star">*</span></label><input type="text" id="modal-category-name" value="${data.name}" required></div><div class="form-group"><label for="modal-category-image-url">Category Image URL <span class="required-star">*</span></label><div class="inline-image-input-container"><div class="image-preview-small" id="modal-category-image-preview"></div><input type="text" class="image-url-input" id="modal-category-image-url" value="${data.imageUrl}" required></div></div><button type="submit" class="btn" id="modal-save-button"><span class="btn-text">Save Changes</span><span class="btn-loader loader-small" style="display: none;"></span></button>`;
             setupImagePreview('modal-category-image-url', 'modal-category-image-preview');
             document.getElementById('modal-category-image-url').dispatchEvent(new Event('input'));
         } 
         else if (type === 'product') {
-            // *** എഡിറ്റ് മോഡലിൽ Size മാറ്റി Specification ചേർത്തു ***
             modalForm.innerHTML = `
                 <input type="hidden" id="modal-item-id" value="${id}">
                 <input type="hidden" id="modal-item-type" value="product">
@@ -529,14 +533,11 @@ modalForm.addEventListener("submit", async (e) => {
             const imageUrls = getImageUrlsFromUploader('modal-image-list-container');
             if (imageUrls.length === 0 || imageUrls[0] === '') throw new Error("Please add at least one image URL.");
             const moreLinks = getMoreLinksFromUploader('modal-more-links-container');
-            
-            // *** എഡിറ്റ് ചെയ്യുമ്പോഴും Specification സേവ് ചെയ്യുന്നു ***
             const specification = document.getElementById('modal-product-specification').value;
 
             dataToSave = {
                 categoryId: document.getElementById('modal-product-category').value,
                 name: document.getElementById('modal-product-name').value,
-                // size: ... ഒഴിവാക്കി
                 specification: specification,
                 mrp: Number(document.getElementById('modal-product-mrp').value) || 0,
                 price: Number(document.getElementById('modal-product-price').value) || 0,
