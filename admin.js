@@ -1,4 +1,5 @@
-// ഇതാണ് 'admin.js' ഫയൽ.
+// ഇതാണ് പുതിയ 'admin.js' ഫയൽ.
+// *** മാറ്റം: അനോണിമസ് ലോഗിൻ ഉള്ളവർക്ക് അഡ്മിൻ പാനൽ കാണിക്കില്ല ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -54,11 +55,9 @@ const productCategorySelect = document.getElementById("product-category");
 const productsListBody = document.getElementById("products-list-body");
 const productFilterCategory = document.getElementById("product-filter-category");
 const featuredProductsListBody = document.getElementById("featured-products-list-body"); 
-const addImageUrlBtn = document.getElementById("add-image-url-btn");
 const productImageContainer = document.getElementById("product-image-list-container");
 
-// "More Links" Elements
-const addMoreLinkBtn = document.getElementById("add-more-link-btn");
+// More Links ElementsElements
 const productMoreLinksContainer = document.getElementById("product-more-links-container");
 
 // Hero Slide Elements
@@ -89,22 +88,6 @@ let currentFeaturedQuery = null;
 let deleteInfo = { id: null, type: null }; 
 
 // --- Helper Functions ---
-
-// *** ഡ്രൈവ് ലിങ്കുകളെ പ്രിവ്യൂ ചെയ്യാൻ പറ്റുന്ന രൂപത്തിലേക്ക് മാറ്റുന്നു ***
-function getPreviewUrl(url) {
-    if (!url) return '';
-    // Google Drive Link Detection
-    if (url.includes('drive.google.com') && url.includes('/d/')) {
-        try {
-            const id = url.split('/d/')[1].split('/')[0];
-            return `https://drive.google.com/uc?export=view&id=${id}`;
-        } catch (e) {
-            return url;
-        }
-    }
-    return url;
-}
-
 function showStatus(element, message, isError = true) {
     element.textContent = message;
     element.className = isError ? 'status-message error' : 'status-message success';
@@ -114,7 +97,6 @@ function clearStatus(element) {
     element.textContent = '';
     element.className = 'status-message';
 }
-
 function disableButton(button, text = "Saving...") {
     if (!button) return;
     button.disabled = true;
@@ -123,7 +105,6 @@ function disableButton(button, text = "Saving...") {
     if (btnText) btnText.textContent = text;
     if (btnLoader) btnLoader.style.display = 'inline-block';
 }
-
 function enableButton(button, defaultText) {
     if (!button) return;
     button.disabled = false;
@@ -144,6 +125,7 @@ loginForm.addEventListener("submit", async (e) => {
     const password = document.getElementById("login-password").value;
     
     try {
+        // ഇമെയിൽ വഴി ലോഗിൻ ചെയ്യുന്നു. ഇത് നിലവിലുള്ള അനോണിമസ് യൂസറെ മാറ്റിക്കോളും.
         await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
         console.error("Login Error:", error);
@@ -157,17 +139,19 @@ logoutButton.addEventListener("click", () => {
     signOut(auth);
 });
 
+// *** പ്രധാന മാറ്റം ഇവിടെയാണ് ***
 onAuthStateChanged(auth, (user) => {
-    if (user) {
+    // user ഉണ്ട്, പക്ഷെ അത് അനോണിമസ് അല്ല എന്ന് ഉറപ്പാക്കുന്നു (!user.isAnonymous)
+    if (user && !user.isAnonymous) {
         loginSection.style.display = "none";
         adminPanel.style.display = "block";
+        
         loadCategories();
         loadProducts("all"); 
         loadFeaturedProducts(); 
         loadHeroSlides(); 
         loadAllSettings();
         
-        // ഇമേജ് & ലിങ്ക് അപ്‌ലോഡറുകൾ ആരംഭിക്കുന്നു
         setupImageUploader('product-image-list-container', 'add-image-url-btn');
         if (productImageContainer.children.length === 0) {
             addImageInput('product-image-list-container');
@@ -179,10 +163,12 @@ onAuthStateChanged(auth, (user) => {
         }
 
     } else {
+        // ലോഗിൻ ചെയ്തിട്ടില്ല, അല്ലെങ്കിൽ അനോണിമസ് കസ്റ്റമർ ആണ്
         loginSection.style.display = "block";
         adminPanel.style.display = "none";
     }
 });
+
 
 // --- 2. Admin Nav Logic ---
 function closeAdminNav() {
@@ -209,7 +195,7 @@ adminNavLinks.addEventListener("click", (e) => {
     }
 });
 
-// --- 3. Image Preview Logic (Simple Input) ---
+// --- 3. Image Preview Logic ---
 function setupImagePreview(inputId, previewId) {
     const input = document.getElementById(inputId);
     const previewContainer = document.getElementById(previewId);
@@ -219,8 +205,7 @@ function setupImagePreview(inputId, previewId) {
         const url = input.value.trim();
         if (url) {
             const img = document.createElement('img');
-            // *** ഇവിടെ getPreviewUrl ഉപയോഗിക്കുന്നു ***
-            img.src = getPreviewUrl(url);
+            img.src = url;
             img.onerror = () => { img.style.display = 'none'; };
             previewContainer.appendChild(img);
         }
@@ -241,7 +226,7 @@ async function loadAllSettings() {
             document.getElementById("setting-logo-text").value = settings.logoText || '';
             document.getElementById("setting-logo-subtitle").value = settings.logoSubtitle || '';
             document.getElementById("setting-video-url").value = settings.videoUrl || '';
-            document.getElementById("setting-home-banner-url").value = settings.homeBannerUrl || ''; 
+            document.getElementById("setting-home-banner-url").value = settings.homeBannerUrl || '';
             document.getElementById("setting-phone").value = settings.phone || '';
             document.getElementById("setting-email").value = settings.email || '';
             document.getElementById("setting-address").value = settings.address || '';
@@ -272,7 +257,7 @@ generalSettingsForm.addEventListener("submit", async (e) => {
             logoText: document.getElementById("setting-logo-text").value,
             logoSubtitle: document.getElementById("setting-logo-subtitle").value,
             videoUrl: document.getElementById("setting-video-url").value,
-            homeBannerUrl: document.getElementById("setting-home-banner-url").value, 
+            homeBannerUrl: document.getElementById("setting-home-banner-url").value,
         };
         const docRef = doc(db, "settings", "global");
         await setDoc(docRef, settings, { merge: true });
@@ -341,12 +326,9 @@ function loadCategories() {
             const category = doc.data();
             const id = doc.id;
             
-            // *** പ്രിവ്യൂവിൽ ഡ്രൈവ് ലിങ്ക് സപ്പോർട്ട് ***
-            const imgSrc = getPreviewUrl(category.imageUrl);
-
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td><img src="${imgSrc}" alt="${category.name}"></td>
+                <td><img src="${category.imageUrl || ''}" alt="${category.name}"></td>
                 <td>${category.name}</td>
                 <td>
                     <button class="btn btn-edit" data-id="${id}" data-type="category">Edit</button>
@@ -416,9 +398,7 @@ function loadProducts(categoryId = "all") {
         querySnapshot.forEach((doc) => {
             const product = doc.data();
             const id = doc.id;
-            // *** പ്രിവ്യൂവിൽ ഡ്രൈവ് ലിങ്ക് സപ്പോർട്ട് ***
-            const rawImg = product.images && product.images[0] ? product.images[0] : '';
-            const imageUrl = getPreviewUrl(rawImg);
+            const imageUrl = product.images && product.images[0] ? product.images[0] : '';
             
             let priceDisplay = `₹${product.price || 0}`;
             if (product.mrp && product.mrp > product.price) {
@@ -459,9 +439,7 @@ function loadFeaturedProducts() {
         querySnapshot.forEach((doc) => {
             const product = doc.data();
             const id = doc.id;
-            // *** പ്രിവ്യൂവിൽ ഡ്രൈവ് ലിങ്ക് സപ്പോർട്ട് ***
-            const rawImg = product.images && product.images[0] ? product.images[0] : '';
-            const imageUrl = getPreviewUrl(rawImg);
+            const imageUrl = product.images && product.images[0] ? product.images[0] : '';
             
             let priceDisplay = `₹${product.price || 0}`;
             if (product.mrp && product.mrp > product.price) {
@@ -507,24 +485,16 @@ addProductForm.addEventListener("submit", async (e) => {
 
         const moreLinks = getMoreLinksFromUploader('product-more-links-container');
 
-        const mrp = Number(document.getElementById("product-mrp").value) || 0;
-        const price = Number(document.getElementById("product-price").value) || 0;
-
-        // *** വില നെഗറ്റീവ് ആണോ എന്ന് പരിശോധിക്കുന്നു ***
-        if (price < 0 || mrp < 0) {
-            throw new Error("Price cannot be negative.");
-        }
-
         const product = {
             categoryId: productCategorySelect.value,
             name: document.getElementById("product-name").value,
             size: document.getElementById("product-size").value,
-            mrp: mrp,
-            price: price,
+            mrp: Number(document.getElementById("product-mrp").value) || 0,
+            price: Number(document.getElementById("product-price").value) || 0,
             description: document.getElementById("product-description").value,
             featured: document.getElementById("product-featured").checked,
             images: imageUrls,
-            moreLinks: moreLinks, 
+            moreLinks: moreLinks,
             createdAt: serverTimestamp()
         };
         
@@ -559,29 +529,15 @@ function loadHeroSlides() {
         querySnapshot.forEach((doc) => {
             const slide = doc.data();
             const id = doc.id;
-            
-            // *** ഡ്രൈവ് വീഡിയോ/ഇമേജ് ലിങ്ക് പ്രിവ്യൂ ***
-            let previewUrl = slide.url;
-            if (slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
-                const driveId = slide.url.split('/d/')[1].split('/')[0];
-                if (slide.type === 'image') {
-                    previewUrl = `https://drive.google.com/uc?export=view&id=${driveId}`;
-                } else {
-                    // വീഡിയോയ്ക്ക് പ്രിവ്യൂ കാണിക്കാൻ പ്രയാസമാണ്, തമ്പ്നെയിൽ കാണിക്കില്ല
-                    previewUrl = ''; 
-                }
-            }
-
             let preview = (slide.type === 'image') 
-                ? `<img src="${previewUrl}" alt="Preview">` 
-                : (previewUrl ? `<video src="${previewUrl}" muted width="50" height="50"></video>` : '🎥 Video');
-
+                ? `<img src="${slide.url}" alt="Preview">` 
+                : `<video src="${slide.url}" muted width="50" height="50"></video>`;
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td>${preview}</td>
                 <td>${slide.type}</td>
                 <td>${slide.order}</td>
-                <td style="word-break: break-all; font-size: 0.8rem;">${slide.url}</td>
+                <td style="word-break: break-all;">${slide.url}</td>
                 <td>
                     <button class="btn btn-delete" data-id="${id}" data-type="heroSlide">Delete</button>
                 </td>
@@ -634,7 +590,6 @@ document.body.addEventListener('click', async (e) => {
     }
 });
 
-// ഡിലീറ്റ് കൺഫർമേഷൻ മോഡൽ
 function openConfirmModal(id, type) {
     deleteInfo = { id, type }; 
     confirmTitle.textContent = `Delete ${type}?`;
@@ -672,7 +627,6 @@ confirmBtnDelete.addEventListener('click', async () => {
     }
 });
 
-// എഡിറ്റ് മോഡൽ
 async function openEditModal(id, type) {
     modalForm.innerHTML = '';
     editModal.style.display = 'flex';
@@ -808,23 +762,16 @@ modalForm.addEventListener("submit", async (e) => {
             
             const moreLinks = getMoreLinksFromUploader('modal-more-links-container');
             
-            const price = Number(document.getElementById('modal-product-price').value) || 0;
-            const mrp = Number(document.getElementById('modal-product-mrp').value) || 0;
-
-            if(price < 0 || mrp < 0) {
-                throw new Error("Price cannot be negative.");
-            }
-
             dataToSave = {
                 categoryId: document.getElementById('modal-product-category').value,
                 name: document.getElementById('modal-product-name').value,
                 size: document.getElementById('modal-product-size').value,
-                mrp: mrp,
-                price: price,
+                mrp: Number(document.getElementById('modal-product-mrp').value) || 0,
+                price: Number(document.getElementById('modal-product-price').value) || 0,
                 description: document.getElementById('modal-product-description').value,
                 featured: document.getElementById('modal-product-featured').checked,
                 images: imageUrls,
-                moreLinks: moreLinks, 
+                moreLinks: moreLinks,
             };
         }
         
@@ -842,8 +789,7 @@ modalForm.addEventListener("submit", async (e) => {
 });
 
 
-// --- 9. ഇമേജ് അപ്‌ലോഡ് സിസ്റ്റം (പ്രിവ്യൂ സഹിതം) ---
-
+// --- 9. ഇമേജ് അപ്‌ലോഡ് സിസ്റ്റം ---
 function setupImageUploader(containerId, addBtnId) {
     const container = document.getElementById(containerId);
     const addBtn = document.getElementById(addBtnId);
@@ -865,8 +811,7 @@ function setupImageUploader(containerId, addBtnId) {
             const url = e.target.value.trim();
             const previewImg = e.target.closest('.image-url-item').querySelector('.image-preview-item');
             if (previewImg) {
-                // *** ഇവിടെ getPreviewUrl ഉപയോഗിക്കുന്നു ***
-                previewImg.src = getPreviewUrl(url) || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
+                previewImg.src = url || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
             }
         }
     });
@@ -879,11 +824,8 @@ function addImageInput(containerId, url = '') {
     const item = document.createElement('div');
     item.className = 'image-url-item';
     
-    // *** ഇവിടെയും getPreviewUrl ഉപയോഗിക്കുന്നു ***
-    const previewSrc = getPreviewUrl(url) || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-
     item.innerHTML = `
-        <img src="${previewSrc}" alt="Preview" class="image-preview-item">
+        <img src="${url || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" alt="Preview" class="image-preview-item">
         <input type="text" value="${url}" placeholder="Paste image URL here" required>
         <button type="button" class="btn-remove-image">&times;</button>
     `;
@@ -920,7 +862,6 @@ function populateImageUploader(containerId, urls) {
 }
 
 // --- 10. "More Links" അപ്‌ലോഡ് സിസ്റ്റം ---
-
 function setupMoreLinksUploader(containerId, addBtnId) {
     const container = document.getElementById(containerId);
     const addBtn = document.getElementById(addBtnId);
@@ -962,7 +903,6 @@ function getMoreLinksFromUploader(containerId) {
     container.querySelectorAll('.link-url-item').forEach(item => {
         const title = item.querySelector('.link-title-input').value.trim();
         const url = item.querySelector('.link-url-input').value.trim();
-        
         if (title && url) { 
             links.push({ title: title, url: url });
         }
