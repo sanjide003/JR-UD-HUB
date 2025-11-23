@@ -232,9 +232,12 @@ async function loadTopSellers() {
                 disableOnInteraction: false 
             },
             speed: 1000,
-            // *** മാറ്റം: മൊബൈലിൽ 2.2 എണ്ണം കാണിക്കുന്നു (വലിപ്പം കുറയാൻ) ***
-            slidesPerView: 2.2, 
-            spaceBetween: 15,
+            
+            // *** മാറ്റം: ഒരൊറ്റ കാർഡ് മാത്രം കാണിക്കുന്നു (Centered) ***
+            slidesPerView: 1, 
+            spaceBetween: 30, // കാർഡുകൾക്കിടയിൽ നല്ല അകലം
+            centeredSlides: true, // കാർഡ് നടുക്ക് വരും
+            
             pagination: { 
                 el: '.top-sellers-pagination-new', 
                 clickable: true,
@@ -270,9 +273,9 @@ async function loadTopSellers() {
                 }
             },
             breakpoints: { 
-                640: { slidesPerView: 3.2 }, 
-                900: { slidesPerView: 4 }, 
-                1200: { slidesPerView: 5 } 
+                640: { slidesPerView: 2, spaceBetween: 20, centeredSlides: false }, 
+                900: { slidesPerView: 4, spaceBetween: 20, centeredSlides: false }, 
+                1200: { slidesPerView: 5, spaceBetween: 20, centeredSlides: false } 
             }
         });
     } catch (error) { console.error("Error loading top sellers: ", error); grid.innerHTML = '<p>Error loading products.</p>'; }
@@ -286,7 +289,6 @@ async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
 
-    // *** മാറ്റം: 2x2 ഗ്രിഡ് കിട്ടാൻ 4 എണ്ണം കാണിക്കുന്നു ***
     const CATEGORIES_TO_SHOW = 4; 
 
     try {
