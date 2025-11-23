@@ -8,17 +8,18 @@
     gap: 1rem; 
 }
 
-/* 1.1 കാറ്റഗറി ഗ്രിഡ് (മൊബൈൽ & ഡെസ്ക്ടോപ്പ്) */
+/* --- 1.1 മുകളിലെ കാറ്റഗറി ഗ്രിഡ് (മൊബൈൽ & ഡെസ്ക്ടോപ്പ്) --- */
 .category-grid-mobile,
 .category-grid-desktop {
     display: grid;
     grid-template-rows: repeat(2, auto); /* 2 വരികൾ */
-    grid-auto-flow: column; /* നിരകൾ നിറയ്ക്കുക, ശേഷം തിരശ്ചീനമായി നീങ്ങുക */
+    grid-auto-flow: column; /* നിരകൾ നിറയ്ക്കുക */
     overflow-x: auto; 
     overflow-y: hidden; 
-    gap: 0.25rem; 
+    gap: 4px; /* *** മാറ്റം: കാറ്റഗറികൾക്കിടയിൽ വളരെ ചെറിയ ഗ്യാപ്പ് (4px) *** */
     padding: 0.25rem; 
     border-bottom: 1px solid var(--border-color);
+    justify-content: start;
 }
 
 /* സ്ക്രോൾബാർ മറയ്ക്കുന്നു */
@@ -32,27 +33,27 @@
     scrollbar-width: none;  
 }
 
-/* 1.3 കാറ്റഗറി ഗ്രിഡ് ഐറ്റം സ്റ്റൈലുകൾ */
+/* --- 1.3 കാറ്റഗറി ഗ്രിഡ് ഐറ്റം (ബാറിലെ ഓരോ ഐറ്റം) --- */
 .category-grid-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 0.25rem; 
+    gap: 2px; /* *** മാറ്റം: ഐക്കണും പേരും തമ്മിൽ 2px ഗ്യാപ്പ് മാത്രം *** */
     text-decoration: none;
     color: var(--text-muted);
     font-weight: 500;
-    width: 70px; 
-    padding: 0.25rem;
+    width: 60px; /* *** മാറ്റം: വീതി 60px ആക്കി കുറച്ചു (കൂടുതൽ അടുപ്പിക്കാൻ) *** */
+    padding: 2px;
     cursor: pointer;
 }
 
 .category-grid-image-box {
-    width: 50px; 
-    height: 50px; 
-    border-radius: 12px; 
+    width: 45px; /* *** മാറ്റം: ബോക്സ് വലിപ്പം 45px ആക്കി *** */
+    height: 45px; 
+    border-radius: 10px; 
     background-color: rgba(233, 213, 255, 0.05); 
     border: 1px solid rgba(233, 213, 255, 0.1);
-    padding: 8px;
+    padding: 6px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -68,11 +69,11 @@
 }
 
 .category-grid-name {
-    font-size: 0.7rem; 
+    font-size: 0.65rem; /* *** മാറ്റം: പേരിന്റെ വലിപ്പം കുറച്ചു *** */
     text-align: center;
     color: var(--text-muted);
     transition: color 0.3s ease;
-    line-height: 1.2;
+    line-height: 1.1;
     white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis; 
@@ -91,15 +92,14 @@
 }
 
 
-/* --- 2. പ്രൊഡക്റ്റ് ഗ്രിഡ് --- */
+/* --- 2. പ്രൊഡക്റ്റ് ഗ്രിഡ് (താഴെയുള്ള പ്രൊഡക്റ്റുകൾ) --- */
 .category-page-content {
     flex-grow: 1;
 }
 .category-product-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    /* *** മാറ്റം: പ്രൊഡക്റ്റുകൾക്കിടയിലുള്ള ഗ്യാപ്പ് 2px (1mm) ആക്കി കുറച്ചു *** */
-    gap: 2px; 
+    gap: 0.5rem; /* പ്രൊഡക്റ്റുകൾക്കിടയിൽ സാധാരണ ഗ്യാപ്പ് മതി */
 }
 .loader-container {
     display: none;
@@ -107,7 +107,7 @@
     padding: 2rem;
 }
 
-/* 2.1 പ്രൊഡക്റ്റ് കാർഡ് (കാറ്റഗറി പേജ്) */
+/* 2.1 പ്രൊഡക്റ്റ് കാർഡ് */
 .category-product-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -186,7 +186,7 @@
         display: none; 
     }
     .category-grid-mobile {
-        padding-bottom: 0.5rem;
+        padding-bottom: 0.25rem;
     }
 }
 
@@ -210,13 +210,16 @@
         width: 60px; 
         height: 60px;
     }
+    .category-grid-name {
+        font-size: 0.8rem;
+    }
     
     .category-page-layout {
         flex-direction: column;
     }
     .category-product-grid {
         grid-template-columns: repeat(4, 1fr);
-        gap: 0.5rem; /* ഡെസ്ക്ടോപ്പിൽ അല്പം കൂടുതൽ ഗ്യാപ്പ് നൽകുന്നു */
+        gap: 1rem;
     }
     /* കാർഡ് സ്റ്റൈലുകൾ ഡെസ്ക്ടോപ്പിനായി */
     .cat-product-image-link {
