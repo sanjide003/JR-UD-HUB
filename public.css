@@ -155,7 +155,8 @@ img { max-width: 100%; height: auto; display: block; }
     padding: 0;
     margin: 0;
 }
-.header-nav-desktop a {
+.header-nav-desktop a,
+.header-nav-desktop button { /* Button style added */
     color: var(--text-color);
     font-weight: 500;
     font-size: 1rem;
@@ -163,11 +164,18 @@ img { max-width: 100%; height: auto; display: block; }
     letter-spacing: 0.5px;
     transition: color 0.3s ease;
     position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-main);
+    padding: 0;
 }
-.header-nav-desktop a:hover {
+.header-nav-desktop a:hover,
+.header-nav-desktop button:hover {
     color: var(--primary-gold);
 }
-.header-nav-desktop a::after {
+.header-nav-desktop a::after,
+.header-nav-desktop button::after {
     content: '';
     position: absolute;
     width: 0;
@@ -177,7 +185,8 @@ img { max-width: 100%; height: auto; display: block; }
     background-color: var(--primary-gold);
     transition: width 0.3s ease;
 }
-.header-nav-desktop a:hover::after {
+.header-nav-desktop a:hover::after,
+.header-nav-desktop button:hover::after {
     width: 100%;
 }
 
@@ -264,22 +273,24 @@ img { max-width: 100%; height: auto; display: block; }
     display: none; /* ഡെസ്ക്ടോപ്പിൽ മറയ്ക്കുന്നു */
 }
 
-/* യൂസർ മെനു ഓവർലേ */
+/* യൂസർ മെനു ഓവർലേ (പൊതുവായ സ്റ്റൈലുകൾ) */
 .user-menu-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.6); z-index: 2000;
     opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
-    display: flex; align-items: flex-end;
+    display: flex;
 }
 .user-menu-overlay.open { opacity: 1; visibility: visible; }
+
+/* മൊബൈൽ സ്റ്റൈൽ (Bottom Sheet) */
 .user-menu-content {
     width: 100%; background-color: var(--card-bg);
     border-top-left-radius: 20px; border-top-right-radius: 20px;
     padding: 1.5rem; border-top: 1px solid var(--primary-gold);
-    transform: translateY(100%); transition: transform 0.3s ease;
+    transition: transform 0.3s ease;
     max-height: 70vh; overflow-y: auto;
 }
-.user-menu-overlay.open .user-menu-content { transform: translateY(0); }
+
 .user-menu-header {
     display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;
@@ -351,6 +362,11 @@ img { max-width: 100%; height: auto; display: block; }
         stroke: var(--primary-gold);
     }
 
+    /* മൊബൈലിൽ താഴെ നിന്നാണ് വരുന്നത് */
+    .user-menu-overlay { align-items: flex-end; }
+    .user-menu-content { transform: translateY(100%); border-radius: 20px 20px 0 0; }
+    .user-menu-overlay.open .user-menu-content { transform: translateY(0); }
+
     #floating-action-buttons { bottom: 80px; right: 15px; }
     .container { padding: 2rem 1rem; }
 }
@@ -360,64 +376,82 @@ img { max-width: 100%; height: auto; display: block; }
     .header-nav-desktop { display: block; }
     .main-header { padding: 0 2rem; }
 
-    /* *** മാറ്റം: ഡെസ്ക്ടോപ്പ് ഫൂട്ടർ ലേഔട്ട് *** */
-    .footer-container-new {
-        display: grid;
-        grid-template-columns: 1fr 1fr; /* About, Quick Links എന്നീ രണ്ട് കോളങ്ങൾ */
-        gap: 2rem;
-        align-items: start;
-        justify-items: center; /* നടുക്ക് വരുത്താൻ */
-    }
-
-    .footer-accordion-item {
-        border-bottom: none;
-        width: 100%;
-        max-width: 300px; /* ലിസ്റ്റുകൾ ഒതുങ്ങിയിരിക്കാൻ */
-    }
-
+    /* *** മാറ്റം: ഡെസ്ക്ടോപ്പിൽ ഫൂട്ടർ എപ്പോഴും തുറന്നു കിടക്കും *** */
     .footer-accordion-toggle {
-        pointer-events: none; /* ക്ലിക്ക് ചെയ്യാൻ പറ്റില്ല (എപ്പോഴും തുറന്നിരിക്കും) */
+        pointer-events: none; 
         cursor: default;
-        justify-content: center; /* തലക്കെട്ട് നടുക്ക് */
+        justify-content: center; 
         font-size: 1.1rem;
     }
     .footer-accordion-toggle svg {
-        display: none; /* അമ്പടയാളം വേണ്ട */
+        display: none; 
     }
-    
-    /* കണ്ടന്റ് എപ്പോഴും കാണിക്കും */
     .footer-accordion-content {
         max-height: none !important; 
         overflow: visible;
-        text-align: center; /* ലിങ്കുകൾ നടുക്ക് */
+        text-align: center; 
     }
-
-    /* സോഷ്യൽ മീഡിയ ഐക്കണുകൾ ഫുൾ വിഡ്ത്തിൽ */
+    .footer-container-new {
+        display: grid;
+        grid-template-columns: 1fr 1fr; 
+        gap: 2rem;
+        align-items: start;
+        justify-items: center; 
+    }
+    .footer-accordion-item {
+        border-bottom: none;
+        width: 100%;
+        max-width: 300px; 
+    }
     .footer-social-new {
-        grid-column: 1 / -1; /* മുഴുവൻ വീതിയും എടുക്കുന്നു */
+        grid-column: 1 / -1; 
         width: 100%;
         justify-content: center;
         border-bottom: none;
         padding-top: 3rem;
         padding-bottom: 1rem;
     }
-
-    /* കോപ്പിറൈറ്റ് ഒറ്റ വരിയിൽ */
     .footer-bottom-new {
         grid-column: 1 / -1;
         width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
-        gap: 1.5rem; /* രണ്ട് ടെക്സ്റ്റുകൾക്കിടയിൽ വിടവ് */
+        gap: 1.5rem; 
         padding-top: 0;
     }
-    .footer-bottom-new p {
-        margin: 0;
+    .footer-bottom-new p { margin: 0; }
+    .footer-powered-by { margin-top: 0; }
+
+    /* *** പുതിയത്: ഡെസ്ക്ടോപ്പ് അക്കൗണ്ട് മെനു (Dropdown Style) *** */
+    .user-menu-overlay {
+        background-color: transparent; /* പശ്ചാത്തലം വേണ്ട */
+        align-items: flex-start; /* മുകളിൽ നിന്ന് തുടങ്ങുന്നു */
+        justify-content: flex-end; /* വലതുവശത്തേക്ക് */
+        padding-top: calc(var(--header-height) + 10px); /* ഹെഡറിന് താഴെ */
+        padding-right: 2rem; /* വലതുവശത്ത് നിന്ന് അകലം */
+        pointer-events: none; /* ഓപ്പൺ ആകാത്തപ്പോൾ ക്ലിക്ക് തടയുന്നു */
     }
-    .footer-powered-by {
-        margin-top: 0;
+    .user-menu-overlay.open {
+        pointer-events: auto;
     }
+    .user-menu-content {
+        width: 300px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        transform: translateY(10px);
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+    .user-menu-overlay.open .user-menu-content {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+    /* ഡെസ്ക്ടോപ്പിൽ ക്ലോസ് ബട്ടൺ ആവശ്യമില്ല (പുറത്ത് ക്ലിക്ക് ചെയ്താൽ മതി) */
+    .user-menu-close-btn { display: none; }
 }
 
 /* പൊതുവായ പേജ് സ്റ്റൈലുകൾ */
