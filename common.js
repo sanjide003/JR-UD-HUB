@@ -96,7 +96,6 @@ async function buildHeader() {
     if (!headerElement) return;
 
     const logoUrl = settings.logoImageUrl || ''; 
-    // Logo URL-നും ഡ്രൈവ് സപ്പോർട്ട് കിട്ടാൻ optimizeImage വിളിക്കുന്നു
     const logoImg = settings.logoImageUrl ? `<img src="${optimizeImage(logoUrl, 150)}" alt="Logo" class="header-logo-img">` : '';
     const logoText = settings.logoText ? `<span class="header-logo-text">${settings.logoText}</span>` : '';
     const logoSubtitle = settings.logoSubtitle ? `<span class="header-logo-subtitle">${settings.logoSubtitle}</span>` : '';
@@ -148,10 +147,11 @@ async function buildFooter() {
     if (settings.facebookUrl) socialLinksHTML += `<a href="${settings.facebookUrl}" target="_blank" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.9V12h2.538v-2.245c0-2.508 1.493-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.465l-1.26.001c-1.243 0-1.63.771-1.63 1.562V12h2.771l-.443 2.89H13.63v6.988C18.343 21.128 22 16.991 22 12z"/></svg></a>`;
     if (settings.youtubeUrl) socialLinksHTML += `<a href="${settings.youtubeUrl}" target="_blank" aria-label="YouTube"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21.58 7.19c-.23-.86-.9-1.52-1.76-1.76C18.26 5 12 5 12 5s-6.26 0-7.82.43c-.86.23-1.52.9-1.76 1.76C2 8.74 2 12 2 12s0 3.26.43 4.81c.23.86.9 1.52 1.76 1.76C5.74 19 12 19 12 19s6.26 0 7.82-.43c.86-.23 1.52-.9 1.76-1.76C22 15.26 22 12 22 12s0-3.26-.42-4.81zM9.75 15.5V8.5L15.75 12 9.75 15.5z"></path></svg></a>`;
 
+    // *** മാറ്റം: type="button" ചേർത്തു ***
     footerElement.innerHTML = `
         <div class="footer-container-new">
             <div class="footer-accordion-item">
-                <button class="footer-accordion-toggle" data-target="footer-content-1">
+                <button type="button" class="footer-accordion-toggle" data-target="footer-content-1">
                     <span>ABOUT</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 11.293l-4.646-4.647a.5.5 0 0 1 .708-.708L8 9.879l4.939-4.939a.5.5 0 0 1 .708.708L8 11.293z"></path></svg>
                 </button>
@@ -167,7 +167,7 @@ async function buildFooter() {
             </div>
             
             <div class="footer-accordion-item">
-                <button class="footer-accordion-toggle" data-target="footer-content-3">
+                <button type="button" class="footer-accordion-toggle" data-target="footer-content-3">
                     <span>QUICK LINKS</span>
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M8 11.293l-4.646-4.647a.5.5 0 0 1 .708-.708L8 9.879l4.939-4.939a.5.5 0 0 1 .708.708L8 11.293z"></path></svg>
                 </button>
@@ -196,13 +196,32 @@ async function buildFooter() {
     setupFooterAccordion();
 }
 
-// *** മാറ്റം: ഫ്ലോട്ടിംഗ് ബട്ടൺ ഒഴിവാക്കി ***
-async function buildFloatingButtons() {
-    const container = document.getElementById('floating-action-buttons');
-    if (container) container.innerHTML = ''; // ബട്ടൺ കാണിക്കാതിരിക്കാൻ ഉള്ളടക്കം ഒഴിവാക്കുന്നു
+function setupFooterAccordion() {
+    const toggles = document.querySelectorAll('.footer-accordion-toggle');
+    toggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+            const targetId = toggle.dataset.target;
+            const content = document.getElementById(targetId);
+            
+            if (!content) return; 
+
+            // *** മാറ്റം: Toggle Logic കൂടുതൽ കൃത്യമാക്കി ***
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+                toggle.classList.remove('active');
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+                toggle.classList.add('active');
+            }
+        });
+    });
 }
 
-// *** മാറ്റം: buildBottomNav-ലേക്ക് settings പാസ്സ് ചെയ്യുന്നു ***
+async function buildFloatingButtons() {
+    const container = document.getElementById('floating-action-buttons');
+    if (container) container.innerHTML = ''; 
+}
+
 function buildBottomNav(settings) {
     if (window.innerWidth > 768) return;
 
@@ -214,7 +233,6 @@ function buildBottomNav(settings) {
     const exploreActive = pageName === 'explore' ? 'active' : '';
     const accountActive = (pageName === 'cart' || pageName === 'contact' || pageName === 'about') ? 'active' : '';
 
-    // *** മാറ്റം: WhatsApp ലിങ്ക് My Account മെനുവിൽ ചേർക്കുന്നു ***
     let whatsappLinkHTML = '';
     if (settings && settings.whatsapp) {
         whatsappLinkHTML = `
@@ -266,7 +284,7 @@ function buildBottomNav(settings) {
                 </button>
             </div>
             <ul class="user-menu-list">
-                ${whatsappLinkHTML} <!-- പുതിയത്: വാട്സപ്പ് ലിങ്ക് ഇവിടെ വരും -->
+                ${whatsappLinkHTML}
                 <li>
                     <a href="cart.html" class="user-menu-link">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
@@ -344,7 +362,6 @@ export async function loadSiteSettings() {
         try { await buildFooter(); } catch (e) { console.error("Error building footer:", e); }
         try { await buildFloatingButtons(); } catch (e) { console.error("Error building floating buttons:", e); }
         
-        // *** മാറ്റം: settings ഇങ്ങോട്ട് പാസ്സ് ചെയ്യുന്നു ***
         try { buildBottomNav(settings); } catch (e) { console.error("Error building bottom nav:", e); }
         
     } catch (error) {
