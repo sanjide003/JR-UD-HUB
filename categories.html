@@ -30,35 +30,42 @@
     <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main class="container page-container">
         
-        <!-- *** പേജിന്റെ തലക്കെട്ട് (h1) നീക്കം ചെയ്തു *** -->
-        <!-- <div class="page-header-bar"> ... </div> -->
-
         <!-- കാറ്റഗറി പേജ് ലേഔട്ട് -->
         <div class="category-page-layout">
             
-            <!-- 
-              3.1 കാറ്റഗറി ഗ്രിഡ്
-              *** പഴയ 'nav' മാറ്റി പുതിയ 'div' ആക്കി. JS ഇത് പൂരിപ്പിക്കും ***
-            -->
+            <!-- 3.0 സെർച്ച് ബാർ (പുതിയത്) -->
+            <div class="search-bar-container">
+                <div class="search-input-wrapper">
+                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                    <input type="text" id="product-search-input" placeholder="Search by Name, Price, Category, Spec...">
+                    <button id="clear-search-btn" style="display: none;">&times;</button>
+                </div>
+            </div>
+
+            <!-- 3.1 കാറ്റഗറി ഗ്രിഡ് -->
             <div class="category-grid-mobile" id="category-nav-mobile">
-                <!-- 'categories.js' വഴി കാറ്റഗറികൾ ഇവിടെ വരും -->
                 <span class="loading-placeholder">Loading categories...</span>
             </div>
             
             <div class="category-grid-desktop" id="category-nav-desktop">
-                <!-- 'categories.js' വഴി കാറ്റഗറികൾ ഇവിടെ വരും -->
                 <span class="loading-placeholder">Loading categories...</span>
             </div>
 
             <!-- 3.2 ഉൽപ്പന്നങ്ങൾ കാണിക്കുന്ന ഗ്രിഡ് -->
             <div class="category-page-content">
                 <div class="category-product-grid" id="category-product-grid">
-                    <!-- 'categories.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
                     <div class="loading-placeholder-full">Loading products...</div>
                 </div>
                 
                 <div class="loader-container" id="infinite-scroll-loader" style="display: none;">
                     <div class="loader-small"></div>
+                </div>
+                <!-- സെർച്ച് ഫലങ്ങൾ ഇല്ലെങ്കിൽ കാണിക്കാൻ -->
+                <div id="no-results-message" style="display: none; text-align: center; padding: 2rem; color: var(--text-muted);">
+                    No products found matching your search.
                 </div>
             </div>
 
