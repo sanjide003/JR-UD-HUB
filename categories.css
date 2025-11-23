@@ -9,6 +9,54 @@
     gap: 2px; 
 }
 
+/* --- 1.0 സെർച്ച് ബാർ സ്റ്റൈലുകൾ (പുതിയത്) --- */
+.search-bar-container {
+    padding: 0.5rem 0;
+    margin-bottom: 0.5rem;
+}
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    transition: border-color 0.3s ease;
+}
+.search-input-wrapper:focus-within {
+    border-color: var(--primary-gold);
+}
+.search-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--text-muted);
+    margin-right: 0.75rem;
+}
+#product-search-input {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-family: var(--font-main);
+    font-size: 1rem;
+    width: 100%;
+    outline: none;
+}
+#clear-search-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    margin-left: 0.5rem;
+}
+#clear-search-btn:hover {
+    color: var(--primary-gold);
+}
+
+
 /* --- 1.1 മുകളിലെ കാറ്റഗറി ഗ്രിഡ് (മൊബൈൽ & ഡെസ്ക്ടോപ്പ്) --- */
 .category-grid-mobile,
 .category-grid-desktop {
