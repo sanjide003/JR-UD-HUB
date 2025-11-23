@@ -53,20 +53,18 @@
     margin-left: 0.5rem;
 }
 
-/* --- 1.1 മുകളിലെ കാറ്റഗറി ഗ്രിഡ് --- */
+/* --- 1.1 മുകളിലെ കാറ്റഗറി ഗ്രിഡ് (മൊബൈൽ & ഡെസ്ക്ടോപ്പ്) --- */
 .category-grid-mobile,
 .category-grid-desktop {
     display: grid;
-    grid-template-rows: repeat(2, 1fr); 
+    grid-template-rows: repeat(2, auto); 
     grid-auto-flow: column; 
     overflow-x: auto; 
     overflow-y: hidden; 
-    gap: 8px; /* *** മാറ്റം: ഐറ്റങ്ങൾക്കിടയിൽ അല്പം ഗ്യാപ്പ് നൽകി *** */
-    padding: 10px 5px; /* പാഡിംഗ് കൂട്ടി */
+    gap: 4px; /* ഐറ്റങ്ങൾക്കിടയിലുള്ള അകലം */
+    padding: 5px 0; 
     border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
     scroll-snap-type: x mandatory; 
-    height: auto; 
-    max-height: 180px; /* ഉയരം കൂട്ടി */
 }
 
 .category-grid-mobile::-webkit-scrollbar,
@@ -84,14 +82,17 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    gap: 4px; /* ഐക്കണും പേരും തമ്മിലുള്ള ഗ്യാപ്പ് */
+    justify-content: center; /* മുകളിൽ നിന്ന് നടുക്കോട്ട് മാറ്റി */
+    gap: 4px; /* ഐക്കണും പേരും തമ്മിലുള്ള അകലം */
     text-decoration: none;
     color: var(--text-muted);
     font-weight: 500;
-    width: 16.66vw; 
-    max-width: 80px; /* വീതി കൂട്ടി */
-    padding: 0;
+    
+    /* *** മാറ്റം: വീതി കൂട്ടി (പേര് ഒറ്റ വരിയിൽ വരാൻ) *** */
+    min-width: 75px; /* കുറഞ്ഞത് 75px വീതി */
+    width: 18vw; /* സ്ക്രീനിന്റെ 18% */
+    
+    padding: 4px 0;
     cursor: pointer;
     scroll-snap-align: start;
     box-sizing: border-box;
@@ -100,18 +101,18 @@
 @media (min-width: 769px) {
     .category-grid-item {
         width: 90px;
-        max-width: none;
+        min-width: 90px;
     }
 }
 
 .category-grid-image-box {
-    /* *** മാറ്റം: ഐക്കൺ ബോക്സ് വലുതാക്കി (42px) *** */
-    width: 42px; 
-    height: 42px; 
-    border-radius: 12px; /* റൗണ്ട് കൂട്ടി */
+    /* *** മാറ്റം: ഐക്കൺ വലിപ്പം കൂട്ടി *** */
+    width: 48px; 
+    height: 48px; 
+    border-radius: 12px; /* കുറച്ചുകൂടി റൗണ്ട് */
     background-color: rgba(233, 213, 255, 0.05); 
     border: 1px solid rgba(233, 213, 255, 0.1);
-    padding: 7px;
+    padding: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -127,21 +128,25 @@
 }
 
 .category-grid-name {
-    /* *** മാറ്റം: പേരിന്റെ വലിപ്പം കൂട്ടി (0.7rem) *** */
-    font-size: 0.7rem; 
+    /* *** മാറ്റം: ഫോണ്ട് വലിപ്പം കൂട്ടി, വ്യക്തത വരുത്തി *** */
+    font-size: 0.75rem; 
     text-align: center;
     color: var(--text-muted);
     line-height: 1.2;
-    white-space: nowrap; /* നിർബന്ധമായും ഒറ്റ വരി */
+    
+    /* ഒറ്റ വരിയിൽ തന്നെ നിർത്തുന്നു */
+    white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis; 
+    
     width: 100%;
-    padding: 0 2px;
+    padding: 0 4px;
 }
 
+/* Active State */
 .category-grid-item.active .category-grid-name {
     color: var(--primary-gold);
-    font-weight: 600; /* ആക്ടീവ് ആകുമ്പോൾ കട്ടി കൂട്ടി */
+    font-weight: 600;
 }
 .category-grid-item.active .category-grid-image-box {
     border-color: var(--primary-gold);
@@ -153,13 +158,13 @@
 .category-page-content {
     flex-grow: 1;
     padding-top: 5px;
-    height: calc(100vh - 240px); /* കാറ്റഗറി ബാർ വലുതായതുകൊണ്ട് ഇവിടെ കുറച്ചു */
+    height: calc(100vh - 230px); /* ഹെഡർ + കാറ്റഗറി ബാർ കുറയ്ക്കുന്നു */
     overflow-y: auto; 
 }
 
 .category-product-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); 
+    grid-template-columns: repeat(2, 1fr); /* മൊബൈലിൽ 2 കോളം */
     gap: 8px; 
     padding: 0 5px 80px 5px; 
 }
