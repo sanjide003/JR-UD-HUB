@@ -5,20 +5,22 @@
 .category-page-layout {
     display: flex;
     flex-direction: column;
-    gap: 1rem; 
+    /* *** മാറ്റം: കാറ്റഗറി ബാറും പ്രൊഡക്റ്റും തമ്മിലുള്ള അകലം 2px (1mm) ആക്കി *** */
+    gap: 2px; 
 }
 
 /* --- 1.1 മുകളിലെ കാറ്റഗറി ഗ്രിഡ് (മൊബൈൽ & ഡെസ്ക്ടോപ്പ്) --- */
 .category-grid-mobile,
 .category-grid-desktop {
     display: grid;
-    grid-template-rows: repeat(2, auto); /* 2 വരികൾ */
-    grid-auto-flow: column; /* നിരകൾ നിറയ്ക്കുക */
+    /* *** 2 വരികളിലായി നിറയുന്നു, ശേഷം സൈഡിലേക്ക് സ്ക്രോൾ ചെയ്യുന്നു *** */
+    grid-template-rows: repeat(2, auto); 
+    grid-auto-flow: column; 
     overflow-x: auto; 
     overflow-y: hidden; 
-    gap: 4px; /* *** മാറ്റം: കാറ്റഗറികൾക്കിടയിൽ വളരെ ചെറിയ ഗ്യാപ്പ് (4px) *** */
-    padding: 0.25rem; 
-    border-bottom: 1px solid var(--border-color);
+    gap: 4px; 
+    padding: 2px; /* പാഡിംഗ് കുറച്ചു */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* ബോർഡർ കനം കുറച്ചു */
     justify-content: start;
 }
 
@@ -33,22 +35,22 @@
     scrollbar-width: none;  
 }
 
-/* --- 1.3 കാറ്റഗറി ഗ്രിഡ് ഐറ്റം (ബാറിലെ ഓരോ ഐറ്റം) --- */
+/* --- 1.3 കാറ്റഗറി ഗ്രിഡ് ഐറ്റം --- */
 .category-grid-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 2px; /* *** മാറ്റം: ഐക്കണും പേരും തമ്മിൽ 2px ഗ്യാപ്പ് മാത്രം *** */
+    gap: 2px; 
     text-decoration: none;
     color: var(--text-muted);
     font-weight: 500;
-    width: 60px; /* *** മാറ്റം: വീതി 60px ആക്കി കുറച്ചു (കൂടുതൽ അടുപ്പിക്കാൻ) *** */
+    width: 60px; 
     padding: 2px;
     cursor: pointer;
 }
 
 .category-grid-image-box {
-    width: 45px; /* *** മാറ്റം: ബോക്സ് വലിപ്പം 45px ആക്കി *** */
+    width: 45px; 
     height: 45px; 
     border-radius: 10px; 
     background-color: rgba(233, 213, 255, 0.05); 
@@ -69,7 +71,7 @@
 }
 
 .category-grid-name {
-    font-size: 0.65rem; /* *** മാറ്റം: പേരിന്റെ വലിപ്പം കുറച്ചു *** */
+    font-size: 0.65rem; 
     text-align: center;
     color: var(--text-muted);
     transition: color 0.3s ease;
@@ -92,14 +94,15 @@
 }
 
 
-/* --- 2. പ്രൊഡക്റ്റ് ഗ്രിഡ് (താഴെയുള്ള പ്രൊഡക്റ്റുകൾ) --- */
+/* --- 2. പ്രൊഡക്റ്റ് ഗ്രിഡ് --- */
 .category-page-content {
     flex-grow: 1;
 }
 .category-product-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 0.5rem; /* പ്രൊഡക്റ്റുകൾക്കിടയിൽ സാധാരണ ഗ്യാപ്പ് മതി */
+    /* *** മാറ്റം: പ്രൊഡക്റ്റുകൾക്കിടയിലുള്ള ഗ്യാപ്പ് 2px ആക്കി *** */
+    gap: 2px; 
 }
 .loader-container {
     display: none;
@@ -111,7 +114,7 @@
 .category-product-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 4px; /* റൗണ്ട് കുറച്ചു */
     overflow: hidden;
     transition: all 0.3s ease;
     display: flex;
@@ -119,12 +122,12 @@
 }
 .category-product-card:hover {
     border-color: var(--secondary-gold);
-    transform: translateY(-5px);
+    transform: translateY(-2px);
 }
 .cat-product-image-link {
     display: block;
     width: 100%;
-    height: 120px;
+    height: 110px; /* ഇമേജ് ഹൈറ്റ് അല്പം കുറച്ചു */
     overflow: hidden;
 }
 .cat-product-image {
@@ -135,44 +138,49 @@
     transition: transform 0.4s ease;
 }
 .category-product-card:hover .cat-product-image {
-    transform: scale(1.1);
+    transform: scale(1.05);
 }
 .cat-product-content {
-    padding: 0.5rem; 
+    padding: 0.4rem; /* പാഡിംഗ് കുറച്ചു */
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 }
 .cat-product-title {
-    font-size: 0.8rem;
+    font-size: 0.75rem; /* ഫോണ്ട് കുറച്ചു */
     color: var(--text-color); 
     font-weight: 500;
-    margin-bottom: 0.25rem;
-    min-height: 30px;
-    line-height: 1.3;
+    margin-bottom: 0.2rem;
+    min-height: 28px;
+    line-height: 1.2;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
 .cat-product-content .price-container {
-    margin-bottom: 0.5rem;
-    gap: 0.25rem;
+    margin-bottom: 0.4rem;
+    gap: 0.2rem;
 }
 .cat-product-content .price-main {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
 }
 .cat-product-content .price-mrp {
-    font-size: 0.75rem;
+    font-size: 0.7rem;
 }
 
 .cat-product-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr; 
-    gap: 0.25rem;
+    gap: 0.2rem;
     margin-top: auto;
 }
 .cat-product-buttons .btn-primary-new,
 .cat-product-buttons .btn-secondary-new {
-    font-size: 0.65rem; 
-    padding: 0.4rem 0.1rem; 
-    gap: 0.2rem;
+    font-size: 0.6rem; 
+    padding: 0.3rem 0.1rem; 
+    gap: 0.1rem;
+    height: 28px;
 }
 .cat-product-buttons .btn-secondary-new svg.icon-btn {
     width: 12px;
@@ -216,6 +224,7 @@
     
     .category-page-layout {
         flex-direction: column;
+        gap: 1rem; /* ഡെസ്ക്ടോപ്പിൽ സാധാരണ ഗ്യാപ്പ് */
     }
     .category-product-grid {
         grid-template-columns: repeat(4, 1fr);
@@ -231,6 +240,7 @@
     .cat-product-title {
         font-size: 1rem;
         min-height: 40px;
+        -webkit-line-clamp: 2;
     }
     .cat-product-content .price-main {
         font-size: 1.3rem;
@@ -246,6 +256,7 @@
         font-size: 0.9rem;
         padding: 0.75rem 1rem;
         gap: 0.5rem;
+        height: auto;
     }
     .cat-product-buttons .btn-secondary-new svg.icon-btn {
         width: 16px;
