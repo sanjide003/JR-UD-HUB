@@ -1,6 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
 
-
 import {
     collection,
     getDocs,
@@ -14,7 +13,7 @@ import {
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db } from './firebase-config.js';
-import { loadSiteSettings, optimizeImage } from './common.js'; // *** optimizeImage ഇറക്കുമതി ചെയ്തു ***
+import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
 setLogLevel('Debug');
@@ -24,6 +23,9 @@ const productGrid = document.getElementById("category-product-grid");
 const categoryNavDesktop = document.getElementById("category-nav-desktop");
 const categoryNavMobile = document.getElementById("category-nav-mobile");
 const loader = document.getElementById("infinite-scroll-loader");
+const searchInput = document.getElementById("product-search-input"); // *** പുതിയത്: സെർച്ച് ഇൻപുട്ട് ***
+const clearSearchBtn = document.getElementById("clear-search-btn");
+const noResultsMsg = document.getElementById("no-results-message");
 
 // --- State ---
 let lastVisible = null; 
@@ -32,12 +34,14 @@ let currentCategoryId = 'all';
 const productsPerPage = 12; 
 let currentQuery = null;
 let whatsappNumber = ''; 
+let allProductsCache = []; // *** സെർച്ചിനായി എല്ലാ പ്രൊഡക്റ്റുകളും ഇവിടെ സൂക്ഷിക്കും ***
+let categoriesMap = new Map(); // *** കാറ്റഗറി പേര് സെർച്ച് ചെയ്യാൻ ഇത് ഉപയോഗിക്കും ***
 
 // --- പേജ് ലോഡ് ആവുമ്പോൾ ---
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
     await loadWhatsappNumber();
-    loadCategoryList(); 
+    await loadCategoryList(); // കാറ്റഗറികൾ ആദ്യം ലോഡ് ചെയ്യുന്നു
     
     const urlParams = new URLSearchParams(window.location.search);
     const categoryIdFromUrl = urlParams.get('filter');
@@ -47,6 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     startLoadingProducts(currentCategoryId); 
+    setupSearch(); // *** സെർച്ച് സെറ്റപ്പ് ചെയ്യുന്നു ***
 });
 
 async function loadWhatsappNumber() {
@@ -60,7 +65,7 @@ async function loadWhatsappNumber() {
 }
 
 /**
- * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു (ഒപ്റ്റിമൈസ് ചെയ്ത ചിത്രങ്ങൾ)
+ * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു (Map ഉണ്ടാക്കുന്നു)
  */
 async function loadCategoryList() {
     if (!categoryNavDesktop || !categoryNavMobile) return;
@@ -71,6 +76,7 @@ async function loadCategoryList() {
 
         let navHtml = '';
         
+        // "All Products" option
         navHtml += `
             <a href="#" class="category-grid-item" data-id="all">
                 <div class="category-grid-image-box">
@@ -84,7 +90,9 @@ async function loadCategoryList() {
         
         catSnapshot.forEach((doc) => {
             const category = doc.data();
-            // *** കാറ്റഗറി ഐക്കൺ ഒപ്റ്റിമൈസ് ചെയ്യുന്നു (വളരെ ചെറിയ വലിപ്പം മതി - 150px) ***
+            // *** മാപ്പിൽ ചേർക്കുന്നു (ID -> Name) ***
+            categoriesMap.set(doc.id, category.name);
+
             const rawImage = category.imageUrl || 'https://placehold.co/80x80/333/D4AF37?text=C';
             const optimizedIcon = optimizeImage(rawImage, 150);
 
@@ -119,15 +127,14 @@ function addNavClickListeners(navElement) {
         e.preventDefault();
         const categoryId = link.dataset.id;
         if (categoryId === currentCategoryId) return; 
+        
+        // സെർച്ച് ക്ലിയർ ചെയ്യുന്നു
+        if(searchInput) searchInput.value = '';
+        if(clearSearchBtn) clearSearchBtn.style.display = 'none';
+        if(noResultsMsg) noResultsMsg.style.display = 'none';
+
         currentCategoryId = categoryId;
         startLoadingProducts(categoryId);
-        
-        const sideNav = document.getElementById('side-nav');
-        const navOverlay = document.getElementById('nav-overlay');
-        if (sideNav && sideNav.classList.contains('open')) {
-            sideNav.classList.remove('open');
-            navOverlay.classList.remove('open');
-        }
     });
 }
 
@@ -158,7 +165,7 @@ async function startLoadingProducts(categoryId) {
 }
 
 /**
- * 4. ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (Image Optimization + Lazy Loading)
+ * ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (Pagination)
  */
 async function loadProducts() {
     if (isLoading || !currentQuery) return;
@@ -189,56 +196,7 @@ async function loadProducts() {
         documentSnapshots.forEach((doc) => {
             const product = doc.data();
             const productId = doc.id;
-            const card = document.createElement('div');
-            card.className = 'category-product-card';
-
-            const price = product.price || 0;
-            const mrp = product.mrp || 0;
-            
-            // *** ഇമേജ് ഒപ്റ്റിമൈസേഷൻ (400px മതി) ***
-            const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
-            const imageUrl = optimizeImage(rawImage, 400, 80);
-
-            let priceHTML = `<span class="price-main">₹${price}</span>`;
-            if (mrp > price) {
-                priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
-            }
-
-            const isInCart = isItemInCart(productId);
-            const buttonText = isInCart ? "Remove" : "Cart";
-            const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new";
-
-            card.innerHTML = `
-                <a href="product.html?id=${productId}" class="cat-product-image-link">
-                    <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" loading="lazy" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
-                </a>
-                <div class="cat-product-content">
-                    <h3 class="cat-product-title">${product.name}</h3>
-                    <div class="price-container">
-                        ${priceHTML}
-                    </div>
-                    <div class="cat-product-buttons">
-                        <button class="btn ${buttonClass} btn-add-to-cart"
-                            data-id="${productId}"
-                            data-name="${product.name}"
-                            data-price="${price}"
-                            data-mrp="${mrp}"
-                            data-image="${imageUrl}"
-                            data-size="${product.size || ''}">
-                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                                <line x1="3" y1="6" x2="21" y2="6"></line>
-                                <path d="M16 10a4 4 0 0 1-8 0"></path>
-                            </svg>
-                            <span>${buttonText}</span>
-                        </button>
-                        <a href="product.html?id=${productId}" class="btn btn-primary-new">
-                            <span>View</span>
-                        </a>
-                    </div>
-                </div>
-            `;
-            productGrid.appendChild(card);
+            renderProductCard(product, productId); // *** കാർഡ് ഉണ്ടാക്കാൻ പ്രത്യേക ഫംഗ്ഷൻ ***
         });
 
     } catch (error) {
@@ -250,6 +208,58 @@ async function loadProducts() {
     }
 }
 
+function renderProductCard(product, productId) {
+    const card = document.createElement('div');
+    card.className = 'category-product-card';
+
+    const price = product.price || 0;
+    const mrp = product.mrp || 0;
+    
+    const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
+    const imageUrl = optimizeImage(rawImage, 400, 80);
+
+    let priceHTML = `<span class="price-main">₹${price}</span>`;
+    if (mrp > price) {
+        priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
+    }
+
+    const isInCart = isItemInCart(productId);
+    const buttonText = isInCart ? "Remove" : "Cart";
+    const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new";
+
+    card.innerHTML = `
+        <a href="product.html?id=${productId}" class="cat-product-image-link">
+            <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" loading="lazy" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
+        </a>
+        <div class="cat-product-content">
+            <h3 class="cat-product-title">${product.name}</h3>
+            <div class="price-container">
+                ${priceHTML}
+            </div>
+            <div class="cat-product-buttons">
+                <button class="btn ${buttonClass} btn-add-to-cart"
+                    data-id="${productId}"
+                    data-name="${product.name}"
+                    data-price="${price}"
+                    data-mrp="${mrp}"
+                    data-image="${imageUrl}"
+                    data-size="${product.size || ''}">
+                    <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
+                    <span>${buttonText}</span>
+                </button>
+                <a href="product.html?id=${productId}" class="btn btn-primary-new">
+                    <span>View</span>
+                </a>
+            </div>
+        </div>
+    `;
+    productGrid.appendChild(card);
+}
+
 function updateActiveCategoryUI(categoryId) {
     const allLinks = document.querySelectorAll('.category-grid-item'); 
     allLinks.forEach(link => {
@@ -258,6 +268,90 @@ function updateActiveCategoryUI(categoryId) {
             link.classList.add('active');
         }
     });
+}
+
+// *** പുതിയത്: സെർച്ച് ലോജിക് ***
+function setupSearch() {
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
+        
+        if (term.length > 0) {
+            clearSearchBtn.style.display = 'block';
+            // സെർച്ച് ചെയ്യുമ്പോൾ സാധാരണ ലോഡിംഗ് നിർത്തുന്നു
+            if (loader) loader.style.display = 'none';
+            currentQuery = null; // ഇൻഫിനിറ്റ് സ്ക്രോൾ നിർത്തുന്നു
+            
+            performSearch(term);
+        } else {
+            clearSearchBtn.style.display = 'none';
+            noResultsMsg.style.display = 'none';
+            // സെർച്ച് ക്ലിയർ ആയാൽ വീണ്ടും പഴയ ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു
+            startLoadingProducts(currentCategoryId);
+        }
+    });
+
+    clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        clearSearchBtn.style.display = 'none';
+        noResultsMsg.style.display = 'none';
+        startLoadingProducts(currentCategoryId);
+    });
+}
+
+// *** സ്മാർട്ട് സെർച്ച് ഫംഗ്ഷൻ (എല്ലാം സെർച്ച് ചെയ്യുന്നു) ***
+async function performSearch(searchTerm) {
+    productGrid.innerHTML = '';
+    isLoading = true; // സ്ക്രോൾ ലോഡർ തടയാൻ
+    if (loader) loader.style.display = 'flex';
+
+    try {
+        // 1. കാഷെയിൽ ഡാറ്റ ഇല്ലെങ്കിൽ എല്ലാം ഫെച്ച് ചെയ്യുന്നു (ഒരിക്കൽ മാത്രം)
+        if (allProductsCache.length === 0) {
+            const q = query(collection(db, "products")); // എല്ലാ പ്രൊഡക്റ്റും എടുക്കുന്നു
+            const snapshot = await getDocs(q);
+            snapshot.forEach(doc => {
+                allProductsCache.push({ id: doc.id, ...doc.data() });
+            });
+        }
+
+        // 2. സെർച്ച് ടേമുകളെ വിഭജിക്കുന്നു (ഉദാ: "Blue Attar" -> ["blue", "attar"])
+        const searchTerms = searchTerm.split(/\s+/);
+
+        // 3. ഫിൽട്ടറിംഗ് (Any Match, Any Order)
+        const filteredProducts = allProductsCache.filter(product => {
+            // കാറ്റഗറി പേര് കണ്ടുപിടിക്കുന്നു
+            const categoryName = categoriesMap.get(product.categoryId) || '';
+            
+            // പ്രൊഡക്റ്റിന്റെ എല്ലാ വിവരങ്ങളും ഒരൊറ്റ സ്ട്രിംഗ് ആക്കുന്നു
+            const productString = `
+                ${product.name} 
+                ${product.price} 
+                ${product.description || ''} 
+                ${product.specification || ''} 
+                ${categoryName}
+            `.toLowerCase();
+
+            // നമ്മൾ ടൈപ്പ് ചെയ്ത *എല്ലാ* വാക്കുകളും ഈ സ്ട്രിംഗിൽ ഉണ്ടോ എന്ന് നോക്കുന്നു
+            return searchTerms.every(term => productString.includes(term));
+        });
+
+        if (loader) loader.style.display = 'none';
+
+        if (filteredProducts.length === 0) {
+            noResultsMsg.style.display = 'block';
+        } else {
+            noResultsMsg.style.display = 'none';
+            filteredProducts.forEach(product => {
+                renderProductCard(product, product.id);
+            });
+        }
+
+    } catch (error) {
+        console.error("Search error:", error);
+        if (loader) loader.style.display = 'none';
+    }
 }
 
 productGrid.addEventListener('click', (e) => {
@@ -291,7 +385,8 @@ productGrid.addEventListener('click', (e) => {
 });
 
 const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && !isLoading && lastVisible) { 
+    // സെർച്ച് ചെയ്യുമ്പോൾ ഇൻഫിനിറ്റ് സ്ക്രോൾ പ്രവർത്തിക്കരുത് (currentQuery null ആകും)
+    if (entries[0].isIntersecting && !isLoading && lastVisible && currentQuery) { 
         loadProducts();
     }
 }, { rootMargin: '200px' });
