@@ -241,7 +241,7 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .footer-accordion-toggle.active svg { transform: rotate(180deg); }
 
-/* *** മാറ്റം: ഡെസ്ക്ടോപ്പിൽ എപ്പോഴും തുറന്നു കിടക്കും, മൊബൈലിൽ മാത്രം അടഞ്ഞു കിടക്കും *** */
+/* ഫൂട്ടർ അക്കോഡിയൻ കണ്ടന്റ് */
 .footer-accordion-content {
     max-height: 0; 
     overflow: hidden; 
@@ -321,7 +321,6 @@ img { max-width: 100%; height: auto; display: block; }
     .bottom-nav-item {
         display: flex; flex-direction: column; align-items: center; justify-content: center;
         text-decoration: none;
-        /* *** മാറ്റം: ഡിഫോൾട്ട് നിറം വെള്ള (White) *** */
         color: #FFFFFF; 
         font-size: 0.7rem; font-weight: 500;
         flex: 1; height: 100%; gap: 4px; transition: all 0.3s ease;
@@ -332,7 +331,7 @@ img { max-width: 100%; height: auto; display: block; }
         stroke-linecap: round; stroke-linejoin: round; transition: all 0.3s ease;
     }
     
-    /* *** മാറ്റം: ആക്ടീവ് പേജ് മാത്രം ഗോൾഡ് (Gold) *** */
+    /* ആക്ടീവ് പേജ് ഗോൾഡ് കളർ */
     .bottom-nav-item.active { 
         color: var(--primary-gold) !important; 
     }
@@ -342,12 +341,11 @@ img { max-width: 100%; height: auto; display: block; }
         fill: none; 
     }
     
-    /* *** കാറ്റലോഗ് ഐക്കൺ ആനിമേഷൻ (Bounce) *** */
+    /* കാറ്റലോഗ് ആനിമേഷൻ */
     @keyframes bounce-subtle {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-4px); }
     }
-    /* ആക്ടീവ് അല്ലാത്തപ്പോൾ മാത്രം ആനിമേഷൻ */
     .bottom-nav-item:not(.active).catalog-anim svg {
         animation: bounce-subtle 2s infinite;
         stroke: var(--primary-gold);
@@ -362,26 +360,63 @@ img { max-width: 100%; height: auto; display: block; }
     .header-nav-desktop { display: block; }
     .main-header { padding: 0 2rem; }
 
-    /* *** മാറ്റം: ഫൂട്ടർ ഡെസ്ക്ടോപ്പിൽ എപ്പോഴും തുറന്നു കിടക്കും *** */
+    /* *** മാറ്റം: ഡെസ്ക്ടോപ്പ് ഫൂട്ടർ ലേഔട്ട് *** */
+    .footer-container-new {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* About, Quick Links എന്നീ രണ്ട് കോളങ്ങൾ */
+        gap: 2rem;
+        align-items: start;
+        justify-items: center; /* നടുക്ക് വരുത്താൻ */
+    }
+
+    .footer-accordion-item {
+        border-bottom: none;
+        width: 100%;
+        max-width: 300px; /* ലിസ്റ്റുകൾ ഒതുങ്ങിയിരിക്കാൻ */
+    }
+
     .footer-accordion-toggle {
-        pointer-events: none; /* ക്ലിക്ക് ചെയ്യാൻ പറ്റില്ല */
+        pointer-events: none; /* ക്ലിക്ക് ചെയ്യാൻ പറ്റില്ല (എപ്പോഴും തുറന്നിരിക്കും) */
         cursor: default;
+        justify-content: center; /* തലക്കെട്ട് നടുക്ക് */
+        font-size: 1.1rem;
     }
     .footer-accordion-toggle svg {
         display: none; /* അമ്പടയാളം വേണ്ട */
     }
+    
+    /* കണ്ടന്റ് എപ്പോഴും കാണിക്കും */
     .footer-accordion-content {
-        max-height: none !important; /* എപ്പോഴും തുറന്നു കിടക്കും */
+        max-height: none !important; 
         overflow: visible;
+        text-align: center; /* ലിങ്കുകൾ നടുക്ക് */
     }
-    .footer-container-new {
-        display: grid;
-        grid-template-columns: repeat(3, 1fr); /* 3 കോളം */
-        gap: 2rem;
-        align-items: start;
-    }
-    .footer-accordion-item {
+
+    /* സോഷ്യൽ മീഡിയ ഐക്കണുകൾ ഫുൾ വിഡ്ത്തിൽ */
+    .footer-social-new {
+        grid-column: 1 / -1; /* മുഴുവൻ വീതിയും എടുക്കുന്നു */
+        width: 100%;
+        justify-content: center;
         border-bottom: none;
+        padding-top: 3rem;
+        padding-bottom: 1rem;
+    }
+
+    /* കോപ്പിറൈറ്റ് ഒറ്റ വരിയിൽ */
+    .footer-bottom-new {
+        grid-column: 1 / -1;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 1.5rem; /* രണ്ട് ടെക്സ്റ്റുകൾക്കിടയിൽ വിടവ് */
+        padding-top: 0;
+    }
+    .footer-bottom-new p {
+        margin: 0;
+    }
+    .footer-powered-by {
+        margin-top: 0;
     }
 }
 
