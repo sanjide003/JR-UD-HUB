@@ -56,17 +56,20 @@
 /* --- 1.1 മുകളിലെ കാറ്റഗറി ഗ്രിഡ് (മൊബൈൽ & ഡെസ്ക്ടോപ്പ്) --- */
 .category-grid-mobile,
 .category-grid-desktop {
-    display: grid;
-    grid-template-rows: repeat(2, auto); 
-    grid-auto-flow: column; 
-    overflow-x: auto; 
+    /* *** മാറ്റം: ഗ്രിഡ് മാറ്റി ഫ്ലെക്സ് ആക്കി (ഒരൊറ്റ വരിയിൽ വരാൻ) *** */
+    display: flex; 
+    flex-wrap: nowrap;
+    overflow-x: auto; /* സൈഡിലേക്ക് സ്ക്രോൾ */
     overflow-y: hidden; 
-    gap: 4px; /* ഐറ്റങ്ങൾക്കിടയിലുള്ള അകലം */
-    padding: 5px 0; 
+    gap: 10px; /* *** മാറ്റം: ഐറ്റങ്ങൾക്കിടയിൽ വ്യക്തമായ അകലം നൽകി *** */
+    padding: 10px 5px; 
     border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
     scroll-snap-type: x mandatory; 
+    height: auto; 
+    justify-content: flex-start;
 }
 
+/* സ്ക്രോൾബാർ മറയ്ക്കുന്നു */
 .category-grid-mobile::-webkit-scrollbar,
 .category-grid-desktop::-webkit-scrollbar {
     display: none;
@@ -82,42 +85,34 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center; /* മുകളിൽ നിന്ന് നടുക്കോട്ട് മാറ്റി */
-    gap: 4px; /* ഐക്കണും പേരും തമ്മിലുള്ള അകലം */
+    justify-content: flex-start;
+    gap: 6px; /* ഐക്കണും പേരും തമ്മിലുള്ള അകലം കൂട്ടി */
     text-decoration: none;
     color: var(--text-muted);
     font-weight: 500;
     
-    /* *** മാറ്റം: വീതി കൂട്ടി (പേര് ഒറ്റ വരിയിൽ വരാൻ) *** */
-    min-width: 75px; /* കുറഞ്ഞത് 75px വീതി */
-    width: 18vw; /* സ്ക്രീനിന്റെ 18% */
+    /* *** മാറ്റം: വീതി കൂട്ടി (വലിപ്പം തോന്നിക്കാൻ) *** */
+    width: 75px; 
+    min-width: 75px;
     
-    padding: 4px 0;
+    padding: 0;
     cursor: pointer;
     scroll-snap-align: start;
-    box-sizing: border-box;
-}
-
-@media (min-width: 769px) {
-    .category-grid-item {
-        width: 90px;
-        min-width: 90px;
-    }
 }
 
 .category-grid-image-box {
-    /* *** മാറ്റം: ഐക്കൺ വലിപ്പം കൂട്ടി *** */
-    width: 48px; 
-    height: 48px; 
-    border-radius: 12px; /* കുറച്ചുകൂടി റൗണ്ട് */
+    /* *** മാറ്റം: ഐക്കൺ ബോക്സ് വലുതാക്കി (50px) *** */
+    width: 50px; 
+    height: 50px; 
+    border-radius: 12px; 
     background-color: rgba(233, 213, 255, 0.05); 
     border: 1px solid rgba(233, 213, 255, 0.1);
-    padding: 8px;
+    padding: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
-    transition: border-color 0.3s ease;
+    transition: border-color 0.3s ease, transform 0.2s ease;
 }
 
 .category-grid-image {
@@ -128,22 +123,21 @@
 }
 
 .category-grid-name {
-    /* *** മാറ്റം: ഫോണ്ട് വലിപ്പം കൂട്ടി, വ്യക്തത വരുത്തി *** */
+    /* *** മാറ്റം: ഫോണ്ട് വലിപ്പം കൂട്ടി (0.75rem) *** */
     font-size: 0.75rem; 
     text-align: center;
     color: var(--text-muted);
     line-height: 1.2;
     
-    /* ഒറ്റ വരിയിൽ തന്നെ നിർത്തുന്നു */
+    /* *** മാറ്റം: നിർബന്ധമായും ഒറ്റ വരിയിൽ തന്നെ നിൽക്കും *** */
     white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis; 
     
     width: 100%;
-    padding: 0 4px;
 }
 
-/* Active State */
+/* 1.4 ആക്ടീവ്/ഹോവർ സ്റ്റൈലുകൾ */
 .category-grid-item.active .category-grid-name {
     color: var(--primary-gold);
     font-weight: 600;
@@ -157,16 +151,17 @@
 /* --- 2. പ്രൊഡക്റ്റ് ഗ്രിഡ് --- */
 .category-page-content {
     flex-grow: 1;
-    padding-top: 5px;
-    height: calc(100vh - 230px); /* ഹെഡർ + കാറ്റഗറി ബാർ കുറയ്ക്കുന്നു */
+    padding-top: 2px;
+    /* സ്ക്രീനിന്റെ ബാക്കി ഭാഗം മുഴുവൻ എടുക്കുന്നു */
+    height: calc(100vh - 200px); 
     overflow-y: auto; 
 }
 
 .category-product-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* മൊബൈലിൽ 2 കോളം */
-    gap: 8px; 
-    padding: 0 5px 80px 5px; 
+    grid-template-columns: repeat(3, 1fr); /* 3x3 ഗ്രിഡ് */
+    gap: 2px; 
+    padding-bottom: 80px; 
 }
 .loader-container {
     display: none;
@@ -178,84 +173,79 @@
 .category-product-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px; 
+    border-radius: 4px; 
     overflow: hidden;
     display: flex;
     flex-direction: column;
     height: auto; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    max-height: 220px; 
 }
 
 .cat-product-image-link {
     display: block;
     width: 100%;
-    aspect-ratio: 1 / 1; 
-    height: auto; 
+    height: 100px; 
     overflow: hidden;
-    position: relative;
 }
 .cat-product-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    background-color: #222;
+    background-color: #333;
 }
 
 .cat-product-content {
-    padding: 0.75rem; 
+    padding: 0.3rem; 
     display: flex;
     flex-direction: column;
     flex-grow: 1;
     justify-content: space-between;
 }
 .cat-product-title {
-    font-size: 0.9rem; 
+    font-size: 0.7rem; 
     color: var(--text-color); 
-    font-weight: 600;
-    margin-bottom: 0.25rem;
-    line-height: 1.3;
+    font-weight: 500;
+    margin-bottom: 0;
+    line-height: 1.1;
+    height: 24px; 
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 38px;
 }
 .cat-product-content .price-container {
-    margin: 0.5rem 0;
-    gap: 0.5rem;
+    margin: 0.2rem 0;
+    gap: 0.2rem;
     display: flex;
-    align-items: center;
+    align-items: baseline;
 }
 .cat-product-content .price-main {
-    font-size: 1.1rem; 
+    font-size: 0.85rem;
     font-weight: 700;
-    color: var(--primary-gold);
 }
 .cat-product-content .price-mrp {
-    font-size: 0.8rem;
-    text-decoration: line-through;
-    color: var(--text-muted);
+    font-size: 0.65rem;
 }
 
 .cat-product-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr; 
-    gap: 0.5rem;
-    margin-top: 0.5rem;
+    gap: 2px;
+    margin-top: 2px;
 }
 .cat-product-buttons .btn-primary-new,
 .cat-product-buttons .btn-secondary-new {
-    font-size: 0.8rem; 
+    font-size: 0.6rem; 
     padding: 0;
-    height: 34px; 
+    height: 24px; 
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 5px;
+    border-radius: 3px;
 }
 .cat-product-buttons .btn-secondary-new svg.icon-btn {
-    width: 14px;
-    height: 14px;
+    width: 10px;
+    height: 10px;
 }
 
 
@@ -267,32 +257,47 @@
 @media (min-width: 769px) {
     .category-grid-mobile { display: none; }
     .category-grid-desktop {
-        display: grid;
-        grid-template-rows: repeat(2, 1fr);
-        grid-auto-flow: column;
+        display: flex;
         overflow-x: auto;
-        gap: 0;
+        gap: 1rem;
         justify-content: flex-start;
         height: auto;
+        max-height: none;
+    }
+    
+    /* ഡെസ്ക്ടോപ്പിൽ കുറച്ചുകൂടി വലുപ്പം */
+    .category-grid-item {
+        width: 90px;
+        min-width: 90px;
+    }
+    .category-grid-image-box {
+        width: 60px;
+        height: 60px;
+    }
+    .category-grid-name {
+        font-size: 0.85rem;
     }
     
     .category-product-grid {
         grid-template-columns: repeat(5, 1fr); 
-        gap: 1.5rem;
-        padding: 0 0 80px 0;
+        gap: 0.5rem;
     }
     
     .category-page-content {
-        height: auto;
+        height: auto; 
         overflow-y: visible;
     }
 
-    .cat-product-image-link { height: 200px; aspect-ratio: auto; }
-    .cat-product-title { font-size: 1rem; min-height: auto; }
-    .cat-product-content { padding: 1rem; }
+    .category-product-card {
+        max-height: none; 
+    }
+    
+    .cat-product-image-link { height: 160px; }
+    .cat-product-title { font-size: 0.9rem; height: auto; }
+    .cat-product-content { padding: 0.75rem; }
     .cat-product-buttons .btn-primary-new,
     .cat-product-buttons .btn-secondary-new {
-        height: 38px;
-        font-size: 0.9rem;
+        height: 32px;
+        font-size: 0.8rem;
     }
 }
