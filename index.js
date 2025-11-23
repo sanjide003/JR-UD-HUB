@@ -51,7 +51,7 @@ async function loadHomeBanner() {
 }
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ (വീഡിയോ/ഡ്രൈവ് സപ്പോർട്ട്)
+ * 1. ഹീറോ സ്ലൈഡർ
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -75,15 +75,12 @@ async function loadHeroSlider() {
                 let embedUrl = '';
                 let finalUrl = slide.url;
 
-                // *** ഡ്രൈവ് വീഡിയോ ലിങ്ക് ഡിറ്റക്ഷൻ ***
                 if (isVideo && slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
                     try {
-                        // ഡ്രൈവ് ലിങ്കിൽ നിന്ന് ID എടുത്ത് download ലിങ്ക് ആക്കുന്നു (വീഡിയോ പ്ലേ ചെയ്യാൻ)
                         const id = slide.url.split('/d/')[1].split('/')[0];
                         finalUrl = `https://drive.google.com/uc?export=download&id=${id}`;
                     } catch(e) {}
                 } 
-                // YouTube ആണോ എന്ന് പരിശോധിക്കുന്നു
                 else if (slide.url.includes('youtube.com/watch?v=')) {
                     videoId = new URL(slide.url).searchParams.get('v');
                     isVideo = true;
@@ -102,11 +99,9 @@ async function loadHeroSlider() {
                     slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
                 }
                 else if (isVideo && embedUrl) {
-                    // YouTube iframe
                     slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 }
                 else if (isVideo) {
-                    // Direct Video (MP4 / Drive)
                     slideEl.innerHTML = `<video class="hero-video-element" src="${finalUrl}" autoplay muted loop playsinline preload="auto"></video>`;
                 }
                 
@@ -114,7 +109,7 @@ async function loadHeroSlider() {
             });
         }
 
-        const heroSwiper = new Swiper('.hero-slider-new', {
+        new Swiper('.hero-slider-new', {
             loop: false, 
             effect: 'fade',
             fadeEffect: { crossFade: true },
@@ -126,11 +121,10 @@ async function loadHeroSlider() {
             },
         });
 
-        // ആദ്യത്തെ സ്ലൈഡിൽ വീഡിയോ ഉണ്ടെങ്കിൽ അത് പ്ലേ ചെയ്യാൻ ശ്രമിക്കുന്നു
         const firstSlideVideo = document.querySelector('.hero-video-element');
         if (firstSlideVideo) {
             firstSlideVideo.muted = true; 
-            firstSlideVideo.play().catch(e => console.log("Initial play failed, waiting for interaction:", e));
+            firstSlideVideo.play().catch(e => console.log("Initial play failed:", e));
         }
 
         setupSmartVideoAutoplay();
@@ -138,17 +132,9 @@ async function loadHeroSlider() {
     } catch (error) { console.error("Error loading hero slider: ", error); }
 }
 
-/**
- * വീഡിയോ സ്ക്രീനിൽ വരുമ്പോൾ Resume ചെയ്യുക, മാറുമ്പോൾ Pause ചെയ്യുക
- */
 function setupSmartVideoAutoplay() {
     const videos = document.querySelectorAll('.hero-video-element, .hero-video-iframe');
-    
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.25 
-    };
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.25 };
 
     const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -156,14 +142,12 @@ function setupSmartVideoAutoplay() {
             const isYouTube = element.tagName === 'IFRAME';
 
             if (entry.isIntersecting) {
-                // *** സ്ക്രീനിൽ ഉണ്ട് -> പ്ലേ ചെയ്യുക ***
                 if (isYouTube) {
                     element.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
                 } else {
                     element.play().catch(e => console.log("Autoplay prevented:", e));
                 }
             } else {
-                // *** സ്ക്രീനിൽ ഇല്ല -> പോസ് ചെയ്യുക ***
                 if (isYouTube) {
                     element.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
                 } else {
@@ -214,8 +198,8 @@ async function loadTopSellers() {
                          onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
                 </a>
                 <div class="top-sellers-product-info">
-                    <div class="top-sellers-product-name">${product.name} ${product.size ? `(${product.size})` : ''}</div>
-                    <div class="top-sellers-product-price">₹${product.price || 0} /-</div>
+                    <div class="top-sellers-product-name">${product.name}</div>
+                    <div class="top-sellers-product-price">₹${product.price || 0}</div>
                     <div class="top-sellers-buttons">
                         <button class="btn ${buttonClass} btn-add-to-cart"
                             data-id="${productId}"
@@ -232,7 +216,7 @@ async function loadTopSellers() {
                             <span>${buttonText}</span>
                         </button>
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">
-                            <span>View Details</span>
+                            <span>View</span>
                         </a>
                     </div>
                 </div>
@@ -248,8 +232,9 @@ async function loadTopSellers() {
                 disableOnInteraction: false 
             },
             speed: 1000,
-            slidesPerView: 1, 
-            spaceBetween: 20,
+            // *** മാറ്റം: മൊബൈലിൽ 2.2 എണ്ണം കാണിക്കുന്നു (വലിപ്പം കുറയാൻ) ***
+            slidesPerView: 2.2, 
+            spaceBetween: 15,
             pagination: { 
                 el: '.top-sellers-pagination-new', 
                 clickable: true,
@@ -285,9 +270,9 @@ async function loadTopSellers() {
                 }
             },
             breakpoints: { 
-                640: { slidesPerView: 2 }, 
+                640: { slidesPerView: 3.2 }, 
                 900: { slidesPerView: 4 }, 
-                1200: { slidesPerView: 4 } 
+                1200: { slidesPerView: 5 } 
             }
         });
     } catch (error) { console.error("Error loading top sellers: ", error); grid.innerHTML = '<p>Error loading products.</p>'; }
@@ -301,7 +286,8 @@ async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
 
-    const CATEGORIES_TO_SHOW = 3; 
+    // *** മാറ്റം: 2x2 ഗ്രിഡ് കിട്ടാൻ 4 എണ്ണം കാണിക്കുന്നു ***
+    const CATEGORIES_TO_SHOW = 4; 
 
     try {
         const catQuery = query(collection(db, "categories"));
