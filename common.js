@@ -96,10 +96,12 @@ async function buildHeader() {
     if (!headerElement) return;
 
     const logoUrl = settings.logoImageUrl || ''; 
+    // Logo URL-നും ഡ്രൈവ് സപ്പോർട്ട് കിട്ടാൻ optimizeImage വിളിക്കുന്നു
     const logoImg = settings.logoImageUrl ? `<img src="${optimizeImage(logoUrl, 150)}" alt="Logo" class="header-logo-img">` : '';
     const logoText = settings.logoText ? `<span class="header-logo-text">${settings.logoText}</span>` : '';
     const logoSubtitle = settings.logoSubtitle ? `<span class="header-logo-subtitle">${settings.logoSubtitle}</span>` : '';
 
+    // *** മാറ്റം: Contact ലിങ്ക് മാറ്റി Account ബട്ടൺ ആക്കി ***
     headerElement.innerHTML = `
         <div class="header-left-section">
             <a href="index.html" class="header-logo">
@@ -116,7 +118,7 @@ async function buildHeader() {
                 <li><a href="index.html">Home</a></li>
                 <li><a href="explore.html">Explore</a></li>
                 <li><a href="categories.html">Catalog</a></li>
-                <li><a href="contact.html">Contact</a></li>
+                <li><button id="desktop-account-btn">Account</button></li>
             </ul>
         </nav>
 
@@ -147,7 +149,6 @@ async function buildFooter() {
     if (settings.facebookUrl) socialLinksHTML += `<a href="${settings.facebookUrl}" target="_blank" aria-label="Facebook"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.9V12h2.538v-2.245c0-2.508 1.493-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.465l-1.26.001c-1.243 0-1.63.771-1.63 1.562V12h2.771l-.443 2.89H13.63v6.988C18.343 21.128 22 16.991 22 12z"/></svg></a>`;
     if (settings.youtubeUrl) socialLinksHTML += `<a href="${settings.youtubeUrl}" target="_blank" aria-label="YouTube"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21.58 7.19c-.23-.86-.9-1.52-1.76-1.76C18.26 5 12 5 12 5s-6.26 0-7.82.43c-.86.23-1.52.9-1.76 1.76C2 8.74 2 12 2 12s0 3.26.43 4.81c.23.86.9 1.52 1.76 1.76C5.74 19 12 19 12 19s6.26 0 7.82-.43c.86-.23 1.52-.9 1.76-1.76C22 15.26 22 12 22 12s0-3.26-.42-4.81zM9.75 15.5V8.5L15.75 12 9.75 15.5z"></path></svg></a>`;
 
-    // *** മാറ്റം: type="button" ചേർത്തു ***
     footerElement.innerHTML = `
         <div class="footer-container-new">
             <div class="footer-accordion-item">
@@ -205,7 +206,6 @@ function setupFooterAccordion() {
             
             if (!content) return; 
 
-            // *** മാറ്റം: Toggle Logic കൂടുതൽ കൃത്യമാക്കി ***
             if (content.style.maxHeight) {
                 content.style.maxHeight = null;
                 toggle.classList.remove('active');
@@ -222,17 +222,8 @@ async function buildFloatingButtons() {
     if (container) container.innerHTML = ''; 
 }
 
-function buildBottomNav(settings) {
-    if (window.innerWidth > 768) return;
-
-    const path = window.location.pathname;
-    const pageName = path.split("/").pop().replace('.html', '') || "index";
-
-    const homeActive = pageName === 'index' ? 'active' : '';
-    const catalogActive = (pageName === 'categories' || pageName === 'product') ? 'active' : '';
-    const exploreActive = pageName === 'explore' ? 'active' : '';
-    const accountActive = (pageName === 'cart' || pageName === 'contact' || pageName === 'about') ? 'active' : '';
-
+// *** മാറ്റം: യൂസർ മെനു HTML ജനറേറ്റ് ചെയ്യുന്ന പ്രത്യേക ഫംഗ്ഷൻ ***
+function buildUserMenuHTML(settings) {
     let whatsappLinkHTML = '';
     if (settings && settings.whatsapp) {
         whatsappLinkHTML = `
@@ -245,35 +236,7 @@ function buildBottomNav(settings) {
         `;
     }
 
-    const navHTML = `
-    <nav class="bottom-nav">
-        <!-- 1. HOME -->
-        <a href="index.html" class="bottom-nav-item ${homeActive}">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-            <span>Home</span>
-        </a>
-
-        <!-- 2. CATALOG -->
-        <a href="categories.html" class="bottom-nav-item catalog-anim ${catalogActive}">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            <span>Catalog</span>
-        </a>
-
-        <!-- 3. EXPLORE -->
-        <a href="explore.html" class="bottom-nav-item ${exploreActive}">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M10 10h4"/><path d="M19 7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3"/><path d="M5 7V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3"/><rect x="4" y="7" width="6" height="8" rx="2"/><rect x="14" y="7" width="6" height="8" rx="2"/><path d="M6 15v4a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4"/><path d="M16 15v4a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4"/>
-            </svg>
-            <span>Explore</span>
-        </a>
-
-        <!-- 4. ACCOUNT -->
-        <button class="bottom-nav-item ${accountActive}" id="bottom-nav-account-btn">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-            <span>Account</span>
-        </button>
-    </nav>
-
+    return `
     <!-- Account Menu Overlay -->
     <div class="user-menu-overlay" id="user-menu-overlay">
         <div class="user-menu-content">
@@ -307,30 +270,69 @@ function buildBottomNav(settings) {
         </div>
     </div>
     `;
-
-    document.body.insertAdjacentHTML('beforeend', navHTML);
-    setupBottomNavEvents();
 }
 
-function setupBottomNavEvents() {
-    const accountBtn = document.getElementById('bottom-nav-account-btn');
+// *** മാറ്റം: മൊബൈൽ നാവിഗേഷൻ ബാർ മാത്രം ഉണ്ടാക്കുന്ന ഫംഗ്ഷൻ ***
+function buildBottomNav(settings) {
+    if (window.innerWidth > 768) return;
+
+    const path = window.location.pathname;
+    const pageName = path.split("/").pop().replace('.html', '') || "index";
+
+    const homeActive = pageName === 'index' ? 'active' : '';
+    const catalogActive = (pageName === 'categories' || pageName === 'product') ? 'active' : '';
+    const exploreActive = pageName === 'explore' ? 'active' : '';
+    const accountActive = (pageName === 'cart' || pageName === 'contact' || pageName === 'about') ? 'active' : '';
+
+    const navHTML = `
+    <nav class="bottom-nav">
+        <a href="index.html" class="bottom-nav-item ${homeActive}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Home</span>
+        </a>
+        <a href="categories.html" class="bottom-nav-item catalog-anim ${catalogActive}">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            <span>Catalog</span>
+        </a>
+        <a href="explore.html" class="bottom-nav-item ${exploreActive}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M10 10h4"/><path d="M19 7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3"/><path d="M5 7V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3"/><rect x="4" y="7" width="6" height="8" rx="2"/><rect x="14" y="7" width="6" height="8" rx="2"/><path d="M6 15v4a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4"/><path d="M16 15v4a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4"/>
+            </svg>
+            <span>Explore</span>
+        </a>
+        <button class="bottom-nav-item ${accountActive}" id="bottom-nav-account-btn">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span>Account</span>
+        </button>
+    </nav>
+    `;
+
+    document.body.insertAdjacentHTML('beforeend', navHTML);
+}
+
+// *** മാറ്റം: എല്ലാ ഇവന്റുകളും (Desktop & Mobile) ഇവിടെ സെറ്റ് ചെയ്യുന്നു ***
+function setupNavEvents() {
+    const mobileAccountBtn = document.getElementById('bottom-nav-account-btn');
+    const desktopAccountBtn = document.getElementById('desktop-account-btn');
     const overlay = document.getElementById('user-menu-overlay');
     const closeBtn = document.getElementById('user-menu-close-btn');
 
-    if (accountBtn && overlay && closeBtn) {
-        accountBtn.addEventListener('click', (e) => {
-            e.preventDefault();
-            overlay.classList.add('open');
-        });
+    const toggleMenu = (e) => {
+        e.preventDefault();
+        if (overlay) overlay.classList.add('open');
+    };
 
-        closeBtn.addEventListener('click', () => {
-            overlay.classList.remove('open');
-        });
+    const closeMenu = () => {
+        if (overlay) overlay.classList.remove('open');
+    };
 
+    if (mobileAccountBtn) mobileAccountBtn.addEventListener('click', toggleMenu);
+    if (desktopAccountBtn) desktopAccountBtn.addEventListener('click', toggleMenu);
+    if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+    
+    if (overlay) {
         overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                overlay.classList.remove('open');
-            }
+            if (e.target === overlay) closeMenu();
         });
     }
 }
@@ -362,7 +364,13 @@ export async function loadSiteSettings() {
         try { await buildFooter(); } catch (e) { console.error("Error building footer:", e); }
         try { await buildFloatingButtons(); } catch (e) { console.error("Error building floating buttons:", e); }
         
-        try { buildBottomNav(settings); } catch (e) { console.error("Error building bottom nav:", e); }
+        // *** മാറ്റം: യൂസർ മെനുവും ബോട്ടം നാവിഗേഷനും ചേർക്കുന്നു ***
+        try { 
+            const menuHTML = buildUserMenuHTML(settings);
+            document.body.insertAdjacentHTML('beforeend', menuHTML);
+            buildBottomNav(settings); 
+            setupNavEvents();
+        } catch (e) { console.error("Error building nav:", e); }
         
     } catch (error) {
         console.error("Error during site initialization: ", error);
