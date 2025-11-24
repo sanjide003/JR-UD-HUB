@@ -2,11 +2,11 @@
 
 import { 
     collection, 
-    getDocs,
-    doc,
-    getDoc,
-    query,
-    where,
+    getDocs, 
+    doc, 
+    getDoc, 
+    query, 
+    where, 
     limit,
     setDoc,
     deleteDoc,
@@ -98,7 +98,6 @@ async function loadProductDetails() {
             priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
         }
 
-        // ... (More Links & Gallery logic same as before) ...
         let moreLinksHTML = '';
         if (product.moreLinks && product.moreLinks.length > 0) {
             moreLinksHTML = '<div class="product-more-links">';
@@ -171,7 +170,7 @@ async function loadProductDetails() {
         const cartButtonText = isInCart ? "Remove from Cart" : "Add to Cart";
         const cartButtonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new";
 
-        // *** പുതിയത്: ആക്ഷൻ ബാർ HTML ***
+        // ആക്ഷൻ ബാർ HTML
         const actionBarHTML = `
             <div class="product-action-bar">
                 <div class="action-group">
@@ -212,17 +211,24 @@ async function loadProductDetails() {
             </div>
         `;
 
+        // *** മാറ്റം: ഇവിടെയാണ് ഓർഡർ മാറ്റുന്നത് ***
         const infoHTML = `
             <div class="product-info">
+                <!-- 1. ലൈക്ക്, കമന്റ്, ഷെയർ ബട്ടണുകൾ (ഏറ്റവും മുകളിൽ) -->
+                ${actionBarHTML}
+
+                <!-- 2. പ്രൊഡക്റ്റ് പേര് -->
                 <h1 class="product-title">${product.name}</h1>
                 
-                ${actionBarHTML} <!-- ഇവിടെ ആക്ഷൻ ബാർ ചേർത്തു -->
-
-                ${specificationHTML ? `<div class="product-specification-section">${specificationHTML}</div>` : ''}
-
+                <!-- 3. വില -->
                 <div class="price-container large">
                     ${priceHTML}
                 </div>
+
+                <!-- 4. സ്പെസിഫിക്കേഷൻ -->
+                ${specificationHTML ? `<div class="product-specification-section">${specificationHTML}</div>` : ''}
+
+                <!-- 5. ഡിസ്ക്രിപ്ഷൻ -->
                 <div class="product-description">
                     ${descriptionHTML}
                 </div>
@@ -256,7 +262,7 @@ async function loadProductDetails() {
         });
         
         setupProductActionButtons();
-        setupRealtimeListeners(productIdStr); // *** ലിസണറുകൾ വിളിക്കുന്നു ***
+        setupRealtimeListeners(productIdStr); 
 
         if (product.categoryId) {
             loadRelatedProducts(product.categoryId, productIdStr);
