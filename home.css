@@ -185,43 +185,71 @@
 }
 
 
-/* --- 5. ഹോം പേജിലെ കാറ്റഗറി സ്ലൈഡർ (പുതിയത്) --- */
-/* ഗ്രിഡ് ക്ലാസ് നീക്കം ചെയ്തു, പകരം Swiper സ്റ്റൈലുകൾ ഉപയോഗിക്കുന്നു */
-.home-category-swiper {
-    width: 100%;
-    padding-bottom: 2rem; /* താഴെ അല്പം സ്പേസ് */
+/* --- 5. ഹോം പേജിലെ കാറ്റഗറി ഗ്രിഡ് (ആനിമേഷൻ ചേർത്തു) --- */
+.category-grid-vertical {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 10px; 
 }
 
+/* കാർഡ് സ്റ്റൈൽ */
 .category-card-home-new {
-    display: block;
     text-decoration: none;
     color: var(--text-muted);
     transition: all 0.3s ease;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    aspect-ratio: 4 / 5; 
+    aspect-ratio: 2 / 3; 
     position: relative; 
-    
     background-color: var(--card-bg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     
-    /* *** മാറ്റം: കാർഡിന്റെ ഉയരം ഉറപ്പാക്കുന്നു *** */
-    height: 100%; 
+    /* *** മാറ്റം: ആനിമേഷന് വേണ്ടിയുള്ള പ്രാരംഭ നില *** */
+    opacity: 0; 
+    transform: translateY(30px); 
 }
+
+/* JS വഴി ഈ ക്ലാസ് വരുമ്പോൾ ആനിമേഷൻ പ്രവർത്തിക്കും */
+.start-animation .category-card-home-new {
+    animation: fadeInUp 0.6s ease forwards;
+}
+
+/* ആനിമേഷൻ കീഫ്രെയിം */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ഓരോ കാർഡിനും ചെറിയ ഡിലേ (Stagger Effect) */
+.start-animation .category-card-home-new:nth-child(1) { animation-delay: 0.1s; }
+.start-animation .category-card-home-new:nth-child(2) { animation-delay: 0.2s; }
+.start-animation .category-card-home-new:nth-child(3) { animation-delay: 0.3s; }
+.start-animation .category-card-home-new:nth-child(4) { animation-delay: 0.4s; }
+.start-animation .category-card-home-new:nth-child(5) { animation-delay: 0.5s; }
+.start-animation .category-card-home-new:nth-child(6) { animation-delay: 0.6s; }
+/* കൂടുതൽ ഉണ്ടെങ്കിൽ... */
+.start-animation .category-card-home-new:nth-child(n+7) { animation-delay: 0.7s; }
+
 
 .category-card-home-new:hover {
     color: var(--primary-gold);
     border-color: var(--primary-gold);
-    transform: translateY(-3px);
+    transform: translateY(-3px); /* ആനിമേഷന് ശേഷം ഹോവർ വർക്ക് ചെയ്യും */
 }
 
 .category-card-home-new h3 {
     font-family: var(--font-main);
-    font-weight: 600;
-    font-size: 0.9rem; /* ഫോണ്ട് കുറച്ചു */
+    font-weight: 500;
+    font-size: 0.8rem; 
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -232,7 +260,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 0.75rem;
+    padding: 0.5rem;
     margin: 0;
     background: rgba(0, 0, 0, 0.6); 
     -webkit-backdrop-filter: blur(5px); 
@@ -262,5 +290,8 @@
     }
     .top-sellers-swiper-new .swiper-slide {
         text-align: center;
+    }
+    .category-grid-vertical {
+        grid-template-columns: repeat(5, 1fr); 
     }
 }
