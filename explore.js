@@ -30,11 +30,9 @@ let isLoading = false;
 const productsPerPage = 5; 
 let currentUser = null;
 
-// *** ഓതന്റിക്കേഷൻ ലിസണർ ***
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        // ലോഗിൻ ചെയ്താൽ റീലോഡ് ചെയ്യേണ്ട ആവശ്യമില്ല, തത്സമയം അപ്ഡേറ്റ് ആകും
     } else {
         signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
     }
@@ -91,7 +89,7 @@ async function loadProducts() {
             const productId = docSnap.id;
             const card = document.createElement('div');
             card.className = 'explore-card';
-            card.id = `product-card-${productId}`; // ID for easy access
+            card.id = `product-card-${productId}`; 
             
             card.innerHTML = `
                 ${buildCategoryHeader(product.categoryId)}
@@ -100,7 +98,6 @@ async function loadProducts() {
             `;
             feedContainer.appendChild(card);
             
-            // *** റിയൽ ടൈം ലിസണറുകൾ ചേർക്കുന്നു ***
             setupRealtimeListeners(productId);
         }
         
@@ -198,8 +195,6 @@ function buildCardContent(productId, product) {
     return `
         <div class="explore-card-content">
             <div class="explore-action-icons">
-                
-                <!-- Like Button -->
                 <div class="action-group">
                     <button title="Like" class="like-btn" data-id="${productId}">
                         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
@@ -207,7 +202,6 @@ function buildCardContent(productId, product) {
                     <span class="action-count like-count">0</span>
                 </div>
 
-                <!-- Rating Button -->
                 <div class="action-group">
                     <button title="Rate" class="comment-btn" data-id="${productId}">
                         <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -222,6 +216,17 @@ function buildCardContent(productId, product) {
             
             <!-- *** റേറ്റിംഗ് ബോക്സ് *** -->
             <div class="rating-box" id="rating-box-${productId}" style="display: none;">
+                <!-- *** മാറ്റം: റേറ്റിംഗ് സമ്മറി (Progress Bars) *** -->
+                <div class="rating-summary" id="rating-summary-${productId}">
+                    <div class="rating-bar-row"><span>5 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>4 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>3 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>2 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>1 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                </div>
+                
+                <hr class="rating-divider">
+
                 <p class="rating-title">Rate this product</p>
                 <div class="star-rating" data-id="${productId}">
                     ${[1, 2, 3, 4, 5].map(i => `
@@ -241,7 +246,6 @@ function buildCardContent(productId, product) {
     `;
 }
 
-// *** റിയൽ ടൈം അപ്ഡേറ്റ്സ് (Firebase Listeners) ***
 function setupRealtimeListeners(productId) {
     const card = document.getElementById(`product-card-${productId}`);
     if (!card) return;
@@ -253,7 +257,6 @@ function setupRealtimeListeners(productId) {
         const likeCountSpan = card.querySelector('.like-count');
         if (likeCountSpan) likeCountSpan.textContent = count;
 
-        // Check if current user liked
         if (currentUser) {
             const isLiked = snapshot.docs.some(doc => doc.id === currentUser.uid);
             const likeBtn = card.querySelector('.like-btn');
@@ -278,7 +281,17 @@ function setupRealtimeListeners(productId) {
         const ratingCountSpan = card.querySelector('.rating-count');
         if (ratingCountSpan) ratingCountSpan.textContent = count;
 
-        // Check user's rating
+        // *** മാറ്റം: സ്റ്റാർ കൗണ്ട് കണക്കാക്കുന്നു ***
+        const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        snapshot.forEach(doc => {
+            const val = doc.data().rating;
+            if (counts[val] !== undefined) counts[val]++;
+        });
+
+        // *** സമ്മറി അപ്ഡേറ്റ് ചെയ്യുന്നു ***
+        updateRatingSummary(card, counts, count);
+
+        // യൂസറുടെ റേറ്റിംഗ് ചെക്ക് ചെയ്യുന്നു
         if (currentUser) {
             const userRatingDoc = snapshot.docs.find(doc => doc.id === currentUser.uid);
             if (userRatingDoc) {
@@ -289,19 +302,41 @@ function setupRealtimeListeners(productId) {
     });
 }
 
-// *** സ്റ്റാർ കളർ ലോജിക് (Red -> Yellow -> Green) ***
+// *** പുതിയത്: സമ്മറി അപ്ഡേറ്റ് ഫംഗ്ഷൻ ***
+function updateRatingSummary(card, counts, total) {
+    const summaryRows = card.querySelectorAll('.rating-bar-row');
+    // 5 മുതൽ 1 വരെ താഴേക്ക്
+    const keys = [5, 4, 3, 2, 1]; 
+    
+    keys.forEach((starVal, index) => {
+        const row = summaryRows[index]; // 0 -> 5 star, 1 -> 4 star...
+        const count = counts[starVal];
+        const percentage = total > 0 ? (count / total) * 100 : 0;
+        
+        const fill = row.querySelector('.bar-fill');
+        const countSpan = row.querySelector('.bar-count');
+        
+        if (fill) fill.style.width = `${percentage}%`;
+        if (countSpan) countSpan.textContent = count;
+        
+        // കളർ സെറ്റ് ചെയ്യുന്നു (Progress Bar)
+        if (starVal >= 4) fill.style.backgroundColor = 'var(--success-green)';
+        else if (starVal === 3) fill.style.backgroundColor = '#f1c40f'; // Yellow
+        else fill.style.backgroundColor = 'var(--error-red)';
+    });
+}
+
 function updateStarUI(card, value) {
     const stars = card.querySelectorAll('.star');
     const feedback = card.querySelector('.rating-feedback');
     
-    // കളർ തീരുമാനിക്കുന്നു
     let colorClass = '';
     if (value <= 2) colorClass = 'red-star';
     else if (value === 3) colorClass = 'yellow-star';
     else colorClass = 'green-star';
 
     stars.forEach(s => {
-        s.className = 'star'; // Reset
+        s.className = 'star'; 
         if (parseInt(s.dataset.value) <= value) {
             s.classList.add('filled', colorClass);
         }
@@ -320,9 +355,8 @@ if (loader) { observer.observe(loader); }
 
 feedContainer.addEventListener('click', async (e) => { 
     const target = e.target;
-    if (!currentUser) return; // ലോഗിൻ ചെയ്യാത്തവർക്ക് ആക്ഷൻ ഇല്ല
+    if (!currentUser) return; 
 
-    // *** Like Action (Firestore) ***
     const likeButton = target.closest('.like-btn');
     if (likeButton) {
         e.preventDefault();
@@ -331,24 +365,15 @@ feedContainer.addEventListener('click', async (e) => {
         
         try {
             if (likeButton.classList.contains('liked')) {
-                // Unlike: Delete doc
                 await deleteDoc(userLikeRef);
             } else {
-                // Like: Set doc
-                await setDoc(userLikeRef, {
-                    timestamp: serverTimestamp()
-                });
-                
-                // ആനിമേഷൻ
+                await setDoc(userLikeRef, { timestamp: serverTimestamp() });
                 likeButton.style.transform = 'scale(1.2)';
                 setTimeout(() => likeButton.style.transform = 'scale(1)', 200);
             }
-        } catch (err) {
-            console.error("Like error:", err);
-        }
+        } catch (err) { console.error("Like error:", err); }
     }
 
-    // *** Toggle Rating Box ***
     const commentButton = target.closest('.comment-btn');
     if (commentButton) {
         e.preventDefault();
@@ -361,27 +386,18 @@ feedContainer.addEventListener('click', async (e) => {
         }
     }
 
-    // *** Rating Action (Firestore) ***
     if (target.classList.contains('star')) {
         const star = target;
         const ratingContainer = star.parentElement;
         const productId = ratingContainer.dataset.id;
         const value = parseInt(star.dataset.value);
-        
         const userRatingRef = doc(db, "products", productId, "ratings", currentUser.uid);
 
         try {
-            await setDoc(userRatingRef, {
-                rating: value,
-                timestamp: serverTimestamp()
-            });
-            // UI അപ്ഡേറ്റ് ലിസണർ വഴി നടക്കും
-        } catch (err) {
-            console.error("Rating error:", err);
-        }
+            await setDoc(userRatingRef, { rating: value, timestamp: serverTimestamp() });
+        } catch (err) { console.error("Rating error:", err); }
     }
 
-    // ... (Share and Bookmark logic remains same)
     const bookmarkButton = target.closest('.bookmark-btn');
     const shareButton = target.closest('.share-btn'); 
     
