@@ -185,45 +185,33 @@
 }
 
 
-/* --- 5. ഹോം പേജിലെ കാറ്റഗറി ഗ്രിഡ് (മാറ്റം: Horizontal Scroll & Larger Images) --- */
-.category-grid-vertical {
-    /* *** മാറ്റം: ഫ്ലെക്സ് ലേഔട്ട് (Single Row) *** */
-    display: flex;
-    overflow-x: auto; /* സൈഡിലേക്ക് സ്ക്രോൾ ചെയ്യാൻ */
-    gap: 15px; /* കാർഡുകൾക്കിടയിൽ അകലം */
-    padding: 10px 5px;
-    scroll-snap-type: x mandatory; /* സ്മൂത്ത് സ്ക്രോളിംഗ് */
-    
-    /* സ്ക്രോൾബാർ മറയ്ക്കുന്നു */
-    -ms-overflow-style: none;
-    scrollbar-width: none;
-}
-.category-grid-vertical::-webkit-scrollbar {
-    display: none;
+/* --- 5. ഹോം പേജിലെ കാറ്റഗറി സ്ലൈഡർ (പുതിയത്) --- */
+/* ഗ്രിഡ് ക്ലാസ് നീക്കം ചെയ്തു, പകരം Swiper സ്റ്റൈലുകൾ ഉപയോഗിക്കുന്നു */
+.home-category-swiper {
+    width: 100%;
+    padding-bottom: 2rem; /* താഴെ അല്പം സ്പേസ് */
 }
 
-/* കാർഡ് സ്റ്റൈൽ */
 .category-card-home-new {
+    display: block;
     text-decoration: none;
     color: var(--text-muted);
     transition: all 0.3s ease;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    aspect-ratio: 2 / 3; 
+    aspect-ratio: 4 / 5; 
     position: relative; 
-    
-    /* *** മാറ്റം: ഫിക്സഡ് വീതി (വലുതാക്കി) *** */
-    min-width: 160px; /* കാർഡിന്റെ വലിപ്പം കൂട്ടി */
-    width: 160px;
-    flex-shrink: 0; /* ചുരുങ്ങാതെ നോക്കുന്നു */
-    scroll-snap-align: start;
     
     background-color: var(--card-bg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    
+    /* *** മാറ്റം: കാർഡിന്റെ ഉയരം ഉറപ്പാക്കുന്നു *** */
+    height: 100%; 
 }
+
 .category-card-home-new:hover {
     color: var(--primary-gold);
     border-color: var(--primary-gold);
@@ -232,8 +220,8 @@
 
 .category-card-home-new h3 {
     font-family: var(--font-main);
-    font-weight: 500;
-    font-size: 0.9rem; 
+    font-weight: 600;
+    font-size: 0.9rem; /* ഫോണ്ട് കുറച്ചു */
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -244,7 +232,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.75rem;
     margin: 0;
     background: rgba(0, 0, 0, 0.6); 
     -webkit-backdrop-filter: blur(5px); 
@@ -265,11 +253,6 @@
     .top-sellers-swiper-new {
         padding: 0 30px;
     }
-    /* മൊബൈലിൽ കാറ്റഗറി കാർഡ് അല്പം ചെറുതാക്കാം, പക്ഷെ വ്യക്തമായിരിക്കണം */
-    .category-card-home-new {
-        min-width: 140px;
-        width: 140px;
-    }
 }
 
 /* ടാബ്ലെറ്റ് & ചെറിയ ഡെസ്ക്ടോപ്പ് */
@@ -279,12 +262,5 @@
     }
     .top-sellers-swiper-new .swiper-slide {
         text-align: center;
-    }
-    
-    /* ഡെസ്ക്ടോപ്പിൽ ഗ്രിഡ് ആക്കാം അല്ലെങ്കിൽ സ്ക്രോൾ തന്നെ നിലനിർത്താം */
-    /* ഇവിടെ സ്ക്രോൾ തന്നെ നിലനിർത്തുന്നു, വലിപ്പം കൂട്ടുന്നു */
-    .category-card-home-new {
-        min-width: 200px;
-        width: 200px;
     }
 }
