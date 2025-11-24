@@ -158,7 +158,7 @@ async function buildFooter() {
                 <div class="footer-accordion-content" id="footer-content-1">
                     <ul>
                         <li><a href="contact.html">Contact Us</a></li>
-                        <li><a href="about.html#store-locator">Store Locator</a></li>
+                        <!-- Store Locator ലിങ്ക് ഒഴിവാക്കി -->
                         <li><a href="about.html#shipping-policy">Shipping Policy</a></li>
                         <li><a href="about.html#privacy-policy">Privacy Policy</a></li>
                         <li><a href="about.html#terms-of-service">Terms of Service</a></li>
