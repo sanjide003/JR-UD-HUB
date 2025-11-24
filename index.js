@@ -280,89 +280,69 @@ async function loadTopSellers() {
 
 
 /**
- * 3. ഹോം പേജിലെ കാറ്റഗറികൾ
+ * 3. ഹോം പേജിലെ കാറ്റഗറികൾ (മാറ്റം: Infinite Swiper)
  */
 async function loadHomeCategories() {
-    const grid = document.getElementById("category-grid-home");
-    if (!grid) return;
-
-    const CATEGORIES_TO_SHOW = 12; // കൂടുതൽ എണ്ണം എടുക്കുന്നു
+    const container = document.getElementById("category-grid-home");
+    if (!container) return;
 
     try {
+        // *** എല്ലാ കാറ്റഗറികളും എടുക്കുന്നു ***
         const catQuery = query(collection(db, "categories"));
         const catSnapshot = await getDocs(catQuery); 
 
         if (catSnapshot.empty) {
-            grid.innerHTML = '<p>No categories to show.</p>'; 
+            container.innerHTML = '<p>No categories to show.</p>'; 
             return;
         }
 
-        let allCategories = [];
+        let slidesHTML = '';
         catSnapshot.forEach((doc) => {
-            allCategories.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            const category = doc.data();
+            const catId = doc.id;
+            
+            const rawImage = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
+            const imageUrl = optimizeImage(rawImage, 400, 80);
+            
+            // *** Swiper Slide ഉണ്ടാക്കുന്നു ***
+            slidesHTML += `
+                <div class="swiper-slide">
+                    <a href="categories.html?filter=${catId}" class="category-card-home-new" style="background-image: url('${imageUrl}')">
+                        <h3>${category.name}</h3>
+                    </a>
+                </div>
+            `;
         });
 
-        for (let i = allCategories.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [allCategories[i], allCategories[j]] = [allCategories[j], allCategories[i]];
-        }
+        // *** ഗ്രിഡ് ലേഔട്ട് മാറ്റി Swiper Structure നൽകുന്നു ***
+        // Class മാറ്റി 'swiper' ആക്കുന്നു
+        container.className = 'swiper home-category-swiper'; 
+        container.innerHTML = `
+            <div class="swiper-wrapper">
+                ${slidesHTML}
+            </div>
+        `;
 
-        const categoriesToShow = allCategories.slice(0, CATEGORIES_TO_SHOW);
-
-        renderCategories(grid, categoriesToShow);
-        
-        // *** പുതിയത്: ആനിമേഷൻ ട്രിഗർ ***
-        setupCategoryAnimation();
+        // *** Swiper Initialize ചെയ്യുന്നു (Infinite Loop & Auto Swipe) ***
+        new Swiper('.home-category-swiper', {
+            loop: true, // ഇൻഫിനിറ്റ് ലൂപ്പ്
+            slidesPerView: 2.2, // മൊബൈലിൽ 2.2 എണ്ണം (വലുതായി കാണാൻ)
+            spaceBetween: 15,
+            autoplay: {
+                delay: 2500, // 2.5 സെക്കൻഡ് കൂടുമ്പോൾ മാറും
+                disableOnInteraction: false,
+            },
+            breakpoints: {
+                640: { slidesPerView: 3.2, spaceBetween: 20 },
+                900: { slidesPerView: 4.5, spaceBetween: 20 },
+                1200: { slidesPerView: 5.5, spaceBetween: 25 }
+            }
+        });
 
     } catch (error) { 
         console.error("Error loading home categories: ", error); 
-        grid.innerHTML = '<p>Error loading categories.</p>';
+        container.innerHTML = '<p>Error loading categories.</p>';
     }
-}
-
-function renderCategories(grid, categories) {
-    grid.innerHTML = '';
-    if (categories.length === 0) {
-        grid.innerHTML = '<p>No categories to show.</p>';
-        return;
-    }
-    
-    categories.forEach((category) => {
-        const catId = category.id;
-        const card = document.createElement('a');
-        card.className = 'category-card-home-new';
-        card.href = `categories.html?filter=${catId}`;
-        
-        const rawImage = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
-        const imageUrl = optimizeImage(rawImage, 400, 80);
-        
-        card.style.backgroundImage = `url('${imageUrl}')`;
-        
-        card.innerHTML = `
-            <h3>${category.name}</h3>
-        `;
-        grid.appendChild(card);
-    });
-}
-
-// *** പുതിയത്: സ്ക്രോൾ ചെയ്യുമ്പോൾ ആനിമേഷൻ നൽകാൻ ***
-function setupCategoryAnimation() {
-    const grid = document.getElementById("category-grid-home");
-    if(!grid) return;
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                grid.classList.add('start-animation');
-                observer.unobserve(grid); // ഒരു തവണ മതി
-            }
-        });
-    }, { threshold: 0.2 });
-
-    observer.observe(grid);
 }
 
 const topSellersGrid = document.getElementById("top-sellers-grid");
