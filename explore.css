@@ -116,6 +116,53 @@
     padding: 1rem;
     margin-bottom: 1rem;
 }
+
+/* *** പുതിയത്: റേറ്റിംഗ് സമ്മറി (Bars) *** */
+.rating-summary {
+    margin-bottom: 1rem;
+}
+.rating-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+.rating-bar-row span:first-child {
+    width: 30px; /* സ്റ്റാർ നമ്പർ */
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
+.star-icon {
+    font-size: 0.7rem;
+}
+.bar-bg {
+    flex-grow: 1;
+    height: 6px;
+    background-color: #333;
+    border-radius: 3px;
+    overflow: hidden;
+}
+.bar-fill {
+    height: 100%;
+    background-color: var(--primary-gold);
+    width: 0%; /* JS വഴി മാറും */
+    transition: width 0.3s ease;
+    border-radius: 3px;
+}
+.bar-count {
+    width: 20px;
+    text-align: right;
+}
+.rating-divider {
+    border: 0;
+    height: 1px;
+    background-color: #333;
+    margin: 1rem 0;
+}
+
 .rating-title {
     font-size: 0.9rem;
     color: var(--text-muted);
@@ -141,7 +188,7 @@
 .star.filled.green-star {
     color: #2ecc71; /* Green */
 }
-/* ഡിഫോൾട്ട് ഫിൽ കളർ (js ലോഡ് ആകുന്നതിന് മുൻപ്) */
+/* ഡിഫോൾട്ട് ഫിൽ കളർ */
 .star.filled {
     color: var(--primary-gold); 
 }
