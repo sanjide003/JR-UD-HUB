@@ -6,22 +6,17 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
-    /* *** മാറ്റം: മുകളിൽ നീല വര നൽകുന്നു *** */
-    border-top: 2px solid #3498db; 
-    padding-top: 2rem;
 }
 
 /* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Swiper) --- */
 .product-gallery-swiper {
     width: 100%;
     aspect-ratio: 1 / 1;
-    /* *** മാറ്റം: ബോർഡർ ഒഴിവാക്കി, കറുപ്പ് പശ്ചാത്തലം *** */
-    border: 1px solid #222; 
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
     margin-bottom: 1rem;
     position: relative;
-    background-color: #000;
 }
 .product-gallery-swiper .swiper-slide img {
     width: 100%;
@@ -31,6 +26,7 @@
 .product-gallery-swiper .swiper-pagination {
     position: absolute;
     bottom: 10px;
+    /* പാജിനേഷൻ സെന്ററിൽ തന്നെ നിൽക്കട്ടെ, ലിങ്കുകൾ ലെഫ്റ്റിൽ വരും */
 }
 .product-gallery-swiper .swiper-pagination-bullet {
     background-color: rgba(255, 255, 255, 0.7);
@@ -41,15 +37,15 @@
     opacity: 1;
 }
 
-/* --- 3. "Paid Promotion" ലിങ്കുകൾ (താഴെ ഇടതുവശത്ത് ബാഡ്ജ് സ്റ്റൈലിൽ) --- */
+/* --- 3. "Paid Promotion" ലിങ്കുകൾ (മാറ്റം: താഴെ ഇടതുവശത്ത് ബാഡ്ജ് സ്റ്റൈലിൽ) --- */
 .product-more-links {
     position: absolute;
-    bottom: 10px; 
-    left: 10px;   
+    bottom: 10px; /* താഴെ */
+    left: 10px;   /* ഇടതുവശത്ത് */
     z-index: 10;
     display: flex;
     flex-direction: column;
-    align-items: flex-start; 
+    align-items: flex-start; /* ഇടതുവശത്തേക്ക് ചേർന്ന് നിൽക്കാൻ */
     gap: 5px;
 }
 
@@ -59,26 +55,26 @@
     gap: 0.5rem;
     padding: 0.4rem 0.8rem;
     
-    /* ബ്ലൂ -> ബ്ലാക്ക് ഷേഡുള്ള ബാഡ്ജ് */
+    /* *** മാറ്റം: ബ്ലൂ -> ബ്ലാക്ക് ഷേഡുള്ള ബാഡ്ജ് സ്റ്റൈൽ *** */
     background: linear-gradient(135deg, #2980b9 0%, #000000 90%);
     border: 1px solid rgba(255, 255, 255, 0.3);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
     
-    color: #ffffff; 
+    color: #ffffff; /* വെള്ള ടെക്സ്റ്റ് */
     font-size: 0.8rem;
     font-weight: 600;
-    border-radius: 4px; 
+    border-radius: 4px; /* അല്പം ബോക്സി ആക്കി ബാഡ്ജ് ലുക്ക് കിട്ടാൻ */
     text-decoration: none;
     transition: all 0.3s ease;
     backdrop-filter: blur(2px);
-    text-transform: uppercase; 
+    text-transform: uppercase; /* വലിയക്ഷരത്തിൽ */
     letter-spacing: 0.5px;
 }
 
 .product-promotion-link:hover {
     transform: translateY(-2px);
     box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
-    background: linear-gradient(135deg, #3498db 0%, #111111 90%); 
+    background: linear-gradient(135deg, #3498db 0%, #111111 90%); /* ഹോവർ ചെയ്യുമ്പോൾ അല്പം ലൈറ്റ് ആക്കുന്നു */
 }
 
 .product-promotion-link svg {
@@ -99,8 +95,6 @@
     gap: 1.5rem;
     margin-bottom: 1rem;
     padding: 0;
-    /* ബോർഡർ ഒഴിവാക്കി */
-    border-bottom: none; 
 }
 .action-group {
     display: flex;
@@ -110,14 +104,14 @@
 .action-count {
     font-size: 0.9rem;
     font-weight: 500;
-    color: #fff; /* വെള്ള നിറം */
+    color: var(--text-color);
 }
 .product-action-bar button {
     background: none;
     border: none;
     cursor: pointer;
     padding: 0;
-    color: #fff; /* വെള്ള നിറം */
+    color: var(--text-color); 
     transition: color 0.2s ease, transform 0.2s ease; 
 }
 .product-action-bar button svg {
@@ -137,10 +131,10 @@
     color: var(--primary-gold);
 }
 
-/* റേറ്റിംഗ് ബോക്സ് - പ്യുവർ ബ്ലാക്ക് പശ്ചാത്തലം */
+/* റേറ്റിംഗ് ബോക്സ് */
 .rating-box {
-    background-color: #000; /* കറുപ്പ് */
-    border: 1px solid #333;
+    background-color: #1a1a1a;
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1.5rem;
@@ -153,7 +147,7 @@
     align-items: center;
     gap: 10px;
     font-size: 0.8rem;
-    color: #ccc;
+    color: var(--text-muted);
     margin-bottom: 4px;
 }
 .rating-bar-row span:first-child {
@@ -166,7 +160,7 @@
 .bar-bg {
     flex-grow: 1;
     height: 6px;
-    background-color: #222;
+    background-color: #333;
     border-radius: 3px;
     overflow: hidden;
 }
@@ -197,7 +191,7 @@
 .star.filled { color: var(--primary-gold); }
 .rating-feedback {
     font-size: 0.85rem;
-    color: #ccc;
+    color: var(--text-muted);
     margin-bottom: 0.5rem;
     font-weight: 500;
 }
@@ -206,7 +200,6 @@
 .product-title {
     font-size: 1.8rem; 
     margin-bottom: 0.5rem;
-    color: #fff; /* വെള്ള */
 }
 
 .product-info .price-container.large { 
@@ -218,15 +211,13 @@
 }
 .product-info .price-container.large .price-mrp { 
     font-size: 1.25rem;
-    color: #888;
+    color: var(--text-muted);
 }
-
-/* വിവരണം - കറുപ്പ് പശ്ചാത്തലം */
 .product-description {
     margin-bottom: 1.5rem;
-    color: #ddd; /* ഇളം ചാരനിറം */
-    border: 1px solid #222;
-    background-color: #000; /* കറുപ്പ് */
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    background-color: var(--card-bg);
     padding: 1rem;
     border-radius: 8px;
     overflow-wrap: break-word;
@@ -241,13 +232,12 @@
     color: #5dade2;
 }
 
-/* സ്പെസിഫിക്കേഷൻ - കറുപ്പ് പശ്ചാത്തലം */
 .product-specification-section {
     margin-bottom: 1.5rem;
-    background-color: #000; /* കറുപ്പ് */
+    background-color: var(--card-bg);
     border-radius: 8px;
     padding: 1rem;
-    border: 1px solid #222;
+    border: 1px solid var(--border-color);
 }
 .product-specs-list {
     list-style-type: none; 
@@ -256,7 +246,7 @@
 }
 .product-specs-list li {
     margin-bottom: 0.5rem;
-    color: #fff; /* വെള്ള */
+    color: var(--text-color);
     position: relative;
     padding-left: 1.5rem;
     font-size: 1rem;
@@ -299,7 +289,7 @@
 .related-products-section {
     margin-top: 4rem;
     padding-top: 2rem;
-    border-top: 1px solid #222;
+    border-top: 1px solid var(--border-color);
 }
 .related-products-section .product-grid-new {
     width: 100%;
@@ -308,8 +298,8 @@
 
 /* Card styles copied for consistency */
 .related-products-section .category-product-card {
-    background-color: #000; /* കറുപ്പ് */
-    border: 1px solid #222;
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
     transition: all 0.3s ease;
@@ -345,7 +335,7 @@
 }
 .related-products-section .cat-product-title {
     font-size: 1rem;
-    color: #fff; /* വെള്ള */
+    color: var(--text-color); 
     font-weight: 500;
     margin-bottom: 0.25rem;
     min-height: 40px;
