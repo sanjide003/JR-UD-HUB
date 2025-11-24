@@ -185,15 +185,24 @@
 }
 
 
-/* --- 5. ഹോം പേജിലെ കാറ്റഗറി ഗ്രിഡ് (മാറ്റം: 3 കോളം & 2:3 അനുപാതം) --- */
+/* --- 5. ഹോം പേജിലെ കാറ്റഗറി ഗ്രിഡ് (മാറ്റം: Horizontal Scroll & Larger Images) --- */
 .category-grid-vertical {
-    display: grid;
-    /* *** മാറ്റം: 3 കോളം ആക്കി (ചെറുതാകാൻ) *** */
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 10px; /* ഗ്യാപ്പ് അല്പം കുറച്ചു */
+    /* *** മാറ്റം: ഫ്ലെക്സ് ലേഔട്ട് (Single Row) *** */
+    display: flex;
+    overflow-x: auto; /* സൈഡിലേക്ക് സ്ക്രോൾ ചെയ്യാൻ */
+    gap: 15px; /* കാർഡുകൾക്കിടയിൽ അകലം */
+    padding: 10px 5px;
+    scroll-snap-type: x mandatory; /* സ്മൂത്ത് സ്ക്രോളിംഗ് */
+    
+    /* സ്ക്രോൾബാർ മറയ്ക്കുന്നു */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+.category-grid-vertical::-webkit-scrollbar {
+    display: none;
 }
 
-/* കാർഡ് സ്റ്റൈൽ (2:3 അനുപാതം) */
+/* കാർഡ് സ്റ്റൈൽ */
 .category-card-home-new {
     text-decoration: none;
     color: var(--text-muted);
@@ -201,9 +210,14 @@
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    /* *** മാറ്റം: 2:3 അനുപാതം (നീളമുള്ളത്) *** */
     aspect-ratio: 2 / 3; 
     position: relative; 
+    
+    /* *** മാറ്റം: ഫിക്സഡ് വീതി (വലുതാക്കി) *** */
+    min-width: 160px; /* കാർഡിന്റെ വലിപ്പം കൂട്ടി */
+    width: 160px;
+    flex-shrink: 0; /* ചുരുങ്ങാതെ നോക്കുന്നു */
+    scroll-snap-align: start;
     
     background-color: var(--card-bg);
     background-size: cover;
@@ -219,7 +233,7 @@
 .category-card-home-new h3 {
     font-family: var(--font-main);
     font-weight: 500;
-    font-size: 0.8rem; /* ഫോണ്ട് കുറച്ചു */
+    font-size: 0.9rem; 
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -249,7 +263,12 @@
         font-size: 0.9rem;
     }
     .top-sellers-swiper-new {
-        padding: 0 40px;
+        padding: 0 30px;
+    }
+    /* മൊബൈലിൽ കാറ്റഗറി കാർഡ് അല്പം ചെറുതാക്കാം, പക്ഷെ വ്യക്തമായിരിക്കണം */
+    .category-card-home-new {
+        min-width: 140px;
+        width: 140px;
     }
 }
 
@@ -261,8 +280,11 @@
     .top-sellers-swiper-new .swiper-slide {
         text-align: center;
     }
-    /* ഡെസ്ക്ടോപ്പിൽ കാറ്റഗറി 5 കോളം ആക്കാം */
-    .category-grid-vertical {
-        grid-template-columns: repeat(5, 1fr); 
+    
+    /* ഡെസ്ക്ടോപ്പിൽ ഗ്രിഡ് ആക്കാം അല്ലെങ്കിൽ സ്ക്രോൾ തന്നെ നിലനിർത്താം */
+    /* ഇവിടെ സ്ക്രോൾ തന്നെ നിലനിർത്തുന്നു, വലിപ്പം കൂട്ടുന്നു */
+    .category-card-home-new {
+        min-width: 200px;
+        width: 200px;
     }
 }
