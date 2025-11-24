@@ -185,63 +185,116 @@
 }
 
 
-/* --- 5. ഹോം പേജിലെ കാറ്റഗറി സ്ലൈഡർ (പുതിയത്) --- */
-.home-category-swiper {
+/* --- 5. ഹോം പേജിലെ കാറ്റഗറി ബബിൾ ലേഔട്ട് (Watch Style) --- */
+
+/* കണ്ടെയ്നർ: സ്ക്രോൾ ചെയ്യാൻ */
+.bubble-scroll-container {
     width: 100%;
-    padding: 20px 0; /* 3D ഇഫക്റ്റ് മുറിഞ്ഞുപോകാതിരിക്കാൻ പാഡിംഗ് */
-    overflow: hidden;
-}
-
-.home-category-swiper .swiper-slide {
-    background-position: center;
-    background-size: cover;
-    width: 200px; /* കാർഡിന്റെ വീതി */
-    height: 280px; /* കാർഡിന്റെ ഉയരം */
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
-    /* 3D Effect */
-    transition: transform 0.3s ease, border-color 0.3s ease;
-}
-
-/* ആക്ടീവ് സ്ലൈഡിന് ബോർഡർ കളർ */
-.home-category-swiper .swiper-slide-active {
-    border-color: var(--primary-gold);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.5);
-}
-
-.category-card-home-new {
-    display: block;
-    width: 100%;
-    height: 100%;
-    text-decoration: none;
+    height: 350px; /* കാണുന്ന ഭാഗത്തിന്റെ ഉയരം */
+    overflow: auto; /* എല്ലാ വശത്തേക്കും സ്ക്രോൾ */
     position: relative;
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000000 70%);
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    
+    /* സ്ക്രോൾബാർ മറയ്ക്കുന്നു */
+    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;  /* IE and Edge */
+    cursor: grab;
+}
+.bubble-scroll-container::-webkit-scrollbar { 
+    display: none; 
+}
+
+/* ഗ്രിഡ്: ഉള്ളിലെ കണ്ടന്റ് */
+.bubble-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    
+    /* സ്ക്രീനിനേക്കാൾ വലുപ്പം (സ്ക്രോൾ ചെയ്യാൻ) */
+    width: 150%; 
+    min-width: 350px;
+    padding: 100px 20px; /* മുകളിലും താഴെയും ബഫർ */
+    gap: 15px;
+    
+    /* തുടക്കത്തിൽ സെന്റർ ചെയ്യാൻ */
+    margin-left: -25%; 
+}
+
+/* ഓരോ ബബിൾ ഐറ്റം */
+.category-bubble {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%; /* വട്ടം */
+    
     background-color: var(--card-bg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
+    
+    position: relative;
+    flex-shrink: 0;
+    
+    border: 2px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    
+    /* സ്മൂത്ത് സ്കെയിലിംഗ് */
+    transition: transform 0.1s ease-out, border-color 0.3s ease;
+    
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
 }
 
-.category-card-home-new h3 {
+/* ബബിളിനുള്ളിലെ പേര് */
+.category-bubble h3 {
+    position: absolute;
+    width: 120%; /* ബബിളിനേക്കാൾ വീതി */
+    text-align: center;
+    
     font-family: var(--font-main);
     font-weight: 600;
-    font-size: 1rem; 
-    text-align: center;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    color: var(--primary-gold);
+    font-size: 0.7rem;
+    color: #fff;
     
+    text-shadow: 0 2px 4px rgba(0,0,0,0.9); /* വായിക്കാൻ എളുപ്പത്തിന് */
+    pointer-events: none;
+    
+    /* തുടക്കത്തിൽ മറയ്ക്കുന്നു (വലുതാകുമ്പോൾ കാണിക്കാം) */
+    opacity: 0; 
+    transition: opacity 0.2s ease;
+    
+    /* നടുക്ക് കൊണ്ടു വരാൻ */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+/* വലുതാകുമ്പോൾ പേര് കാണിക്കുന്നു */
+.category-bubble.active h3 {
+    opacity: 1;
+}
+.category-bubble.active {
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    z-index: 10; /* മറ്റുള്ളവയുടെ മുകളിൽ */
+}
+
+/* ഓവർലേ (ഇമേജ് ഡാർക്ക് ആക്കാൻ) */
+.category-bubble::after {
+    content: '';
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 1rem;
-    margin: 0;
-    background: rgba(0, 0, 0, 0.7); 
-    -webkit-backdrop-filter: blur(5px); 
-    backdrop-filter: blur(5px);
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.3);
+    transition: background 0.3s ease;
+}
+.category-bubble.active::after {
+    background: rgba(0,0,0,0.1); /* ആക്ടീവ് ആകുമ്പോൾ തെളിയുന്നു */
 }
 
 
@@ -259,14 +312,15 @@
         padding: 0 30px;
     }
     
-    /* മൊബൈലിൽ കാറ്റഗറി സ്ലൈഡർ വലിപ്പം ക്രമീകരിക്കുന്നു */
-    .home-category-swiper .swiper-slide {
-        width: 150px;
-        height: 220px;
+    /* മൊബൈലിൽ ബബിൾ ഗ്രിഡ് അഡ്ജസ്റ്റ്മെന്റ് */
+    .bubble-grid {
+        width: 180%; /* കൂടുതൽ വീതി */
+        margin-left: -40%;
+        gap: 10px;
     }
-    .category-card-home-new h3 {
-        font-size: 0.85rem;
-        padding: 0.75rem;
+    .category-bubble {
+        width: 70px;
+        height: 70px;
     }
 }
 
@@ -279,9 +333,11 @@
         text-align: center;
     }
     
-    /* ഡെസ്ക്ടോപ്പിൽ കാറ്റഗറി കാർഡ് വലുതാക്കുന്നു */
-    .home-category-swiper .swiper-slide {
-        width: 240px;
-        height: 320px;
+    .bubble-scroll-container {
+        height: 450px;
+    }
+    .category-bubble {
+        width: 100px;
+        height: 100px;
     }
 }
