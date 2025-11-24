@@ -232,12 +232,9 @@ async function loadTopSellers() {
                 disableOnInteraction: false 
             },
             speed: 1000,
-            
-            // *** മാറ്റം: ഒരൊറ്റ കാർഡ് മാത്രം കാണിക്കുന്നു (Centered) ***
             slidesPerView: 1, 
-            spaceBetween: 30, // കാർഡുകൾക്കിടയിൽ നല്ല അകലം
-            centeredSlides: true, // കാർഡ് നടുക്ക് വരും
-            
+            spaceBetween: 30, 
+            centeredSlides: true, 
             pagination: { 
                 el: '.top-sellers-pagination-new', 
                 clickable: true,
@@ -289,7 +286,8 @@ async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
 
-    const CATEGORIES_TO_SHOW = 4; 
+    // *** മാറ്റം: പഴയത് പോലെ 3 എണ്ണം മാത്രം കാണിക്കുന്നു ***
+    const CATEGORIES_TO_SHOW = 3; 
 
     try {
         const catQuery = query(collection(db, "categories"));
