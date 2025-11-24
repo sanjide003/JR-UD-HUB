@@ -1,5 +1,4 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// *** മാറ്റം: Size മാറ്റി Specification (Points) കാണിക്കുന്നു ***
 
 import { 
     collection, 
@@ -9,11 +8,16 @@ import {
     query,
     where,
     limit,
+    setDoc,
+    deleteDoc,
+    onSnapshot,
+    serverTimestamp,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { db } from './firebase-config.js';
+import { db, auth } from './firebase-config.js';
 import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
+import { onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
 setLogLevel('Debug');
 
@@ -21,6 +25,16 @@ const productDetailContent = document.getElementById('product-detail-content');
 const relatedProductsGrid = document.getElementById('related-products-grid');
 let currentProduct = null;
 let whatsappNumber = ''; 
+let currentUser = null;
+
+// ഓതന്റിക്കേഷൻ ലിസണർ
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUser = user;
+    } else {
+        signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
+    }
+});
 
 function linkify(text) {
     if (!text) return '';
@@ -72,8 +86,7 @@ async function loadProductDetails() {
             price: product.price || 0,
             mrp: product.mrp || 0,
             image: product.images && product.images[0] ? product.images[0] : '',
-            // size: ... ഒഴിവാക്കി
-            specification: product.specification || '' // പുതിയത്
+            specification: product.specification || ''
         };
 
         const price = product.price || 0;
@@ -85,6 +98,7 @@ async function loadProductDetails() {
             priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
         }
 
+        // ... (More Links & Gallery logic same as before) ...
         let moreLinksHTML = '';
         if (product.moreLinks && product.moreLinks.length > 0) {
             moreLinksHTML = '<div class="product-more-links">';
@@ -140,15 +154,12 @@ async function loadProductDetails() {
             descriptionHTML = linkifiedText.replace(/\n/g, '<br>');
         }
 
-        // *** Specification Logic (Points List) ***
         let specificationHTML = '';
         if (product.specification) {
-            // പുതിയ വരികളെ (Enter) <li> ടാഗുകൾ ആക്കി മാറ്റുന്നു
             const points = product.specification.split('\n').filter(line => line.trim() !== '');
             if (points.length > 0) {
                 specificationHTML = '<ul class="product-specs-list">';
                 points.forEach(point => {
-                    // ഹൈഫൺ (-) ഉണ്ടെങ്കിൽ അത് നീക്കം ചെയ്ത് വൃത്തിയാക്കുന്നു
                     const cleanPoint = point.replace(/^-\s*/, '').trim();
                     specificationHTML += `<li>${cleanPoint}</li>`;
                 });
@@ -160,11 +171,53 @@ async function loadProductDetails() {
         const cartButtonText = isInCart ? "Remove from Cart" : "Add to Cart";
         const cartButtonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new";
 
+        // *** പുതിയത്: ആക്ഷൻ ബാർ HTML ***
+        const actionBarHTML = `
+            <div class="product-action-bar">
+                <div class="action-group">
+                    <button title="Like" class="like-btn" data-id="${productIdStr}">
+                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    </button>
+                    <span class="action-count like-count">0</span>
+                </div>
+                <div class="action-group">
+                    <button title="Rate" class="comment-btn" data-id="${productIdStr}">
+                        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                    </button>
+                    <span class="action-count rating-count">0</span>
+                </div>
+                <div class="action-group">
+                    <button title="Share" class="share-btn" data-id="${productIdStr}" data-name="${product.name}" data-price="${price}">
+                        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- റേറ്റിംഗ് ബോക്സ് -->
+            <div class="rating-box" id="rating-box-main" style="display: none;">
+                <!-- റേറ്റിംഗ് സമ്മറി -->
+                <div class="rating-summary">
+                    <div class="rating-bar-row"><span>5 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>4 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>3 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>2 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>1 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                </div>
+                <hr class="rating-divider">
+                <p class="rating-title">Rate this product</p>
+                <div class="star-rating" data-id="${productIdStr}">
+                    ${[1, 2, 3, 4, 5].map(i => `<span class="star" data-value="${i}">&#9733;</span>`).join('')}
+                </div>
+                <div class="rating-feedback">Tap a star to rate</div>
+            </div>
+        `;
+
         const infoHTML = `
             <div class="product-info">
                 <h1 class="product-title">${product.name}</h1>
                 
-                <!-- *** Size മാറ്റി Specification ചേർത്തു *** -->
+                ${actionBarHTML} <!-- ഇവിടെ ആക്ഷൻ ബാർ ചേർത്തു -->
+
                 ${specificationHTML ? `<div class="product-specification-section">${specificationHTML}</div>` : ''}
 
                 <div class="price-container large">
@@ -196,19 +249,14 @@ async function loadProductDetails() {
         
         new Swiper('.product-gallery-swiper', {
             loop: true,
-            autoplay: {
-                delay: 3000,
-                disableOnInteraction: false,
-            },
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
+            autoplay: { delay: 3000, disableOnInteraction: false },
+            pagination: { el: '.swiper-pagination', clickable: true },
             allowTouchMove: true,
             speed: 600,
         });
         
         setupProductActionButtons();
+        setupRealtimeListeners(productIdStr); // *** ലിസണറുകൾ വിളിക്കുന്നു ***
 
         if (product.categoryId) {
             loadRelatedProducts(product.categoryId, productIdStr);
@@ -220,14 +268,156 @@ async function loadProductDetails() {
     }
 }
 
+// *** റിയൽ ടൈം അപ്ഡേറ്റ്സ് ***
+function setupRealtimeListeners(productId) {
+    // Likes
+    const likesRef = collection(db, "products", productId, "likes");
+    onSnapshot(likesRef, (snapshot) => {
+        const count = snapshot.size;
+        const likeCountSpan = document.querySelector('.like-count');
+        if (likeCountSpan) likeCountSpan.textContent = count;
+
+        if (currentUser) {
+            const isLiked = snapshot.docs.some(doc => doc.id === currentUser.uid);
+            const likeBtn = document.querySelector('.like-btn');
+            const svg = likeBtn.querySelector('svg');
+            
+            if (isLiked) {
+                likeBtn.classList.add('liked');
+                svg.style.fill = 'var(--error-red)';
+                svg.style.stroke = 'var(--error-red)';
+            } else {
+                likeBtn.classList.remove('liked');
+                svg.style.fill = 'none';
+                svg.style.stroke = 'currentColor';
+            }
+        }
+    });
+
+    // Ratings
+    const ratingsRef = collection(db, "products", productId, "ratings");
+    onSnapshot(ratingsRef, (snapshot) => {
+        const count = snapshot.size;
+        const ratingCountSpan = document.querySelector('.rating-count');
+        if (ratingCountSpan) ratingCountSpan.textContent = count;
+
+        // Calculate Summary
+        const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        snapshot.forEach(doc => {
+            const val = doc.data().rating;
+            if (counts[val] !== undefined) counts[val]++;
+        });
+        updateRatingSummary(counts, count);
+
+        // User Rating
+        if (currentUser) {
+            const userRatingDoc = snapshot.docs.find(doc => doc.id === currentUser.uid);
+            if (userRatingDoc) {
+                updateStarUI(userRatingDoc.data().rating);
+            }
+        }
+    });
+}
+
+function updateRatingSummary(counts, total) {
+    const summaryRows = document.querySelectorAll('.rating-bar-row');
+    const keys = [5, 4, 3, 2, 1];
+    
+    keys.forEach((starVal, index) => {
+        const row = summaryRows[index];
+        const count = counts[starVal];
+        const percentage = total > 0 ? (count / total) * 100 : 0;
+        
+        const fill = row.querySelector('.bar-fill');
+        const countSpan = row.querySelector('.bar-count');
+        
+        if (fill) fill.style.width = `${percentage}%`;
+        if (countSpan) countSpan.textContent = count;
+        
+        if (starVal >= 4) fill.style.backgroundColor = 'var(--success-green)';
+        else if (starVal === 3) fill.style.backgroundColor = '#f1c40f';
+        else fill.style.backgroundColor = 'var(--error-red)';
+    });
+}
+
+function updateStarUI(value) {
+    const stars = document.querySelectorAll('.star');
+    const feedback = document.querySelector('.rating-feedback');
+    
+    let colorClass = '';
+    if (value <= 2) colorClass = 'red-star';
+    else if (value === 3) colorClass = 'yellow-star';
+    else colorClass = 'green-star';
+
+    stars.forEach(s => {
+        s.className = 'star'; 
+        if (parseInt(s.dataset.value) <= value) {
+            s.classList.add('filled', colorClass);
+        }
+    });
+    
+    if (feedback) feedback.textContent = `You rated: ${value} stars`;
+}
 
 function setupProductActionButtons() {
-    const cartButton = document.getElementById('add-to-cart-btn');
-    const whatsappButton = document.getElementById('buy-on-whatsapp-btn');
-    const feedback = document.getElementById('add-to-cart-feedback');
-    
-    if (cartButton) {
-        cartButton.addEventListener('click', () => {
+    const container = document.querySelector('.product-info'); // ഇവന്റ് ഡെലിഗേഷൻ
+    if(!container) return;
+
+    container.addEventListener('click', async (e) => {
+        const target = e.target;
+        
+        // Like
+        const likeBtn = target.closest('.like-btn');
+        if(likeBtn && currentUser) {
+            e.preventDefault();
+            const productId = likeBtn.dataset.id;
+            const userLikeRef = doc(db, "products", productId, "likes", currentUser.uid);
+            try {
+                if (likeBtn.classList.contains('liked')) {
+                    await deleteDoc(userLikeRef);
+                } else {
+                    await setDoc(userLikeRef, { timestamp: serverTimestamp() });
+                    likeBtn.style.transform = 'scale(1.2)';
+                    setTimeout(() => likeBtn.style.transform = 'scale(1)', 200);
+                }
+            } catch(err) { console.error(err); }
+        }
+
+        // Rating Toggle
+        const commentBtn = target.closest('.comment-btn');
+        if(commentBtn) {
+            e.preventDefault();
+            const ratingBox = document.getElementById('rating-box-main');
+            ratingBox.style.display = ratingBox.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Star Click
+        if(target.classList.contains('star') && currentUser) {
+            const star = target;
+            const productId = star.parentElement.dataset.id;
+            const value = parseInt(star.dataset.value);
+            const userRatingRef = doc(db, "products", productId, "ratings", currentUser.uid);
+            try {
+                await setDoc(userRatingRef, { rating: value, timestamp: serverTimestamp() });
+            } catch(err) { console.error(err); }
+        }
+
+        // Share
+        const shareBtn = target.closest('.share-btn');
+        if(shareBtn) {
+            e.preventDefault();
+            if (!navigator.share) return;
+            const name = shareBtn.dataset.name;
+            const price = shareBtn.dataset.price;
+            const url = window.location.href;
+            try {
+                await navigator.share({ title: name, text: `Check out ${name}!\nPrice: ₹${price}`, url: url });
+            } catch(err) { console.error(err); }
+        }
+        
+        // Cart Logic
+        const cartButton = target.closest('#add-to-cart-btn');
+        if (cartButton) {
             if (!currentProduct) return;
             const buttonText = cartButton.querySelector('span');
             const id = currentProduct.id;
@@ -245,35 +435,23 @@ function setupProductActionButtons() {
                 cartButton.classList.remove('btn-secondary-new');
                 if (buttonText) buttonText.textContent = 'Remove from Cart';
             }
-        });
-    }
-    
-    if (whatsappButton) {
-        if (!whatsappNumber) {
-            whatsappButton.style.display = 'none';
-            return;
         }
-        whatsappButton.addEventListener('click', (e) => {
+        
+        // WhatsApp Logic
+        const whatsappButton = target.closest('#buy-on-whatsapp-btn');
+        if (whatsappButton) {
             e.preventDefault();
-            if (currentProduct) {
-                const productLink = window.location.href; 
-                let message = `Hi, I'm interested in this product:\n\n`;
-                message += `*${currentProduct.name}*\n`;
-                // Specification ഉണ്ടെങ്കിൽ അതും മെസ്സേജിൽ ചേർക്കാം
+            if (whatsappNumber && currentProduct) {
+                let message = `Hi, I'm interested in this product:\n\n*${currentProduct.name}*\n`;
                 if(currentProduct.specification) message += `*Specs: ${currentProduct.specification.replace(/\n/g, ', ')}*\n`;
-                message += `*Price: ₹${currentProduct.price.toFixed(2)}*\n\n`; 
-                message += `Product Link:\n${productLink}`;
-                const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
-                window.open(whatsappUrl, '_blank');
-            } else {
-                 feedback.textContent = `Could not get product details.`;
-                 feedback.style.display = 'block';
-                 feedback.style.color = 'var(--error-red)';
+                message += `*Price: ₹${currentProduct.price.toFixed(2)}*\n\nProduct Link:\n${window.location.href}`;
+                window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
             }
-        });
-    }
+        }
+    });
 }
 
+// Related Products Logic (Unchanged)
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
     try {
