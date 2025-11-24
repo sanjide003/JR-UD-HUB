@@ -173,28 +173,18 @@
     animation: fadeInUp 1s ease-out 0.5s forwards;
 }
 
+/* *** മാറ്റം: Heading Center & Underline നീക്കം *** */
 .section-title-new {
     position: relative;
-    display: inline-block;
+    display: block;
+    text-align: center;
     margin: 0 auto 2rem;
-    padding-bottom: 0.5rem;
+    padding-bottom: 0;
 }
 
+/* Underline നീക്കം ചെയ്തു */
 .section-title-new::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, transparent, var(--primary-gold), transparent);
-    animation: expandLine 1.5s ease-out 0.7s forwards;
-}
-
-@keyframes expandLine {
-    from { width: 0; }
-    to { width: 60px; }
+    display: none;
 }
 
 .top-sellers-swiper-new {
@@ -364,15 +354,44 @@
     height: 200px;
 }
 
-/* --- 5. ഹോം പേജിലെ കാറ്റഗറി സ്ലൈഡർ - 3D Effects --- */
+/* --- 5. ഹോം പേജിലെ കാറ്റഗറി സ്ലൈഡർ - 3D Gallery Effect --- */
 .home-category-swiper {
     width: 100%;
-    padding-bottom: 2rem;
+    padding: 3rem 0;
+    overflow: visible !important;
+}
+
+.home-category-swiper .swiper-wrapper {
+    align-items: center;
 }
 
 .home-category-swiper .swiper-slide {
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-style: preserve-3d;
     perspective: 1000px;
+    opacity: 0.5;
+}
+
+/* *** 3D Gallery Effect - മുമ്പിലത്തേത് വലുതും തെളിച്ചവും *** */
+.home-category-swiper .swiper-slide-active {
+    opacity: 1;
+    z-index: 10;
+    transform: scale(1.15) translateZ(0);
+}
+
+/* *** അടുത്തുള്ളവ ചെറുതായി കുറച്ച് opacity *** */
+.home-category-swiper .swiper-slide-next,
+.home-category-swiper .swiper-slide-prev {
+    opacity: 0.7;
+    z-index: 5;
+    transform: scale(0.9) translateZ(-50px);
+}
+
+/* *** വളരെ അകലെയുള്ളവ കൂടുതൽ fade ആയി *** */
+.home-category-swiper .swiper-slide-next + .swiper-slide,
+.home-category-swiper .swiper-slide-prev + .swiper-slide-prev {
+    opacity: 0.4;
+    transform: scale(0.8) translateZ(-100px);
 }
 
 .category-card-home-new {
@@ -381,11 +400,14 @@
     color: var(--text-muted);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 16px;
     overflow: hidden;
-    aspect-ratio: 4 / 5; 
     position: relative; 
-    height: 100%; 
+    height: 100%;
+    
+    /* *** വലിപ്പം കൂട്ടി *** */
+    aspect-ratio: 3 / 4;
+    min-height: 380px;
     
     background-color: var(--card-bg);
     background-size: cover;
@@ -393,6 +415,7 @@
     background-repeat: no-repeat;
     
     transform-style: preserve-3d;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
 }
 
 .category-card-home-new::before {
@@ -404,23 +427,24 @@
     bottom: 0;
     background: linear-gradient(180deg, 
         transparent 0%, 
-        rgba(0,0,0,0.4) 60%, 
-        rgba(0,0,0,0.8) 100%
+        rgba(0,0,0,0.3) 50%, 
+        rgba(0,0,0,0.85) 100%
     );
     z-index: 1;
     transition: all 0.4s ease;
 }
 
-.category-card-home-new:hover {
-    transform: translateY(-5px) rotateX(2deg);
+/* Active slide hover effect */
+.home-category-swiper .swiper-slide-active .category-card-home-new:hover {
+    transform: translateY(-5px);
     border-color: var(--primary-gold);
-    box-shadow: 0 15px 30px rgba(212, 175, 55, 0.3);
+    box-shadow: 0 20px 40px rgba(212, 175, 55, 0.4);
 }
 
-.category-card-home-new:hover::before {
+.home-category-swiper .swiper-slide-active .category-card-home-new:hover::before {
     background: linear-gradient(180deg, 
-        rgba(212, 175, 55, 0.1) 0%, 
-        rgba(0,0,0,0.5) 60%, 
+        rgba(212, 175, 55, 0.15) 0%, 
+        rgba(0,0,0,0.4) 50%, 
         rgba(0,0,0,0.9) 100%
     );
 }
@@ -428,7 +452,7 @@
 .category-card-home-new h3 {
     font-family: var(--font-main);
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1.1rem;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -439,20 +463,26 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 1rem;
+    padding: 1.5rem;
     margin: 0;
-    background: rgba(0, 0, 0, 0.7); 
-    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.75); 
+    backdrop-filter: blur(10px);
     z-index: 2;
-    transition: all 0.3s ease;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    transition: all 0.4s ease;
+    text-shadow: 0 3px 6px rgba(0,0,0,0.8);
+    letter-spacing: 0.5px;
 }
 
-.category-card-home-new:hover h3 {
-    background: rgba(212, 175, 55, 0.2);
-    padding: 1.2rem;
+.home-category-swiper .swiper-slide-active .category-card-home-new h3 {
+    font-size: 1.2rem;
+    padding: 1.75rem;
+}
+
+.home-category-swiper .swiper-slide-active .category-card-home-new:hover h3 {
+    background: rgba(212, 175, 55, 0.25);
     color: #fff;
     letter-spacing: 1px;
+    transform: translateY(-2px);
 }
 
 /* --- 6. Scroll Reveal Animations --- */
@@ -510,14 +540,24 @@
         padding: 0 20px;
     }
     
+    .category-card-home-new {
+        min-height: 280px;
+        aspect-ratio: 3 / 4;
+    }
+    
     .category-card-home-new h3 {
-        font-size: 0.85rem;
-        padding: 0.75rem;
+        font-size: 0.9rem;
+        padding: 1rem;
+    }
+    
+    .home-category-swiper .swiper-slide-active .category-card-home-new h3 {
+        font-size: 1rem;
+        padding: 1.2rem;
     }
 }
 
 /* Tablet & Small Desktop */
-@media (min-width: 769px) {
+@media (min-width: 769px) and (max-width: 1199px) {
     .top-sellers-swiper-new {
         padding: 0;
     }
@@ -529,6 +569,10 @@
     .hero-section-new {
         height: 75vh;
     }
+    
+    .category-card-home-new {
+        min-height: 320px;
+    }
 }
 
 /* Large Desktop */
@@ -539,5 +583,17 @@
     
     .container {
         max-width: 1400px;
+    }
+    
+    .category-card-home-new {
+        min-height: 420px;
+    }
+    
+    .category-card-home-new h3 {
+        font-size: 1.15rem;
+    }
+    
+    .home-category-swiper .swiper-slide-active .category-card-home-new h3 {
+        font-size: 1.3rem;
     }
 }
