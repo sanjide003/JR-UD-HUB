@@ -233,8 +233,8 @@ async function loadTopSellers() {
             },
             speed: 1000,
             slidesPerView: 1, 
-            spaceBetween: 30, 
-            centeredSlides: true, 
+            spaceBetween: 30,
+            centeredSlides: true,
             pagination: { 
                 el: '.top-sellers-pagination-new', 
                 clickable: true,
@@ -286,8 +286,8 @@ async function loadHomeCategories() {
     const grid = document.getElementById("category-grid-home");
     if (!grid) return;
 
-    // *** മാറ്റം: പഴയത് പോലെ 3 എണ്ണം മാത്രം കാണിക്കുന്നു ***
-    const CATEGORIES_TO_SHOW = 3; 
+    // *** മാറ്റം: ലിമിറ്റ് ഒഴിവാക്കി, എല്ലാ കാറ്റഗറികളും കാണിക്കുന്നു ***
+    // const CATEGORIES_TO_SHOW = 4; 
 
     try {
         const catQuery = query(collection(db, "categories"));
@@ -306,14 +306,14 @@ async function loadHomeCategories() {
             });
         });
 
+        // റാൻഡം ഓർഡർ നിലനിർത്തുന്നു
         for (let i = allCategories.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [allCategories[i], allCategories[j]] = [allCategories[j], allCategories[i]];
         }
 
-        const categoriesToShow = allCategories.slice(0, CATEGORIES_TO_SHOW);
-
-        renderCategories(grid, categoriesToShow);
+        // *** മാറ്റം: എല്ലാ കാറ്റഗറികളും റെൻഡർ ചെയ്യുന്നു ***
+        renderCategories(grid, allCategories);
 
     } catch (error) { 
         console.error("Error loading home categories: ", error); 
