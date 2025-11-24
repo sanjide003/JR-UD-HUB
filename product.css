@@ -26,7 +26,6 @@
 .product-gallery-swiper .swiper-pagination {
     position: absolute;
     bottom: 10px;
-    /* പാജിനേഷൻ സെന്ററിൽ തന്നെ നിൽക്കട്ടെ, ലിങ്കുകൾ ലെഫ്റ്റിൽ വരും */
 }
 .product-gallery-swiper .swiper-pagination-bullet {
     background-color: rgba(255, 255, 255, 0.7);
@@ -37,15 +36,15 @@
     opacity: 1;
 }
 
-/* --- 3. "Paid Promotion" ലിങ്കുകൾ (മാറ്റം: താഴെ ഇടതുവശത്ത് ബാഡ്ജ് സ്റ്റൈലിൽ) --- */
+/* --- 3. "Paid Promotion" ലിങ്കുകൾ (മാറ്റം: പ്രീമിയം ബ്ലാക്ക് & ഗോൾഡ് സ്റ്റൈൽ) --- */
 .product-more-links {
     position: absolute;
-    bottom: 10px; /* താഴെ */
-    left: 10px;   /* ഇടതുവശത്ത് */
+    bottom: 10px; 
+    left: 10px;   
     z-index: 10;
     display: flex;
     flex-direction: column;
-    align-items: flex-start; /* ഇടതുവശത്തേക്ക് ചേർന്ന് നിൽക്കാൻ */
+    align-items: flex-start; 
     gap: 5px;
 }
 
@@ -53,28 +52,31 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
-    padding: 0.4rem 0.8rem;
+    padding: 0.5rem 1rem;
     
-    /* *** മാറ്റം: ബ്ലൂ -> ബ്ലാക്ക് ഷേഡുള്ള ബാഡ്ജ് സ്റ്റൈൽ *** */
-    background: linear-gradient(135deg, #2980b9 0%, #000000 90%);
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    /* *** മാറ്റം: നീല മാറ്റി പ്രീമിയം ലുക്ക് നൽകി *** */
+    background-color: rgba(0, 0, 0, 0.7); /* സുതാര്യമായ കറുപ്പ് */
+    border: 1px solid var(--primary-gold); /* ഗോൾഡ് ബോർഡർ */
     
     color: #ffffff; /* വെള്ള ടെക്സ്റ്റ് */
     font-size: 0.8rem;
     font-weight: 600;
-    border-radius: 4px; /* അല്പം ബോക്സി ആക്കി ബാഡ്ജ് ലുക്ക് കിട്ടാൻ */
+    border-radius: 4px; 
     text-decoration: none;
     transition: all 0.3s ease;
-    backdrop-filter: blur(2px);
-    text-transform: uppercase; /* വലിയക്ഷരത്തിൽ */
-    letter-spacing: 0.5px;
+    backdrop-filter: blur(4px); /* ഗ്ലാസ് ഇഫക്റ്റ് */
+    text-transform: uppercase; 
+    letter-spacing: 1px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 .product-promotion-link:hover {
+    /* ഹോവർ ചെയ്യുമ്പോൾ ഗോൾഡ് നിറം */
+    background-color: var(--primary-gold);
+    color: #000000; 
+    border-color: var(--primary-gold);
     transform: translateY(-2px);
-    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
-    background: linear-gradient(135deg, #3498db 0%, #111111 90%); /* ഹോവർ ചെയ്യുമ്പോൾ അല്പം ലൈറ്റ് ആക്കുന്നു */
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.4); /* തിളക്കം */
 }
 
 .product-promotion-link svg {
@@ -370,7 +372,7 @@
 /* --- 6. റെസ്പോൺസീവ് (Responsive) --- */
 @media (max-width: 768px) {
     .product-title {
-        font-size: 2rem;
+        font-size: 1.5rem;
     }
     .product-actions-grid {
         max-width: 100%; 
