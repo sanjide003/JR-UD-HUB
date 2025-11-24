@@ -9,11 +9,16 @@ import {
     limit,
     startAfter,
     orderBy,
+    setDoc,
+    deleteDoc,
+    onSnapshot,
+    serverTimestamp,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { db } from './firebase-config.js';
+import { db, auth } from './firebase-config.js';
 import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
+import { onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
 setLogLevel('Debug');
 
@@ -23,18 +28,17 @@ let categoriesMap = new Map();
 let lastVisible = null;
 let isLoading = false;
 const productsPerPage = 5; 
+let currentUser = null;
 
-// *** ലോക്കൽ സ്റ്റോറേജ് കീ (യൂസർ ഇന്ററാക്ഷൻ സേവ് ചെയ്യാൻ) ***
-const EXPLORE_DATA_KEY = 'explore_user_interactions';
-
-function getLocalData() {
-    const data = localStorage.getItem(EXPLORE_DATA_KEY);
-    return data ? JSON.parse(data) : { likes: {}, ratings: {} };
-}
-
-function saveLocalData(data) {
-    localStorage.setItem(EXPLORE_DATA_KEY, JSON.stringify(data));
-}
+// *** ഓതന്റിക്കേഷൻ ലിസണർ ***
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUser = user;
+        // ലോഗിൻ ചെയ്താൽ റീലോഡ് ചെയ്യേണ്ട ആവശ്യമില്ല, തത്സമയം അപ്ഡേറ്റ് ആകും
+    } else {
+        signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
+    }
+});
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
@@ -82,11 +86,12 @@ async function loadProducts() {
         }
         lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
 
-        documentSnapshots.forEach((doc) => {
-            const product = doc.data();
-            const productId = doc.id;
+        for (const docSnap of documentSnapshots.docs) {
+            const product = docSnap.data();
+            const productId = docSnap.id;
             const card = document.createElement('div');
             card.className = 'explore-card';
+            card.id = `product-card-${productId}`; // ID for easy access
             
             card.innerHTML = `
                 ${buildCategoryHeader(product.categoryId)}
@@ -94,7 +99,10 @@ async function loadProducts() {
                 ${buildCardContent(productId, product)}
             `;
             feedContainer.appendChild(card);
-        });
+            
+            // *** റിയൽ ടൈം ലിസണറുകൾ ചേർക്കുന്നു ***
+            setupRealtimeListeners(productId);
+        }
         
         new Swiper('.explore-image-swiper', {
             loop: false,
@@ -187,39 +195,24 @@ function buildCardContent(productId, product) {
     const svgFill = isInCart ? 'style="fill: var(--primary-gold); color: var(--primary-gold);"' : '';
     const buttonTitle = isInCart ? 'Remove from Cart' : 'Add to Cart';
 
-    // *** ലൈക്ക് & റേറ്റിംഗ് ഡാറ്റ എടുക്കുന്നു ***
-    const localData = getLocalData();
-    
-    // ലൈക്ക് ലോജിക്
-    const isLiked = localData.likes[productId] || false;
-    const likeClass = isLiked ? 'liked' : '';
-    const likeFill = isLiked ? 'fill: var(--error-red); stroke: var(--error-red);' : '';
-    const baseLikeCount = 120; 
-    const likeCount = isLiked ? baseLikeCount + 1 : baseLikeCount;
-
-    // റേറ്റിംഗ് ലോജിക്
-    const userRating = localData.ratings[productId] || 0;
-    const baseRatingCount = 45;
-    const totalRatings = userRating > 0 ? baseRatingCount + 1 : baseRatingCount;
-
     return `
         <div class="explore-card-content">
             <div class="explore-action-icons">
                 
-                <!-- Like Button with Count -->
+                <!-- Like Button -->
                 <div class="action-group">
-                    <button title="Like" class="like-btn ${likeClass}" data-id="${productId}">
-                        <svg viewBox="0 0 24 24" style="${likeFill}"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <button title="Like" class="like-btn" data-id="${productId}">
+                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                     </button>
-                    <span class="action-count like-count">${likeCount}</span>
+                    <span class="action-count like-count">0</span>
                 </div>
 
-                <!-- Comment/Rate Button with Count -->
+                <!-- Rating Button -->
                 <div class="action-group">
                     <button title="Rate" class="comment-btn" data-id="${productId}">
                         <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                     </button>
-                    <span class="action-count rating-count">${totalRatings}</span>
+                    <span class="action-count rating-count">0</span>
                 </div>
 
                 <button title="Share" class="share-btn" data-id="${productId}" data-name="${product.name}" data-price="${price}"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
@@ -227,17 +220,15 @@ function buildCardContent(productId, product) {
                 <button title="${buttonTitle}" class="bookmark-btn ${activeClass}" data-id="${productId}" data-name="${product.name}" data-price="${price}" data-mrp="${mrp}" data-image="${imageUrl}" data-size="${product.size || ''}"><svg viewBox="0 0 24 24" ${svgFill}><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
             </div>
             
-            <!-- *** റേറ്റിംഗ് ബോക്സ് (തുറക്കുമ്പോൾ മാത്രം കാണും) *** -->
+            <!-- *** റേറ്റിംഗ് ബോക്സ് *** -->
             <div class="rating-box" id="rating-box-${productId}" style="display: none;">
                 <p class="rating-title">Rate this product</p>
                 <div class="star-rating" data-id="${productId}">
                     ${[1, 2, 3, 4, 5].map(i => `
-                        <span class="star ${i <= userRating ? 'filled' : ''}" data-value="${i}">&#9733;</span>
+                        <span class="star" data-value="${i}">&#9733;</span>
                     `).join('')}
                 </div>
-                <div class="rating-feedback">
-                    ${userRating > 0 ? `You rated: ${userRating} stars` : 'Tap a star to rate'}
-                </div>
+                <div class="rating-feedback">Tap a star to rate</div>
                 <div class="comment-input-disabled">
                     <input type="text" placeholder="Comments are disabled" disabled>
                 </div>
@@ -250,6 +241,76 @@ function buildCardContent(productId, product) {
     `;
 }
 
+// *** റിയൽ ടൈം അപ്ഡേറ്റ്സ് (Firebase Listeners) ***
+function setupRealtimeListeners(productId) {
+    const card = document.getElementById(`product-card-${productId}`);
+    if (!card) return;
+
+    // 1. Likes Listener
+    const likesRef = collection(db, "products", productId, "likes");
+    onSnapshot(likesRef, (snapshot) => {
+        const count = snapshot.size;
+        const likeCountSpan = card.querySelector('.like-count');
+        if (likeCountSpan) likeCountSpan.textContent = count;
+
+        // Check if current user liked
+        if (currentUser) {
+            const isLiked = snapshot.docs.some(doc => doc.id === currentUser.uid);
+            const likeBtn = card.querySelector('.like-btn');
+            const svg = likeBtn.querySelector('svg');
+            
+            if (isLiked) {
+                likeBtn.classList.add('liked');
+                svg.style.fill = 'var(--error-red)';
+                svg.style.stroke = 'var(--error-red)';
+            } else {
+                likeBtn.classList.remove('liked');
+                svg.style.fill = 'none';
+                svg.style.stroke = 'currentColor';
+            }
+        }
+    });
+
+    // 2. Ratings Listener
+    const ratingsRef = collection(db, "products", productId, "ratings");
+    onSnapshot(ratingsRef, (snapshot) => {
+        const count = snapshot.size;
+        const ratingCountSpan = card.querySelector('.rating-count');
+        if (ratingCountSpan) ratingCountSpan.textContent = count;
+
+        // Check user's rating
+        if (currentUser) {
+            const userRatingDoc = snapshot.docs.find(doc => doc.id === currentUser.uid);
+            if (userRatingDoc) {
+                const rating = userRatingDoc.data().rating;
+                updateStarUI(card, rating);
+            }
+        }
+    });
+}
+
+// *** സ്റ്റാർ കളർ ലോജിക് (Red -> Yellow -> Green) ***
+function updateStarUI(card, value) {
+    const stars = card.querySelectorAll('.star');
+    const feedback = card.querySelector('.rating-feedback');
+    
+    // കളർ തീരുമാനിക്കുന്നു
+    let colorClass = '';
+    if (value <= 2) colorClass = 'red-star';
+    else if (value === 3) colorClass = 'yellow-star';
+    else colorClass = 'green-star';
+
+    stars.forEach(s => {
+        s.className = 'star'; // Reset
+        if (parseInt(s.dataset.value) <= value) {
+            s.classList.add('filled', colorClass);
+        }
+    });
+    
+    if (feedback) feedback.textContent = `You rated: ${value} stars`;
+}
+
+
 const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !isLoading && lastVisible) { 
         loadProducts();
@@ -259,38 +320,32 @@ if (loader) { observer.observe(loader); }
 
 feedContainer.addEventListener('click', async (e) => { 
     const target = e.target;
-    
-    // *** Like Button Logic ***
+    if (!currentUser) return; // ലോഗിൻ ചെയ്യാത്തവർക്ക് ആക്ഷൻ ഇല്ല
+
+    // *** Like Action (Firestore) ***
     const likeButton = target.closest('.like-btn');
     if (likeButton) {
         e.preventDefault();
-        const id = likeButton.dataset.id;
-        const countSpan = likeButton.parentElement.querySelector('.like-count');
-        const svg = likeButton.querySelector('svg');
+        const productId = likeButton.dataset.id;
+        const userLikeRef = doc(db, "products", productId, "likes", currentUser.uid);
         
-        const localData = getLocalData();
-        let currentCount = parseInt(countSpan.textContent);
-
-        if (likeButton.classList.contains('liked')) {
-            // Unlike
-            likeButton.classList.remove('liked');
-            svg.style.fill = 'none';
-            svg.style.stroke = 'currentColor';
-            delete localData.likes[id];
-            countSpan.textContent = currentCount - 1;
-        } else {
-            // Like
-            likeButton.classList.add('liked');
-            svg.style.fill = 'var(--error-red)';
-            svg.style.stroke = 'var(--error-red)';
-            localData.likes[id] = true;
-            countSpan.textContent = currentCount + 1;
-            
-            // Animation
-            likeButton.style.transform = 'scale(1.2)';
-            setTimeout(() => likeButton.style.transform = 'scale(1)', 200);
+        try {
+            if (likeButton.classList.contains('liked')) {
+                // Unlike: Delete doc
+                await deleteDoc(userLikeRef);
+            } else {
+                // Like: Set doc
+                await setDoc(userLikeRef, {
+                    timestamp: serverTimestamp()
+                });
+                
+                // ആനിമേഷൻ
+                likeButton.style.transform = 'scale(1.2)';
+                setTimeout(() => likeButton.style.transform = 'scale(1)', 200);
+            }
+        } catch (err) {
+            console.error("Like error:", err);
         }
-        saveLocalData(localData);
     }
 
     // *** Toggle Rating Box ***
@@ -299,8 +354,6 @@ feedContainer.addEventListener('click', async (e) => {
         e.preventDefault();
         const id = commentButton.dataset.id;
         const ratingBox = document.getElementById(`rating-box-${id}`);
-        
-        // Toggle visibility
         if (ratingBox.style.display === 'none') {
             ratingBox.style.display = 'block';
         } else {
@@ -308,44 +361,24 @@ feedContainer.addEventListener('click', async (e) => {
         }
     }
 
-    // *** Star Rating Logic ***
+    // *** Rating Action (Firestore) ***
     if (target.classList.contains('star')) {
         const star = target;
         const ratingContainer = star.parentElement;
-        const id = ratingContainer.dataset.id;
+        const productId = ratingContainer.dataset.id;
         const value = parseInt(star.dataset.value);
-        const feedbackDiv = ratingContainer.nextElementSibling;
         
-        // കൗണ്ട് അപ്ഡേറ്റ് ചെയ്യാനുള്ള സ്പാൻ കണ്ടെത്തുന്നു
-        // (rating-box -> parent (card-content) -> explore-action-icons -> action-group -> rating-count)
-        // കുറച്ചുകൂടി എളുപ്പത്തിൽ ഐഡി വെച്ച് കണ്ടുപിടിക്കാം അല്ലെങ്കിൽ DOM ട്രാവേഴ്സ് ചെയ്യാം
-        const cardContent = ratingContainer.closest('.explore-card-content');
-        const countSpan = cardContent.querySelector('.rating-count');
+        const userRatingRef = doc(db, "products", productId, "ratings", currentUser.uid);
 
-        const localData = getLocalData();
-        const previousRating = localData.ratings[id] || 0;
-
-        // സ്റ്റാർ നിറയ്ക്കുന്നു
-        const stars = ratingContainer.querySelectorAll('.star');
-        stars.forEach(s => {
-            if (parseInt(s.dataset.value) <= value) {
-                s.classList.add('filled');
-            } else {
-                s.classList.remove('filled');
-            }
-        });
-
-        feedbackDiv.textContent = `You rated: ${value} stars`;
-        
-        // പുതിയ റേറ്റിംഗ് ആണെങ്കിൽ മാത്രം കൗണ്ട് കൂട്ടുന്നു
-        if (previousRating === 0) {
-            let currentCount = parseInt(countSpan.textContent);
-            countSpan.textContent = currentCount + 1;
+        try {
+            await setDoc(userRatingRef, {
+                rating: value,
+                timestamp: serverTimestamp()
+            });
+            // UI അപ്ഡേറ്റ് ലിസണർ വഴി നടക്കും
+        } catch (err) {
+            console.error("Rating error:", err);
         }
-
-        // Save
-        localData.ratings[id] = value;
-        saveLocalData(localData);
     }
 
     // ... (Share and Bookmark logic remains same)
@@ -379,12 +412,7 @@ feedContainer.addEventListener('click', async (e) => {
 
     if (shareButton) {
         e.preventDefault();
-        if (!navigator.share) {
-            const originalIcon = shareButton.innerHTML;
-            shareButton.innerHTML = 'Not Supported';
-            setTimeout(() => { shareButton.innerHTML = originalIcon; }, 2000);
-            return;
-        }
+        if (!navigator.share) return;
         const id = shareButton.dataset.id;
         const name = shareButton.dataset.name;
         const price = shareButton.dataset.price;
@@ -399,16 +427,7 @@ feedContainer.addEventListener('click', async (e) => {
                 shareButton.innerHTML = originalIcon;
                 shareButton.classList.remove('shared-success');
             }, 2000);
-        } catch (err) {
-            console.error('Error sharing:', err);
-            const originalIcon = shareButton.innerHTML;
-            shareButton.innerHTML = '<svg viewBox="0 0 24 24" style="stroke: var(--error-red);"><path d="M18 6 6 18M6 6l12 12"></path></svg>'; 
-            shareButton.classList.add('shared-fail');
-            setTimeout(() => {
-                shareButton.innerHTML = originalIcon;
-                shareButton.classList.remove('shared-fail');
-            }, 2000);
-        }
+        } catch (err) { console.error('Error sharing:', err); }
     }
 
     if (target.classList.contains('read-more-btn')) {
