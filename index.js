@@ -280,13 +280,14 @@ async function loadTopSellers() {
 
 
 /**
- * 3. ഹോം പേജിലെ കാറ്റഗറികൾ (3D Gallery Effect)
+ * 3. ഹോം പേജിലെ കാറ്റഗറികൾ - Watch Style Bubble Layout
  */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
 
     try {
+        // എല്ലാ കാറ്റഗറികളും എടുക്കുന്നു
         const catQuery = query(collection(db, "categories"));
         const catSnapshot = await getDocs(catQuery); 
 
@@ -295,84 +296,91 @@ async function loadHomeCategories() {
             return;
         }
 
-        let slidesHTML = '';
+        // ബബിൾ കണ്ടെയ്നർ നിർമ്മിക്കുന്നു
+        container.className = 'bubble-scroll-container';
+        const gridInner = document.createElement('div');
+        gridInner.className = 'bubble-grid';
+        
         catSnapshot.forEach((doc) => {
             const category = doc.data();
             const catId = doc.id;
             
             const rawImage = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
-            // മികച്ച ക്വാളിറ്റിയുള്ള ചിത്രം നൽകുന്നു
-            const imageUrl = optimizeImage(rawImage, 500, 85);
+            const imageUrl = optimizeImage(rawImage, 300, 80);
             
-            slidesHTML += `
-                <div class="swiper-slide">
-                    <a href="categories.html?filter=${catId}" class="category-card-home-new" style="background-image: url('${imageUrl}')">
-                        <h3>${category.name}</h3>
-                    </a>
-                </div>
-            `;
+            const bubble = document.createElement('a');
+            bubble.href = `categories.html?filter=${catId}`;
+            bubble.className = 'category-bubble';
+            bubble.style.backgroundImage = `url('${imageUrl}')`;
+            
+            // പേര് (മറഞ്ഞിരിക്കും, വലുതാകുമ്പോൾ തെളിയും)
+            bubble.innerHTML = `<h3>${category.name}</h3>`;
+            
+            gridInner.appendChild(bubble);
         });
+        
+        container.innerHTML = '';
+        container.appendChild(gridInner);
 
-        container.className = 'swiper home-category-swiper'; 
-        container.innerHTML = `
-            <div class="swiper-wrapper">
-                ${slidesHTML}
-            </div>
-        `;
-
-        // *** 3D Coverflow Effect ***
-        new Swiper('.home-category-swiper', {
-            loop: true,
-            effect: 'coverflow',
-            grabCursor: true,
-            centeredSlides: true,
-            slidesPerView: 'auto', // ഓട്ടോമാറ്റിക് വീതി
-            
-            coverflowEffect: {
-                rotate: 0,      // കറക്കം വേണ്ട
-                stretch: 0,     // വലിച്ചു നീട്ടൽ വേണ്ട
-                depth: 200,     // 3D ആഴം (പിന്നിലുള്ളവ ചെറുതാകും)
-                modifier: 1.5,  // ഇഫക്റ്റിന്റെ തീവ്രത
-                slideShadows: false, // നിഴൽ വേണ്ട (ഭംഗിക്ക് വേണ്ടി)
-            },
-            
-            autoplay: {
-                delay: 3000,
-                disableOnInteraction: false,
-                pauseOnMouseEnter: true, // മൗസ് വെക്കുമ്പോൾ നിൽക്കും
-            },
-            
-            speed: 800, // സ്മൂത്ത് ട്രാൻസിഷൻ
-            
-            // റെസ്പോൺസീവ് ബ്രേക്ക്പോയിന്റുകൾ
-            breakpoints: {
-                320: { 
-                    slidesPerView: 1.5, // മൊബൈലിൽ നടുക്കുള്ളത് വലുതായും, സൈഡിലുള്ളത് പാതിയായും
-                    spaceBetween: 20,
-                    coverflowEffect: { depth: 150, modifier: 1.2 }
-                },
-                640: { 
-                    slidesPerView: 2.5,
-                    spaceBetween: 25,
-                    coverflowEffect: { depth: 180, modifier: 1.3 }
-                },
-                900: { 
-                    slidesPerView: 3,
-                    spaceBetween: 30,
-                    coverflowEffect: { depth: 200, modifier: 1.4 }
-                },
-                1200: { 
-                    slidesPerView: 3.5,
-                    spaceBetween: 35,
-                    coverflowEffect: { depth: 220, modifier: 1.5 }
-                }
-            }
-        });
+        // *** ആനിമേഷൻ ഫംഗ്ഷൻ വിളിക്കുന്നു ***
+        setupBubbleAnimation(container, gridInner);
 
     } catch (error) { 
         console.error("Error loading home categories: ", error); 
         container.innerHTML = '<p>Error loading categories.</p>';
     }
+}
+
+// *** ബബിൾ ആനിമേഷൻ ലോജിക് (Magnification Effect) ***
+function setupBubbleAnimation(container, grid) {
+    // നടുക്ക് സെറ്റ് ചെയ്യുന്നു
+    const centerX = container.offsetWidth / 2;
+    const centerY = container.offsetHeight / 2;
+    
+    // സ്ക്രോൾ ചെയ്യുമ്പോൾ ആനിമേഷൻ
+    const onScroll = () => {
+        const bubbles = grid.querySelectorAll('.category-bubble');
+        const containerRect = container.getBoundingClientRect();
+        const contCenterX = containerRect.left + containerRect.width / 2;
+        const contCenterY = containerRect.top + containerRect.height / 2;
+
+        bubbles.forEach(bubble => {
+            const rect = bubble.getBoundingClientRect();
+            const bubCenterX = rect.left + rect.width / 2;
+            const bubCenterY = rect.top + rect.height / 2;
+
+            // നടുവിൽ നിന്നുള്ള ദൂരം
+            const dist = Math.hypot(bubCenterX - contCenterX, bubCenterY - contCenterY);
+            
+            // ദൂരം കുറയുമ്പോൾ സ്കെയിൽ കൂടണം
+            const maxDist = 250; // ഇഫക്റ്റ് ബാധിക്കുന്ന ദൂരം
+            let scale = 1;
+            
+            if (dist < maxDist) {
+                // 1.0 മുതൽ 1.6 വരെ സ്കെയിൽ ചെയ്യുന്നു
+                scale = 1 + ((maxDist - dist) / maxDist) * 0.6;
+            }
+
+            // സ്റ്റൈൽ അപ്ലൈ ചെയ്യുന്നു
+            bubble.style.transform = `scale(${scale})`;
+            
+            // ഏറ്റവും നടുക്കുള്ളതിന് പേര് കാണിക്കുന്നു
+            if (scale > 1.4) {
+                bubble.classList.add('active');
+            } else {
+                bubble.classList.remove('active');
+            }
+        });
+    };
+
+    container.addEventListener('scroll', onScroll);
+    // തുടക്കത്തിൽ തന്നെ ഒന്ന് ഓടിക്കുന്നു
+    setTimeout(() => {
+        // നടുക്ക് സ്ക്രോൾ ചെയ്ത് വെക്കുന്നു
+        container.scrollLeft = (grid.offsetWidth - container.offsetWidth) / 2;
+        container.scrollTop = (grid.offsetHeight - container.offsetHeight) / 2;
+        onScroll();
+    }, 100);
 }
 
 const topSellersGrid = document.getElementById("top-sellers-grid");
