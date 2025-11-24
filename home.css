@@ -106,14 +106,13 @@
 
 /* --- 4. 'For You' (ടോപ്പ് സെല്ലേഴ്സ്) --- */
 .top-sellers-swiper-new {
-    padding-bottom: 0; 
+    padding: 0 30px; 
 }
 .top-sellers-swiper-new .swiper-slide {
     text-align: center;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    /* വലിപ്പം കുറയ്ക്കാൻ പാഡിംഗ് കുറയ്ക്കുന്നു */
     background-color: var(--card-bg);
 }
 .top-sellers-product-image {
@@ -123,7 +122,7 @@
     margin-bottom: 0; 
 }
 .top-sellers-product-info {
-    padding: 0.75rem; /* പാഡിംഗ് കുറച്ചു */
+    padding: 0.75rem; 
 }
 
 /* ആനിമേറ്റഡ് ഡോട്ടുകൾ */
@@ -161,7 +160,7 @@
 }
 
 .top-sellers-product-name {
-    font-size: 0.9rem; /* ഫോണ്ട് കുറച്ചു */
+    font-size: 0.9rem;
     color: var(--text-color);
     font-weight: 500;
     margin-bottom: 0.25rem;
@@ -170,7 +169,7 @@
     text-overflow: ellipsis;
 }
 .top-sellers-product-price {
-    font-size: 1rem; /* വില അല്പം കുറച്ചു */
+    font-size: 1rem; 
     color: var(--text-muted);
     margin-bottom: 0.75rem;
 }
@@ -180,22 +179,21 @@
     gap: 0.25rem;
     padding: 0;
 }
-/* ഹോം പേജിലെ ബട്ടണുകൾ ചെറുതാക്കുന്നു */
 .top-sellers-buttons .btn {
     padding: 0.5rem 0.25rem;
     font-size: 0.8rem;
 }
 
 
-/* --- 5. ഹോം പേജിലെ കാറ്റഗറി ഗ്രിഡ് (മാറ്റം: 2 കോളം) --- */
+/* --- 5. ഹോം പേജിലെ കാറ്റഗറി ഗ്രിഡ് (മാറ്റം: 1 Column Vertical List) --- */
 .category-grid-vertical {
     display: grid;
-    /* *** മാറ്റം: 1fr മാറ്റി 2 കോളം ആക്കി (ചെറുതാകാൻ) *** */
-    grid-template-columns: repeat(2, 1fr); 
-    gap: 1rem; /* ഗ്യാപ്പ് കുറച്ചു */
+    /* *** മാറ്റം: പഴയതുപോലെ 1 കോളം (Vertical List) *** */
+    grid-template-columns: 1fr; 
+    gap: 1.5rem; 
 }
 
-/* കാർഡ് സ്റ്റൈൽ (4:5 അനുപാതം) */
+/* കാർഡ് സ്റ്റൈൽ (മാറ്റം: 1:1 അനുപാതം) */
 .category-card-home-new {
     text-decoration: none;
     color: var(--text-muted);
@@ -203,9 +201,11 @@
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    aspect-ratio: 4 / 5; 
-    position: relative; 
     
+    /* *** മാറ്റം: ചതുരശ്ര രൂപം (Square) *** */
+    aspect-ratio: 1 / 1; 
+    
+    position: relative; 
     background-color: var(--card-bg);
     background-size: cover;
     background-position: center;
@@ -220,7 +220,7 @@
 .category-card-home-new h3 {
     font-family: var(--font-main);
     font-weight: 500;
-    font-size: 0.9rem; /* ഫോണ്ട് കുറച്ചു */
+    font-size: 1rem; 
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -231,7 +231,7 @@
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 0.5rem;
+    padding: 0.75rem;
     margin: 0;
     background: rgba(0, 0, 0, 0.6); 
     -webkit-backdrop-filter: blur(5px); 
@@ -249,15 +249,22 @@
         padding: 2rem 1rem;
         font-size: 0.9rem;
     }
+    .top-sellers-swiper-new {
+        padding: 0 40px;
+    }
 }
 
 /* ടാബ്ലെറ്റ് & ചെറിയ ഡെസ്ക്ടോപ്പ് */
 @media (min-width: 769px) {
+    .top-sellers-swiper-new {
+        padding: 0; 
+    }
     .top-sellers-swiper-new .swiper-slide {
         text-align: center;
     }
-    /* ഡെസ്ക്ടോപ്പിൽ കാറ്റഗറി 4 കോളം */
+    
+    /* *** മാറ്റം: ഡെസ്ക്ടോപ്പിൽ 3 എണ്ണം ഒരേ വരിയിൽ *** */
     .category-grid-vertical {
-        grid-template-columns: repeat(4, 1fr); 
+        grid-template-columns: repeat(3, 1fr); 
     }
 }
