@@ -23,7 +23,7 @@ const productGrid = document.getElementById("category-product-grid");
 const categoryNavDesktop = document.getElementById("category-nav-desktop");
 const categoryNavMobile = document.getElementById("category-nav-mobile");
 const loader = document.getElementById("infinite-scroll-loader");
-const searchInput = document.getElementById("product-search-input"); // *** പുതിയത്: സെർച്ച് ഇൻപുട്ട് ***
+const searchInput = document.getElementById("product-search-input"); 
 const clearSearchBtn = document.getElementById("clear-search-btn");
 const noResultsMsg = document.getElementById("no-results-message");
 
@@ -34,14 +34,14 @@ let currentCategoryId = 'all';
 const productsPerPage = 12; 
 let currentQuery = null;
 let whatsappNumber = ''; 
-let allProductsCache = []; // *** സെർച്ചിനായി എല്ലാ പ്രൊഡക്റ്റുകളും ഇവിടെ സൂക്ഷിക്കും ***
-let categoriesMap = new Map(); // *** കാറ്റഗറി പേര് സെർച്ച് ചെയ്യാൻ ഇത് ഉപയോഗിക്കും ***
+let allProductsCache = []; 
+let categoriesMap = new Map(); 
 
 // --- പേജ് ലോഡ് ആവുമ്പോൾ ---
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
     await loadWhatsappNumber();
-    await loadCategoryList(); // കാറ്റഗറികൾ ആദ്യം ലോഡ് ചെയ്യുന്നു
+    await loadCategoryList(); 
     
     const urlParams = new URLSearchParams(window.location.search);
     const categoryIdFromUrl = urlParams.get('filter');
@@ -51,7 +51,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     startLoadingProducts(currentCategoryId); 
-    setupSearch(); // *** സെർച്ച് സെറ്റപ്പ് ചെയ്യുന്നു ***
+    setupSearch(); 
 });
 
 async function loadWhatsappNumber() {
@@ -65,7 +65,7 @@ async function loadWhatsappNumber() {
 }
 
 /**
- * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു (Map ഉണ്ടാക്കുന്നു)
+ * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു
  */
 async function loadCategoryList() {
     if (!categoryNavDesktop || !categoryNavMobile) return;
@@ -76,7 +76,7 @@ async function loadCategoryList() {
 
         let navHtml = '';
         
-        // "All Products" option
+        // *** മാറ്റം: പേര് "All" എന്ന് മാത്രമാക്കി ***
         navHtml += `
             <a href="#" class="category-grid-item" data-id="all">
                 <div class="category-grid-image-box">
@@ -84,13 +84,12 @@ async function loadCategoryList() {
                         <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zM13 3h8v8h-8V3zm0 10h8v8h-8v-8z"/>
                     </svg>
                 </div>
-                <span class="category-grid-name">All Products</span>
+                <span class="category-grid-name">All</span>
             </a>
         `;
         
         catSnapshot.forEach((doc) => {
             const category = doc.data();
-            // *** മാപ്പിൽ ചേർക്കുന്നു (ID -> Name) ***
             categoriesMap.set(doc.id, category.name);
 
             const rawImage = category.imageUrl || 'https://placehold.co/80x80/333/D4AF37?text=C';
@@ -128,7 +127,6 @@ function addNavClickListeners(navElement) {
         const categoryId = link.dataset.id;
         if (categoryId === currentCategoryId) return; 
         
-        // സെർച്ച് ക്ലിയർ ചെയ്യുന്നു
         if(searchInput) searchInput.value = '';
         if(clearSearchBtn) clearSearchBtn.style.display = 'none';
         if(noResultsMsg) noResultsMsg.style.display = 'none';
@@ -164,9 +162,6 @@ async function startLoadingProducts(categoryId) {
     await loadProducts();
 }
 
-/**
- * ഉൽപ്പന്നങ്ങൾ ലോഡ് ചെയ്യുന്നു (Pagination)
- */
 async function loadProducts() {
     if (isLoading || !currentQuery) return;
     isLoading = true;
@@ -196,7 +191,7 @@ async function loadProducts() {
         documentSnapshots.forEach((doc) => {
             const product = doc.data();
             const productId = doc.id;
-            renderProductCard(product, productId); // *** കാർഡ് ഉണ്ടാക്കാൻ പ്രത്യേക ഫംഗ്ഷൻ ***
+            renderProductCard(product, productId); 
         });
 
     } catch (error) {
@@ -270,7 +265,6 @@ function updateActiveCategoryUI(categoryId) {
     });
 }
 
-// *** പുതിയത്: സെർച്ച് ലോജിക് ***
 function setupSearch() {
     if (!searchInput) return;
 
@@ -279,15 +273,13 @@ function setupSearch() {
         
         if (term.length > 0) {
             clearSearchBtn.style.display = 'block';
-            // സെർച്ച് ചെയ്യുമ്പോൾ സാധാരണ ലോഡിംഗ് നിർത്തുന്നു
             if (loader) loader.style.display = 'none';
-            currentQuery = null; // ഇൻഫിനിറ്റ് സ്ക്രോൾ നിർത്തുന്നു
+            currentQuery = null; 
             
             performSearch(term);
         } else {
             clearSearchBtn.style.display = 'none';
             noResultsMsg.style.display = 'none';
-            // സെർച്ച് ക്ലിയർ ആയാൽ വീണ്ടും പഴയ ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു
             startLoadingProducts(currentCategoryId);
         }
     });
@@ -300,31 +292,25 @@ function setupSearch() {
     });
 }
 
-// *** സ്മാർട്ട് സെർച്ച് ഫംഗ്ഷൻ (എല്ലാം സെർച്ച് ചെയ്യുന്നു) ***
 async function performSearch(searchTerm) {
     productGrid.innerHTML = '';
-    isLoading = true; // സ്ക്രോൾ ലോഡർ തടയാൻ
+    isLoading = true; 
     if (loader) loader.style.display = 'flex';
 
     try {
-        // 1. കാഷെയിൽ ഡാറ്റ ഇല്ലെങ്കിൽ എല്ലാം ഫെച്ച് ചെയ്യുന്നു (ഒരിക്കൽ മാത്രം)
         if (allProductsCache.length === 0) {
-            const q = query(collection(db, "products")); // എല്ലാ പ്രൊഡക്റ്റും എടുക്കുന്നു
+            const q = query(collection(db, "products")); 
             const snapshot = await getDocs(q);
             snapshot.forEach(doc => {
                 allProductsCache.push({ id: doc.id, ...doc.data() });
             });
         }
 
-        // 2. സെർച്ച് ടേമുകളെ വിഭജിക്കുന്നു (ഉദാ: "Blue Attar" -> ["blue", "attar"])
         const searchTerms = searchTerm.split(/\s+/);
 
-        // 3. ഫിൽട്ടറിംഗ് (Any Match, Any Order)
         const filteredProducts = allProductsCache.filter(product => {
-            // കാറ്റഗറി പേര് കണ്ടുപിടിക്കുന്നു
             const categoryName = categoriesMap.get(product.categoryId) || '';
             
-            // പ്രൊഡക്റ്റിന്റെ എല്ലാ വിവരങ്ങളും ഒരൊറ്റ സ്ട്രിംഗ് ആക്കുന്നു
             const productString = `
                 ${product.name} 
                 ${product.price} 
@@ -333,7 +319,6 @@ async function performSearch(searchTerm) {
                 ${categoryName}
             `.toLowerCase();
 
-            // നമ്മൾ ടൈപ്പ് ചെയ്ത *എല്ലാ* വാക്കുകളും ഈ സ്ട്രിംഗിൽ ഉണ്ടോ എന്ന് നോക്കുന്നു
             return searchTerms.every(term => productString.includes(term));
         });
 
@@ -385,7 +370,6 @@ productGrid.addEventListener('click', (e) => {
 });
 
 const observer = new IntersectionObserver((entries) => {
-    // സെർച്ച് ചെയ്യുമ്പോൾ ഇൻഫിനിറ്റ് സ്ക്രോൾ പ്രവർത്തിക്കരുത് (currentQuery null ആകും)
     if (entries[0].isIntersecting && !isLoading && lastVisible && currentQuery) { 
         loadProducts();
     }
