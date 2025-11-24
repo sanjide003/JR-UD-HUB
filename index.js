@@ -1,4 +1,4 @@
-// മെച്ചപ്പെടുത്തിയ 'index.js' ഫയൽ - 3D Gallery Effect ഉൾപ്പെടെ
+// ഇതാണ് 'index.js' ഫയൽ.
 
 import { db } from './firebase-config.js';
 import { 
@@ -23,41 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHeroSlider();
     loadTopSellers();
     loadHomeCategories();
-    
-    // Scroll reveal ആനിമേഷനുകൾ സജ്ജമാക്കുന്നു
-    setupScrollReveal();
-    
-    // Smooth scroll behavior
-    document.documentElement.style.scrollBehavior = 'smooth';
 });
-
-/**
- * Scroll Reveal Animation Setup
- */
-function setupScrollReveal() {
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('revealed');
-                // Once revealed, stop observing
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    // All sections to animate
-    const sections = document.querySelectorAll('.home-section, .hero-text-section');
-    sections.forEach(section => {
-        section.classList.add('scroll-reveal');
-        observer.observe(section);
-    });
-}
 
 /**
  * ഹോം പേജ് ബാനർ
@@ -85,7 +51,7 @@ async function loadHomeBanner() {
 }
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ - മെച്ചപ്പെടുത്തിയത്
+ * 1. ഹീറോ സ്ലൈഡർ
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -143,29 +109,16 @@ async function loadHeroSlider() {
             });
         }
 
-        // മെച്ചപ്പെടുത്തിയ Swiper configuration
-        const heroSwiper = new Swiper('.hero-slider-new', {
+        new Swiper('.hero-slider-new', {
             loop: false, 
             effect: 'fade',
-            fadeEffect: { 
-                crossFade: true 
-            },
+            fadeEffect: { crossFade: true },
             allowTouchMove: true,
-            speed: 1200,
-            autoplay: {
-                delay: 5000,
-                disableOnInteraction: false,
-            },
+            speed: 1000,
             pagination: {
                 el: '.hero-pagination-dots',
                 clickable: true,
             },
-            on: {
-                slideChange: function() {
-                    // Pause videos on non-active slides
-                    pauseInactiveVideos();
-                }
-            }
         });
 
         const firstSlideVideo = document.querySelector('.hero-video-element');
@@ -176,30 +129,12 @@ async function loadHeroSlider() {
 
         setupSmartVideoAutoplay();
 
-    } catch (error) { 
-        console.error("Error loading hero slider: ", error); 
-    }
-}
-
-function pauseInactiveVideos() {
-    const videos = document.querySelectorAll('.hero-video-element');
-    videos.forEach(video => {
-        const slide = video.closest('.swiper-slide');
-        if (!slide.classList.contains('swiper-slide-active')) {
-            video.pause();
-        } else {
-            video.play().catch(e => console.log("Play failed:", e));
-        }
-    });
+    } catch (error) { console.error("Error loading hero slider: ", error); }
 }
 
 function setupSmartVideoAutoplay() {
     const videos = document.querySelectorAll('.hero-video-element, .hero-video-iframe');
-    const observerOptions = { 
-        root: null, 
-        rootMargin: '0px', 
-        threshold: 0.25 
-    };
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.25 };
 
     const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -227,35 +162,25 @@ function setupSmartVideoAutoplay() {
     });
 }
 
+
 /**
- * 2. "For You" (Top Sellers) - മെച്ചപ്പെടുത്തിയത്
+ * 2. "For You" (Top Sellers)
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
-    
-    // Skeleton loader കാണിക്കുന്നു
-    showSkeletonLoader(grid, 5);
-    
     try {
         const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
         const querySnapshot = await getDocs(q);
-        
         if (querySnapshot.empty) {
-            grid.innerHTML = '<p>No featured products found.</p>'; 
-            return;
+            grid.innerHTML = '<p>No featured products found.</p>'; return;
         }
-        
         grid.innerHTML = '';
-        let delay = 0;
-        
         querySnapshot.forEach((doc) => {
             const product = doc.data();
             const productId = doc.id;
             const card = document.createElement('div');
             card.className = 'swiper-slide';
-            card.style.animationDelay = `${delay}ms`;
-            delay += 100;
             
             const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
             const imageUrl = optimizeImage(rawImage, 400, 80);
@@ -300,13 +225,13 @@ async function loadTopSellers() {
         });
 
         const autoplayDelay = 4000; 
-        const topSellersSwiper = new Swiper('.top-sellers-swiper-new', {
+        new Swiper('.top-sellers-swiper-new', {
             loop: true,
             autoplay: { 
                 delay: autoplayDelay, 
                 disableOnInteraction: false 
             },
-            speed: 800,
+            speed: 1000,
             slidesPerView: 1, 
             spaceBetween: 30,
             centeredSlides: true,
@@ -319,11 +244,29 @@ async function loadTopSellers() {
             },
             on: {
                 init: function (swiper) {
-                    updateProgressAnimation(swiper, autoplayDelay);
+                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+                    if (activeBullet) {
+                        const progressEl = activeBullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
+                        }
+                    }
                 },
                 slideChangeTransitionStart: function (swiper) {
-                    resetAllProgress(swiper);
-                    updateProgressAnimation(swiper, autoplayDelay);
+                    swiper.pagination.bullets.forEach(bullet => {
+                        const progressEl = bullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = 'none';
+                        }
+                    });
+                    
+                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+                    if (activeBullet) {
+                        const progressEl = activeBullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
+                        }
+                    }
                 }
             },
             breakpoints: { 
@@ -332,59 +275,12 @@ async function loadTopSellers() {
                 1200: { slidesPerView: 5, spaceBetween: 20, centeredSlides: false } 
             }
         });
-        
-    } catch (error) { 
-        console.error("Error loading top sellers: ", error); 
-        grid.innerHTML = '<p>Error loading products.</p>'; 
-    }
+    } catch (error) { console.error("Error loading top sellers: ", error); grid.innerHTML = '<p>Error loading products.</p>'; }
 }
 
-function updateProgressAnimation(swiper, delay) {
-    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
-    if (activeBullet) {
-        const progressEl = activeBullet.querySelector('.pagination-progress');
-        if (progressEl) {
-            progressEl.style.animation = `progress-fill ${delay / 1000}s linear forwards`;
-        }
-    }
-}
-
-function resetAllProgress(swiper) {
-    swiper.pagination.bullets.forEach(bullet => {
-        const progressEl = bullet.querySelector('.pagination-progress');
-        if (progressEl) {
-            progressEl.style.animation = 'none';
-            void progressEl.offsetWidth; // Reflow
-            progressEl.style.transform = 'scaleX(0)';
-        }
-    });
-}
 
 /**
- * Skeleton Loader Helper
- */
-function showSkeletonLoader(container, count = 5) {
-    container.innerHTML = '';
-    for (let i = 0; i < count; i++) {
-        const skeleton = document.createElement('div');
-        skeleton.className = 'swiper-slide';
-        skeleton.innerHTML = `
-            <div class="skeleton" style="width: 100%; aspect-ratio: 4/5; margin-bottom: 0.5rem;"></div>
-            <div style="padding: 0.75rem;">
-                <div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 0.5rem;"></div>
-                <div class="skeleton" style="height: 20px; width: 50%; margin-bottom: 0.75rem;"></div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                    <div class="skeleton" style="height: 40px;"></div>
-                    <div class="skeleton" style="height: 40px;"></div>
-                </div>
-            </div>
-        `;
-        container.appendChild(skeleton);
-    }
-}
-
-/**
- * 3. ഹോം പേജിലെ കാറ്റഗറി സ്ലൈഡർ - 3D Gallery Effect
+ * 3. ഹോം പേജിലെ കാറ്റഗറികൾ (3D Gallery Effect)
  */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
@@ -405,6 +301,7 @@ async function loadHomeCategories() {
             const catId = doc.id;
             
             const rawImage = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
+            // മികച്ച ക്വാളിറ്റിയുള്ള ചിത്രം നൽകുന്നു
             const imageUrl = optimizeImage(rawImage, 500, 85);
             
             slidesHTML += `
@@ -423,64 +320,51 @@ async function loadHomeCategories() {
             </div>
         `;
 
-        // *** 3D Gallery Swiper Configuration ***
+        // *** 3D Coverflow Effect ***
         new Swiper('.home-category-swiper', {
             loop: true,
             effect: 'coverflow',
             grabCursor: true,
             centeredSlides: true,
-            slidesPerView: 'auto',
+            slidesPerView: 'auto', // ഓട്ടോമാറ്റിക് വീതി
             
-            // *** 3D Coverflow Settings ***
             coverflowEffect: {
-                rotate: 0,
-                stretch: 0,
-                depth: 200,
-                modifier: 1.5,
-                slideShadows: false,
+                rotate: 0,      // കറക്കം വേണ്ട
+                stretch: 0,     // വലിച്ചു നീട്ടൽ വേണ്ട
+                depth: 200,     // 3D ആഴം (പിന്നിലുള്ളവ ചെറുതാകും)
+                modifier: 1.5,  // ഇഫക്റ്റിന്റെ തീവ്രത
+                slideShadows: false, // നിഴൽ വേണ്ട (ഭംഗിക്ക് വേണ്ടി)
             },
             
             autoplay: {
-                delay: 3500,
+                delay: 3000,
                 disableOnInteraction: false,
-                pauseOnMouseEnter: true,
+                pauseOnMouseEnter: true, // മൗസ് വെക്കുമ്പോൾ നിൽക്കും
             },
             
-            speed: 800,
+            speed: 800, // സ്മൂത്ത് ട്രാൻസിഷൻ
             
-            // *** Responsive Breakpoints ***
+            // റെസ്പോൺസീവ് ബ്രേക്ക്പോയിന്റുകൾ
             breakpoints: {
                 320: { 
-                    slidesPerView: 1.5,
+                    slidesPerView: 1.5, // മൊബൈലിൽ നടുക്കുള്ളത് വലുതായും, സൈഡിലുള്ളത് പാതിയായും
                     spaceBetween: 20,
-                    coverflowEffect: {
-                        depth: 150,
-                        modifier: 1.2,
-                    }
+                    coverflowEffect: { depth: 150, modifier: 1.2 }
                 },
                 640: { 
                     slidesPerView: 2.5,
                     spaceBetween: 25,
-                    coverflowEffect: {
-                        depth: 180,
-                        modifier: 1.3,
-                    }
+                    coverflowEffect: { depth: 180, modifier: 1.3 }
                 },
                 900: { 
                     slidesPerView: 3,
                     spaceBetween: 30,
-                    coverflowEffect: {
-                        depth: 200,
-                        modifier: 1.4,
-                    }
+                    coverflowEffect: { depth: 200, modifier: 1.4 }
                 },
                 1200: { 
                     slidesPerView: 3.5,
                     spaceBetween: 35,
-                    coverflowEffect: {
-                        depth: 220,
-                        modifier: 1.5,
-                    }
+                    coverflowEffect: { depth: 220, modifier: 1.5 }
                 }
             }
         });
@@ -491,9 +375,6 @@ async function loadHomeCategories() {
     }
 }
 
-/**
- * Cart button interactions with animation
- */
 const topSellersGrid = document.getElementById("top-sellers-grid");
 if (topSellersGrid) {
     topSellersGrid.addEventListener('click', (e) => {
@@ -503,9 +384,6 @@ if (topSellersGrid) {
         
         const id = button.dataset.id;
         const buttonText = button.querySelector('span');
-
-        // Button ripple effect
-        createRipple(e, button);
 
         if (button.classList.contains('added-to-cart')) {
             removeFromCart(id);
@@ -527,82 +405,6 @@ if (topSellersGrid) {
             button.classList.add('btn-primary-new');
             button.classList.remove('btn-secondary-new'); 
             if (buttonText) buttonText.textContent = 'Remove';
-            
-            // Success feedback
-            showToast('Added to cart!');
         }
     });
-}
-
-/**
- * Ripple effect helper
- */
-function createRipple(event, button) {
-    const ripple = document.createElement('span');
-    const rect = button.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const x = event.clientX - rect.left - size / 2;
-    const y = event.clientY - rect.top - size / 2;
-
-    ripple.style.width = ripple.style.height = `${size}px`;
-    ripple.style.left = `${x}px`;
-    ripple.style.top = `${y}px`;
-    ripple.style.position = 'absolute';
-    ripple.style.borderRadius = '50%';
-    ripple.style.backgroundColor = 'rgba(255, 255, 255, 0.4)';
-    ripple.style.transform = 'scale(0)';
-    ripple.style.animation = 'ripple-animation 0.6s ease-out';
-    ripple.style.pointerEvents = 'none';
-
-    button.appendChild(ripple);
-
-    setTimeout(() => ripple.remove(), 600);
-}
-
-// Ripple animation
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes ripple-animation {
-        to {
-            transform: scale(2);
-            opacity: 0;
-        }
-    }
-`;
-document.head.appendChild(style);
-
-/**
- * Toast notification
- */
-function showToast(message) {
-    const toast = document.createElement('div');
-    toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed;
-        bottom: 100px;
-        left: 50%;
-        transform: translateX(-50%) translateY(100px);
-        background: var(--primary-gold);
-        color: var(--bg-color);
-        padding: 12px 24px;
-        border-radius: 8px;
-        font-weight: 600;
-        z-index: 10000;
-        opacity: 0;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
-    `;
-    
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateX(-50%) translateY(0)';
-    }, 10);
-    
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(-50%) translateY(100px)';
-        setTimeout(() => toast.remove(), 300);
-    }, 2000);
 }
