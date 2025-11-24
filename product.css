@@ -26,6 +26,7 @@
 .product-gallery-swiper .swiper-pagination {
     position: absolute;
     bottom: 10px;
+    /* പാജിനേഷൻ സെന്ററിൽ തന്നെ നിൽക്കട്ടെ, ലിങ്കുകൾ ലെഫ്റ്റിൽ വരും */
 }
 .product-gallery-swiper .swiper-pagination-bullet {
     background-color: rgba(255, 255, 255, 0.7);
@@ -36,52 +37,63 @@
     opacity: 1;
 }
 
-/* --- 3. "Paid Promotion" ലിങ്കുകൾ (ഗാലറിക്ക് മുകളിൽ) --- */
+/* --- 3. "Paid Promotion" ലിങ്കുകൾ (മാറ്റം: താഴെ ഇടതുവശത്ത് ബാഡ്ജ് സ്റ്റൈലിൽ) --- */
 .product-more-links {
     position: absolute;
-    top: 10px;
-    right: 10px;
+    bottom: 10px; /* താഴെ */
+    left: 10px;   /* ഇടതുവശത്ത് */
     z-index: 10;
     display: flex;
     flex-direction: column;
-    align-items: flex-end;
+    align-items: flex-start; /* ഇടതുവശത്തേക്ക് ചേർന്ന് നിൽക്കാൻ */
     gap: 5px;
 }
+
 .product-promotion-link {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.3rem 0.6rem;
-    background-color: rgba(0, 0, 0, 0.5);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    color: var(--text-color);
-    font-size: 0.75rem;
-    font-weight: 500;
-    border-radius: 15px;
+    gap: 0.5rem;
+    padding: 0.4rem 0.8rem;
+    
+    /* *** മാറ്റം: ബ്ലൂ -> ബ്ലാക്ക് ഷേഡുള്ള ബാഡ്ജ് സ്റ്റൈൽ *** */
+    background: linear-gradient(135deg, #2980b9 0%, #000000 90%);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    
+    color: #ffffff; /* വെള്ള ടെക്സ്റ്റ് */
+    font-size: 0.8rem;
+    font-weight: 600;
+    border-radius: 4px; /* അല്പം ബോക്സി ആക്കി ബാഡ്ജ് ലുക്ക് കിട്ടാൻ */
     text-decoration: none;
     transition: all 0.3s ease;
-    backdrop-filter: blur(5px);
+    backdrop-filter: blur(2px);
+    text-transform: uppercase; /* വലിയക്ഷരത്തിൽ */
+    letter-spacing: 0.5px;
 }
+
 .product-promotion-link:hover {
-    background-color: rgba(0, 0, 0, 0.7);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(135deg, #3498db 0%, #111111 90%); /* ഹോവർ ചെയ്യുമ്പോൾ അല്പം ലൈറ്റ് ആക്കുന്നു */
 }
+
 .product-promotion-link svg {
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     fill: currentColor;
 }
 
 /* --- 4. പ്രൊഡക്റ്റ് വിവരങ്ങൾ --- */
 .product-info { 
-    padding-top: 0; /* മുകളിലെ സ്പേസ് കുറച്ചു */
+    padding-top: 0;
 }
 
-/* *** മാറ്റം: ആക്ഷൻ ബാർ സ്റ്റൈലുകൾ *** */
+/* ആക്ഷൻ ബാർ */
 .product-action-bar {
     display: flex;
     align-items: center;
     gap: 1.5rem;
-    margin-bottom: 1rem; /* താഴെയുള്ള പേരുമായി അകലം */
+    margin-bottom: 1rem;
     padding: 0;
 }
 .action-group {
@@ -119,7 +131,7 @@
     color: var(--primary-gold);
 }
 
-/* *** റേറ്റിംഗ് ബോക്സ് *** */
+/* റേറ്റിംഗ് ബോക്സ് */
 .rating-box {
     background-color: #1a1a1a;
     border: 1px solid var(--border-color);
@@ -186,7 +198,7 @@
 
 
 .product-title {
-    font-size: 1.8rem; /* പേര് വലുതാക്കി */
+    font-size: 1.8rem; 
     margin-bottom: 0.5rem;
 }
 
