@@ -108,7 +108,7 @@
     transform: scale(1.2); 
 }
 
-/* *** പുതിയത്: റേറ്റിംഗ് ബോക്സ് സ്റ്റൈലുകൾ *** */
+/* *** റേറ്റിംഗ് ബോക്സ് സ്റ്റൈലുകൾ *** */
 .rating-box {
     background-color: #1a1a1a;
     border: 1px solid var(--border-color);
@@ -123,22 +123,35 @@
 }
 .star-rating {
     font-size: 1.5rem;
-    color: #555;
+    color: #555; /* ഡിഫോൾട്ട് ഗ്രേ കളർ */
     cursor: pointer;
     margin-bottom: 0.5rem;
 }
 .star {
     transition: color 0.2s;
 }
-.star.filled {
-    color: var(--primary-gold); /* ഗോൾഡ് സ്റ്റാർ */
+
+/* *** സ്റ്റാർ കളറുകൾ (Red -> Yellow -> Green) *** */
+.star.filled.red-star {
+    color: #e74c3c; /* Red */
 }
+.star.filled.yellow-star {
+    color: #f1c40f; /* Yellow */
+}
+.star.filled.green-star {
+    color: #2ecc71; /* Green */
+}
+/* ഡിഫോൾട്ട് ഫിൽ കളർ (js ലോഡ് ആകുന്നതിന് മുൻപ്) */
+.star.filled {
+    color: var(--primary-gold); 
+}
+
 .star:hover {
     color: var(--secondary-gold);
 }
 .rating-feedback {
     font-size: 0.85rem;
-    color: var(--success-green);
+    color: var(--text-muted);
     margin-bottom: 0.5rem;
     font-weight: 500;
 }
