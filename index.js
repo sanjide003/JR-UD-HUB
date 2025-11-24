@@ -1,4 +1,4 @@
-// മെച്ചപ്പെടുത്തിയ 'index.js' ഫയൽ - ആനിമേഷനുകൾ ഉൾപ്പെടെ
+// മെച്ചപ്പെടുത്തിയ 'index.js' ഫയൽ - 3D Gallery Effect ഉൾപ്പെടെ
 
 import { db } from './firebase-config.js';
 import { 
@@ -384,7 +384,7 @@ function showSkeletonLoader(container, count = 5) {
 }
 
 /**
- * 3. ഹോം പേജിലെ കാറ്റഗറി സ്ലൈഡർ - മെച്ചപ്പെടുത്തിയത്
+ * 3. ഹോം പേജിലെ കാറ്റഗറി സ്ലൈഡർ - 3D Gallery Effect
  */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
@@ -405,7 +405,7 @@ async function loadHomeCategories() {
             const catId = doc.id;
             
             const rawImage = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
-            const imageUrl = optimizeImage(rawImage, 400, 80);
+            const imageUrl = optimizeImage(rawImage, 500, 85);
             
             slidesHTML += `
                 <div class="swiper-slide">
@@ -423,22 +423,65 @@ async function loadHomeCategories() {
             </div>
         `;
 
-        // മെച്ചപ്പെടുത്തിയ Swiper configuration
+        // *** 3D Gallery Swiper Configuration ***
         new Swiper('.home-category-swiper', {
             loop: true,
-            slidesPerView: 2.2,
-            spaceBetween: 15,
+            effect: 'coverflow',
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: 'auto',
+            
+            // *** 3D Coverflow Settings ***
+            coverflowEffect: {
+                rotate: 0,
+                stretch: 0,
+                depth: 200,
+                modifier: 1.5,
+                slideShadows: false,
+            },
+            
             autoplay: {
-                delay: 3000,
+                delay: 3500,
                 disableOnInteraction: false,
                 pauseOnMouseEnter: true,
             },
+            
             speed: 800,
-            grabCursor: true,
+            
+            // *** Responsive Breakpoints ***
             breakpoints: {
-                640: { slidesPerView: 3.2, spaceBetween: 20 },
-                900: { slidesPerView: 4.5, spaceBetween: 20 },
-                1200: { slidesPerView: 5.5, spaceBetween: 25 }
+                320: { 
+                    slidesPerView: 1.5,
+                    spaceBetween: 20,
+                    coverflowEffect: {
+                        depth: 150,
+                        modifier: 1.2,
+                    }
+                },
+                640: { 
+                    slidesPerView: 2.5,
+                    spaceBetween: 25,
+                    coverflowEffect: {
+                        depth: 180,
+                        modifier: 1.3,
+                    }
+                },
+                900: { 
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                    coverflowEffect: {
+                        depth: 200,
+                        modifier: 1.4,
+                    }
+                },
+                1200: { 
+                    slidesPerView: 3.5,
+                    spaceBetween: 35,
+                    coverflowEffect: {
+                        depth: 220,
+                        modifier: 1.5,
+                    }
+                }
             }
         });
 
