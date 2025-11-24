@@ -63,9 +63,22 @@
 .explore-action-icons {
     display: flex;
     align-items: center;
-    gap: 1.25rem; 
+    gap: 1.5rem; 
     margin-bottom: 1rem;
 }
+
+/* Action Group (Icon + Count) */
+.action-group {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+.action-count {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--text-color);
+}
+
 .explore-action-icons button {
     background: none;
     border: none;
@@ -94,6 +107,52 @@
     color: var(--primary-gold); 
     transform: scale(1.2); 
 }
+
+/* *** പുതിയത്: റേറ്റിംഗ് ബോക്സ് സ്റ്റൈലുകൾ *** */
+.rating-box {
+    background-color: #1a1a1a;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+.rating-title {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+}
+.star-rating {
+    font-size: 1.5rem;
+    color: #555;
+    cursor: pointer;
+    margin-bottom: 0.5rem;
+}
+.star {
+    transition: color 0.2s;
+}
+.star.filled {
+    color: var(--primary-gold); /* ഗോൾഡ് സ്റ്റാർ */
+}
+.star:hover {
+    color: var(--secondary-gold);
+}
+.rating-feedback {
+    font-size: 0.85rem;
+    color: var(--success-green);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+.comment-input-disabled input {
+    width: 100%;
+    padding: 0.75rem;
+    background-color: #2a2a2a;
+    border: 1px solid #333;
+    border-radius: 5px;
+    color: var(--text-muted);
+    font-style: italic;
+    cursor: not-allowed;
+}
+
 
 /* 2.5 പ്രൊഡക്റ്റ് പേരും വിലയും */
 .explore-product-title {
@@ -142,7 +201,7 @@
     padding: 2rem;
 }
 
-/* --- 4. പുതിയത്: ഷെയർ ബട്ടൺ ഫീഡ്ബാക്ക് --- */
+/* --- 4. ഷെയർ ബട്ടൺ ഫീഡ്ബാക്ക് --- */
 .explore-action-icons button.share-btn.shared-success {
     color: var(--success-green);
     transform: scale(1.2);
