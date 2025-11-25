@@ -368,12 +368,16 @@
     height: 500px;
     position: relative;
     overflow: visible;
-    /* *** മാറ്റം: Default cursor, no grab *** */
-    touch-action: pan-y; /* Allow vertical scrolling */
-    pointer-events: none; /* Pass through by default */
+    /* *** മാറ്റം: Allow drag on entire canvas *** */
+    touch-action: pan-y;
+    cursor: grab;
 }
 
-/* *** പുതിയത്: Drag Zone - Center Circle *** */
+.category-grid-canvas:active {
+    cursor: grabbing;
+}
+
+/* *** Drag Zone - Now just visual indicator *** */
 .category-drag-zone {
     position: absolute;
     top: 50%;
@@ -382,36 +386,25 @@
     width: 280px;
     height: 280px;
     border-radius: 50%;
-    /* *** Visible drag area indicator *** */
+    /* *** Just visual hint, not interactive *** */
     background: radial-gradient(circle, 
-        rgba(212, 175, 55, 0.05) 0%, 
+        rgba(212, 175, 55, 0.03) 0%, 
         transparent 70%
     );
-    border: 2px dashed rgba(212, 175, 55, 0.2);
-    cursor: grab;
-    pointer-events: auto;
-    z-index: 5;
-    transition: all 0.3s ease;
-    
-    /* *** Critical for mobile touch *** */
-    touch-action: none;
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
+    border: 2px dashed rgba(212, 175, 55, 0.15);
+    pointer-events: none; /* Don't block interactions */
+    z-index: 1;
+    transition: opacity 0.3s ease;
 }
 
-.category-drag-zone:active {
-    cursor: grabbing;
-    background: radial-gradient(circle, 
-        rgba(212, 175, 55, 0.1) 0%, 
-        transparent 70%
-    );
-    border-color: rgba(212, 175, 55, 0.4);
+/* Fade out when dragging */
+.category-drag-zone.dragging {
+    opacity: 0;
 }
 
 /* Drag hint */
 .category-drag-zone::before {
-    content: '👆 Drag Here';
+    content: '👆 Tap or Drag';
     position: absolute;
     top: 50%;
     left: 50%;
@@ -456,8 +449,11 @@
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
     will-change: border-color, box-shadow;
-    /* Remove transition during drag */
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    
+    /* *** Allow clicks/taps *** */
+    pointer-events: auto;
+    cursor: pointer;
 }
 
 .category-card-watch::before {
