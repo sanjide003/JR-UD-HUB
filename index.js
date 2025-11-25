@@ -1,4 +1,4 @@
-// Apple Watch Style Category Grid - index.js
+// ഇതാണ് 'index.js' ഫയൽ. (Updated with 3D Gallery & Animations)
 
 import { db } from './firebase-config.js';
 import { 
@@ -24,12 +24,15 @@ document.addEventListener("DOMContentLoaded", () => {
     loadTopSellers();
     loadHomeCategories();
     
+    // *** പുതിയത്: സ്ക്രോൾ ആനിമേഷൻ ***
     setupScrollReveal();
+    
+    // സ്മൂത്ത് സ്ക്രോൾ ബിഹേവിയർ
     document.documentElement.style.scrollBehavior = 'smooth';
 });
 
 /**
- * Scroll Reveal Animation Setup
+ * Scroll Reveal Animation Setup (പേജ് സ്ക്രോൾ ചെയ്യുമ്പോൾ ഉള്ള ആനിമേഷൻ)
  */
 function setupScrollReveal() {
     const observerOptions = {
@@ -167,9 +170,7 @@ async function loadHeroSlider() {
 
         setupSmartVideoAutoplay();
 
-    } catch (error) { 
-        console.error("Error loading hero slider: ", error); 
-    }
+    } catch (error) { console.error("Error loading hero slider: ", error); }
 }
 
 function pauseInactiveVideos() {
@@ -214,6 +215,7 @@ function setupSmartVideoAutoplay() {
     });
 }
 
+
 /**
  * 2. "For You" (Top Sellers)
  */
@@ -221,8 +223,9 @@ async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
     
+    // *** പുതിയത്: Skeleton Loader കാണിക്കുന്നു ***
     showSkeletonLoader(grid, 5);
-    
+
     try {
         const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
         const querySnapshot = await getDocs(q);
@@ -234,7 +237,7 @@ async function loadTopSellers() {
         
         grid.innerHTML = '';
         let delay = 0;
-        
+
         querySnapshot.forEach((doc) => {
             const product = doc.data();
             const productId = doc.id;
@@ -341,20 +344,17 @@ function resetAllProgress(swiper) {
     });
 }
 
+// *** Skeleton Loader Helper ***
 function showSkeletonLoader(container, count = 5) {
     container.innerHTML = '';
     for (let i = 0; i < count; i++) {
         const skeleton = document.createElement('div');
         skeleton.className = 'swiper-slide';
         skeleton.innerHTML = `
-            <div class="skeleton" style="width: 100%; aspect-ratio: 4/5; margin-bottom: 0.5rem;"></div>
+            <div class="skeleton" style="width: 100%; aspect-ratio: 4/5; margin-bottom: 0.5rem; background: #222;"></div>
             <div style="padding: 0.75rem;">
-                <div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 0.5rem;"></div>
-                <div class="skeleton" style="height: 20px; width: 50%; margin-bottom: 0.75rem;"></div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                    <div class="skeleton" style="height: 40px;"></div>
-                    <div class="skeleton" style="height: 40px;"></div>
-                </div>
+                <div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 0.5rem; background: #222;"></div>
+                <div class="skeleton" style="height: 20px; width: 50%; margin-bottom: 0.75rem; background: #222;"></div>
             </div>
         `;
         container.appendChild(skeleton);
@@ -362,7 +362,7 @@ function showSkeletonLoader(container, count = 5) {
 }
 
 /**
- * 3. Apple Watch Style Category Grid
+ * 3. ഹോം പേജിലെ കാറ്റഗറികൾ (3D Gallery Effect) - Swiper ഉപയോഗിച്ച്
  */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
@@ -377,22 +377,78 @@ async function loadHomeCategories() {
             return;
         }
 
-        const categories = [];
+        let slidesHTML = '';
         catSnapshot.forEach((doc) => {
-            categories.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            const category = doc.data();
+            const catId = doc.id;
+            
+            const rawImage = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
+            const imageUrl = optimizeImage(rawImage, 500, 85);
+            
+            slidesHTML += `
+                <div class="swiper-slide">
+                    <a href="categories.html?filter=${catId}" class="category-card-home-new" style="background-image: url('${imageUrl}')">
+                        <h3>${category.name}</h3>
+                    </a>
+                </div>
+            `;
         });
 
-        // Create Watch-style grid
-        container.className = 'home-category-grid-wrapper';
+        // Swiper Container Structure
+        container.className = 'swiper home-category-swiper'; 
         container.innerHTML = `
-            <div class="category-grid-canvas" id="category-canvas"></div>
-            <div class="category-scroll-hint">👆 Drag to explore categories</div>
+            <div class="swiper-wrapper">
+                ${slidesHTML}
+            </div>
         `;
 
-        initWatchStyleGrid(categories);
+        // *** 3D Coverflow Swiper Initialize ***
+        new Swiper('.home-category-swiper', {
+            loop: true,
+            effect: 'coverflow',
+            grabCursor: true,
+            centeredSlides: true,
+            slidesPerView: 'auto', // ഓട്ടോമാറ്റിക് വീതി
+            
+            coverflowEffect: {
+                rotate: 0,
+                stretch: 0,
+                depth: 200,
+                modifier: 1.5,
+                slideShadows: false, // നിഴൽ വേണ്ട
+            },
+            
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+                pauseOnMouseEnter: true,
+            },
+            
+            speed: 800,
+            
+            breakpoints: {
+                320: { 
+                    slidesPerView: 1.5,
+                    spaceBetween: 20,
+                    coverflowEffect: { depth: 150, modifier: 1.2 }
+                },
+                640: { 
+                    slidesPerView: 2.5,
+                    spaceBetween: 25,
+                    coverflowEffect: { depth: 180, modifier: 1.3 }
+                },
+                900: { 
+                    slidesPerView: 3,
+                    spaceBetween: 30,
+                    coverflowEffect: { depth: 200, modifier: 1.4 }
+                },
+                1200: { 
+                    slidesPerView: 3.5,
+                    spaceBetween: 35,
+                    coverflowEffect: { depth: 220, modifier: 1.5 }
+                }
+            }
+        });
 
     } catch (error) { 
         console.error("Error loading home categories: ", error); 
@@ -400,351 +456,6 @@ async function loadHomeCategories() {
     }
 }
 
-function initWatchStyleGrid(categories) {
-    const canvas = document.getElementById('category-canvas');
-    if (!canvas) return;
-
-    const isMobile = window.innerWidth <= 768;
-    const itemSize = isMobile ? 100 : 130;
-    const centerSize = isMobile ? 140 : 180;
-    const spacing = isMobile ? 30 : 40;
-
-    // Calculate honeycomb positions (no infinite repeat)
-    const positions = calculateHoneycombPositions(categories.length, itemSize, spacing);
-    
-    // *** Calculate boundaries based on actual positions ***
-    let minX = 0, maxX = 0, minY = 0, maxY = 0;
-    positions.forEach(pos => {
-        minX = Math.min(minX, pos.x);
-        maxX = Math.max(maxX, pos.x);
-        minY = Math.min(minY, pos.y);
-        maxY = Math.max(maxY, pos.y);
-    });
-    
-    // Add padding to boundaries
-    const boundaryPadding = itemSize * 1.5;
-    minX -= boundaryPadding;
-    maxX += boundaryPadding;
-    minY -= boundaryPadding;
-    maxY += boundaryPadding;
-    
-    let offsetX = 0;
-    let offsetY = 0;
-    let isDragging = false;
-    let startX = 0;
-    let startY = 0;
-    let currentX = 0;
-    let currentY = 0;
-    let velocityX = 0;
-    let velocityY = 0;
-    let lastUpdateTime = Date.now();
-    let animationFrameId = null;
-
-    // Create category items with GPU acceleration
-    categories.forEach((category, index) => {
-        const item = document.createElement('div');
-        item.className = 'category-item-watch';
-        item.style.width = `${itemSize}px`;
-        item.style.height = `${itemSize}px`;
-        
-        const imageUrl = optimizeImage(category.imageUrl || '', 300, 80);
-        
-        item.innerHTML = `
-            <a href="categories.html?filter=${category.id}" class="category-card-watch" style="background-image: url('${imageUrl}')">
-                <h3>${category.name}</h3>
-            </a>
-        `;
-        
-        item.dataset.index = index;
-        canvas.appendChild(item);
-    });
-
-    const items = canvas.querySelectorAll('.category-item-watch');
-    const canvasRect = canvas.getBoundingClientRect();
-    const centerX = canvasRect.width / 2;
-    const centerY = canvasRect.height / 2;
-
-    // *** Boundary constraint with elastic effect ***
-    function constrainToBounds(x, y) {
-        const elasticity = 0.3; // Resistance at boundaries
-        
-        let constrainedX = x;
-        let constrainedY = y;
-        
-        // X boundaries with elastic resistance
-        if (x > -minX) {
-            const overflow = x - (-minX);
-            constrainedX = -minX + overflow * elasticity;
-        } else if (x < -maxX) {
-            const overflow = x - (-maxX);
-            constrainedX = -maxX + overflow * elasticity;
-        }
-        
-        // Y boundaries with elastic resistance
-        if (y > -minY) {
-            const overflow = y - (-minY);
-            constrainedY = -minY + overflow * elasticity;
-        } else if (y < -maxY) {
-            const overflow = y - (-maxY);
-            constrainedY = -maxY + overflow * elasticity;
-        }
-        
-        return { x: constrainedX, y: constrainedY };
-    }
-
-    // *** Performance: Batch DOM updates ***
-    let updateScheduled = false;
-    
-    function scheduleUpdate() {
-        if (updateScheduled) return;
-        updateScheduled = true;
-        
-        animationFrameId = requestAnimationFrame(() => {
-            updatePositions();
-            updateScheduled = false;
-        });
-    }
-
-    function updatePositions() {
-        const now = Date.now();
-        const deltaTime = now - lastUpdateTime;
-        
-        // *** Throttle: 60fps max ***
-        if (deltaTime < 16) return;
-        lastUpdateTime = now;
-
-        let closestItem = null;
-        let minDistance = Infinity;
-
-        // *** Performance: Use transform3d for GPU acceleration ***
-        items.forEach((item, index) => {
-            const pos = positions[index];
-            const x = pos.x + offsetX;
-            const y = pos.y + offsetY;
-            
-            // Calculate distance from center
-            const distance = Math.sqrt(x * x + y * y);
-
-            if (distance < minDistance) {
-                minDistance = distance;
-                closestItem = item;
-            }
-
-            // Scale based on distance (optimized calculation)
-            const maxDistance = 400;
-            const scale = Math.max(0.7, 1 - Math.min(distance / 300, 1));
-            const opacity = Math.max(0.5, 1 - Math.min(distance / maxDistance, 1));
-            
-            // *** GPU-accelerated transform ***
-            item.style.transform = `translate3d(${centerX + x}px, ${centerY + y}px, 0) translate(-50%, -50%) scale(${scale})`;
-            item.style.opacity = opacity;
-            item.style.zIndex = Math.floor((1 - scale) * 100);
-            
-            if (item.classList.contains('center')) {
-                item.classList.remove('center');
-            }
-        });
-
-        // Mark center item
-        if (closestItem) {
-            closestItem.classList.add('center');
-            const centerScale = centerSize / itemSize;
-            const pos = positions[parseInt(closestItem.dataset.index)];
-            const x = pos.x + offsetX;
-            const y = pos.y + offsetY;
-            closestItem.style.transform = `translate3d(${centerX + x}px, ${centerY + y}px, 0) translate(-50%, -50%) scale(${centerScale})`;
-            closestItem.style.opacity = 1;
-            closestItem.style.zIndex = 1000;
-        }
-    }
-
-    // Touch/Mouse events with better performance
-    let lastMoveTime = 0;
-    
-    function handleStart(e) {
-        isDragging = true;
-        const point = e.touches ? e.touches[0] : e;
-        startX = point.clientX - currentX;
-        startY = point.clientY - currentY;
-        velocityX = 0;
-        velocityY = 0;
-        canvas.style.cursor = 'grabbing';
-        
-        // Cancel inertia animation
-        if (animationFrameId) {
-            cancelAnimationFrame(animationFrameId);
-            animationFrameId = null;
-        }
-    }
-
-    function handleMove(e) {
-        if (!isDragging) return;
-        
-        const now = Date.now();
-        if (now - lastMoveTime < 16) return; // Throttle to 60fps
-        lastMoveTime = now;
-        
-        e.preventDefault();
-        
-        const point = e.touches ? e.touches[0] : e;
-        let newX = point.clientX - startX;
-        let newY = point.clientY - startY;
-        
-        // *** Apply boundary constraints ***
-        const constrained = constrainToBounds(newX, newY);
-        newX = constrained.x;
-        newY = constrained.y;
-        
-        velocityX = newX - currentX;
-        velocityY = newY - currentY;
-        
-        currentX = newX;
-        currentY = newY;
-        offsetX = currentX;
-        offsetY = currentY;
-        
-        scheduleUpdate();
-    }
-
-    function handleEnd() {
-        isDragging = false;
-        canvas.style.cursor = 'grab';
-        
-        // *** Snap back if outside bounds + smooth inertia ***
-        function animate() {
-            const friction = 0.95;
-            const snapStrength = 0.1;
-            
-            // Check if outside hard boundaries
-            let needsSnap = false;
-            let targetX = offsetX;
-            let targetY = offsetY;
-            
-            if (offsetX > -minX) {
-                targetX = -minX;
-                needsSnap = true;
-            } else if (offsetX < -maxX) {
-                targetX = -maxX;
-                needsSnap = true;
-            }
-            
-            if (offsetY > -minY) {
-                targetY = -minY;
-                needsSnap = true;
-            } else if (offsetY < -maxY) {
-                targetY = -maxY;
-                needsSnap = true;
-            }
-            
-            // Snap back animation
-            if (needsSnap) {
-                offsetX += (targetX - offsetX) * snapStrength;
-                offsetY += (targetY - offsetY) * snapStrength;
-                currentX = offsetX;
-                currentY = offsetY;
-                
-                scheduleUpdate();
-                
-                // Continue until close enough
-                if (Math.abs(offsetX - targetX) > 1 || Math.abs(offsetY - targetY) > 1) {
-                    animationFrameId = requestAnimationFrame(animate);
-                } else {
-                    offsetX = targetX;
-                    offsetY = targetY;
-                    currentX = offsetX;
-                    currentY = offsetY;
-                    scheduleUpdate();
-                    animationFrameId = null;
-                }
-            }
-            // Inertia animation
-            else if (Math.abs(velocityX) > 0.3 || Math.abs(velocityY) > 0.3) {
-                velocityX *= friction;
-                velocityY *= friction;
-                
-                let newOffsetX = offsetX + velocityX;
-                let newOffsetY = offsetY + velocityY;
-                
-                // Check boundaries during inertia
-                if (newOffsetX > -minX || newOffsetX < -maxX) {
-                    velocityX *= -0.3; // Bounce effect
-                    newOffsetX = Math.max(-maxX, Math.min(-minX, newOffsetX));
-                }
-                if (newOffsetY > -minY || newOffsetY < -maxY) {
-                    velocityY *= -0.3; // Bounce effect
-                    newOffsetY = Math.max(-maxY, Math.min(-minY, newOffsetY));
-                }
-                
-                offsetX = newOffsetX;
-                offsetY = newOffsetY;
-                currentX = offsetX;
-                currentY = offsetY;
-                
-                scheduleUpdate();
-                animationFrameId = requestAnimationFrame(animate);
-            } else {
-                animationFrameId = null;
-            }
-        }
-        animate();
-    }
-
-    // Event listeners with passive option for better performance
-    canvas.addEventListener('mousedown', handleStart);
-    canvas.addEventListener('mousemove', handleMove);
-    canvas.addEventListener('mouseup', handleEnd);
-    canvas.addEventListener('mouseleave', handleEnd);
-    
-    canvas.addEventListener('touchstart', handleStart, { passive: false });
-    canvas.addEventListener('touchmove', handleMove, { passive: false });
-    canvas.addEventListener('touchend', handleEnd);
-
-    // Initial render
-    updatePositions();
-
-    // Debounced resize handler
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            const newRect = canvas.getBoundingClientRect();
-            scheduleUpdate();
-        }, 100);
-    });
-}
-
-function calculateHoneycombPositions(count, size, spacing) {
-    const positions = [];
-    const radius = size + spacing;
-    
-    // Center item
-    positions.push({ x: 0, y: 0 });
-    
-    let itemCount = 1;
-    let ring = 1;
-    
-    while (itemCount < count) {
-        const itemsInRing = ring * 6;
-        const angleStep = (Math.PI * 2) / itemsInRing;
-        const ringRadius = ring * radius;
-        
-        for (let i = 0; i < itemsInRing && itemCount < count; i++) {
-            const angle = i * angleStep;
-            positions.push({
-                x: Math.cos(angle) * ringRadius,
-                y: Math.sin(angle) * ringRadius
-            });
-            itemCount++;
-        }
-        ring++;
-    }
-    
-    return positions;
-}
-
-/**
- * Cart interactions
- */
 const topSellersGrid = document.getElementById("top-sellers-grid");
 if (topSellersGrid) {
     topSellersGrid.addEventListener('click', (e) => {
@@ -755,6 +466,7 @@ if (topSellersGrid) {
         const id = button.dataset.id;
         const buttonText = button.querySelector('span');
 
+        // *** Ripple Effect ***
         createRipple(e, button);
 
         if (button.classList.contains('added-to-cart')) {
@@ -777,11 +489,14 @@ if (topSellersGrid) {
             button.classList.add('btn-primary-new');
             button.classList.remove('btn-secondary-new'); 
             if (buttonText) buttonText.textContent = 'Remove';
+            
+            // *** Toast Notification ***
             showToast('Added to cart!');
         }
     });
 }
 
+// *** Ripple Effect Helper ***
 function createRipple(event, button) {
     const ripple = document.createElement('span');
     const rect = button.getBoundingClientRect();
@@ -800,14 +515,35 @@ function createRipple(event, button) {
     setTimeout(() => ripple.remove(), 600);
 }
 
+// Add dynamic styles for animations
 const style = document.createElement('style');
 style.textContent = `
     @keyframes ripple-animation {
         to { transform: scale(2); opacity: 0; }
     }
+    .scroll-reveal {
+        opacity: 0;
+        transform: translateY(30px);
+        transition: all 0.8s cubic-bezier(0.5, 0, 0, 1);
+    }
+    .scroll-reveal.revealed {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .skeleton {
+        background: linear-gradient(90deg, #222 25%, #333 50%, #222 75%);
+        background-size: 200% 100%;
+        animation: skeleton-loading 1.5s infinite;
+        border-radius: 4px;
+    }
+    @keyframes skeleton-loading {
+        0% { background-position: 200% 0; }
+        100% { background-position: -200% 0; }
+    }
 `;
 document.head.appendChild(style);
 
+// *** Toast Notification ***
 function showToast(message) {
     const toast = document.createElement('div');
     toast.textContent = message;
