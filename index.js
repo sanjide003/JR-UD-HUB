@@ -388,8 +388,10 @@ async function loadHomeCategories() {
         // Create Watch-style grid
         container.className = 'home-category-grid-wrapper';
         container.innerHTML = `
-            <div class="category-grid-canvas" id="category-canvas"></div>
-            <div class="category-scroll-hint">👆 Drag to explore categories</div>
+            <div class="category-grid-canvas" id="category-canvas">
+                <div class="category-drag-zone" id="category-drag-zone"></div>
+            </div>
+            <div class="category-scroll-hint">👆 Drag center circle to explore</div>
         `;
 
         initWatchStyleGrid(categories);
@@ -402,7 +404,8 @@ async function loadHomeCategories() {
 
 function initWatchStyleGrid(categories) {
     const canvas = document.getElementById('category-canvas');
-    if (!canvas) return;
+    const dragZone = document.getElementById('category-drag-zone');
+    if (!canvas || !dragZone) return;
 
     const isMobile = window.innerWidth <= 768;
     const itemSize = isMobile ? 100 : 130;
@@ -412,7 +415,7 @@ function initWatchStyleGrid(categories) {
     // Calculate honeycomb positions
     const basePositions = calculateHoneycombPositions(categories.length, itemSize, spacing);
     
-    // *** Calculate grid dimensions properly ***
+    // Calculate grid dimensions properly
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     basePositions.forEach(pos => {
         minX = Math.min(minX, pos.x);
@@ -421,11 +424,10 @@ function initWatchStyleGrid(categories) {
         maxY = Math.max(maxY, pos.y);
     });
     
-    // Grid size with proper margins
     const gridWidth = (maxX - minX) + itemSize * 3;
     const gridHeight = (maxY - minY) + itemSize * 3;
     
-    // *** Create 3x3 grid for seamless infinite scroll ***
+    // Create 3x3 grid for seamless infinite scroll
     const positions = [];
     const categoryMap = [];
     
@@ -446,15 +448,13 @@ function initWatchStyleGrid(categories) {
     let isDragging = false;
     let startX = 0;
     let startY = 0;
-    let currentX = 0;
-    let currentY = 0;
     let velocityX = 0;
     let velocityY = 0;
     let lastUpdateTime = Date.now();
     let animationFrameId = null;
     
-    // *** Drag sensitivity control ***
-    const dragSensitivity = 0.6; // Lower = less sensitive
+    // *** Fixed drag sensitivity ***
+    const dragMultiplier = 0.5; // Consistent, slower movement
 
     // Create category items
     positions.forEach((pos, index) => {
@@ -483,11 +483,10 @@ function initWatchStyleGrid(categories) {
     const centerX = canvasRect.width / 2;
     const centerY = canvasRect.height / 2;
 
-    // *** Smooth wrapping function ***
+    // Smooth wrapping function
     function normalizeOffset(offset, gridSize) {
         const halfGrid = gridSize / 2;
         
-        // Wrap smoothly when crossing boundaries
         while (offset > halfGrid) {
             offset -= gridSize;
         }
@@ -517,13 +516,9 @@ function initWatchStyleGrid(categories) {
         if (deltaTime < 16) return;
         lastUpdateTime = now;
 
-        // *** Apply smooth wrapping ***
+        // Apply smooth wrapping
         offsetX = normalizeOffset(offsetX, gridWidth);
         offsetY = normalizeOffset(offsetY, gridHeight);
-        
-        // Update current positions
-        currentX = offsetX;
-        currentY = offsetY;
 
         let closestItem = null;
         let minDistance = Infinity;
@@ -563,20 +558,26 @@ function initWatchStyleGrid(categories) {
     }
 
     let lastMoveTime = 0;
+    let lastX = 0;
+    let lastY = 0;
     
     function handleStart(e) {
         isDragging = true;
         const point = e.touches ? e.touches[0] : e;
-        startX = point.clientX - currentX;
-        startY = point.clientY - currentY;
+        startX = point.clientX;
+        startY = point.clientY;
+        lastX = startX;
+        lastY = startY;
         velocityX = 0;
         velocityY = 0;
-        canvas.style.cursor = 'grabbing';
         
         if (animationFrameId) {
             cancelAnimationFrame(animationFrameId);
             animationFrameId = null;
         }
+        
+        // Hide drag hint
+        dragZone.style.opacity = '0.5';
     }
 
     function handleMove(e) {
@@ -587,36 +588,38 @@ function initWatchStyleGrid(categories) {
         lastMoveTime = now;
         
         e.preventDefault();
+        e.stopPropagation();
         
         const point = e.touches ? e.touches[0] : e;
         
-        // *** Apply drag sensitivity ***
-        let newX = (point.clientX - startX) * dragSensitivity;
-        let newY = (point.clientY - startY) * dragSensitivity;
+        // *** Calculate delta from last position ***
+        const deltaX = (point.clientX - lastX) * dragMultiplier;
+        const deltaY = (point.clientY - lastY) * dragMultiplier;
         
-        // *** Smooth velocity calculation ***
-        velocityX = (newX - currentX) * 0.5; // Dampen velocity
-        velocityY = (newY - currentY) * 0.5;
+        // Update offset
+        offsetX += deltaX;
+        offsetY += deltaY;
         
-        currentX = newX;
-        currentY = newY;
-        offsetX = currentX;
-        offsetY = currentY;
+        // Store velocity for inertia
+        velocityX = deltaX;
+        velocityY = deltaY;
+        
+        // Update last position
+        lastX = point.clientX;
+        lastY = point.clientY;
         
         scheduleUpdate();
     }
 
     function handleEnd() {
         isDragging = false;
-        canvas.style.cursor = 'grab';
         
-        // Update startX/startY for next drag
-        startX = startX + (currentX / dragSensitivity);
-        startY = startY + (currentY / dragSensitivity);
+        // Show drag hint
+        dragZone.style.opacity = '1';
         
-        // *** Smooth inertia ***
+        // Smooth inertia
         function animate() {
-            const friction = 0.92; // More friction for control
+            const friction = 0.93;
             
             if (Math.abs(velocityX) > 0.5 || Math.abs(velocityY) > 0.5) {
                 velocityX *= friction;
@@ -624,8 +627,6 @@ function initWatchStyleGrid(categories) {
                 
                 offsetX += velocityX;
                 offsetY += velocityY;
-                currentX = offsetX;
-                currentY = offsetY;
                 
                 scheduleUpdate();
                 animationFrameId = requestAnimationFrame(animate);
@@ -636,14 +637,15 @@ function initWatchStyleGrid(categories) {
         animate();
     }
 
-    canvas.addEventListener('mousedown', handleStart);
-    canvas.addEventListener('mousemove', handleMove);
-    canvas.addEventListener('mouseup', handleEnd);
-    canvas.addEventListener('mouseleave', handleEnd);
+    // *** Attach events to drag zone only ***
+    dragZone.addEventListener('mousedown', handleStart);
+    dragZone.addEventListener('mousemove', handleMove);
+    dragZone.addEventListener('mouseup', handleEnd);
+    dragZone.addEventListener('mouseleave', handleEnd);
     
-    canvas.addEventListener('touchstart', handleStart, { passive: false });
-    canvas.addEventListener('touchmove', handleMove, { passive: false });
-    canvas.addEventListener('touchend', handleEnd);
+    dragZone.addEventListener('touchstart', handleStart, { passive: false });
+    dragZone.addEventListener('touchmove', handleMove, { passive: false });
+    dragZone.addEventListener('touchend', handleEnd);
 
     updatePositions();
 
