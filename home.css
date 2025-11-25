@@ -368,74 +368,23 @@
     height: 500px;
     position: relative;
     overflow: visible;
-    /* *** മാറ്റം: Default cursor, no grab *** */
-    touch-action: pan-y; /* Allow vertical scrolling */
-    pointer-events: none; /* Pass through by default */
-}
-
-/* *** പുതിയത്: Drag Zone - Center Circle *** */
-.category-drag-zone {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 280px;
-    height: 280px;
-    border-radius: 50%;
-    /* *** Visible drag area indicator *** */
-    background: radial-gradient(circle, 
-        rgba(212, 175, 55, 0.05) 0%, 
-        transparent 70%
-    );
-    border: 2px dashed rgba(212, 175, 55, 0.2);
     cursor: grab;
-    pointer-events: auto;
-    z-index: 5;
-    transition: all 0.3s ease;
-    
-    /* *** Critical for mobile touch *** */
     touch-action: none;
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
 }
 
-.category-drag-zone:active {
+.category-grid-canvas:active {
     cursor: grabbing;
-    background: radial-gradient(circle, 
-        rgba(212, 175, 55, 0.1) 0%, 
-        transparent 70%
-    );
-    border-color: rgba(212, 175, 55, 0.4);
-}
-
-/* Drag hint */
-.category-drag-zone::before {
-    content: '👆 Drag Here';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    font-weight: 600;
-    opacity: 0.6;
-    pointer-events: none;
-    text-align: center;
-    white-space: nowrap;
 }
 
 .category-item-watch {
     position: absolute;
     transform-origin: center;
-    /* *** GPU Acceleration *** */
     will-change: transform, opacity;
     transform: translate3d(0, 0, 0);
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
-    /* Smooth transitions only when not dragging */
     transition: opacity 0.2s ease;
-    pointer-events: auto; /* Items are clickable */
+    pointer-events: auto;
 }
 
 .category-card-watch {
@@ -452,12 +401,11 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* *** GPU Acceleration *** */
     transform: translateZ(0);
     -webkit-transform: translateZ(0);
     will-change: border-color, box-shadow;
-    /* Remove transition during drag */
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: pointer;
 }
 
 .category-card-watch::before {
