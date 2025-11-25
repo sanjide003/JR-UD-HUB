@@ -578,6 +578,9 @@ function initWatchStyleGrid(categories) {
         
         // Hide drag hint
         dragZone.style.opacity = '0.5';
+        
+        e.preventDefault();
+        e.stopPropagation();
     }
 
     function handleMove(e) {
@@ -611,7 +614,9 @@ function initWatchStyleGrid(categories) {
         scheduleUpdate();
     }
 
-    function handleEnd() {
+    function handleEnd(e) {
+        if (!isDragging) return;
+        
         isDragging = false;
         
         // Show drag hint
@@ -637,15 +642,17 @@ function initWatchStyleGrid(categories) {
         animate();
     }
 
-    // *** Attach events to drag zone only ***
+    // *** Attach to drag zone for start, but document for move/end ***
     dragZone.addEventListener('mousedown', handleStart);
-    dragZone.addEventListener('mousemove', handleMove);
-    dragZone.addEventListener('mouseup', handleEnd);
-    dragZone.addEventListener('mouseleave', handleEnd);
-    
     dragZone.addEventListener('touchstart', handleStart, { passive: false });
-    dragZone.addEventListener('touchmove', handleMove, { passive: false });
-    dragZone.addEventListener('touchend', handleEnd);
+    
+    // *** Move and end on document so drag works anywhere ***
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mouseup', handleEnd);
+    
+    document.addEventListener('touchmove', handleMove, { passive: false });
+    document.addEventListener('touchend', handleEnd);
+    document.addEventListener('touchcancel', handleEnd);
 
     updatePositions();
 
