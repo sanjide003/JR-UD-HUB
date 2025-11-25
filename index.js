@@ -180,7 +180,7 @@ function setupSmartVideoAutoplay() {
 
 
 /**
- * 2. "For You" (Top Sellers)
+ * 2. "For You" (Top Sellers) - Modern Pagination
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
@@ -253,36 +253,7 @@ async function loadTopSellers() {
             pagination: { 
                 el: '.top-sellers-pagination-new', 
                 clickable: true,
-                renderBullet: function (index, className) {
-                    return '<span class="' + className + '"><span class="pagination-progress"></span></span>';
-                }
-            },
-            on: {
-                init: function (swiper) {
-                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
-                    if (activeBullet) {
-                        const progressEl = activeBullet.querySelector('.pagination-progress');
-                        if (progressEl) {
-                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
-                        }
-                    }
-                },
-                slideChangeTransitionStart: function (swiper) {
-                    swiper.pagination.bullets.forEach(bullet => {
-                        const progressEl = bullet.querySelector('.pagination-progress');
-                        if (progressEl) {
-                            progressEl.style.animation = 'none';
-                        }
-                    });
-                    
-                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
-                    if (activeBullet) {
-                        const progressEl = activeBullet.querySelector('.pagination-progress');
-                        if (progressEl) {
-                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
-                        }
-                    }
-                }
+                dynamicBullets: false
             },
             breakpoints: { 
                 640: { slidesPerView: 2 }, 
