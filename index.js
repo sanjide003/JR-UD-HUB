@@ -1,4 +1,4 @@
-// ഇതാണ് 'index.js' ഫയൽ.
+// Apple Watch Style Category Grid - index.js
 
 import { db } from './firebase-config.js';
 import { 
@@ -23,7 +23,36 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHeroSlider();
     loadTopSellers();
     loadHomeCategories();
+    
+    setupScrollReveal();
+    document.documentElement.style.scrollBehavior = 'smooth';
 });
+
+/**
+ * Scroll Reveal Animation Setup
+ */
+function setupScrollReveal() {
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+
+    const sections = document.querySelectorAll('.home-section, .hero-text-section');
+    sections.forEach(section => {
+        section.classList.add('scroll-reveal');
+        observer.observe(section);
+    });
+}
 
 /**
  * ഹോം പേജ് ബാനർ
@@ -109,16 +138,25 @@ async function loadHeroSlider() {
             });
         }
 
-        new Swiper('.hero-slider-new', {
+        const heroSwiper = new Swiper('.hero-slider-new', {
             loop: false, 
             effect: 'fade',
             fadeEffect: { crossFade: true },
             allowTouchMove: true,
-            speed: 1000,
+            speed: 1200,
+            autoplay: {
+                delay: 5000,
+                disableOnInteraction: false,
+            },
             pagination: {
                 el: '.hero-pagination-dots',
                 clickable: true,
             },
+            on: {
+                slideChange: function() {
+                    pauseInactiveVideos();
+                }
+            }
         });
 
         const firstSlideVideo = document.querySelector('.hero-video-element');
@@ -129,7 +167,21 @@ async function loadHeroSlider() {
 
         setupSmartVideoAutoplay();
 
-    } catch (error) { console.error("Error loading hero slider: ", error); }
+    } catch (error) { 
+        console.error("Error loading hero slider: ", error); 
+    }
+}
+
+function pauseInactiveVideos() {
+    const videos = document.querySelectorAll('.hero-video-element');
+    videos.forEach(video => {
+        const slide = video.closest('.swiper-slide');
+        if (!slide.classList.contains('swiper-slide-active')) {
+            video.pause();
+        } else {
+            video.play().catch(e => console.log("Play failed:", e));
+        }
+    });
 }
 
 function setupSmartVideoAutoplay() {
@@ -162,25 +214,34 @@ function setupSmartVideoAutoplay() {
     });
 }
 
-
 /**
  * 2. "For You" (Top Sellers)
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
+    
+    showSkeletonLoader(grid, 5);
+    
     try {
         const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
         const querySnapshot = await getDocs(q);
+        
         if (querySnapshot.empty) {
-            grid.innerHTML = '<p>No featured products found.</p>'; return;
+            grid.innerHTML = '<p>No featured products found.</p>'; 
+            return;
         }
+        
         grid.innerHTML = '';
+        let delay = 0;
+        
         querySnapshot.forEach((doc) => {
             const product = doc.data();
             const productId = doc.id;
             const card = document.createElement('div');
             card.className = 'swiper-slide';
+            card.style.animationDelay = `${delay}ms`;
+            delay += 100;
             
             const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
             const imageUrl = optimizeImage(rawImage, 400, 80);
@@ -227,11 +288,8 @@ async function loadTopSellers() {
         const autoplayDelay = 4000; 
         new Swiper('.top-sellers-swiper-new', {
             loop: true,
-            autoplay: { 
-                delay: autoplayDelay, 
-                disableOnInteraction: false 
-            },
-            speed: 1000,
+            autoplay: { delay: autoplayDelay, disableOnInteraction: false },
+            speed: 800,
             slidesPerView: 1, 
             spaceBetween: 30,
             centeredSlides: true,
@@ -243,30 +301,10 @@ async function loadTopSellers() {
                 }
             },
             on: {
-                init: function (swiper) {
-                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
-                    if (activeBullet) {
-                        const progressEl = activeBullet.querySelector('.pagination-progress');
-                        if (progressEl) {
-                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
-                        }
-                    }
-                },
+                init: function (swiper) { updateProgressAnimation(swiper, autoplayDelay); },
                 slideChangeTransitionStart: function (swiper) {
-                    swiper.pagination.bullets.forEach(bullet => {
-                        const progressEl = bullet.querySelector('.pagination-progress');
-                        if (progressEl) {
-                            progressEl.style.animation = 'none';
-                        }
-                    });
-                    
-                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
-                    if (activeBullet) {
-                        const progressEl = activeBullet.querySelector('.pagination-progress');
-                        if (progressEl) {
-                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
-                        }
-                    }
+                    resetAllProgress(swiper);
+                    updateProgressAnimation(swiper, autoplayDelay);
                 }
             },
             breakpoints: { 
@@ -275,19 +313,62 @@ async function loadTopSellers() {
                 1200: { slidesPerView: 5, spaceBetween: 20, centeredSlides: false } 
             }
         });
-    } catch (error) { console.error("Error loading top sellers: ", error); grid.innerHTML = '<p>Error loading products.</p>'; }
+        
+    } catch (error) { 
+        console.error("Error loading top sellers: ", error); 
+        grid.innerHTML = '<p>Error loading products.</p>'; 
+    }
 }
 
+function updateProgressAnimation(swiper, delay) {
+    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+    if (activeBullet) {
+        const progressEl = activeBullet.querySelector('.pagination-progress');
+        if (progressEl) {
+            progressEl.style.animation = `progress-fill ${delay / 1000}s linear forwards`;
+        }
+    }
+}
+
+function resetAllProgress(swiper) {
+    swiper.pagination.bullets.forEach(bullet => {
+        const progressEl = bullet.querySelector('.pagination-progress');
+        if (progressEl) {
+            progressEl.style.animation = 'none';
+            void progressEl.offsetWidth;
+            progressEl.style.transform = 'scaleX(0)';
+        }
+    });
+}
+
+function showSkeletonLoader(container, count = 5) {
+    container.innerHTML = '';
+    for (let i = 0; i < count; i++) {
+        const skeleton = document.createElement('div');
+        skeleton.className = 'swiper-slide';
+        skeleton.innerHTML = `
+            <div class="skeleton" style="width: 100%; aspect-ratio: 4/5; margin-bottom: 0.5rem;"></div>
+            <div style="padding: 0.75rem;">
+                <div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 0.5rem;"></div>
+                <div class="skeleton" style="height: 20px; width: 50%; margin-bottom: 0.75rem;"></div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                    <div class="skeleton" style="height: 40px;"></div>
+                    <div class="skeleton" style="height: 40px;"></div>
+                </div>
+            </div>
+        `;
+        container.appendChild(skeleton);
+    }
+}
 
 /**
- * 3. ഹോം പേജിലെ കാറ്റഗറികൾ - Watch Style Bubble Layout
+ * 3. Apple Watch Style Category Grid
  */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
 
     try {
-        // എല്ലാ കാറ്റഗറികളും എടുക്കുന്നു
         const catQuery = query(collection(db, "categories"));
         const catSnapshot = await getDocs(catQuery); 
 
@@ -296,34 +377,22 @@ async function loadHomeCategories() {
             return;
         }
 
-        // ബബിൾ കണ്ടെയ്നർ നിർമ്മിക്കുന്നു
-        container.className = 'bubble-scroll-container';
-        const gridInner = document.createElement('div');
-        gridInner.className = 'bubble-grid';
-        
+        const categories = [];
         catSnapshot.forEach((doc) => {
-            const category = doc.data();
-            const catId = doc.id;
-            
-            const rawImage = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
-            const imageUrl = optimizeImage(rawImage, 300, 80);
-            
-            const bubble = document.createElement('a');
-            bubble.href = `categories.html?filter=${catId}`;
-            bubble.className = 'category-bubble';
-            bubble.style.backgroundImage = `url('${imageUrl}')`;
-            
-            // പേര് (മറഞ്ഞിരിക്കും, വലുതാകുമ്പോൾ തെളിയും)
-            bubble.innerHTML = `<h3>${category.name}</h3>`;
-            
-            gridInner.appendChild(bubble);
+            categories.push({
+                id: doc.id,
+                ...doc.data()
+            });
         });
-        
-        container.innerHTML = '';
-        container.appendChild(gridInner);
 
-        // *** ആനിമേഷൻ ഫംഗ്ഷൻ വിളിക്കുന്നു ***
-        setupBubbleAnimation(container, gridInner);
+        // Create Watch-style grid
+        container.className = 'home-category-grid-wrapper';
+        container.innerHTML = `
+            <div class="category-grid-canvas" id="category-canvas"></div>
+            <div class="category-scroll-hint">👆 Drag to explore categories</div>
+        `;
+
+        initWatchStyleGrid(categories);
 
     } catch (error) { 
         console.error("Error loading home categories: ", error); 
@@ -331,58 +400,191 @@ async function loadHomeCategories() {
     }
 }
 
-// *** ബബിൾ ആനിമേഷൻ ലോജിക് (Magnification Effect) ***
-function setupBubbleAnimation(container, grid) {
-    // നടുക്ക് സെറ്റ് ചെയ്യുന്നു
-    const centerX = container.offsetWidth / 2;
-    const centerY = container.offsetHeight / 2;
+function initWatchStyleGrid(categories) {
+    const canvas = document.getElementById('category-canvas');
+    if (!canvas) return;
+
+    const isMobile = window.innerWidth <= 768;
+    const itemSize = isMobile ? 100 : 130;
+    const centerSize = isMobile ? 140 : 180;
+    const spacing = isMobile ? 30 : 40;
+
+    // Calculate honeycomb positions
+    const positions = calculateHoneycombPositions(categories.length, itemSize, spacing);
     
-    // സ്ക്രോൾ ചെയ്യുമ്പോൾ ആനിമേഷൻ
-    const onScroll = () => {
-        const bubbles = grid.querySelectorAll('.category-bubble');
-        const containerRect = container.getBoundingClientRect();
-        const contCenterX = containerRect.left + containerRect.width / 2;
-        const contCenterY = containerRect.top + containerRect.height / 2;
+    let offsetX = 0;
+    let offsetY = 0;
+    let isDragging = false;
+    let startX = 0;
+    let startY = 0;
+    let currentX = 0;
+    let currentY = 0;
+    let velocityX = 0;
+    let velocityY = 0;
 
-        bubbles.forEach(bubble => {
-            const rect = bubble.getBoundingClientRect();
-            const bubCenterX = rect.left + rect.width / 2;
-            const bubCenterY = rect.top + rect.height / 2;
+    // Create category items
+    categories.forEach((category, index) => {
+        const item = document.createElement('div');
+        item.className = 'category-item-watch';
+        item.style.width = `${itemSize}px`;
+        item.style.height = `${itemSize}px`;
+        
+        const imageUrl = optimizeImage(category.imageUrl || '', 300, 80);
+        
+        item.innerHTML = `
+            <a href="categories.html?filter=${category.id}" class="category-card-watch" style="background-image: url('${imageUrl}')">
+                <h3>${category.name}</h3>
+            </a>
+        `;
+        
+        item.dataset.index = index;
+        canvas.appendChild(item);
+    });
 
-            // നടുവിൽ നിന്നുള്ള ദൂരം
-            const dist = Math.hypot(bubCenterX - contCenterX, bubCenterY - contCenterY);
+    const items = canvas.querySelectorAll('.category-item-watch');
+
+    function updatePositions() {
+        const canvasRect = canvas.getBoundingClientRect();
+        const centerX = canvasRect.width / 2;
+        const centerY = canvasRect.height / 2;
+
+        let closestItem = null;
+        let minDistance = Infinity;
+
+        items.forEach((item, index) => {
+            const pos = positions[index];
+            const x = centerX + pos.x + offsetX;
+            const y = centerY + pos.y + offsetY;
             
-            // ദൂരം കുറയുമ്പോൾ സ്കെയിൽ കൂടണം
-            const maxDist = 250; // ഇഫക്റ്റ് ബാധിക്കുന്ന ദൂരം
-            let scale = 1;
-            
-            if (dist < maxDist) {
-                // 1.0 മുതൽ 1.6 വരെ സ്കെയിൽ ചെയ്യുന്നു
-                scale = 1 + ((maxDist - dist) / maxDist) * 0.6;
+            item.style.left = `${x}px`;
+            item.style.top = `${y}px`;
+
+            // Calculate distance from center
+            const distance = Math.sqrt(
+                Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
+            );
+
+            if (distance < minDistance) {
+                minDistance = distance;
+                closestItem = item;
             }
 
-            // സ്റ്റൈൽ അപ്ലൈ ചെയ്യുന്നു
-            bubble.style.transform = `scale(${scale})`;
+            // Scale based on distance
+            const scale = Math.max(0.7, 1 - distance / 300);
+            const opacity = Math.max(0.5, 1 - distance / 400);
             
-            // ഏറ്റവും നടുക്കുള്ളതിന് പേര് കാണിക്കുന്നു
-            if (scale > 1.4) {
-                bubble.classList.add('active');
-            } else {
-                bubble.classList.remove('active');
-            }
+            item.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            item.style.opacity = opacity;
+            item.style.zIndex = Math.floor((1 - scale) * 100);
+            item.classList.remove('center');
         });
-    };
 
-    container.addEventListener('scroll', onScroll);
-    // തുടക്കത്തിൽ തന്നെ ഒന്ന് ഓടിക്കുന്നു
-    setTimeout(() => {
-        // നടുക്ക് സ്ക്രോൾ ചെയ്ത് വെക്കുന്നു
-        container.scrollLeft = (grid.offsetWidth - container.offsetWidth) / 2;
-        container.scrollTop = (grid.offsetHeight - container.offsetHeight) / 2;
-        onScroll();
-    }, 100);
+        // Mark center item
+        if (closestItem) {
+            closestItem.classList.add('center');
+            const centerScale = centerSize / itemSize;
+            closestItem.style.transform = `translate(-50%, -50%) scale(${centerScale})`;
+            closestItem.style.opacity = 1;
+            closestItem.style.zIndex = 1000;
+        }
+    }
+
+    // Touch/Mouse events
+    function handleStart(e) {
+        isDragging = true;
+        const point = e.touches ? e.touches[0] : e;
+        startX = point.clientX - currentX;
+        startY = point.clientY - currentY;
+        velocityX = 0;
+        velocityY = 0;
+        canvas.style.cursor = 'grabbing';
+    }
+
+    function handleMove(e) {
+        if (!isDragging) return;
+        e.preventDefault();
+        
+        const point = e.touches ? e.touches[0] : e;
+        currentX = point.clientX - startX;
+        currentY = point.clientY - startY;
+        
+        velocityX = currentX - offsetX;
+        velocityY = currentY - offsetY;
+        
+        offsetX = currentX;
+        offsetY = currentY;
+        
+        updatePositions();
+    }
+
+    function handleEnd() {
+        isDragging = false;
+        canvas.style.cursor = 'grab';
+        
+        // Inertia effect
+        function animate() {
+            if (Math.abs(velocityX) > 0.5 || Math.abs(velocityY) > 0.5) {
+                velocityX *= 0.95;
+                velocityY *= 0.95;
+                offsetX += velocityX;
+                offsetY += velocityY;
+                currentX = offsetX;
+                currentY = offsetY;
+                updatePositions();
+                requestAnimationFrame(animate);
+            }
+        }
+        animate();
+    }
+
+    canvas.addEventListener('mousedown', handleStart);
+    canvas.addEventListener('mousemove', handleMove);
+    canvas.addEventListener('mouseup', handleEnd);
+    canvas.addEventListener('mouseleave', handleEnd);
+    
+    canvas.addEventListener('touchstart', handleStart, { passive: false });
+    canvas.addEventListener('touchmove', handleMove, { passive: false });
+    canvas.addEventListener('touchend', handleEnd);
+
+    // Initial render
+    updatePositions();
+
+    // Resize handler
+    window.addEventListener('resize', updatePositions);
 }
 
+function calculateHoneycombPositions(count, size, spacing) {
+    const positions = [];
+    const radius = size + spacing;
+    
+    // Center item
+    positions.push({ x: 0, y: 0 });
+    
+    let itemCount = 1;
+    let ring = 1;
+    
+    while (itemCount < count) {
+        const itemsInRing = ring * 6;
+        const angleStep = (Math.PI * 2) / itemsInRing;
+        const ringRadius = ring * radius;
+        
+        for (let i = 0; i < itemsInRing && itemCount < count; i++) {
+            const angle = i * angleStep;
+            positions.push({
+                x: Math.cos(angle) * ringRadius,
+                y: Math.sin(angle) * ringRadius
+            });
+            itemCount++;
+        }
+        ring++;
+    }
+    
+    return positions;
+}
+
+/**
+ * Cart interactions
+ */
 const topSellersGrid = document.getElementById("top-sellers-grid");
 if (topSellersGrid) {
     topSellersGrid.addEventListener('click', (e) => {
@@ -392,6 +594,8 @@ if (topSellersGrid) {
         
         const id = button.dataset.id;
         const buttonText = button.querySelector('span');
+
+        createRipple(e, button);
 
         if (button.classList.contains('added-to-cart')) {
             removeFromCart(id);
@@ -413,6 +617,60 @@ if (topSellersGrid) {
             button.classList.add('btn-primary-new');
             button.classList.remove('btn-secondary-new'); 
             if (buttonText) buttonText.textContent = 'Remove';
+            showToast('Added to cart!');
         }
     });
+}
+
+function createRipple(event, button) {
+    const ripple = document.createElement('span');
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+
+    ripple.style.cssText = `
+        position: absolute; width: ${size}px; height: ${size}px;
+        left: ${x}px; top: ${y}px; border-radius: 50%;
+        background: rgba(255, 255, 255, 0.4); transform: scale(0);
+        animation: ripple-animation 0.6s ease-out; pointer-events: none;
+    `;
+
+    button.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+}
+
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple-animation {
+        to { transform: scale(2); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.textContent = message;
+    toast.style.cssText = `
+        position: fixed; bottom: 100px; left: 50%; 
+        transform: translateX(-50%) translateY(100px);
+        background: var(--primary-gold); color: var(--bg-color);
+        padding: 12px 24px; border-radius: 8px; font-weight: 600;
+        z-index: 10000; opacity: 0;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
+    `;
+    
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.style.opacity = '1';
+        toast.style.transform = 'translateX(-50%) translateY(0)';
+    }, 10);
+    
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateX(-50%) translateY(100px)';
+        setTimeout(() => toast.remove(), 300);
+    }, 2000);
 }
