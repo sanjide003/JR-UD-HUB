@@ -1,4 +1,4 @@
-/* ഇതാണ് 'explore.css' 
+/* ഇതാണ് 'explore.css' - ബട്ടൺ സ്റ്റേറ്റുകൾ ശരിയാക്കിയത്
 */
 
 /* --- 1. ഫീഡ് കണ്ടെയ്നർ --- */
@@ -79,14 +79,16 @@
     color: var(--text-color);
 }
 
+/* *** മെച്ചപ്പെടുത്തിയ ബട്ടൺ സ്റ്റൈലുകൾ *** */
 .explore-action-icons button {
     background: none;
     border: none;
     cursor: pointer;
     padding: 0;
     color: var(--text-color); 
-    transition: color 0.2s ease, transform 0.2s ease; 
+    transition: all 0.3s ease; /* transform ചേർത്തു */
 }
+
 .explore-action-icons button svg {
     width: 24px;
     height: 24px;
@@ -95,17 +97,62 @@
     stroke-width: 2;
     stroke-linecap: round;
     stroke-linejoin: round;
+    transition: all 0.3s ease; /* SVG-യ്ക്കും transition */
 }
+
+.explore-action-icons button:hover {
+    color: var(--text-muted);
+    transform: scale(1.1); /* hover-ൽ scale */
+}
+
+/* *** LIKE BUTTON - ACTIVE STATE *** */
+.explore-action-icons button.like-btn.liked {
+    color: var(--error-red);
+}
+
+.explore-action-icons button.like-btn.liked svg {
+    fill: var(--error-red);
+    stroke: var(--error-red);
+}
+
+/* *** BOOKMARK (CART) BUTTON - ACTIVE STATE *** */
 .explore-action-icons button.bookmark-btn {
     margin-left: auto; 
 }
-.explore-action-icons button:hover {
-    color: var(--text-muted);
+
+/* Default state - empty bookmark */
+.explore-action-icons button.bookmark-btn svg {
+    fill: none;
+    stroke: currentColor;
 }
 
+/* Active state - filled bookmark */
 .explore-action-icons button.bookmark-btn.added-to-cart {
-    color: var(--primary-gold); 
-    transform: scale(1.2); 
+    color: var(--primary-gold);
+}
+
+.explore-action-icons button.bookmark-btn.added-to-cart svg {
+    fill: var(--primary-gold);
+    stroke: var(--primary-gold);
+}
+
+/* *** SHARE BUTTON - FEEDBACK STATES *** */
+.explore-action-icons button.share-btn.shared-success {
+    color: var(--success-green);
+    transform: scale(1.2);
+}
+
+.explore-action-icons button.share-btn.shared-success svg {
+    stroke: var(--success-green);
+}
+
+.explore-action-icons button.share-btn.shared-fail {
+    color: var(--error-red);
+    transform: scale(1.2);
+}
+
+.explore-action-icons button.share-btn.shared-fail svg {
+    stroke: var(--error-red);
 }
 
 /* *** റേറ്റിംഗ് ബോക്സ് സ്റ്റൈലുകൾ *** */
@@ -130,7 +177,7 @@
     margin-bottom: 4px;
 }
 .rating-bar-row span:first-child {
-    width: 30px; /* സ്റ്റാർ നമ്പർ */
+    width: 30px; 
     display: flex;
     align-items: center;
     gap: 2px;
@@ -148,7 +195,7 @@
 .bar-fill {
     height: 100%;
     background-color: var(--primary-gold);
-    width: 0%; /* JS വഴി മാറും */
+    width: 0%; 
     transition: width 0.3s ease;
     border-radius: 3px;
 }
@@ -170,7 +217,7 @@
 }
 .star-rating {
     font-size: 1.5rem;
-    color: #555; /* ഡിഫോൾട്ട് ഗ്രേ കളർ */
+    color: #555; 
     cursor: pointer;
     margin-bottom: 0.5rem;
 }
@@ -213,7 +260,6 @@
     cursor: not-allowed;
 }
 
-
 /* 2.5 പ്രൊഡക്റ്റ് പേരും വിലയും */
 .explore-product-title {
     font-size: 1.2rem;
@@ -248,7 +294,6 @@
     display: none; 
 }
 
-
 /* --- 3. ലോഡിംഗ് --- */
 .loading-placeholder-full {
     text-align: center;
@@ -259,21 +304,4 @@
     display: none;
     justify-content: center;
     padding: 2rem;
-}
-
-/* --- 4. ഷെയർ ബട്ടൺ ഫീഡ്ബാക്ക് --- */
-.explore-action-icons button.share-btn.shared-success {
-    color: var(--success-green);
-    transform: scale(1.2);
-}
-.explore-action-icons button.share-btn.shared-success svg {
-    stroke: var(--success-green);
-}
-
-.explore-action-icons button.share-btn.shared-fail {
-    color: var(--error-red);
-    transform: scale(1.2);
-}
-.explore-action-icons button.share-btn.shared-fail svg {
-    stroke: var(--error-red);
 }
