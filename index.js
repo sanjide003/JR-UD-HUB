@@ -560,12 +560,13 @@ function initWatchStyleGrid(categories) {
     let lastMoveTime = 0;
     let lastX = 0;
     let lastY = 0;
+    let hasMoved = false; // Track if drag actually happened
+    let dragThreshold = 10; // Pixels to move before considering it a drag
     
     function handleStart(e) {
-        // *** Touch-specific handling ***
-        if (e.touches && e.touches.length > 1) return; // Ignore multi-touch
+        // Ignore multi-touch
+        if (e.touches && e.touches.length > 1) return;
         
-        isDragging = true;
         const point = e.touches ? e.touches[0] : e;
         startX = point.clientX;
         startY = point.clientY;
@@ -573,6 +574,7 @@ function initWatchStyleGrid(categories) {
         lastY = startY;
         velocityX = 0;
         velocityY = 0;
+        hasMoved = false; // Reset
         
         if (animationFrameId) {
             cancelAnimationFrame(animationFrameId);
@@ -580,36 +582,51 @@ function initWatchStyleGrid(categories) {
         }
         
         // Hide drag hint
-        if (dragZone) dragZone.style.opacity = '0.5';
-        
-        // *** Important: Prevent default for touch ***
-        if (e.touches) {
-            e.preventDefault();
+        if (dragZone) {
+            dragZone.classList.add('dragging');
         }
+        
+        // Don't set isDragging yet - wait for actual movement
     }
 
     function handleMove(e) {
-        if (!isDragging) return;
-        
-        // *** Ignore if multiple touches ***
+        // Ignore if multiple touches
         if (e.touches && e.touches.length > 1) {
             handleEnd(e);
             return;
         }
         
+        const point = e.touches ? e.touches[0] : e;
+        
+        // *** Calculate distance moved from start ***
+        const distanceX = Math.abs(point.clientX - startX);
+        const distanceY = Math.abs(point.clientY - startY);
+        const totalDistance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
+        
+        // *** Only start dragging if moved beyond threshold ***
+        if (!isDragging && totalDistance > dragThreshold) {
+            isDragging = true;
+            hasMoved = true;
+            
+            // Prevent default only when drag confirmed
+            if (e.touches) {
+                e.preventDefault();
+            }
+        }
+        
+        if (!isDragging) return;
+        
         const now = Date.now();
         if (now - lastMoveTime < 16) return;
         lastMoveTime = now;
         
-        // *** Prevent default for touch ***
+        // Prevent default for touch
         if (e.touches) {
             e.preventDefault();
             e.stopPropagation();
         }
         
-        const point = e.touches ? e.touches[0] : e;
-        
-        // *** Calculate delta from last position ***
+        // Calculate delta from last position
         const deltaX = (point.clientX - lastX) * dragMultiplier;
         const deltaY = (point.clientY - lastY) * dragMultiplier;
         
@@ -629,47 +646,58 @@ function initWatchStyleGrid(categories) {
     }
 
     function handleEnd(e) {
-        if (!isDragging) return;
+        if (!isDragging && !hasMoved) {
+            // *** This was a tap, not a drag - allow link click ***
+            // Do nothing, let the link work
+            if (dragZone) {
+                dragZone.classList.remove('dragging');
+            }
+            return;
+        }
         
         isDragging = false;
         
         // Show drag hint
-        if (dragZone) dragZone.style.opacity = '1';
-        
-        // Smooth inertia
-        function animate() {
-            const friction = 0.93;
-            
-            if (Math.abs(velocityX) > 0.5 || Math.abs(velocityY) > 0.5) {
-                velocityX *= friction;
-                velocityY *= friction;
-                
-                offsetX += velocityX;
-                offsetY += velocityY;
-                
-                scheduleUpdate();
-                animationFrameId = requestAnimationFrame(animate);
-            } else {
-                animationFrameId = null;
-            }
+        if (dragZone) {
+            dragZone.classList.remove('dragging');
         }
-        animate();
+        
+        // Only do inertia if actually dragged
+        if (hasMoved) {
+            function animate() {
+                const friction = 0.93;
+                
+                if (Math.abs(velocityX) > 0.5 || Math.abs(velocityY) > 0.5) {
+                    velocityX *= friction;
+                    velocityY *= friction;
+                    
+                    offsetX += velocityX;
+                    offsetY += velocityY;
+                    
+                    scheduleUpdate();
+                    animationFrameId = requestAnimationFrame(animate);
+                } else {
+                    animationFrameId = null;
+                }
+            }
+            animate();
+        }
+        
+        hasMoved = false;
     }
 
-    // *** Mouse events ***
-    dragZone.addEventListener('mousedown', handleStart);
+    // *** Attach to canvas instead of dragZone ***
+    canvas.addEventListener('mousedown', handleStart);
+    canvas.addEventListener('touchstart', handleStart, { 
+        passive: true // Allow browser to optimize
+    });
+    
+    // Move and end on document
     document.addEventListener('mousemove', handleMove);
     document.addEventListener('mouseup', handleEnd);
     
-    // *** Touch events with proper options ***
-    dragZone.addEventListener('touchstart', handleStart, { 
-        passive: false,
-        capture: false 
-    });
-    
     document.addEventListener('touchmove', handleMove, { 
-        passive: false,
-        capture: false 
+        passive: false // Need to preventDefault
     });
     
     document.addEventListener('touchend', handleEnd, { 
