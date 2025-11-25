@@ -409,8 +409,15 @@ function initWatchStyleGrid(categories) {
     const centerSize = isMobile ? 140 : 180;
     const spacing = isMobile ? 30 : 40;
 
-    // Calculate honeycomb positions
-    const positions = calculateHoneycombPositions(categories.length, itemSize, spacing);
+    // *** Infinite scroll: കാറ്റഗറികൾ repeat ചെയ്യുന്നു ***
+    const repeatCount = 3; // 3x3 grid of repeats
+    const infiniteCategories = [];
+    for (let i = 0; i < repeatCount * repeatCount; i++) {
+        infiniteCategories.push(...categories);
+    }
+
+    // Calculate honeycomb positions for infinite grid
+    const positions = calculateHoneycombPositions(infiniteCategories.length, itemSize, spacing);
     
     let offsetX = 0;
     let offsetY = 0;
@@ -421,9 +428,11 @@ function initWatchStyleGrid(categories) {
     let currentY = 0;
     let velocityX = 0;
     let velocityY = 0;
+    let lastUpdateTime = Date.now();
+    let animationFrameId = null;
 
-    // Create category items
-    categories.forEach((category, index) => {
+    // Create category items with GPU acceleration
+    infiniteCategories.forEach((category, index) => {
         const item = document.createElement('div');
         item.className = 'category-item-watch';
         item.style.width = `${itemSize}px`;
@@ -442,54 +451,79 @@ function initWatchStyleGrid(categories) {
     });
 
     const items = canvas.querySelectorAll('.category-item-watch');
+    const canvasRect = canvas.getBoundingClientRect();
+    const centerX = canvasRect.width / 2;
+    const centerY = canvasRect.height / 2;
+
+    // *** Performance: Batch DOM updates ***
+    let updateScheduled = false;
+    
+    function scheduleUpdate() {
+        if (updateScheduled) return;
+        updateScheduled = true;
+        
+        animationFrameId = requestAnimationFrame(() => {
+            updatePositions();
+            updateScheduled = false;
+        });
+    }
 
     function updatePositions() {
-        const canvasRect = canvas.getBoundingClientRect();
-        const centerX = canvasRect.width / 2;
-        const centerY = canvasRect.height / 2;
+        const now = Date.now();
+        const deltaTime = now - lastUpdateTime;
+        
+        // *** Throttle: 60fps max ***
+        if (deltaTime < 16) return;
+        lastUpdateTime = now;
 
         let closestItem = null;
         let minDistance = Infinity;
 
+        // *** Performance: Use transform3d for GPU acceleration ***
         items.forEach((item, index) => {
             const pos = positions[index];
-            const x = centerX + pos.x + offsetX;
-            const y = centerY + pos.y + offsetY;
+            const x = pos.x + offsetX;
+            const y = pos.y + offsetY;
             
-            item.style.left = `${x}px`;
-            item.style.top = `${y}px`;
-
             // Calculate distance from center
-            const distance = Math.sqrt(
-                Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
-            );
+            const distance = Math.sqrt(x * x + y * y);
 
             if (distance < minDistance) {
                 minDistance = distance;
                 closestItem = item;
             }
 
-            // Scale based on distance
-            const scale = Math.max(0.7, 1 - distance / 300);
-            const opacity = Math.max(0.5, 1 - distance / 400);
+            // Scale based on distance (optimized calculation)
+            const maxDistance = 400;
+            const scale = Math.max(0.7, 1 - Math.min(distance / 300, 1));
+            const opacity = Math.max(0.5, 1 - Math.min(distance / maxDistance, 1));
             
-            item.style.transform = `translate(-50%, -50%) scale(${scale})`;
+            // *** GPU-accelerated transform ***
+            item.style.transform = `translate3d(${centerX + x}px, ${centerY + y}px, 0) translate(-50%, -50%) scale(${scale})`;
             item.style.opacity = opacity;
             item.style.zIndex = Math.floor((1 - scale) * 100);
-            item.classList.remove('center');
+            
+            if (item.classList.contains('center')) {
+                item.classList.remove('center');
+            }
         });
 
         // Mark center item
         if (closestItem) {
             closestItem.classList.add('center');
             const centerScale = centerSize / itemSize;
-            closestItem.style.transform = `translate(-50%, -50%) scale(${centerScale})`;
+            const pos = positions[parseInt(closestItem.dataset.index)];
+            const x = pos.x + offsetX;
+            const y = pos.y + offsetY;
+            closestItem.style.transform = `translate3d(${centerX + x}px, ${centerY + y}px, 0) translate(-50%, -50%) scale(${centerScale})`;
             closestItem.style.opacity = 1;
             closestItem.style.zIndex = 1000;
         }
     }
 
-    // Touch/Mouse events
+    // Touch/Mouse events with better performance
+    let lastMoveTime = 0;
+    
     function handleStart(e) {
         isDragging = true;
         const point = e.touches ? e.touches[0] : e;
@@ -498,45 +532,65 @@ function initWatchStyleGrid(categories) {
         velocityX = 0;
         velocityY = 0;
         canvas.style.cursor = 'grabbing';
+        
+        // Cancel inertia animation
+        if (animationFrameId) {
+            cancelAnimationFrame(animationFrameId);
+            animationFrameId = null;
+        }
     }
 
     function handleMove(e) {
         if (!isDragging) return;
+        
+        const now = Date.now();
+        if (now - lastMoveTime < 16) return; // Throttle to 60fps
+        lastMoveTime = now;
+        
         e.preventDefault();
         
         const point = e.touches ? e.touches[0] : e;
-        currentX = point.clientX - startX;
-        currentY = point.clientY - startY;
+        const newX = point.clientX - startX;
+        const newY = point.clientY - startY;
         
-        velocityX = currentX - offsetX;
-        velocityY = currentY - offsetY;
+        velocityX = newX - currentX;
+        velocityY = newY - currentY;
         
+        currentX = newX;
+        currentY = newY;
         offsetX = currentX;
         offsetY = currentY;
         
-        updatePositions();
+        scheduleUpdate();
     }
 
     function handleEnd() {
         isDragging = false;
         canvas.style.cursor = 'grab';
         
-        // Inertia effect
+        // *** Smooth inertia with RAF ***
         function animate() {
-            if (Math.abs(velocityX) > 0.5 || Math.abs(velocityY) > 0.5) {
-                velocityX *= 0.95;
-                velocityY *= 0.95;
+            const friction = 0.95;
+            
+            if (Math.abs(velocityX) > 0.3 || Math.abs(velocityY) > 0.3) {
+                velocityX *= friction;
+                velocityY *= friction;
+                
                 offsetX += velocityX;
                 offsetY += velocityY;
                 currentX = offsetX;
                 currentY = offsetY;
-                updatePositions();
-                requestAnimationFrame(animate);
+                
+                scheduleUpdate();
+                animationFrameId = requestAnimationFrame(animate);
+            } else {
+                animationFrameId = null;
             }
         }
         animate();
     }
 
+    // Event listeners with passive option for better performance
     canvas.addEventListener('mousedown', handleStart);
     canvas.addEventListener('mousemove', handleMove);
     canvas.addEventListener('mouseup', handleEnd);
@@ -549,8 +603,15 @@ function initWatchStyleGrid(categories) {
     // Initial render
     updatePositions();
 
-    // Resize handler
-    window.addEventListener('resize', updatePositions);
+    // Debounced resize handler
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            const newRect = canvas.getBoundingClientRect();
+            scheduleUpdate();
+        }, 100);
+    });
 }
 
 function calculateHoneycombPositions(count, size, spacing) {
