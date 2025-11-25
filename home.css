@@ -1,4 +1,4 @@
-/* ഇത് home.css - Fixed Image Sizes with Proper Aspect Ratio */
+/* ഇത് home.css - Instagram Post Style with Inset Design */
 
 /* --- 0. Performance Optimizations --- */
 * {
@@ -133,9 +133,11 @@ img, video, iframe {
     max-width: 800px;
 }
 
-/* --- 4. 'For You' (ടോപ്പ് സെല്ലേഴ്സ്) --- */
+/* --- 4. 'For You' (ടോപ്പ് സെല്ലേഴ്സ്) - Instagram Post Style (1:1) --- */
 .top-sellers-swiper-new {
     padding-bottom: 0;
+    padding-left: 1rem;
+    padding-right: 1rem;
 }
 
 .top-sellers-swiper-new .swiper-slide {
@@ -156,9 +158,10 @@ img, video, iframe {
     box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
 }
 
+/* Instagram Post Size - Perfect Square (1:1) */
 .top-sellers-product-image {
     width: 100%;
-    height: 280px;
+    aspect-ratio: 1 / 1;
     object-fit: cover;
     object-position: center;
     margin-bottom: 0;
@@ -245,11 +248,11 @@ img, video, iframe {
     font-size: 0.8rem;
 }
 
-/* --- 5. ഹോം പേജിലെ കാറ്റഗറി ഗ്രിഡ് (വെർട്ടിക്കൽ ലിസ്റ്റ്) --- */
+/* --- 5. ഹോം പേജിലെ കാറ്റഗറി ഗ്രിഡ് (വെർട്ടിക്കൽ ലിസ്റ്റ്) - Square (1:1) with Inset --- */
 .category-grid-vertical {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 0.75rem;
+    gap: 1rem;
     max-width: 100%;
     margin: 0 auto;
     padding: 0 1rem;
@@ -265,7 +268,7 @@ img, video, iframe {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    height: 320px;
+    aspect-ratio: 1 / 1;
     position: relative;
     background-color: var(--card-bg);
     background-size: cover;
@@ -327,16 +330,18 @@ img, video, iframe {
 
 /* Extra Small Mobile (< 360px) */
 @media (max-width: 359px) {
-    .top-sellers-product-image {
-        height: 220px;
-    }
-    
-    .category-card-home-new {
-        height: 260px;
-    }
-    
     .hero-section-new {
         height: 50vh;
+    }
+    
+    .top-sellers-swiper-new {
+        padding-left: 0.75rem;
+        padding-right: 0.75rem;
+    }
+    
+    .category-grid-vertical {
+        padding: 0 0.75rem;
+        gap: 0.75rem;
     }
 }
 
@@ -356,22 +361,19 @@ img, video, iframe {
         height: 70px;
     }
     
-    .category-grid-vertical {
-        max-width: 100%;
-        gap: 0.75rem;
+    .top-sellers-swiper-new {
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
     
-    .category-card-home-new {
-        height: 300px;
+    .category-grid-vertical {
+        padding: 0 1rem;
+        gap: 0.75rem;
     }
     
     .category-card-home-new h3 {
         font-size: 0.9rem;
         padding: 0.6rem;
-    }
-    
-    .top-sellers-product-image {
-        height: 250px;
     }
     
     .top-sellers-product-name {
@@ -400,16 +402,14 @@ img, video, iframe {
         height: 58vh;
     }
     
-    .top-sellers-product-image {
-        height: 280px;
-    }
-    
-    .category-card-home-new {
-        height: 340px;
-    }
-    
     .category-grid-vertical {
         max-width: 400px;
+        padding: 0 1rem;
+    }
+    
+    .top-sellers-swiper-new {
+        padding-left: 1rem;
+        padding-right: 1rem;
     }
 }
 
@@ -424,16 +424,14 @@ img, video, iframe {
         font-size: 0.9rem;
     }
     
-    .top-sellers-product-image {
-        height: 300px;
-    }
-    
     .category-grid-vertical {
         max-width: 450px;
+        padding: 0 1.5rem;
     }
     
-    .category-card-home-new {
-        height: 360px;
+    .top-sellers-swiper-new {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
     }
 }
 
@@ -445,14 +443,12 @@ img, video, iframe {
     
     .category-grid-vertical {
         max-width: 400px;
+        padding: 0 2rem;
     }
     
-    .category-card-home-new {
-        height: 380px;
-    }
-    
-    .top-sellers-product-image {
-        height: 320px;
+    .top-sellers-swiper-new {
+        padding-left: 2rem;
+        padding-right: 2rem;
     }
     
     .top-sellers-swiper-new .swiper-slide {
@@ -468,14 +464,12 @@ img, video, iframe {
     
     .category-grid-vertical {
         max-width: 380px;
+        padding: 0 2rem;
     }
     
-    .category-card-home-new {
-        height: 400px;
-    }
-    
-    .top-sellers-product-image {
-        height: 340px;
+    .top-sellers-swiper-new {
+        padding-left: 2rem;
+        padding-right: 2rem;
     }
 }
 
@@ -487,14 +481,12 @@ img, video, iframe {
     
     .category-grid-vertical {
         max-width: 380px;
+        padding: 0 2rem;
     }
     
-    .category-card-home-new {
-        height: 400px;
-    }
-    
-    .top-sellers-product-image {
-        height: 350px;
+    .top-sellers-swiper-new {
+        padding-left: 2rem;
+        padding-right: 2rem;
     }
 }
 
@@ -543,10 +535,14 @@ img, video, iframe {
     
     .category-grid-vertical {
         grid-template-columns: 1fr 1fr;
+        padding: 0;
+    }
+    
+    .top-sellers-swiper-new {
+        padding: 0;
     }
     
     .category-card-home-new {
-        height: 300px;
         page-break-inside: avoid;
     }
 }
