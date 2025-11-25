@@ -378,9 +378,14 @@
 
 .category-item-watch {
     position: absolute;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     transform-origin: center;
-    will-change: transform;
+    /* *** GPU Acceleration *** */
+    will-change: transform, opacity;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    /* Smooth transitions only when not dragging */
+    transition: opacity 0.2s ease;
 }
 
 .category-card-watch {
@@ -394,10 +399,15 @@
     background-position: center;
     border: 2px solid var(--border-color);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
+    /* *** GPU Acceleration *** */
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+    will-change: border-color, box-shadow;
+    /* Remove transition during drag */
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .category-card-watch::before {
