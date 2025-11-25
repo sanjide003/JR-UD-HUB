@@ -6,30 +6,31 @@
     width: 100%;
     height: auto;
     line-height: 0; 
-    position: relative; 
-    padding-bottom: 4px; 
-    background-color: #000; 
+    position: relative; /* ::after എലമെന്റിന് വേണ്ടി */
+    padding-bottom: 4px; /* പുതിയ ഡിസൈൻ ബോർഡറിന് സ്ഥലം നൽകാൻ */
+    background-color: #000; /* കറുത്ത പശ്ചാത്തലം */
 }
+/* ::after എലമെന്റ് ഉപയോഗിച്ച് ഒരു ഗ്രേഡിയന്റ് ബോർഡർ ഉണ്ടാക്കുന്നു */
 .home-top-banner::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 4px; 
+    height: 4px; /* ബോർഡറിന്റെ കനം */
     background: linear-gradient(90deg, 
         var(--bg-color) 0%, 
         var(--primary-gold) 25%, 
         var(--primary-gold) 75%, 
         var(--bg-color) 100%
-    ); 
+    ); /* ബ്ലാക്ക് -> ഗോൾഡ് -> ബ്ലാക്ക് ഗ്രേഡിയന്റ് */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 .home-top-banner img {
     width: 100%;
     height: auto;
     display: block;
-    max-height: 100px; 
+    max-height: 100px; /* ഉയരം 100px ആയി കുറച്ചു */
     object-fit: cover; 
 }
 
@@ -56,6 +57,7 @@
     height: 100%;
     object-fit: cover;
 }
+/* YouTube/Shorts ശരിയാക്കാൻ */
 .hero-slider-new .swiper-slide iframe {
     width: 100%;
     height: 100%;
@@ -63,6 +65,7 @@
     aspect-ratio: 9 / 16; 
     pointer-events: none; 
 }
+/* സ്വൈപ്പ് ശരിയാക്കാൻ */
 .hero-slider-new .swiper-slide::after {
     content: '';
     position: absolute;
@@ -73,6 +76,7 @@
     background: transparent;
     z-index: 5;
 }
+/* ഡോട്ടുകൾ (Pagination) */
 .hero-slider-new .hero-pagination-dots {
     position: absolute;
     bottom: 20px;
@@ -106,14 +110,13 @@
 
 /* --- 4. 'For You' (ടോപ്പ് സെല്ലേഴ്സ്) --- */
 .top-sellers-swiper-new {
-    padding: 0 30px; 
+    padding-bottom: 0; 
 }
 .top-sellers-swiper-new .swiper-slide {
     text-align: center;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    background-color: var(--card-bg);
 }
 .top-sellers-product-image {
     width: 100%;
@@ -122,10 +125,10 @@
     margin-bottom: 0; 
 }
 .top-sellers-product-info {
-    padding: 0.75rem; 
+    padding: 1rem; 
 }
 
-/* ആനിമേറ്റഡ് ഡോട്ടുകൾ */
+/* ആനിമേറ്റഡ് ഡോട്ടുകൾ (പ്രോഗ്രസ് ബാർ) */
 .top-sellers-pagination-new {
     position: relative; 
     margin-top: 1.5rem; 
@@ -143,6 +146,7 @@
     overflow: hidden; 
     cursor: pointer;
 }
+/* പ്രോഗ്രസ് ബാർ (നിറയുന്നത്) */
 .top-sellers-pagination-new .pagination-progress {
     display: block;
     width: 100%;
@@ -151,49 +155,44 @@
     transform: scaleX(0); 
     transform-origin: left; 
 }
+/* ആക്ടീവ് ആയ ഡോട്ട് മാത്രം ആനിമേഷൻ കാണിക്കും */
 .top-sellers-pagination-new .swiper-pagination-bullet-active .pagination-progress {
     animation: progress-fill 4s linear forwards; 
 }
+/* ആനിമേഷൻ കീഫ്രെയിം */
 @keyframes progress-fill {
     from { transform: scaleX(0); }
     to { transform: scaleX(1); }
 }
 
 .top-sellers-product-name {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: var(--text-color);
     font-weight: 500;
-    margin-bottom: 0.25rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    margin-bottom: 0.5rem;
 }
 .top-sellers-product-price {
-    font-size: 1rem; 
+    font-size: 1.1rem;
     color: var(--text-muted);
-    margin-bottom: 0.75rem;
+    margin-bottom: 1.5rem;
 }
 .top-sellers-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.25rem;
+    gap: 0.5rem;
     padding: 0;
 }
-.top-sellers-buttons .btn {
-    padding: 0.5rem 0.25rem;
-    font-size: 0.8rem;
+
+
+/* --- 5. ഹോം പേജിലെ കാറ്റഗറി ഗ്രിഡ് (വെർട്ടിക്കൽ ലിസ്റ്റ്) --- */
+.category-grid-vertical {
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 1.5rem; 
 }
 
-
-/* --- 5. ഹോം പേജിലെ കാറ്റഗറി സ്ലൈഡർ (പുതിയത്) --- */
-/* ഗ്രിഡ് ക്ലാസ് നീക്കം ചെയ്തു, പകരം Swiper സ്റ്റൈലുകൾ ഉപയോഗിക്കുന്നു */
-.home-category-swiper {
-    width: 100%;
-    padding-bottom: 2rem; /* താഴെ അല്പം സ്പേസ് */
-}
-
+/* കാർഡ് സ്റ്റൈൽ (4:5 അനുപാതം) */
 .category-card-home-new {
-    display: block;
     text-decoration: none;
     color: var(--text-muted);
     transition: all 0.3s ease;
@@ -207,11 +206,7 @@
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
-    
-    /* *** മാറ്റം: കാർഡിന്റെ ഉയരം ഉറപ്പാക്കുന്നു *** */
-    height: 100%; 
 }
-
 .category-card-home-new:hover {
     color: var(--primary-gold);
     border-color: var(--primary-gold);
@@ -220,8 +215,8 @@
 
 .category-card-home-new h3 {
     font-family: var(--font-main);
-    font-weight: 600;
-    font-size: 0.9rem; /* ഫോണ്ട് കുറച്ചു */
+    font-weight: 500;
+    font-size: 1rem; 
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
@@ -234,7 +229,7 @@
     width: 100%;
     padding: 0.75rem;
     margin: 0;
-    background: rgba(0, 0, 0, 0.6); 
+    background: rgba(0, 0, 0, 0.5); 
     -webkit-backdrop-filter: blur(5px); 
     backdrop-filter: blur(5px);
 }
@@ -250,16 +245,13 @@
         padding: 2rem 1rem;
         font-size: 0.9rem;
     }
-    .top-sellers-swiper-new {
-        padding: 0 30px;
+    .top-sellers-buttons {
+        padding: 0;
     }
 }
 
 /* ടാബ്ലെറ്റ് & ചെറിയ ഡെസ്ക്ടോപ്പ് */
 @media (min-width: 769px) {
-    .top-sellers-swiper-new {
-        padding: 0;
-    }
     .top-sellers-swiper-new .swiper-slide {
         text-align: center;
     }

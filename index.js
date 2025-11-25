@@ -51,7 +51,7 @@ async function loadHomeBanner() {
 }
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ
+ * 1. ഹീറോ സ്ലൈഡർ (വീഡിയോ/ഡ്രൈവ് സപ്പോർട്ട്)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -75,12 +75,15 @@ async function loadHeroSlider() {
                 let embedUrl = '';
                 let finalUrl = slide.url;
 
+                // *** ഡ്രൈവ് വീഡിയോ ലിങ്ക് ഡിറ്റക്ഷൻ ***
                 if (isVideo && slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
                     try {
+                        // ഡ്രൈവ് ലിങ്കിൽ നിന്ന് ID എടുത്ത് download ലിങ്ക് ആക്കുന്നു (വീഡിയോ പ്ലേ ചെയ്യാൻ)
                         const id = slide.url.split('/d/')[1].split('/')[0];
                         finalUrl = `https://drive.google.com/uc?export=download&id=${id}`;
                     } catch(e) {}
                 } 
+                // YouTube ആണോ എന്ന് പരിശോധിക്കുന്നു
                 else if (slide.url.includes('youtube.com/watch?v=')) {
                     videoId = new URL(slide.url).searchParams.get('v');
                     isVideo = true;
@@ -99,9 +102,11 @@ async function loadHeroSlider() {
                     slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
                 }
                 else if (isVideo && embedUrl) {
+                    // YouTube iframe
                     slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 }
                 else if (isVideo) {
+                    // Direct Video (MP4 / Drive)
                     slideEl.innerHTML = `<video class="hero-video-element" src="${finalUrl}" autoplay muted loop playsinline preload="auto"></video>`;
                 }
                 
@@ -109,7 +114,7 @@ async function loadHeroSlider() {
             });
         }
 
-        new Swiper('.hero-slider-new', {
+        const heroSwiper = new Swiper('.hero-slider-new', {
             loop: false, 
             effect: 'fade',
             fadeEffect: { crossFade: true },
@@ -121,10 +126,11 @@ async function loadHeroSlider() {
             },
         });
 
+        // ആദ്യത്തെ സ്ലൈഡിൽ വീഡിയോ ഉണ്ടെങ്കിൽ അത് പ്ലേ ചെയ്യാൻ ശ്രമിക്കുന്നു
         const firstSlideVideo = document.querySelector('.hero-video-element');
         if (firstSlideVideo) {
             firstSlideVideo.muted = true; 
-            firstSlideVideo.play().catch(e => console.log("Initial play failed:", e));
+            firstSlideVideo.play().catch(e => console.log("Initial play failed, waiting for interaction:", e));
         }
 
         setupSmartVideoAutoplay();
@@ -132,9 +138,17 @@ async function loadHeroSlider() {
     } catch (error) { console.error("Error loading hero slider: ", error); }
 }
 
+/**
+ * വീഡിയോ സ്ക്രീനിൽ വരുമ്പോൾ Resume ചെയ്യുക, മാറുമ്പോൾ Pause ചെയ്യുക
+ */
 function setupSmartVideoAutoplay() {
     const videos = document.querySelectorAll('.hero-video-element, .hero-video-iframe');
-    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.25 };
+    
+    const observerOptions = {
+        root: null,
+        rootMargin: '0px',
+        threshold: 0.25 
+    };
 
     const videoObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
@@ -142,12 +156,14 @@ function setupSmartVideoAutoplay() {
             const isYouTube = element.tagName === 'IFRAME';
 
             if (entry.isIntersecting) {
+                // *** സ്ക്രീനിൽ ഉണ്ട് -> പ്ലേ ചെയ്യുക ***
                 if (isYouTube) {
                     element.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
                 } else {
                     element.play().catch(e => console.log("Autoplay prevented:", e));
                 }
             } else {
+                // *** സ്ക്രീനിൽ ഇല്ല -> പോസ് ചെയ്യുക ***
                 if (isYouTube) {
                     element.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
                 } else {
@@ -198,8 +214,8 @@ async function loadTopSellers() {
                          onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
                 </a>
                 <div class="top-sellers-product-info">
-                    <div class="top-sellers-product-name">${product.name}</div>
-                    <div class="top-sellers-product-price">₹${product.price || 0}</div>
+                    <div class="top-sellers-product-name">${product.name} ${product.size ? `(${product.size})` : ''}</div>
+                    <div class="top-sellers-product-price">₹${product.price || 0} /-</div>
                     <div class="top-sellers-buttons">
                         <button class="btn ${buttonClass} btn-add-to-cart"
                             data-id="${productId}"
@@ -216,7 +232,7 @@ async function loadTopSellers() {
                             <span>${buttonText}</span>
                         </button>
                         <a href="product.html?id=${productId}" class="btn btn-primary-new">
-                            <span>View</span>
+                            <span>View Details</span>
                         </a>
                     </div>
                 </div>
@@ -233,8 +249,7 @@ async function loadTopSellers() {
             },
             speed: 1000,
             slidesPerView: 1, 
-            spaceBetween: 30,
-            centeredSlides: true,
+            spaceBetween: 20,
             pagination: { 
                 el: '.top-sellers-pagination-new', 
                 clickable: true,
@@ -270,9 +285,9 @@ async function loadTopSellers() {
                 }
             },
             breakpoints: { 
-                640: { slidesPerView: 2, spaceBetween: 20, centeredSlides: false }, 
-                900: { slidesPerView: 4, spaceBetween: 20, centeredSlides: false }, 
-                1200: { slidesPerView: 5, spaceBetween: 20, centeredSlides: false } 
+                640: { slidesPerView: 2 }, 
+                900: { slidesPerView: 4 }, 
+                1200: { slidesPerView: 4 } 
             }
         });
     } catch (error) { console.error("Error loading top sellers: ", error); grid.innerHTML = '<p>Error loading products.</p>'; }
@@ -280,69 +295,69 @@ async function loadTopSellers() {
 
 
 /**
- * 3. ഹോം പേജിലെ കാറ്റഗറികൾ (മാറ്റം: Infinite Swiper)
+ * 3. ഹോം പേജിലെ കാറ്റഗറികൾ
  */
 async function loadHomeCategories() {
-    const container = document.getElementById("category-grid-home");
-    if (!container) return;
+    const grid = document.getElementById("category-grid-home");
+    if (!grid) return;
+
+    const CATEGORIES_TO_SHOW = 3; 
 
     try {
-        // *** എല്ലാ കാറ്റഗറികളും എടുക്കുന്നു ***
         const catQuery = query(collection(db, "categories"));
         const catSnapshot = await getDocs(catQuery); 
 
         if (catSnapshot.empty) {
-            container.innerHTML = '<p>No categories to show.</p>'; 
+            grid.innerHTML = '<p>No categories to show.</p>'; 
             return;
         }
 
-        let slidesHTML = '';
+        let allCategories = [];
         catSnapshot.forEach((doc) => {
-            const category = doc.data();
-            const catId = doc.id;
-            
-            const rawImage = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
-            const imageUrl = optimizeImage(rawImage, 400, 80);
-            
-            // *** Swiper Slide ഉണ്ടാക്കുന്നു ***
-            slidesHTML += `
-                <div class="swiper-slide">
-                    <a href="categories.html?filter=${catId}" class="category-card-home-new" style="background-image: url('${imageUrl}')">
-                        <h3>${category.name}</h3>
-                    </a>
-                </div>
-            `;
+            allCategories.push({
+                id: doc.id,
+                ...doc.data()
+            });
         });
 
-        // *** ഗ്രിഡ് ലേഔട്ട് മാറ്റി Swiper Structure നൽകുന്നു ***
-        // Class മാറ്റി 'swiper' ആക്കുന്നു
-        container.className = 'swiper home-category-swiper'; 
-        container.innerHTML = `
-            <div class="swiper-wrapper">
-                ${slidesHTML}
-            </div>
-        `;
+        for (let i = allCategories.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [allCategories[i], allCategories[j]] = [allCategories[j], allCategories[i]];
+        }
 
-        // *** Swiper Initialize ചെയ്യുന്നു ***
-        new Swiper('.home-category-swiper', {
-            loop: true, // ഇൻഫിനിറ്റ് ലൂപ്പ്
-            slidesPerView: 2.2, // മൊബൈലിൽ 2.2 എണ്ണം (വലുതായി കാണാൻ)
-            spaceBetween: 15,
-            autoplay: {
-                delay: 3000,
-                disableOnInteraction: false,
-            },
-            breakpoints: {
-                640: { slidesPerView: 3.2, spaceBetween: 20 },
-                900: { slidesPerView: 4.5, spaceBetween: 20 },
-                1200: { slidesPerView: 5.5, spaceBetween: 25 }
-            }
-        });
+        const categoriesToShow = allCategories.slice(0, CATEGORIES_TO_SHOW);
+
+        renderCategories(grid, categoriesToShow);
 
     } catch (error) { 
         console.error("Error loading home categories: ", error); 
-        container.innerHTML = '<p>Error loading categories.</p>';
+        grid.innerHTML = '<p>Error loading categories.</p>';
     }
+}
+
+function renderCategories(grid, categories) {
+    grid.innerHTML = '';
+    if (categories.length === 0) {
+        grid.innerHTML = '<p>No categories to show.</p>';
+        return;
+    }
+    
+    categories.forEach((category) => {
+        const catId = category.id;
+        const card = document.createElement('a');
+        card.className = 'category-card-home-new';
+        card.href = `categories.html?filter=${catId}`;
+        
+        const rawImage = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
+        const imageUrl = optimizeImage(rawImage, 400, 80);
+        
+        card.style.backgroundImage = `url('${imageUrl}')`;
+        
+        card.innerHTML = `
+            <h3>${category.name}</h3>
+        `;
+        grid.appendChild(card);
+    });
 }
 
 const topSellersGrid = document.getElementById("top-sellers-grid");
