@@ -1,4 +1,4 @@
-/* ഇത് home.css - മൊബൈലിന് അനുയോജ്യമായ പൂർണ്ണ കോഡ് */
+/* ഇത് home.css - Fixed Image Sizes with Proper Aspect Ratio */
 
 /* --- 0. Performance Optimizations --- */
 * {
@@ -20,11 +20,12 @@ img, video, iframe {
 /* --- 1. ഹോം പേജ് ടോപ്പ് ബാനർ --- */
 .home-top-banner {
     width: 100%;
-    height: auto;
+    height: 70px;
     line-height: 0; 
     position: relative;
     padding-bottom: 4px;
     background-color: #000;
+    overflow: hidden;
 }
 
 .home-top-banner::after {
@@ -45,16 +46,16 @@ img, video, iframe {
 
 .home-top-banner img {
     width: 100%;
-    height: auto;
+    height: 70px;
     display: block;
-    max-height: 100px;
     object-fit: cover;
+    object-position: center;
 }
 
 /* --- 2. ഹീറോ സ്ലൈഡർ --- */
 .hero-section-new {
     width: 100%;
-    height: 70vh;
+    height: 60vh;
     overflow: hidden;
     position: relative;
 }
@@ -125,9 +126,9 @@ img, video, iframe {
 /* --- 3. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ --- */
 .hero-text-section {
     text-align: center;
-    padding: 2.5rem 1.5rem;
+    padding: 2rem 1.5rem;
     color: var(--text-muted);
-    font-size: 1rem;
+    font-size: 0.95rem;
     line-height: 1.7;
     max-width: 800px;
 }
@@ -146,6 +147,7 @@ img, video, iframe {
                 border-color 0.3s ease,
                 box-shadow 0.3s ease;
     background-color: var(--card-bg);
+    height: auto;
 }
 
 .top-sellers-swiper-new .swiper-slide:hover {
@@ -156,9 +158,11 @@ img, video, iframe {
 
 .top-sellers-product-image {
     width: 100%;
-    aspect-ratio: 2 / 3;
+    height: 280px;
     object-fit: cover;
+    object-position: center;
     margin-bottom: 0;
+    display: block;
     transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -246,8 +250,9 @@ img, video, iframe {
     display: grid;
     grid-template-columns: 1fr;
     gap: 0.75rem;
-    max-width: 450px;
+    max-width: 100%;
     margin: 0 auto;
+    padding: 0 1rem;
 }
 
 .category-card-home-new {
@@ -260,7 +265,7 @@ img, video, iframe {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    aspect-ratio: 2 / 3;
+    height: 320px;
     position: relative;
     background-color: var(--card-bg);
     background-size: cover;
@@ -320,8 +325,23 @@ img, video, iframe {
 
 /* --- 6. റെസ്പോൺസീവ് (Responsive) --- */
 
-/* Mobile Devices */
-@media (max-width: 480px) {
+/* Extra Small Mobile (< 360px) */
+@media (max-width: 359px) {
+    .top-sellers-product-image {
+        height: 220px;
+    }
+    
+    .category-card-home-new {
+        height: 260px;
+    }
+    
+    .hero-section-new {
+        height: 50vh;
+    }
+}
+
+/* Small Mobile Devices (360px - 480px) */
+@media (min-width: 360px) and (max-width: 480px) {
     .hero-section-new {
         height: 55vh;
     }
@@ -331,8 +351,9 @@ img, video, iframe {
         font-size: 0.85rem;
     }
     
+    .home-top-banner,
     .home-top-banner img {
-        max-height: 70px;
+        height: 70px;
     }
     
     .category-grid-vertical {
@@ -341,7 +362,7 @@ img, video, iframe {
     }
     
     .category-card-home-new {
-        aspect-ratio: 2 / 3;
+        height: 300px;
     }
     
     .category-card-home-new h3 {
@@ -350,7 +371,7 @@ img, video, iframe {
     }
     
     .top-sellers-product-image {
-        aspect-ratio: 2 / 3;
+        height: 250px;
     }
     
     .top-sellers-product-name {
@@ -373,8 +394,27 @@ img, video, iframe {
     }
 }
 
-/* Tablets */
-@media (min-width: 481px) and (max-width: 768px) {
+/* Medium Mobile (481px - 640px) */
+@media (min-width: 481px) and (max-width: 640px) {
+    .hero-section-new {
+        height: 58vh;
+    }
+    
+    .top-sellers-product-image {
+        height: 280px;
+    }
+    
+    .category-card-home-new {
+        height: 340px;
+    }
+    
+    .category-grid-vertical {
+        max-width: 400px;
+    }
+}
+
+/* Large Mobile / Small Tablets (641px - 768px) */
+@media (min-width: 641px) and (max-width: 768px) {
     .hero-section-new {
         height: 60vh;
     }
@@ -384,17 +424,44 @@ img, video, iframe {
         font-size: 0.9rem;
     }
     
+    .top-sellers-product-image {
+        height: 300px;
+    }
+    
+    .category-grid-vertical {
+        max-width: 450px;
+    }
+    
+    .category-card-home-new {
+        height: 360px;
+    }
+}
+
+/* Tablets (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .hero-section-new {
+        height: 65vh;
+    }
+    
     .category-grid-vertical {
         max-width: 400px;
     }
     
     .category-card-home-new {
-        aspect-ratio: 2 / 3;
+        height: 380px;
+    }
+    
+    .top-sellers-product-image {
+        height: 320px;
+    }
+    
+    .top-sellers-swiper-new .swiper-slide {
+        text-align: center;
     }
 }
 
-/* Small Desktop */
-@media (min-width: 769px) and (max-width: 1024px) {
+/* Small Desktop (1025px - 1440px) */
+@media (min-width: 1025px) and (max-width: 1440px) {
     .hero-section-new {
         height: 70vh;
     }
@@ -404,16 +471,16 @@ img, video, iframe {
     }
     
     .category-card-home-new {
-        aspect-ratio: 2 / 3;
+        height: 400px;
     }
     
-    .top-sellers-swiper-new .swiper-slide {
-        text-align: center;
+    .top-sellers-product-image {
+        height: 340px;
     }
 }
 
-/* Large Desktop */
-@media (min-width: 1025px) {
+/* Large Desktop (> 1440px) */
+@media (min-width: 1441px) {
     .hero-section-new {
         height: 75vh;
     }
@@ -423,7 +490,11 @@ img, video, iframe {
     }
     
     .category-card-home-new {
-        aspect-ratio: 2 / 3;
+        height: 400px;
+    }
+    
+    .top-sellers-product-image {
+        height: 350px;
     }
 }
 
@@ -472,5 +543,10 @@ img, video, iframe {
     
     .category-grid-vertical {
         grid-template-columns: 1fr 1fr;
+    }
+    
+    .category-card-home-new {
+        height: 300px;
+        page-break-inside: avoid;
     }
 }
