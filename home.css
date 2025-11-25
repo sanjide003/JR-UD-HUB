@@ -368,38 +368,43 @@
     height: 500px;
     position: relative;
     overflow: visible;
-    /* *** മാറ്റം: Allow drag on entire canvas *** */
+    /* *** മാറ്റം: Allow page scroll by default *** */
     touch-action: pan-y;
-    cursor: grab;
+    pointer-events: none; /* Pass through */
 }
 
-.category-grid-canvas:active {
-    cursor: grabbing;
-}
-
-/* *** Drag Zone - Now just visual indicator *** */
+/* *** Drag Zone - Interactive area *** */
 .category-drag-zone {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 280px;
-    height: 280px;
+    width: 320px;
+    height: 320px;
     border-radius: 50%;
-    /* *** Just visual hint, not interactive *** */
+    /* *** Visual indicator *** */
     background: radial-gradient(circle, 
-        rgba(212, 175, 55, 0.03) 0%, 
+        rgba(212, 175, 55, 0.05) 0%, 
         transparent 70%
     );
-    border: 2px dashed rgba(212, 175, 55, 0.15);
-    pointer-events: none; /* Don't block interactions */
-    z-index: 1;
-    transition: opacity 0.3s ease;
+    border: 2px dashed rgba(212, 175, 55, 0.2);
+    pointer-events: auto; /* Only this is interactive */
+    z-index: 10;
+    transition: all 0.3s ease;
+    
+    /* *** Critical for mobile *** */
+    touch-action: none;
+    cursor: grab;
 }
 
-/* Fade out when dragging */
+.category-drag-zone:active,
 .category-drag-zone.dragging {
-    opacity: 0;
+    cursor: grabbing;
+    background: radial-gradient(circle, 
+        rgba(212, 175, 55, 0.08) 0%, 
+        transparent 70%
+    );
+    border-color: rgba(212, 175, 55, 0.35);
 }
 
 /* Drag hint */
@@ -416,6 +421,11 @@
     pointer-events: none;
     text-align: center;
     white-space: nowrap;
+    transition: opacity 0.3s ease;
+}
+
+.category-drag-zone.dragging::before {
+    opacity: 0;
 }
 
 .category-item-watch {
@@ -428,7 +438,8 @@
     -webkit-backface-visibility: hidden;
     /* Smooth transitions only when not dragging */
     transition: opacity 0.2s ease;
-    pointer-events: auto; /* Items are clickable */
+    pointer-events: auto; /* Items clickable */
+    z-index: 2; /* Below drag zone */
 }
 
 .category-card-watch {
