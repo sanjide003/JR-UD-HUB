@@ -1,71 +1,92 @@
-/* ഇത് index.css
-*/
+/* ഇത് index.css - Fully Optimized for All Devices */
+
+/* --- 0. Performance Optimizations --- */
+* {
+    -webkit-tap-highlight-color: transparent;
+}
+
+img, video, iframe {
+    will-change: transform;
+}
+
+.top-sellers-swiper-new .swiper-slide,
+.category-card-home-new {
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    transform: translateZ(0);
+    -webkit-transform: translateZ(0);
+}
 
 /* --- 1. ഹോം പേജ് ടോപ്പ് ബാനർ --- */
 .home-top-banner {
     width: 100%;
     height: auto;
     line-height: 0; 
-    position: relative; /* ::after എലമെന്റിന് വേണ്ടി */
-    padding-bottom: 4px; /* പുതിയ ഡിസൈൻ ബോർഡറിന് സ്ഥലം നൽകാൻ */
-    background-color: #000; /* കറുത്ത പശ്ചാത്തലം */
+    position: relative;
+    padding-bottom: 4px;
+    background-color: #000;
 }
-/* ::after എലമെന്റ് ഉപയോഗിച്ച് ഒരു ഗ്രേഡിയന്റ് ബോർഡർ ഉണ്ടാക്കുന്നു */
+
 .home-top-banner::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 4px; /* ബോർഡറിന്റെ കനം */
+    height: 4px;
     background: linear-gradient(90deg, 
         var(--bg-color) 0%, 
         var(--primary-gold) 25%, 
         var(--primary-gold) 75%, 
         var(--bg-color) 100%
-    ); /* ബ്ലാക്ക് -> ഗോൾഡ് -> ബ്ലാക്ക് ഗ്രേഡിയന്റ് */
+    );
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
+
 .home-top-banner img {
     width: 100%;
     height: auto;
     display: block;
-    max-height: 100px; /* ഉയരം 100px ആയി കുറച്ചു */
-    object-fit: cover; 
+    max-height: 100px;
+    object-fit: cover;
 }
-
 
 /* --- 2. ഹീറോ സ്ലൈഡർ --- */
 .hero-section-new {
     width: 100%;
-    height: 70vh; 
+    height: 70vh;
     overflow: hidden;
     position: relative;
 }
+
 .hero-slider-new {
     width: 100%;
     height: 100%;
 }
+
 .hero-slider-new .swiper-slide {
     width: 100%;
     height: 100%;
     position: relative;
 }
+
 .hero-slider-new .swiper-slide img,
 .hero-slider-new .swiper-slide video {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
-/* YouTube/Shorts ശരിയാക്കാൻ */
+
+/* YouTube/Shorts Support */
 .hero-slider-new .swiper-slide iframe {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    aspect-ratio: 9 / 16; 
-    pointer-events: none; 
+    aspect-ratio: 9 / 16;
+    pointer-events: none;
 }
-/* സ്വൈപ്പ് ശരിയാക്കാൻ */
+
+/* Swipe Layer */
 .hero-slider-new .swiper-slide::after {
     content: '';
     position: absolute;
@@ -76,7 +97,8 @@
     background: transparent;
     z-index: 5;
 }
-/* ഡോട്ടുകൾ (Pagination) */
+
+/* Pagination Dots */
 .hero-slider-new .hero-pagination-dots {
     position: absolute;
     bottom: 20px;
@@ -85,6 +107,7 @@
     text-align: center;
     z-index: 10;
 }
+
 .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet {
     background-color: rgba(255, 255, 255, 0.7);
     width: 10px;
@@ -93,6 +116,7 @@
     margin: 0 5px;
     transition: background-color 0.3s ease;
 }
+
 .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active {
     background-color: var(--primary-gold);
     opacity: 1;
@@ -110,72 +134,100 @@
 
 /* --- 4. 'For You' (ടോപ്പ് സെല്ലേഴ്സ്) --- */
 .top-sellers-swiper-new {
-    padding-bottom: 0; 
+    padding-bottom: 0;
 }
+
 .top-sellers-swiper-new .swiper-slide {
     text-align: center;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-}
-.top-sellers-product-image {
-    width: 100%;
-    aspect-ratio: 4 / 5; 
-    object-fit: cover;
-    margin-bottom: 0; 
-}
-.top-sellers-product-info {
-    padding: 1rem; 
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), 
+                border-color 0.3s ease,
+                box-shadow 0.3s ease;
+    background-color: var(--card-bg);
 }
 
-/* ആനിമേറ്റഡ് ഡോട്ടുകൾ (പ്രോഗ്രസ് ബാർ) */
+.top-sellers-swiper-new .swiper-slide:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-gold);
+    box-shadow: 0 8px 20px rgba(212, 175, 55, 0.2);
+}
+
+.top-sellers-product-image {
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    object-fit: cover;
+    margin-bottom: 0;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.top-sellers-swiper-new .swiper-slide:hover .top-sellers-product-image {
+    transform: scale(1.05);
+}
+
+.top-sellers-product-info {
+    padding: 0.75rem;
+}
+
+/* Animated Progress Dots */
 .top-sellers-pagination-new {
-    position: relative; 
-    margin-top: 1.5rem; 
-    margin-bottom: 1.5rem; 
+    position: relative;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
     display: flex;
     justify-content: center;
-    gap: 8px; 
+    gap: 8px;
 }
+
 .top-sellers-pagination-new .swiper-pagination-bullet {
-    width: 30px; 
+    width: 30px;
     height: 5px;
     border-radius: 3px;
-    background-color: var(--border-color); 
+    background-color: var(--border-color);
     opacity: 1;
-    overflow: hidden; 
+    overflow: hidden;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
-/* പ്രോഗ്രസ് ബാർ (നിറയുന്നത്) */
+
 .top-sellers-pagination-new .pagination-progress {
     display: block;
     width: 100%;
     height: 100%;
-    background-color: var(--primary-gold); 
-    transform: scaleX(0); 
-    transform-origin: left; 
+    background-color: var(--primary-gold);
+    transform: scaleX(0);
+    transform-origin: left;
 }
-/* ആക്ടീവ് ആയ ഡോട്ട് മാത്രം ആനിമേഷൻ കാണിക്കും */
+
 .top-sellers-pagination-new .swiper-pagination-bullet-active .pagination-progress {
-    animation: progress-fill 4s linear forwards; 
+    animation: progress-fill 4s linear forwards;
 }
-/* ആനിമേഷൻ കീഫ്രെയിം */
+
 @keyframes progress-fill {
     from { transform: scaleX(0); }
     to { transform: scaleX(1); }
 }
 
 .top-sellers-product-name {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: var(--text-color);
     font-weight: 500;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.4rem;
+    min-height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
 }
+
 .top-sellers-product-price {
-    font-size: 1.1rem;
+    font-size: 1rem;
     color: var(--text-muted);
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.75rem;
+    font-weight: 600;
 }
+
 .top-sellers-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -183,76 +235,207 @@
     padding: 0;
 }
 
+.top-sellers-buttons .btn {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.85rem;
+}
 
 /* --- 5. ഹോം പേജിലെ കാറ്റഗറി ഗ്രിഡ് (വെർട്ടിക്കൽ ലിസ്റ്റ്) --- */
 .category-grid-vertical {
     display: grid;
-    grid-template-columns: 1fr; 
-    gap: 1.5rem; 
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-/* കാർഡ് സ്റ്റൈൽ (4:5 അനുപാതം) */
 .category-card-home-new {
     text-decoration: none;
     color: var(--text-muted);
-    transition: all 0.3s ease;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+                border-color 0.4s ease,
+                box-shadow 0.4s ease,
+                color 0.4s ease;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     overflow: hidden;
-    aspect-ratio: 4 / 5; 
-    position: relative; 
-    
+    aspect-ratio: 3 / 4;
+    position: relative;
     background-color: var(--card-bg);
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
 }
+
+.category-card-home-new::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.8) 0%, transparent 50%);
+    opacity: 0.7;
+    transition: opacity 0.4s ease;
+}
+
+.category-card-home-new:hover::before {
+    opacity: 0.9;
+}
+
 .category-card-home-new:hover {
     color: var(--primary-gold);
     border-color: var(--primary-gold);
-    transform: translateY(-3px);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(212, 175, 55, 0.25);
 }
 
 .category-card-home-new h3 {
     font-family: var(--font-main);
-    font-weight: 500;
-    font-size: 1rem; 
+    font-weight: 600;
+    font-size: 1.1rem;
     text-align: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     color: var(--primary-gold);
-    
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 0.75rem;
+    padding: 1rem;
     margin: 0;
-    background: rgba(0, 0, 0, 0.5); 
-    -webkit-backdrop-filter: blur(5px); 
-    backdrop-filter: blur(5px);
+    background: rgba(0, 0, 0, 0.6);
+    -webkit-backdrop-filter: blur(8px);
+    backdrop-filter: blur(8px);
+    z-index: 1;
+    transition: background 0.3s ease, letter-spacing 0.3s ease;
 }
 
+.category-card-home-new:hover h3 {
+    background: rgba(0, 0, 0, 0.8);
+    letter-spacing: 1px;
+}
 
 /* --- 6. റെസ്പോൺസീവ് (Responsive) --- */
 
-@media (max-width: 768px) {
+/* Mobile Devices */
+@media (max-width: 480px) {
+    .hero-section-new {
+        height: 55vh;
+    }
+    
+    .hero-text-section {
+        padding: 1.5rem 1rem;
+        font-size: 0.85rem;
+    }
+    
+    .home-top-banner img {
+        max-height: 80px;
+    }
+    
+    .category-card-home-new h3 {
+        font-size: 1rem;
+        padding: 0.75rem;
+    }
+    
+    .top-sellers-product-name {
+        font-size: 0.85rem;
+        min-height: 2.2rem;
+    }
+    
+    .top-sellers-buttons .btn {
+        font-size: 0.8rem;
+        padding: 0.5rem 0.4rem;
+    }
+}
+
+/* Tablets */
+@media (min-width: 481px) and (max-width: 768px) {
     .hero-section-new {
         height: 60vh;
     }
+    
     .hero-text-section {
         padding: 2rem 1rem;
         font-size: 0.9rem;
     }
-    .top-sellers-buttons {
-        padding: 0;
+    
+    .category-grid-vertical {
+        max-width: 500px;
     }
 }
 
-/* ടാബ്ലെറ്റ് & ചെറിയ ഡെസ്ക്ടോപ്പ് */
-@media (min-width: 769px) {
+/* Small Desktop */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .hero-section-new {
+        height: 70vh;
+    }
+    
+    .category-grid-vertical {
+        max-width: 450px;
+    }
+    
     .top-sellers-swiper-new .swiper-slide {
         text-align: center;
+    }
+}
+
+/* Large Desktop */
+@media (min-width: 1025px) {
+    .hero-section-new {
+        height: 75vh;
+    }
+    
+    .category-grid-vertical {
+        max-width: 450px;
+    }
+}
+
+/* High Resolution Displays */
+@media (min-resolution: 2dppx) {
+    .top-sellers-product-image,
+    .category-card-home-new {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Reduce Motion for Accessibility */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .top-sellers-swiper-new .swiper-slide:hover,
+    .category-card-home-new:hover {
+        transform: none;
+    }
+    
+    .top-sellers-product-image {
+        transition: none;
+    }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+    .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet {
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+}
+
+/* Print Styles */
+@media print {
+    .hero-section-new,
+    .top-sellers-pagination-new {
+        display: none;
+    }
+    
+    .category-grid-vertical {
+        grid-template-columns: 1fr 1fr;
     }
 }
