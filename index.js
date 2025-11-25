@@ -1,4 +1,4 @@
-// Optimized Shopping App - index.js (Performance Enhanced)
+// ഇതാണ് 'index.js' ഫയൽ.
 
 import { db } from './firebase-config.js';
 import { 
@@ -23,39 +23,10 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHeroSlider();
     loadTopSellers();
     loadHomeCategories();
-    
-    setupScrollReveal();
-    document.documentElement.style.scrollBehavior = 'smooth';
 });
 
 /**
- * Lightweight Scroll Reveal
- */
-function setupScrollReveal() {
-    const observerOptions = {
-        root: null,
-        rootMargin: '0px',
-        threshold: 0.1
-    };
-
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('revealed');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-
-    const sections = document.querySelectorAll('.home-section, .hero-text-section');
-    sections.forEach(section => {
-        section.classList.add('scroll-reveal');
-        observer.observe(section);
-    });
-}
-
-/**
- * Home Banner
+ * ഹോം പേജ് ബാനർ
  */
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
@@ -80,7 +51,7 @@ async function loadHomeBanner() {
 }
 
 /**
- * Hero Slider
+ * 1. ഹീറോ സ്ലൈഡർ
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -138,25 +109,16 @@ async function loadHeroSlider() {
             });
         }
 
-        const heroSwiper = new Swiper('.hero-slider-new', {
+        new Swiper('.hero-slider-new', {
             loop: false, 
             effect: 'fade',
             fadeEffect: { crossFade: true },
             allowTouchMove: true,
-            speed: 1200,
-            autoplay: {
-                delay: 5000,
-                disableOnInteraction: false,
-            },
+            speed: 1000,
             pagination: {
                 el: '.hero-pagination-dots',
                 clickable: true,
             },
-            on: {
-                slideChange: function() {
-                    pauseInactiveVideos();
-                }
-            }
         });
 
         const firstSlideVideo = document.querySelector('.hero-video-element');
@@ -167,21 +129,7 @@ async function loadHeroSlider() {
 
         setupSmartVideoAutoplay();
 
-    } catch (error) { 
-        console.error("Error loading hero slider: ", error); 
-    }
-}
-
-function pauseInactiveVideos() {
-    const videos = document.querySelectorAll('.hero-video-element');
-    videos.forEach(video => {
-        const slide = video.closest('.swiper-slide');
-        if (!slide.classList.contains('swiper-slide-active')) {
-            video.pause();
-        } else {
-            video.play().catch(e => console.log("Play failed:", e));
-        }
-    });
+    } catch (error) { console.error("Error loading hero slider: ", error); }
 }
 
 function setupSmartVideoAutoplay() {
@@ -214,26 +162,20 @@ function setupSmartVideoAutoplay() {
     });
 }
 
+
 /**
- * Top Sellers - Optimized
+ * 2. "For You" (Top Sellers)
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
-    
-    showSkeletonLoader(grid, 5);
-    
     try {
         const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
         const querySnapshot = await getDocs(q);
-        
         if (querySnapshot.empty) {
-            grid.innerHTML = '<p>No featured products found.</p>'; 
-            return;
+            grid.innerHTML = '<p>No featured products found.</p>'; return;
         }
-        
         grid.innerHTML = '';
-        
         querySnapshot.forEach((doc) => {
             const product = doc.data();
             const productId = doc.id;
@@ -285,8 +227,11 @@ async function loadTopSellers() {
         const autoplayDelay = 4000; 
         new Swiper('.top-sellers-swiper-new', {
             loop: true,
-            autoplay: { delay: autoplayDelay, disableOnInteraction: false },
-            speed: 800,
+            autoplay: { 
+                delay: autoplayDelay, 
+                disableOnInteraction: false 
+            },
+            speed: 1000,
             slidesPerView: 1, 
             spaceBetween: 30,
             centeredSlides: true,
@@ -298,10 +243,30 @@ async function loadTopSellers() {
                 }
             },
             on: {
-                init: function (swiper) { updateProgressAnimation(swiper, autoplayDelay); },
+                init: function (swiper) {
+                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+                    if (activeBullet) {
+                        const progressEl = activeBullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
+                        }
+                    }
+                },
                 slideChangeTransitionStart: function (swiper) {
-                    resetAllProgress(swiper);
-                    updateProgressAnimation(swiper, autoplayDelay);
+                    swiper.pagination.bullets.forEach(bullet => {
+                        const progressEl = bullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = 'none';
+                        }
+                    });
+                    
+                    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+                    if (activeBullet) {
+                        const progressEl = activeBullet.querySelector('.pagination-progress');
+                        if (progressEl) {
+                            progressEl.style.animation = `progress-fill ${autoplayDelay / 1000}s linear forwards`;
+                        }
+                    }
                 }
             },
             breakpoints: { 
@@ -310,62 +275,19 @@ async function loadTopSellers() {
                 1200: { slidesPerView: 5, spaceBetween: 20, centeredSlides: false } 
             }
         });
-        
-    } catch (error) { 
-        console.error("Error loading top sellers: ", error); 
-        grid.innerHTML = '<p>Error loading products.</p>'; 
-    }
+    } catch (error) { console.error("Error loading top sellers: ", error); grid.innerHTML = '<p>Error loading products.</p>'; }
 }
 
-function updateProgressAnimation(swiper, delay) {
-    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
-    if (activeBullet) {
-        const progressEl = activeBullet.querySelector('.pagination-progress');
-        if (progressEl) {
-            progressEl.style.animation = `progress-fill ${delay / 1000}s linear forwards`;
-        }
-    }
-}
-
-function resetAllProgress(swiper) {
-    swiper.pagination.bullets.forEach(bullet => {
-        const progressEl = bullet.querySelector('.pagination-progress');
-        if (progressEl) {
-            progressEl.style.animation = 'none';
-            void progressEl.offsetWidth;
-            progressEl.style.transform = 'scaleX(0)';
-        }
-    });
-}
-
-function showSkeletonLoader(container, count = 5) {
-    container.innerHTML = '';
-    for (let i = 0; i < count; i++) {
-        const skeleton = document.createElement('div');
-        skeleton.className = 'swiper-slide';
-        skeleton.innerHTML = `
-            <div class="skeleton" style="width: 100%; aspect-ratio: 4/5; margin-bottom: 0.5rem;"></div>
-            <div style="padding: 0.75rem;">
-                <div class="skeleton" style="height: 20px; width: 80%; margin-bottom: 0.5rem;"></div>
-                <div class="skeleton" style="height: 20px; width: 50%; margin-bottom: 0.75rem;"></div>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
-                    <div class="skeleton" style="height: 40px;"></div>
-                    <div class="skeleton" style="height: 40px;"></div>
-                </div>
-            </div>
-        `;
-        container.appendChild(skeleton);
-    }
-}
 
 /**
- * Optimized Category Grid - Reduced animations
+ * 3. ഹോം പേജിലെ കാറ്റഗറികൾ (മാറ്റം: Infinite Swiper)
  */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
 
     try {
+        // *** എല്ലാ കാറ്റഗറികളും എടുക്കുന്നു ***
         const catQuery = query(collection(db, "categories"));
         const catSnapshot = await getDocs(catQuery); 
 
@@ -374,21 +296,48 @@ async function loadHomeCategories() {
             return;
         }
 
-        const categories = [];
+        let slidesHTML = '';
         catSnapshot.forEach((doc) => {
-            categories.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            const category = doc.data();
+            const catId = doc.id;
+            
+            const rawImage = category.imageUrl || 'https://placehold.co/260x360/1e1e1e/D4AF37?text=...';
+            const imageUrl = optimizeImage(rawImage, 400, 80);
+            
+            // *** Swiper Slide ഉണ്ടാക്കുന്നു ***
+            slidesHTML += `
+                <div class="swiper-slide">
+                    <a href="categories.html?filter=${catId}" class="category-card-home-new" style="background-image: url('${imageUrl}')">
+                        <h3>${category.name}</h3>
+                    </a>
+                </div>
+            `;
         });
 
-        container.className = 'home-category-grid-wrapper';
+        // *** ഗ്രിഡ് ലേഔട്ട് മാറ്റി Swiper Structure നൽകുന്നു ***
+        // Class മാറ്റി 'swiper' ആക്കുന്നു
+        container.className = 'swiper home-category-swiper'; 
         container.innerHTML = `
-            <div class="category-grid-canvas" id="category-canvas"></div>
-            <div class="category-scroll-hint">👆 Drag to explore categories</div>
+            <div class="swiper-wrapper">
+                ${slidesHTML}
+            </div>
         `;
 
-        initOptimizedWatchStyleGrid(categories);
+        // *** Swiper Initialize ചെയ്യുന്നു ***
+        new Swiper('.home-category-swiper', {
+            loop: true, // ഇൻഫിനിറ്റ് ലൂപ്പ്
+            slidesPerView: 2.2, // മൊബൈലിൽ 2.2 എണ്ണം (വലുതായി കാണാൻ)
+            spaceBetween: 15,
+            autoplay: {
+                delay: 3000,
+                disableOnInteraction: false,
+            },
+            breakpoints: {
+                640: { slidesPerView: 3.2, spaceBetween: 20 },
+                900: { slidesPerView: 4.5, spaceBetween: 20 },
+                1200: { slidesPerView: 5.5, spaceBetween: 25 }
+            }
+        });
 
     } catch (error) { 
         console.error("Error loading home categories: ", error); 
@@ -396,296 +345,6 @@ async function loadHomeCategories() {
     }
 }
 
-function initOptimizedWatchStyleGrid(categories) {
-    const canvas = document.getElementById('category-canvas');
-    if (!canvas) return;
-
-    const isMobile = window.innerWidth <= 768;
-    const itemSize = isMobile ? 100 : 130;
-    const centerSize = isMobile ? 140 : 180;
-    const spacing = isMobile ? 30 : 40;
-
-    const positions = calculateHoneycombPositions(categories.length, itemSize, spacing);
-    
-    let minX = 0, maxX = 0, minY = 0, maxY = 0;
-    positions.forEach(pos => {
-        minX = Math.min(minX, pos.x);
-        maxX = Math.max(maxX, pos.x);
-        minY = Math.min(minY, pos.y);
-        maxY = Math.max(maxY, pos.y);
-    });
-    
-    const boundaryPadding = itemSize * 1.5;
-    minX -= boundaryPadding;
-    maxX += boundaryPadding;
-    minY -= boundaryPadding;
-    maxY += boundaryPadding;
-    
-    let offsetX = 0;
-    let offsetY = 0;
-    let isDragging = false;
-    let startX = 0;
-    let startY = 0;
-    let currentX = 0;
-    let currentY = 0;
-    let velocityX = 0;
-    let velocityY = 0;
-    let animationFrameId = null;
-
-    // Create items
-    categories.forEach((category, index) => {
-        const item = document.createElement('div');
-        item.className = 'category-item-watch';
-        item.style.width = `${itemSize}px`;
-        item.style.height = `${itemSize}px`;
-        
-        const imageUrl = optimizeImage(category.imageUrl || '', 300, 80);
-        
-        item.innerHTML = `
-            <a href="categories.html?filter=${category.id}" class="category-card-watch" style="background-image: url('${imageUrl}')">
-                <h3>${category.name}</h3>
-            </a>
-        `;
-        
-        item.dataset.index = index;
-        canvas.appendChild(item);
-    });
-
-    const items = canvas.querySelectorAll('.category-item-watch');
-    const canvasRect = canvas.getBoundingClientRect();
-    const centerX = canvasRect.width / 2;
-    const centerY = canvasRect.height / 2;
-
-    function constrainToBounds(x, y) {
-        const elasticity = 0.3;
-        let constrainedX = x;
-        let constrainedY = y;
-        
-        if (x > -minX) {
-            const overflow = x - (-minX);
-            constrainedX = -minX + overflow * elasticity;
-        } else if (x < -maxX) {
-            const overflow = x - (-maxX);
-            constrainedX = -maxX + overflow * elasticity;
-        }
-        
-        if (y > -minY) {
-            const overflow = y - (-minY);
-            constrainedY = -minY + overflow * elasticity;
-        } else if (y < -maxY) {
-            const overflow = y - (-maxY);
-            constrainedY = -maxY + overflow * elasticity;
-        }
-        
-        return { x: constrainedX, y: constrainedY };
-    }
-
-    // Optimized: Throttled update
-    let lastUpdate = 0;
-    const throttleDelay = 16; // ~60fps
-    
-    function updatePositions() {
-        const now = Date.now();
-        if (now - lastUpdate < throttleDelay) return;
-        lastUpdate = now;
-
-        let closestItem = null;
-        let minDistance = Infinity;
-
-        items.forEach((item, index) => {
-            const pos = positions[index];
-            const x = pos.x + offsetX;
-            const y = pos.y + offsetY;
-            
-            const distance = Math.sqrt(x * x + y * y);
-
-            if (distance < minDistance) {
-                minDistance = distance;
-                closestItem = item;
-            }
-
-            const maxDistance = 400;
-            const scale = Math.max(0.7, 1 - Math.min(distance / 300, 1));
-            const opacity = Math.max(0.5, 1 - Math.min(distance / maxDistance, 1));
-            
-            item.style.transform = `translate3d(${centerX + x}px, ${centerY + y}px, 0) translate(-50%, -50%) scale(${scale})`;
-            item.style.opacity = opacity;
-            item.style.zIndex = Math.floor((1 - scale) * 100);
-            
-            if (item.classList.contains('center')) {
-                item.classList.remove('center');
-            }
-        });
-
-        if (closestItem) {
-            closestItem.classList.add('center');
-            const centerScale = centerSize / itemSize;
-            const pos = positions[parseInt(closestItem.dataset.index)];
-            const x = pos.x + offsetX;
-            const y = pos.y + offsetY;
-            closestItem.style.transform = `translate3d(${centerX + x}px, ${centerY + y}px, 0) translate(-50%, -50%) scale(${centerScale})`;
-            closestItem.style.opacity = 1;
-            closestItem.style.zIndex = 1000;
-        }
-    }
-
-    function handleStart(e) {
-        isDragging = true;
-        const point = e.touches ? e.touches[0] : e;
-        startX = point.clientX - currentX;
-        startY = point.clientY - currentY;
-        velocityX = 0;
-        velocityY = 0;
-        canvas.style.cursor = 'grabbing';
-        
-        if (animationFrameId) {
-            cancelAnimationFrame(animationFrameId);
-            animationFrameId = null;
-        }
-    }
-
-    function handleMove(e) {
-        if (!isDragging) return;
-        e.preventDefault();
-        
-        const point = e.touches ? e.touches[0] : e;
-        let newX = point.clientX - startX;
-        let newY = point.clientY - startY;
-        
-        const constrained = constrainToBounds(newX, newY);
-        newX = constrained.x;
-        newY = constrained.y;
-        
-        velocityX = newX - currentX;
-        velocityY = newY - currentY;
-        
-        currentX = newX;
-        currentY = newY;
-        offsetX = currentX;
-        offsetY = currentY;
-        
-        updatePositions();
-    }
-
-    function handleEnd() {
-        isDragging = false;
-        canvas.style.cursor = 'grab';
-        
-        function animate() {
-            const friction = 0.95;
-            const snapStrength = 0.1;
-            
-            let needsSnap = false;
-            let targetX = offsetX;
-            let targetY = offsetY;
-            
-            if (offsetX > -minX) {
-                targetX = -minX;
-                needsSnap = true;
-            } else if (offsetX < -maxX) {
-                targetX = -maxX;
-                needsSnap = true;
-            }
-            
-            if (offsetY > -minY) {
-                targetY = -minY;
-                needsSnap = true;
-            } else if (offsetY < -maxY) {
-                targetY = -maxY;
-                needsSnap = true;
-            }
-            
-            if (needsSnap) {
-                offsetX += (targetX - offsetX) * snapStrength;
-                offsetY += (targetY - offsetY) * snapStrength;
-                currentX = offsetX;
-                currentY = offsetY;
-                
-                updatePositions();
-                
-                if (Math.abs(offsetX - targetX) > 1 || Math.abs(offsetY - targetY) > 1) {
-                    animationFrameId = requestAnimationFrame(animate);
-                }
-            }
-            else if (Math.abs(velocityX) > 0.3 || Math.abs(velocityY) > 0.3) {
-                velocityX *= friction;
-                velocityY *= friction;
-                
-                let newOffsetX = offsetX + velocityX;
-                let newOffsetY = offsetY + velocityY;
-                
-                if (newOffsetX > -minX || newOffsetX < -maxX) {
-                    velocityX *= -0.3;
-                    newOffsetX = Math.max(-maxX, Math.min(-minX, newOffsetX));
-                }
-                if (newOffsetY > -minY || newOffsetY < -maxY) {
-                    velocityY *= -0.3;
-                    newOffsetY = Math.max(-maxY, Math.min(-minY, newOffsetY));
-                }
-                
-                offsetX = newOffsetX;
-                offsetY = newOffsetY;
-                currentX = offsetX;
-                currentY = offsetY;
-                
-                updatePositions();
-                animationFrameId = requestAnimationFrame(animate);
-            }
-        }
-        animate();
-    }
-
-    canvas.addEventListener('mousedown', handleStart);
-    canvas.addEventListener('mousemove', handleMove);
-    canvas.addEventListener('mouseup', handleEnd);
-    canvas.addEventListener('mouseleave', handleEnd);
-    
-    canvas.addEventListener('touchstart', handleStart, { passive: false });
-    canvas.addEventListener('touchmove', handleMove, { passive: false });
-    canvas.addEventListener('touchend', handleEnd);
-
-    updatePositions();
-
-    let resizeTimeout;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(() => {
-            updatePositions();
-        }, 100);
-    });
-}
-
-function calculateHoneycombPositions(count, size, spacing) {
-    const positions = [];
-    const radius = size + spacing;
-    
-    positions.push({ x: 0, y: 0 });
-    
-    let itemCount = 1;
-    let ring = 1;
-    
-    while (itemCount < count) {
-        const itemsInRing = ring * 6;
-        const angleStep = (Math.PI * 2) / itemsInRing;
-        const ringRadius = ring * radius;
-        
-        for (let i = 0; i < itemsInRing && itemCount < count; i++) {
-            const angle = i * angleStep;
-            positions.push({
-                x: Math.cos(angle) * ringRadius,
-                y: Math.sin(angle) * ringRadius
-            });
-            itemCount++;
-        }
-        ring++;
-    }
-    
-    return positions;
-}
-
-/**
- * Cart interactions
- */
 const topSellersGrid = document.getElementById("top-sellers-grid");
 if (topSellersGrid) {
     topSellersGrid.addEventListener('click', (e) => {
@@ -695,8 +354,6 @@ if (topSellersGrid) {
         
         const id = button.dataset.id;
         const buttonText = button.querySelector('span');
-
-        createRipple(e, button);
 
         if (button.classList.contains('added-to-cart')) {
             removeFromCart(id);
@@ -718,64 +375,6 @@ if (topSellersGrid) {
             button.classList.add('btn-primary-new');
             button.classList.remove('btn-secondary-new'); 
             if (buttonText) buttonText.textContent = 'Remove';
-            showToast('Added to cart!');
         }
     });
-}
-
-function createRipple(event, button) {
-    const ripple = document.createElement('span');
-    const rect = button.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const x = event.clientX - rect.left - size / 2;
-    const y = event.clientY - rect.top - size / 2;
-
-    ripple.style.cssText = `
-        position: absolute; width: ${size}px; height: ${size}px;
-        left: ${x}px; top: ${y}px; border-radius: 50%;
-        background: rgba(255, 255, 255, 0.4); transform: scale(0);
-        animation: ripple-animation 0.6s ease-out; pointer-events: none;
-    `;
-
-    button.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 600);
-}
-
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes ripple-animation {
-        to { transform: scale(2); opacity: 0; }
-    }
-    @keyframes progress-fill {
-        from { transform: scaleX(0); }
-        to { transform: scaleX(1); }
-    }
-`;
-document.head.appendChild(style);
-
-function showToast(message) {
-    const toast = document.createElement('div');
-    toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed; bottom: 100px; left: 50%; 
-        transform: translateX(-50%) translateY(100px);
-        background: var(--primary-gold); color: var(--bg-color);
-        padding: 12px 24px; border-radius: 8px; font-weight: 600;
-        z-index: 10000; opacity: 0;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
-    `;
-    
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateX(-50%) translateY(0)';
-    }, 10);
-    
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(-50%) translateY(100px)';
-        setTimeout(() => toast.remove(), 300);
-    }, 2000);
 }

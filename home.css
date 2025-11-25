@@ -1,4 +1,5 @@
-/* ഇത് home.css - Enhanced Shopping Experience */
+/* ഇത് index.css
+*/
 
 /* --- 1. ഹോം പേജ് ടോപ്പ് ബാനർ --- */
 .home-top-banner {
@@ -8,7 +9,6 @@
     position: relative; 
     padding-bottom: 4px; 
     background-color: #000; 
-    overflow: hidden;
 }
 .home-top-banner::after {
     content: '';
@@ -30,7 +30,237 @@
     height: auto;
     display: block;
     max-height: 100px; 
+    object-fit: cover; 
+}
+
+
+/* --- 2. ഹീറോ സ്ലൈഡർ --- */
+.hero-section-new {
+    width: 100%;
+    height: 70vh; 
+    overflow: hidden;
+    position: relative;
+}
+.hero-slider-new {
+    width: 100%;
+    height: 100%;
+}
+.hero-slider-new .swiper-slide {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.hero-slider-new .swiper-slide img,
+.hero-slider-new .swiper-slide video {
+    width: 100%;
+    height: 100%;
     object-fit: cover;
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
+}
+.hero-slider-new .swiper-slide iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 9 / 16; 
+    pointer-events: none; 
+}
+.hero-slider-new .swiper-slide::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+    z-index: 5;
+}
+.hero-slider-new .hero-pagination-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+}
+.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet {
+    background-color: rgba(255, 255, 255, 0.7);
+    width: 10px;
+    height: 10px;
+    opacity: 0.8;
+    margin: 0 5px;
+    transition: background-color 0.3s ease;
+}
+.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active {
+    background-color: var(--primary-gold);
+    opacity: 1;
+}
+
+/* --- 3. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ --- */
+.hero-text-section {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 800px;
+}
+
+/* --- 4. 'For You' (ടോപ്പ് സെല്ലേഴ്സ്) --- */
+.top-sellers-swiper-new {
+    padding: 0 30px; 
+}
+.top-sellers-swiper-new .swiper-slide {
+    text-align: center;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    background-color: var(--card-bg);
+}
+.top-sellers-product-image {
+    width: 100%;
+    aspect-ratio: 4 / 5; 
+    object-fit: cover;
+    margin-bottom: 0; 
+}
+.top-sellers-product-info {
+    padding: 0.75rem; 
+}
+
+/* ആനിമേറ്റഡ് ഡോട്ടുകൾ */
+.top-sellers-pagination-new {
+    position: relative; 
+    margin-top: 1.5rem; 
+    margin-bottom: 1.5rem; 
+    display: flex;
+    justify-content: center;
+    gap: 8px; 
+}
+.top-sellers-pagination-new .swiper-pagination-bullet {
+    width: 30px; 
+    height: 5px;
+    border-radius: 3px;
+    background-color: var(--border-color); 
+    opacity: 1;
+    overflow: hidden; 
+    cursor: pointer;
+}
+.top-sellers-pagination-new .pagination-progress {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background-color: var(--primary-gold); 
+    transform: scaleX(0); 
+    transform-origin: left; 
+}
+.top-sellers-pagination-new .swiper-pagination-bullet-active .pagination-progress {
+    animation: progress-fill 4s linear forwards; 
+}
+@keyframes progress-fill {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+.top-sellers-product-name {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    font-weight: 500;
+    margin-bottom: 0.25rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.top-sellers-product-price {
+    font-size: 1rem; 
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+}
+.top-sellers-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.25rem;
+    padding: 0;
+}
+.top-sellers-buttons .btn {
+    padding: 0.5rem 0.25rem;
+    font-size: 0.8rem;
+}
+
+
+/* --- 5. ഹോം പേജിലെ കാറ്റഗറി സ്ലൈഡർ (പുതിയത്) --- */
+/* ഗ്രിഡ് ക്ലാസ് നീക്കം ചെയ്തു, പകരം Swiper സ്റ്റൈലുകൾ ഉപയോഗിക്കുന്നു */
+.home-category-swiper {
+    width: 100%;
+    padding-bottom: 2rem; /* താഴെ അല്പം സ്പേസ് */
+}
+
+.category-card-home-new {
+    display: block;
+    text-decoration: none;
+    color: var(--text-muted);
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+    aspect-ratio: 4 / 5; 
+    position: relative; 
+    
+    background-color: var(--card-bg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    
+    /* *** മാറ്റം: കാർഡിന്റെ ഉയരം ഉറപ്പാക്കുന്നു *** */
+    height: 100%; 
+}
+
+.category-card-home-new:hover {
+    color: var(--primary-gold);
+    border-color: var(--primary-gold);
+    transform: translateY(-3px);
+}
+
+.category-card-home-new h3 {
+    font-family: var(--font-main);
+    font-weight: 600;
+    font-size: 0.9rem; /* ഫോണ്ട് കുറച്ചു */
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--primary-gold);
+    
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.6); 
+    -webkit-backdrop-filter: blur(5px); 
+    backdrop-filter: blur(5px);
+}
+
+
+/* --- 6. റെസ്പോൺസീവ് (Responsive) --- */
+
+@media (max-width: 768px) {
+    .hero-section-new {
+        height: 60vh;
+    }
+    .hero-text-section {
+        padding: 2rem 1rem;
+        font-size: 0.9rem;
+    }
+    .top-sellers-swiper-new {
+        padding: 0 30px;
+    }
+}
+
+/* ടാബ്ലെറ്റ് & ചെറിയ ഡെസ്ക്ടോപ്പ് */
+@media (min-width: 769px) {
+    .top-sellers-swiper-new {
+        padding: 0;
+    }
+    .top-sellers-swiper-new .swiper-slide {
+        text-align: center;
+    }
 }
