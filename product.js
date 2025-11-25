@@ -1,4 +1,4 @@
-// ഇതാണ് 'product.js' ഫയൽ.
+// ഇതാണ് 'product.js' - ബട്ടൺ സ്റ്റേറ്റുകൾ ശരിയാക്കിയത്
 
 import { 
     collection, 
@@ -27,7 +27,6 @@ let currentProduct = null;
 let whatsappNumber = ''; 
 let currentUser = null;
 
-// ഓതന്റിക്കേഷൻ ലിസണർ
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
@@ -196,45 +195,39 @@ async function loadProductDetails() {
             <div class="rating-box" id="rating-box-main" style="display: none;">
                 <!-- റേറ്റിംഗ് സമ്മറി -->
                 <div class="rating-summary">
-                    <div class="rating-bar-row"><span>5 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>4 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>3 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>2 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>1 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>5 <span class="star-icon">★</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>4 <span class="star-icon">★</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>3 <span class="star-icon">★</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>2 <span class="star-icon">★</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>1 <span class="star-icon">★</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
                 </div>
                 <hr class="rating-divider">
                 <p class="rating-title">Rate this product</p>
                 <div class="star-rating" data-id="${productIdStr}">
-                    ${[1, 2, 3, 4, 5].map(i => `<span class="star" data-value="${i}">&#9733;</span>`).join('')}
+                    ${[1, 2, 3, 4, 5].map(i => `<span class="star" data-value="${i}">★</span>`).join('')}
                 </div>
                 <div class="rating-feedback">Tap a star to rate</div>
             </div>
         `;
 
-        // *** മാറ്റം: ഇവിടെയാണ് ഓർഡർ മാറ്റുന്നത് ***
         const infoHTML = `
             <div class="product-info">
-                <!-- 1. ലൈക്ക്, കമന്റ്, ഷെയർ ബട്ടണുകൾ (ഏറ്റവും മുകളിൽ) -->
                 ${actionBarHTML}
 
-                <!-- 2. പ്രൊഡക്റ്റ് പേര് -->
                 <h1 class="product-title">${product.name}</h1>
                 
-                <!-- 3. വില -->
                 <div class="price-container large">
                     ${priceHTML}
                 </div>
 
-                <!-- 4. സ്പെസിഫിക്കേഷൻ -->
                 ${specificationHTML ? `<div class="product-specification-section">${specificationHTML}</div>` : ''}
 
-                <!-- 5. ഡിസ്ക്രിപ്ഷൻ -->
                 <div class="product-description">
                     ${descriptionHTML}
                 </div>
                 
                 <div class="product-actions-grid">
-                    <button class="btn ${cartButtonClass}" id="add-to-cart-btn">
+                    <button class="btn ${cartButtonClass} btn-add-to-cart-product" id="add-to-cart-btn">
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                             <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -274,7 +267,7 @@ async function loadProductDetails() {
     }
 }
 
-// *** റിയൽ ടൈം അപ്ഡേറ്റ്സ് ***
+// റിയൽ ടൈം അപ്ഡേറ്റുകൾ
 function setupRealtimeListeners(productId) {
     // Likes
     const likesRef = collection(db, "products", productId, "likes");
@@ -286,16 +279,12 @@ function setupRealtimeListeners(productId) {
         if (currentUser) {
             const isLiked = snapshot.docs.some(doc => doc.id === currentUser.uid);
             const likeBtn = document.querySelector('.like-btn');
-            const svg = likeBtn.querySelector('svg');
             
+            // *** ശരിയാക്കിയത്: Like button state ***
             if (isLiked) {
                 likeBtn.classList.add('liked');
-                svg.style.fill = 'var(--error-red)';
-                svg.style.stroke = 'var(--error-red)';
             } else {
                 likeBtn.classList.remove('liked');
-                svg.style.fill = 'none';
-                svg.style.stroke = 'currentColor';
             }
         }
     });
@@ -307,7 +296,6 @@ function setupRealtimeListeners(productId) {
         const ratingCountSpan = document.querySelector('.rating-count');
         if (ratingCountSpan) ratingCountSpan.textContent = count;
 
-        // Calculate Summary
         const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
         snapshot.forEach(doc => {
             const val = doc.data().rating;
@@ -315,7 +303,6 @@ function setupRealtimeListeners(productId) {
         });
         updateRatingSummary(counts, count);
 
-        // User Rating
         if (currentUser) {
             const userRatingDoc = snapshot.docs.find(doc => doc.id === currentUser.uid);
             if (userRatingDoc) {
@@ -366,7 +353,7 @@ function updateStarUI(value) {
 }
 
 function setupProductActionButtons() {
-    const container = document.querySelector('.product-info'); // ഇവന്റ് ഡെലിഗേഷൻ
+    const container = document.querySelector('.product-info');
     if(!container) return;
 
     container.addEventListener('click', async (e) => {
@@ -383,8 +370,8 @@ function setupProductActionButtons() {
                     await deleteDoc(userLikeRef);
                 } else {
                     await setDoc(userLikeRef, { timestamp: serverTimestamp() });
-                    likeBtn.style.transform = 'scale(1.2)';
-                    setTimeout(() => likeBtn.style.transform = 'scale(1)', 200);
+                    likeBtn.style.transform = 'scale(1.3)';
+                    setTimeout(() => likeBtn.style.transform = 'scale(1)', 300);
                 }
             } catch(err) { console.error(err); }
         }
@@ -418,28 +405,44 @@ function setupProductActionButtons() {
             const url = window.location.href;
             try {
                 await navigator.share({ title: name, text: `Check out ${name}!\nPrice: ₹${price}`, url: url });
-            } catch(err) { console.error(err); }
+            } catch(err) { 
+                if (err.name !== 'AbortError') {
+                    console.error(err);
+                }
+            }
         }
         
-        // Cart Logic
+        // *** ശരിയാക്കിയത്: Cart Logic ***
         const cartButton = target.closest('#add-to-cart-btn');
         if (cartButton) {
+            e.preventDefault();
             if (!currentProduct) return;
+            
             const buttonText = cartButton.querySelector('span');
             const id = currentProduct.id;
 
             if (cartButton.classList.contains('added-to-cart')) {
+                // Remove from cart
                 removeFromCart(id);
                 cartButton.classList.remove('added-to-cart');
                 cartButton.classList.remove('btn-primary-new');
                 cartButton.classList.add('btn-secondary-new');
                 if (buttonText) buttonText.textContent = 'Add to Cart';
+                
+                // Animation
+                cartButton.style.transform = 'scale(0.9)';
+                setTimeout(() => cartButton.style.transform = 'scale(1)', 200);
             } else {
+                // Add to cart
                 addToCart(id, currentProduct);
                 cartButton.classList.add('added-to-cart');
                 cartButton.classList.add('btn-primary-new');
                 cartButton.classList.remove('btn-secondary-new');
                 if (buttonText) buttonText.textContent = 'Remove from Cart';
+                
+                // Animation
+                cartButton.style.transform = 'scale(1.1)';
+                setTimeout(() => cartButton.style.transform = 'scale(1)', 200);
             }
         }
         
@@ -457,7 +460,7 @@ function setupProductActionButtons() {
     });
 }
 
-// Related Products Logic (Unchanged)
+// Related Products Logic
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
     try {
@@ -543,19 +546,27 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
     } catch (error) { console.error("Error loading related products: ", error); }
 }
 
+// *** ശരിയാക്കിയത്: Related Products Cart Button ***
 relatedProductsGrid.addEventListener('click', (e) => {
     const cartButton = e.target.closest('.btn-add-to-cart');
     if (cartButton) {
         e.preventDefault();
         const id = cartButton.dataset.id;
         const buttonText = cartButton.querySelector('span');
+        
         if (cartButton.classList.contains('added-to-cart')) {
+            // Remove from cart
             removeFromCart(id);
             cartButton.classList.remove('added-to-cart');
             cartButton.classList.remove('btn-primary-new');
             cartButton.classList.add('btn-secondary-new');
             if (buttonText) buttonText.textContent = 'Cart';
+            
+            // Animation
+            cartButton.style.transform = 'scale(0.9)';
+            setTimeout(() => cartButton.style.transform = 'scale(1)', 200);
         } else {
+            // Add to cart
             const product = {
                 id: id, 
                 name: cartButton.dataset.name,
@@ -569,6 +580,10 @@ relatedProductsGrid.addEventListener('click', (e) => {
             cartButton.classList.add('btn-primary-new');
             cartButton.classList.remove('btn-secondary-new');
             if (buttonText) buttonText.textContent = 'Remove';
+            
+            // Animation
+            cartButton.style.transform = 'scale(1.1)';
+            setTimeout(() => cartButton.style.transform = 'scale(1)', 200);
         }
     } 
 });
