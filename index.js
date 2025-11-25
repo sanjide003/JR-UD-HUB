@@ -562,6 +562,9 @@ function initWatchStyleGrid(categories) {
     let lastY = 0;
     
     function handleStart(e) {
+        // *** Touch-specific handling ***
+        if (e.touches && e.touches.length > 1) return; // Ignore multi-touch
+        
         isDragging = true;
         const point = e.touches ? e.touches[0] : e;
         startX = point.clientX;
@@ -577,21 +580,32 @@ function initWatchStyleGrid(categories) {
         }
         
         // Hide drag hint
-        dragZone.style.opacity = '0.5';
+        if (dragZone) dragZone.style.opacity = '0.5';
         
-        e.preventDefault();
-        e.stopPropagation();
+        // *** Important: Prevent default for touch ***
+        if (e.touches) {
+            e.preventDefault();
+        }
     }
 
     function handleMove(e) {
         if (!isDragging) return;
         
+        // *** Ignore if multiple touches ***
+        if (e.touches && e.touches.length > 1) {
+            handleEnd(e);
+            return;
+        }
+        
         const now = Date.now();
         if (now - lastMoveTime < 16) return;
         lastMoveTime = now;
         
-        e.preventDefault();
-        e.stopPropagation();
+        // *** Prevent default for touch ***
+        if (e.touches) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
         
         const point = e.touches ? e.touches[0] : e;
         
@@ -620,7 +634,7 @@ function initWatchStyleGrid(categories) {
         isDragging = false;
         
         // Show drag hint
-        dragZone.style.opacity = '1';
+        if (dragZone) dragZone.style.opacity = '1';
         
         // Smooth inertia
         function animate() {
@@ -642,17 +656,29 @@ function initWatchStyleGrid(categories) {
         animate();
     }
 
-    // *** Attach to drag zone for start, but document for move/end ***
+    // *** Mouse events ***
     dragZone.addEventListener('mousedown', handleStart);
-    dragZone.addEventListener('touchstart', handleStart, { passive: false });
-    
-    // *** Move and end on document so drag works anywhere ***
     document.addEventListener('mousemove', handleMove);
     document.addEventListener('mouseup', handleEnd);
     
-    document.addEventListener('touchmove', handleMove, { passive: false });
-    document.addEventListener('touchend', handleEnd);
-    document.addEventListener('touchcancel', handleEnd);
+    // *** Touch events with proper options ***
+    dragZone.addEventListener('touchstart', handleStart, { 
+        passive: false,
+        capture: false 
+    });
+    
+    document.addEventListener('touchmove', handleMove, { 
+        passive: false,
+        capture: false 
+    });
+    
+    document.addEventListener('touchend', handleEnd, { 
+        passive: true 
+    });
+    
+    document.addEventListener('touchcancel', handleEnd, { 
+        passive: true 
+    });
 
     updatePositions();
 
