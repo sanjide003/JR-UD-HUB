@@ -412,8 +412,8 @@ function initWatchStyleGrid(categories) {
     // Calculate honeycomb positions
     const basePositions = calculateHoneycombPositions(categories.length, itemSize, spacing);
     
-    // *** Calculate grid dimensions for wrapping ***
-    let minX = 0, maxX = 0, minY = 0, maxY = 0;
+    // *** Calculate grid dimensions properly ***
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     basePositions.forEach(pos => {
         minX = Math.min(minX, pos.x);
         maxX = Math.max(maxX, pos.x);
@@ -421,10 +421,11 @@ function initWatchStyleGrid(categories) {
         maxY = Math.max(maxY, pos.y);
     });
     
-    const gridWidth = maxX - minX + itemSize * 2;
-    const gridHeight = maxY - minY + itemSize * 2;
+    // Grid size with proper margins
+    const gridWidth = (maxX - minX) + itemSize * 3;
+    const gridHeight = (maxY - minY) + itemSize * 3;
     
-    // *** Create 9 copies for seamless infinite scroll (3x3 grid) ***
+    // *** Create 3x3 grid for seamless infinite scroll ***
     const positions = [];
     const categoryMap = [];
     
@@ -435,7 +436,7 @@ function initWatchStyleGrid(categories) {
                     x: pos.x + (gridX * gridWidth),
                     y: pos.y + (gridY * gridHeight)
                 });
-                categoryMap.push(idx); // Track which original category this is
+                categoryMap.push(idx);
             });
         }
     }
@@ -451,8 +452,11 @@ function initWatchStyleGrid(categories) {
     let velocityY = 0;
     let lastUpdateTime = Date.now();
     let animationFrameId = null;
+    
+    // *** Drag sensitivity control ***
+    const dragSensitivity = 0.6; // Lower = less sensitive
 
-    // Create category items with GPU acceleration
+    // Create category items
     positions.forEach((pos, index) => {
         const categoryIndex = categoryMap[index];
         const category = categories[categoryIndex];
@@ -479,19 +483,21 @@ function initWatchStyleGrid(categories) {
     const centerX = canvasRect.width / 2;
     const centerY = canvasRect.height / 2;
 
-    // *** Infinite wrapping logic ***
-    function wrapOffset(offset, gridSize) {
-        // Wrap around when moving too far
+    // *** Smooth wrapping function ***
+    function normalizeOffset(offset, gridSize) {
         const halfGrid = gridSize / 2;
-        if (offset > halfGrid) {
-            return offset - gridSize;
-        } else if (offset < -halfGrid) {
-            return offset + gridSize;
+        
+        // Wrap smoothly when crossing boundaries
+        while (offset > halfGrid) {
+            offset -= gridSize;
         }
+        while (offset < -halfGrid) {
+            offset += gridSize;
+        }
+        
         return offset;
     }
 
-    // *** Performance: Batch DOM updates ***
     let updateScheduled = false;
     
     function scheduleUpdate() {
@@ -508,26 +514,25 @@ function initWatchStyleGrid(categories) {
         const now = Date.now();
         const deltaTime = now - lastUpdateTime;
         
-        // *** Throttle: 60fps max ***
         if (deltaTime < 16) return;
         lastUpdateTime = now;
 
-        // *** Apply infinite wrapping ***
-        offsetX = wrapOffset(offsetX, gridWidth);
-        offsetY = wrapOffset(offsetY, gridHeight);
+        // *** Apply smooth wrapping ***
+        offsetX = normalizeOffset(offsetX, gridWidth);
+        offsetY = normalizeOffset(offsetY, gridHeight);
+        
+        // Update current positions
         currentX = offsetX;
         currentY = offsetY;
 
         let closestItem = null;
         let minDistance = Infinity;
 
-        // *** Performance: Use transform3d for GPU acceleration ***
         items.forEach((item, index) => {
             const pos = positions[index];
             const x = pos.x + offsetX;
             const y = pos.y + offsetY;
             
-            // Calculate distance from center
             const distance = Math.sqrt(x * x + y * y);
 
             if (distance < minDistance) {
@@ -535,22 +540,16 @@ function initWatchStyleGrid(categories) {
                 closestItem = item;
             }
 
-            // Scale based on distance (optimized calculation)
             const maxDistance = 400;
             const scale = Math.max(0.7, 1 - Math.min(distance / 300, 1));
             const opacity = Math.max(0.5, 1 - Math.min(distance / maxDistance, 1));
             
-            // *** GPU-accelerated transform ***
             item.style.transform = `translate3d(${centerX + x}px, ${centerY + y}px, 0) translate(-50%, -50%) scale(${scale})`;
             item.style.opacity = opacity;
             item.style.zIndex = Math.floor((1 - scale) * 100);
-            
-            if (item.classList.contains('center')) {
-                item.classList.remove('center');
-            }
+            item.classList.remove('center');
         });
 
-        // Mark center item
         if (closestItem) {
             closestItem.classList.add('center');
             const centerScale = centerSize / itemSize;
@@ -563,7 +562,6 @@ function initWatchStyleGrid(categories) {
         }
     }
 
-    // Touch/Mouse events with better performance
     let lastMoveTime = 0;
     
     function handleStart(e) {
@@ -575,7 +573,6 @@ function initWatchStyleGrid(categories) {
         velocityY = 0;
         canvas.style.cursor = 'grabbing';
         
-        // Cancel inertia animation
         if (animationFrameId) {
             cancelAnimationFrame(animationFrameId);
             animationFrameId = null;
@@ -586,17 +583,20 @@ function initWatchStyleGrid(categories) {
         if (!isDragging) return;
         
         const now = Date.now();
-        if (now - lastMoveTime < 16) return; // Throttle to 60fps
+        if (now - lastMoveTime < 16) return;
         lastMoveTime = now;
         
         e.preventDefault();
         
         const point = e.touches ? e.touches[0] : e;
-        let newX = point.clientX - startX;
-        let newY = point.clientY - startY;
         
-        velocityX = newX - currentX;
-        velocityY = newY - currentY;
+        // *** Apply drag sensitivity ***
+        let newX = (point.clientX - startX) * dragSensitivity;
+        let newY = (point.clientY - startY) * dragSensitivity;
+        
+        // *** Smooth velocity calculation ***
+        velocityX = (newX - currentX) * 0.5; // Dampen velocity
+        velocityY = (newY - currentY) * 0.5;
         
         currentX = newX;
         currentY = newY;
@@ -610,11 +610,15 @@ function initWatchStyleGrid(categories) {
         isDragging = false;
         canvas.style.cursor = 'grab';
         
-        // *** Smooth inertia with infinite wrapping ***
+        // Update startX/startY for next drag
+        startX = startX + (currentX / dragSensitivity);
+        startY = startY + (currentY / dragSensitivity);
+        
+        // *** Smooth inertia ***
         function animate() {
-            const friction = 0.95;
+            const friction = 0.92; // More friction for control
             
-            if (Math.abs(velocityX) > 0.3 || Math.abs(velocityY) > 0.3) {
+            if (Math.abs(velocityX) > 0.5 || Math.abs(velocityY) > 0.5) {
                 velocityX *= friction;
                 velocityY *= friction;
                 
@@ -632,7 +636,6 @@ function initWatchStyleGrid(categories) {
         animate();
     }
 
-    // Event listeners with passive option for better performance
     canvas.addEventListener('mousedown', handleStart);
     canvas.addEventListener('mousemove', handleMove);
     canvas.addEventListener('mouseup', handleEnd);
@@ -642,15 +645,12 @@ function initWatchStyleGrid(categories) {
     canvas.addEventListener('touchmove', handleMove, { passive: false });
     canvas.addEventListener('touchend', handleEnd);
 
-    // Initial render
     updatePositions();
 
-    // Debounced resize handler
     let resizeTimeout;
     window.addEventListener('resize', () => {
         clearTimeout(resizeTimeout);
         resizeTimeout = setTimeout(() => {
-            const newRect = canvas.getBoundingClientRect();
             scheduleUpdate();
         }, 100);
     });
