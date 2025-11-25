@@ -409,15 +409,24 @@ function initWatchStyleGrid(categories) {
     const centerSize = isMobile ? 140 : 180;
     const spacing = isMobile ? 30 : 40;
 
-    // *** Infinite scroll: കാറ്റഗറികൾ repeat ചെയ്യുന്നു ***
-    const repeatCount = 3; // 3x3 grid of repeats
-    const infiniteCategories = [];
-    for (let i = 0; i < repeatCount * repeatCount; i++) {
-        infiniteCategories.push(...categories);
-    }
-
-    // Calculate honeycomb positions for infinite grid
-    const positions = calculateHoneycombPositions(infiniteCategories.length, itemSize, spacing);
+    // Calculate honeycomb positions (no infinite repeat)
+    const positions = calculateHoneycombPositions(categories.length, itemSize, spacing);
+    
+    // *** Calculate boundaries based on actual positions ***
+    let minX = 0, maxX = 0, minY = 0, maxY = 0;
+    positions.forEach(pos => {
+        minX = Math.min(minX, pos.x);
+        maxX = Math.max(maxX, pos.x);
+        minY = Math.min(minY, pos.y);
+        maxY = Math.max(maxY, pos.y);
+    });
+    
+    // Add padding to boundaries
+    const boundaryPadding = itemSize * 1.5;
+    minX -= boundaryPadding;
+    maxX += boundaryPadding;
+    minY -= boundaryPadding;
+    maxY += boundaryPadding;
     
     let offsetX = 0;
     let offsetY = 0;
@@ -432,7 +441,7 @@ function initWatchStyleGrid(categories) {
     let animationFrameId = null;
 
     // Create category items with GPU acceleration
-    infiniteCategories.forEach((category, index) => {
+    categories.forEach((category, index) => {
         const item = document.createElement('div');
         item.className = 'category-item-watch';
         item.style.width = `${itemSize}px`;
@@ -454,6 +463,34 @@ function initWatchStyleGrid(categories) {
     const canvasRect = canvas.getBoundingClientRect();
     const centerX = canvasRect.width / 2;
     const centerY = canvasRect.height / 2;
+
+    // *** Boundary constraint with elastic effect ***
+    function constrainToBounds(x, y) {
+        const elasticity = 0.3; // Resistance at boundaries
+        
+        let constrainedX = x;
+        let constrainedY = y;
+        
+        // X boundaries with elastic resistance
+        if (x > -minX) {
+            const overflow = x - (-minX);
+            constrainedX = -minX + overflow * elasticity;
+        } else if (x < -maxX) {
+            const overflow = x - (-maxX);
+            constrainedX = -maxX + overflow * elasticity;
+        }
+        
+        // Y boundaries with elastic resistance
+        if (y > -minY) {
+            const overflow = y - (-minY);
+            constrainedY = -minY + overflow * elasticity;
+        } else if (y < -maxY) {
+            const overflow = y - (-maxY);
+            constrainedY = -maxY + overflow * elasticity;
+        }
+        
+        return { x: constrainedX, y: constrainedY };
+    }
 
     // *** Performance: Batch DOM updates ***
     let updateScheduled = false;
@@ -550,8 +587,13 @@ function initWatchStyleGrid(categories) {
         e.preventDefault();
         
         const point = e.touches ? e.touches[0] : e;
-        const newX = point.clientX - startX;
-        const newY = point.clientY - startY;
+        let newX = point.clientX - startX;
+        let newY = point.clientY - startY;
+        
+        // *** Apply boundary constraints ***
+        const constrained = constrainToBounds(newX, newY);
+        newX = constrained.x;
+        newY = constrained.y;
         
         velocityX = newX - currentX;
         velocityY = newY - currentY;
@@ -568,16 +610,73 @@ function initWatchStyleGrid(categories) {
         isDragging = false;
         canvas.style.cursor = 'grab';
         
-        // *** Smooth inertia with RAF ***
+        // *** Snap back if outside bounds + smooth inertia ***
         function animate() {
             const friction = 0.95;
+            const snapStrength = 0.1;
             
-            if (Math.abs(velocityX) > 0.3 || Math.abs(velocityY) > 0.3) {
+            // Check if outside hard boundaries
+            let needsSnap = false;
+            let targetX = offsetX;
+            let targetY = offsetY;
+            
+            if (offsetX > -minX) {
+                targetX = -minX;
+                needsSnap = true;
+            } else if (offsetX < -maxX) {
+                targetX = -maxX;
+                needsSnap = true;
+            }
+            
+            if (offsetY > -minY) {
+                targetY = -minY;
+                needsSnap = true;
+            } else if (offsetY < -maxY) {
+                targetY = -maxY;
+                needsSnap = true;
+            }
+            
+            // Snap back animation
+            if (needsSnap) {
+                offsetX += (targetX - offsetX) * snapStrength;
+                offsetY += (targetY - offsetY) * snapStrength;
+                currentX = offsetX;
+                currentY = offsetY;
+                
+                scheduleUpdate();
+                
+                // Continue until close enough
+                if (Math.abs(offsetX - targetX) > 1 || Math.abs(offsetY - targetY) > 1) {
+                    animationFrameId = requestAnimationFrame(animate);
+                } else {
+                    offsetX = targetX;
+                    offsetY = targetY;
+                    currentX = offsetX;
+                    currentY = offsetY;
+                    scheduleUpdate();
+                    animationFrameId = null;
+                }
+            }
+            // Inertia animation
+            else if (Math.abs(velocityX) > 0.3 || Math.abs(velocityY) > 0.3) {
                 velocityX *= friction;
                 velocityY *= friction;
                 
-                offsetX += velocityX;
-                offsetY += velocityY;
+                let newOffsetX = offsetX + velocityX;
+                let newOffsetY = offsetY + velocityY;
+                
+                // Check boundaries during inertia
+                if (newOffsetX > -minX || newOffsetX < -maxX) {
+                    velocityX *= -0.3; // Bounce effect
+                    newOffsetX = Math.max(-maxX, Math.min(-minX, newOffsetX));
+                }
+                if (newOffsetY > -minY || newOffsetY < -maxY) {
+                    velocityY *= -0.3; // Bounce effect
+                    newOffsetY = Math.max(-maxY, Math.min(-minY, newOffsetY));
+                }
+                
+                offsetX = newOffsetX;
+                offsetY = newOffsetY;
                 currentX = offsetX;
                 currentY = offsetY;
                 
