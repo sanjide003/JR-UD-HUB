@@ -389,9 +389,15 @@
     );
     border: 2px dashed rgba(212, 175, 55, 0.2);
     cursor: grab;
-    pointer-events: auto; /* Only this area is draggable */
+    pointer-events: auto;
     z-index: 5;
     transition: all 0.3s ease;
+    
+    /* *** Critical for mobile touch *** */
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
 }
 
 .category-drag-zone:active {
