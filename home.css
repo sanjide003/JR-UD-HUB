@@ -1,16 +1,14 @@
-/* ഇത് മെച്ചപ്പെടുത്തിയ home.css - Apple Watch Style Category Grid */
+/* ഇത് home.css (Updated with Watch Style Grid) */
 
-/* --- 1. ഹോം പേജ് ടോപ്പ് ബാനർ - മെച്ചപ്പെടുത്തിയത് --- */
+/* --- 1. ഹോം പേജ് ടോപ്പ് ബാനർ --- */
 .home-top-banner {
     width: 100%;
     height: auto;
     line-height: 0; 
     position: relative; 
     padding-bottom: 4px; 
-    background-color: #000;
-    overflow: hidden;
+    background-color: #000; 
 }
-
 .home-top-banner::after {
     content: '';
     position: absolute;
@@ -18,556 +16,180 @@
     left: 0;
     width: 100%;
     height: 4px; 
-    background: linear-gradient(90deg, 
-        var(--bg-color) 0%, 
-        var(--primary-gold) 25%, 
-        var(--primary-gold) 75%, 
-        var(--bg-color) 100%
-    ); 
+    background: linear-gradient(90deg, var(--bg-color) 0%, var(--primary-gold) 25%, var(--primary-gold) 75%, var(--bg-color) 100%); 
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    animation: shimmer 3s infinite;
 }
-
-@keyframes shimmer {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
 .home-top-banner img {
     width: 100%;
     height: auto;
     display: block;
     max-height: 100px; 
-    object-fit: cover;
-    animation: fadeIn 0.8s ease-out;
+    object-fit: cover; 
 }
 
-/* --- 2. ഹീറോ സ്ലൈഡർ - Parallax & Smooth Effects --- */
+/* --- 2. ഹീറോ സ്ലൈഡർ --- */
 .hero-section-new {
     width: 100%;
     height: 70vh; 
     overflow: hidden;
     position: relative;
 }
-
-.hero-slider-new {
-    width: 100%;
-    height: 100%;
-}
-
-.hero-slider-new .swiper-slide {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-}
-
+.hero-slider-new { width: 100%; height: 100%; }
+.hero-slider-new .swiper-slide { width: 100%; height: 100%; position: relative; }
 .hero-slider-new .swiper-slide img,
-.hero-slider-new .swiper-slide video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    transform: scale(1.05);
-    transition: transform 8s ease-out;
-}
-
-/* Zoom-in effect on active slide */
-.hero-slider-new .swiper-slide-active img,
-.hero-slider-new .swiper-slide-active video {
-    animation: kenBurns 8s ease-out forwards;
-}
-
-@keyframes kenBurns {
-    0% { transform: scale(1.05); }
-    100% { transform: scale(1.1); }
-}
-
+.hero-slider-new .swiper-slide video,
 .hero-slider-new .swiper-slide iframe {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    aspect-ratio: 9 / 16; 
-    pointer-events: none; 
+    width: 100%; height: 100%; object-fit: cover;
 }
-
-/* Overlay gradient for better text readability */
-.hero-slider-new .swiper-slide::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to bottom, 
-        rgba(0,0,0,0.2) 0%, 
-        rgba(0,0,0,0.5) 100%
-    );
-    z-index: 1;
-}
-
+.hero-slider-new .swiper-slide iframe { aspect-ratio: 9 / 16; pointer-events: none; }
 .hero-slider-new .swiper-slide::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: transparent;
-    z-index: 5;
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: transparent; z-index: 5;
 }
-
-/* Enhanced pagination dots */
 .hero-slider-new .hero-pagination-dots {
-    position: absolute;
-    bottom: 20px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    z-index: 10;
+    position: absolute; bottom: 20px; left: 0; width: 100%; text-align: center; z-index: 10;
 }
-
 .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet {
-    background-color: rgba(255, 255, 255, 0.5);
-    width: 8px;
-    height: 8px;
-    opacity: 1;
-    margin: 0 6px;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
+    background-color: rgba(255, 255, 255, 0.7); width: 10px; height: 10px; opacity: 0.8; margin: 0 5px; transition: background-color 0.3s ease;
 }
-
 .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active {
-    background-color: var(--primary-gold);
-    width: 24px;
-    border-radius: 10px;
-    border-color: var(--primary-gold);
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+    background-color: var(--primary-gold); opacity: 1;
 }
 
-/* --- 3. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ - Fade In Animation --- */
+/* --- 3. ഹീറോ ടെക്സ്റ്റ് --- */
 .hero-text-section {
-    text-align: center;
-    padding: 2.5rem 1.5rem;
-    color: var(--text-muted);
-    font-size: 1rem;
-    line-height: 1.7;
-    max-width: 800px;
-    opacity: 0;
-    animation: fadeInUp 1s ease-out 0.3s forwards;
+    text-align: center; padding: 2.5rem 1.5rem; color: var(--text-muted); font-size: 1rem; line-height: 1.7; max-width: 800px;
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* --- 4. 'For You' (ടോപ്പ് സെല്ലേഴ്സ്) - Enhanced Cards --- */
-.home-section {
-    opacity: 0;
-    animation: fadeInUp 1s ease-out 0.5s forwards;
-}
-
-/* *** മാറ്റം: Heading Center & Underline നീക്കം *** */
-.section-title-new {
-    position: relative;
-    display: block;
-    text-align: center;
-    margin: 0 auto 2rem;
-    padding-bottom: 0;
-}
-
-/* Underline നീക്കം ചെയ്തു */
-.section-title-new::after {
-    display: none;
-}
-
-.top-sellers-swiper-new {
-    padding: 0 30px; 
-}
-
+/* --- 4. For You (Top Sellers) --- */
+.top-sellers-swiper-new { padding: 0 30px; }
 .top-sellers-swiper-new .swiper-slide {
-    text-align: center;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    overflow: hidden;
-    background-color: var(--card-bg);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
+    text-align: center; border: 1px solid var(--border-color); border-radius: 8px; overflow: hidden; background-color: var(--card-bg);
 }
-
-.top-sellers-swiper-new .swiper-slide::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, 
-        rgba(212, 175, 55, 0.1) 0%, 
-        transparent 50%
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    z-index: 1;
-    pointer-events: none;
-}
-
-.top-sellers-swiper-new .swiper-slide:hover {
-    transform: translateY(-8px);
-    border-color: var(--primary-gold);
-    box-shadow: 0 12px 24px rgba(212, 175, 55, 0.2);
-}
-
-.top-sellers-swiper-new .swiper-slide:hover::before {
-    opacity: 1;
-}
-
-.top-sellers-product-image {
-    width: 100%;
-    aspect-ratio: 4 / 5; 
-    object-fit: cover;
-    margin-bottom: 0;
-    transition: transform 0.6s ease;
-}
-
-.top-sellers-swiper-new .swiper-slide:hover .top-sellers-product-image {
-    transform: scale(1.08);
-}
-
-.top-sellers-product-info {
-    padding: 1rem;
-    position: relative;
-    z-index: 2;
-}
-
-/* ആനിമേറ്റഡ് പുരോഗതി ഡോട്ടുകൾ */
+.top-sellers-product-image { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; margin-bottom: 0; }
+.top-sellers-product-info { padding: 0.75rem; }
 .top-sellers-pagination-new {
-    position: relative; 
-    margin-top: 1.5rem; 
-    margin-bottom: 1.5rem; 
-    display: flex;
-    justify-content: center;
-    gap: 10px; 
+    position: relative; margin-top: 1.5rem; margin-bottom: 1.5rem; display: flex; justify-content: center; gap: 8px; 
 }
-
 .top-sellers-pagination-new .swiper-pagination-bullet {
-    width: 40px; 
-    height: 6px;
-    border-radius: 3px;
-    background-color: var(--border-color); 
-    opacity: 1;
-    overflow: hidden; 
-    cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
+    width: 30px; height: 5px; border-radius: 3px; background-color: var(--border-color); opacity: 1; overflow: hidden; cursor: pointer;
 }
-
-.top-sellers-pagination-new .swiper-pagination-bullet:hover {
-    background-color: rgba(212, 175, 55, 0.3);
-}
-
 .top-sellers-pagination-new .pagination-progress {
-    display: block;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, 
-        var(--primary-gold) 0%, 
-        var(--secondary-gold) 100%
-    );
-    transform: scaleX(0); 
-    transform-origin: left;
-    box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+    display: block; width: 100%; height: 100%; background-color: var(--primary-gold); transform: scaleX(0); transform-origin: left; 
 }
-
-.top-sellers-pagination-new .swiper-pagination-bullet-active {
-    background-color: rgba(212, 175, 55, 0.2);
-}
-
 .top-sellers-pagination-new .swiper-pagination-bullet-active .pagination-progress {
     animation: progress-fill 4s linear forwards; 
 }
-
-@keyframes progress-fill {
-    from { transform: scaleX(0); }
-    to { transform: scaleX(1); }
-}
+@keyframes progress-fill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
 
 .top-sellers-product-name {
-    font-size: 0.95rem;
-    color: var(--text-color);
-    font-weight: 500;
-    margin-bottom: 0.5rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: color 0.3s ease;
+    font-size: 0.9rem; color: var(--text-color); font-weight: 500; margin-bottom: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+.top-sellers-product-price { font-size: 1rem; color: var(--text-muted); margin-bottom: 0.75rem; }
+.top-sellers-buttons { display: grid; grid-template-columns: 1fr 1fr; gap: 0.25rem; padding: 0; }
+.top-sellers-buttons .btn { padding: 0.5rem 0.25rem; font-size: 0.8rem; }
 
-.top-sellers-swiper-new .swiper-slide:hover .top-sellers-product-name {
-    color: var(--primary-gold);
-}
-
-.top-sellers-product-price {
-    font-size: 1.1rem; 
-    color: var(--primary-gold);
-    margin-bottom: 1rem;
-    font-weight: 600;
-}
-
-.top-sellers-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-    padding: 0;
-}
-
-.top-sellers-buttons .btn {
-    padding: 0.6rem 0.5rem;
-    font-size: 0.85rem;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-}
-
-/* Ripple effect on button click */
-.top-sellers-buttons .btn::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.top-sellers-buttons .btn:active::after {
-    width: 200px;
-    height: 200px;
-}
-
-/* --- 5. Apple Watch Style Category Grid --- */
+/* --- 5. SHOP BY CATEGORY (Apple Watch Style) --- */
 .home-category-grid-wrapper {
     width: 100%;
-    padding: 3rem 0;
     position: relative;
+    margin-top: 1rem;
     overflow: hidden;
-    min-height: 500px;
+    /* Container Style */
+    background: radial-gradient(circle at center, #1a1a1a 0%, #000000 80%);
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    box-shadow: inset 0 0 30px rgba(0,0,0,0.8);
 }
 
 .category-grid-canvas {
     width: 100%;
-    height: 500px;
+    height: 400px; /* Visible Height */
+    overflow: hidden; /* Hide scrollbars but allow JS scroll */
     position: relative;
-    overflow: visible;
     cursor: grab;
-    touch-action: none;
+    touch-action: none; /* Handle touches in JS */
 }
+.category-grid-canvas:active { cursor: grabbing; }
 
-.category-grid-canvas:active {
-    cursor: grabbing;
-}
-
-.category-item-watch {
-    position: absolute;
-    transform-origin: center;
-    /* *** GPU Acceleration *** */
-    will-change: transform, opacity;
-    transform: translate3d(0, 0, 0);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    /* Smooth transitions only when not dragging */
-    transition: opacity 0.2s ease;
-}
-
-.category-card-watch {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    overflow: hidden;
-    position: relative;
-    background-color: var(--card-bg);
-    background-size: cover;
-    background-position: center;
-    border: 2px solid var(--border-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* *** GPU Acceleration *** */
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    will-change: border-color, box-shadow;
-    /* Remove transition during drag */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.category-card-watch::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, 
-        transparent 0%, 
-        rgba(0,0,0,0.6) 100%
-    );
-    z-index: 1;
-}
-
-.category-card-watch h3 {
-    position: relative;
-    z-index: 2;
-    color: var(--primary-gold);
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-align: center;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-    padding: 0.5rem;
-    word-wrap: break-word;
-    max-width: 90%;
-}
-
-/* Center item - വലുതാക്കുന്നു */
-.category-item-watch.center .category-card-watch {
-    border-color: var(--primary-gold);
-    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
-}
-
-.category-item-watch.center .category-card-watch h3 {
-    font-size: 1rem;
-}
-
-.category-item-watch.center .category-card-watch::before {
-    background: radial-gradient(circle at center, 
-        rgba(212, 175, 55, 0.1) 0%, 
-        rgba(0,0,0,0.5) 100%
-    );
-}
-
-/* Scroll indicator */
+/* Hint Text */
 .category-scroll-hint {
     text-align: center;
     color: var(--text-muted);
-    font-size: 0.85rem;
-    margin-top: 1rem;
+    font-size: 0.8rem;
+    padding: 10px;
     opacity: 0.7;
     animation: pulse 2s infinite;
 }
+@keyframes pulse { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
 
-@keyframes pulse {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 0.3; }
+/* Bubble Item */
+.category-item-watch {
+    position: absolute;
+    top: 0; left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Initial state managed by JS */
+    will-change: transform, opacity;
+    transform-origin: center center;
 }
 
-/* --- 6. Scroll Reveal Animations --- */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+.category-card-watch {
+    width: 100%; height: 100%;
+    border-radius: 50%;
+    background-color: var(--card-bg);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    border: 2px solid var(--border-color);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    position: relative;
+    transition: border-color 0.3s ease;
 }
 
-/* Initial hidden state for scroll animations */
-.scroll-reveal {
+/* Name inside bubble */
+.category-card-watch h3 {
+    position: absolute;
+    width: 100%;
+    text-align: center;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.9);
     opacity: 0;
-    transform: translateY(40px);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    z-index: 2;
 }
 
-.scroll-reveal.revealed {
-    opacity: 1;
-    transform: translateY(0);
+/* Active State (Center) */
+.category-item-watch.center .category-card-watch {
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 25px rgba(212, 175, 55, 0.5);
 }
+.category-item-watch.center h3 { opacity: 1; }
 
-/* --- 7. Loading States & Skeletons --- */
-.skeleton {
-    background: linear-gradient(
-        90deg,
-        var(--card-bg) 0%,
-        rgba(255,255,255,0.05) 50%,
-        var(--card-bg) 100%
-    );
-    background-size: 200% 100%;
-    animation: skeleton-loading 1.5s infinite;
-    border-radius: 8px;
+/* Overlay for image */
+.category-card-watch::after {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    border-radius: 50%; background: rgba(0,0,0,0.3); transition: background 0.3s ease;
 }
+.category-item-watch.center .category-card-watch::after { background: rgba(0,0,0,0.1); }
 
-@keyframes skeleton-loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* --- 8. Responsive Adjustments --- */
+/* --- 6. Responsive --- */
 @media (max-width: 768px) {
-    .hero-section-new {
-        height: 60vh;
-    }
+    .hero-section-new { height: 60vh; }
+    .hero-text-section { padding: 2rem 1rem; font-size: 0.9rem; }
+    .top-sellers-swiper-new { padding: 0 30px; }
     
-    .hero-text-section {
-        padding: 2rem 1rem;
-        font-size: 0.9rem;
-    }
-    
-    .top-sellers-swiper-new {
-        padding: 0 20px;
-    }
-    
-    .category-grid-canvas {
-        height: 400px;
-    }
-    
-    .home-category-grid-wrapper {
-        min-height: 400px;
-    }
+    .category-grid-canvas { height: 380px; }
 }
 
-/* Tablet & Small Desktop */
-@media (min-width: 769px) and (max-width: 1199px) {
-    .top-sellers-swiper-new {
-        padding: 0;
-    }
-    
-    .top-sellers-swiper-new .swiper-slide {
-        text-align: center;
-    }
-    
-    .hero-section-new {
-        height: 75vh;
-    }
-    
-    .category-grid-canvas {
-        height: 550px;
-    }
-    
-    .home-category-grid-wrapper {
-        min-height: 550px;
-    }
-}
-
-/* Large Desktop */
-@media (min-width: 1200px) {
-    .hero-section-new {
-        height: 80vh;
-    }
-    
-    .container {
-        max-width: 1400px;
-    }
-    
-    .category-grid-canvas {
-        height: 600px;
-    }
-    
-    .home-category-grid-wrapper {
-        min-height: 600px;
-    }
+@media (min-width: 769px) {
+    .top-sellers-swiper-new { padding: 0; }
+    .category-grid-canvas { height: 500px; }
 }
