@@ -372,8 +372,10 @@ async function loadHomeCategories() {
 
         container.className = 'home-category-grid-wrapper';
         container.innerHTML = `
-            <div class="category-grid-canvas" id="category-canvas"></div>
-            <div class="category-scroll-hint">👆 Drag to explore categories</div>
+            <div class="category-grid-canvas" id="category-canvas">
+                <div class="category-drag-zone" id="category-drag-zone"></div>
+            </div>
+            <div class="category-scroll-hint">👆 Drag center circle to explore</div>
         `;
 
         initWatchStyleGrid(categories);
@@ -386,7 +388,8 @@ async function loadHomeCategories() {
 
 function initWatchStyleGrid(categories) {
     const canvas = document.getElementById('category-canvas');
-    if (!canvas) return;
+    const dragZone = document.getElementById('category-drag-zone');
+    if (!canvas || !dragZone) return;
 
     const isMobile = window.innerWidth <= 768;
     const itemSize = isMobile ? 100 : 130;
@@ -550,6 +553,8 @@ function initWatchStyleGrid(categories) {
             cancelAnimationFrame(animationFrameId);
             animationFrameId = null;
         }
+        
+        dragZone.classList.add('dragging');
     }
 
     function handleMove(e) {
@@ -568,6 +573,7 @@ function initWatchStyleGrid(categories) {
             isDragging = true;
             if (e.touches) {
                 e.preventDefault();
+                e.stopPropagation();
             }
         }
         
@@ -598,9 +604,13 @@ function initWatchStyleGrid(categories) {
     }
 
     function handleEnd() {
-        if (!isDragging) return;
+        if (!isDragging) {
+            dragZone.classList.remove('dragging');
+            return;
+        }
         
         isDragging = false;
+        dragZone.classList.remove('dragging');
         
         function animate() {
             const friction = 0.93;
@@ -621,11 +631,14 @@ function initWatchStyleGrid(categories) {
         animate();
     }
 
-    canvas.addEventListener('mousedown', handleStart);
+    // *** Attach to drag zone only ***
+    dragZone.addEventListener('mousedown', handleStart);
+    dragZone.addEventListener('touchstart', handleStart, { passive: true });
+    
+    // Move and end on document
     document.addEventListener('mousemove', handleMove);
     document.addEventListener('mouseup', handleEnd);
     
-    canvas.addEventListener('touchstart', handleStart, { passive: true });
     document.addEventListener('touchmove', handleMove, { passive: false });
     document.addEventListener('touchend', handleEnd);
 
