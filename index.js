@@ -537,9 +537,12 @@ function initWatchStyleGrid(categories) {
     let lastMoveTime = 0;
     let lastX = 0;
     let lastY = 0;
+    let startedInZone = false; // Track if drag started in zone
     
     function handleStart(e) {
         if (e.touches && e.touches.length > 1) return;
+        
+        startedInZone = true; // Mark that drag started in zone
         
         const point = e.touches ? e.touches[0] : e;
         startX = point.clientX;
@@ -558,6 +561,9 @@ function initWatchStyleGrid(categories) {
     }
 
     function handleMove(e) {
+        // *** Only allow drag if started in zone ***
+        if (!startedInZone) return;
+        
         if (e.touches && e.touches.length > 1) {
             handleEnd(e);
             return;
@@ -604,6 +610,10 @@ function initWatchStyleGrid(categories) {
     }
 
     function handleEnd() {
+        if (!startedInZone) return; // Ignore if didn't start in zone
+        
+        startedInZone = false; // Reset
+        
         if (!isDragging) {
             dragZone.classList.remove('dragging');
             return;
@@ -631,16 +641,16 @@ function initWatchStyleGrid(categories) {
         animate();
     }
 
-    // *** Attach to drag zone only ***
+    // *** Events only on drag zone ***
     dragZone.addEventListener('mousedown', handleStart);
+    dragZone.addEventListener('mousemove', handleMove);
+    dragZone.addEventListener('mouseup', handleEnd);
+    dragZone.addEventListener('mouseleave', handleEnd);
+    
     dragZone.addEventListener('touchstart', handleStart, { passive: true });
-    
-    // Move and end on document
-    document.addEventListener('mousemove', handleMove);
-    document.addEventListener('mouseup', handleEnd);
-    
-    document.addEventListener('touchmove', handleMove, { passive: false });
-    document.addEventListener('touchend', handleEnd);
+    dragZone.addEventListener('touchmove', handleMove, { passive: false });
+    dragZone.addEventListener('touchend', handleEnd);
+    dragZone.addEventListener('touchcancel', handleEnd);
 
     updatePositions();
 
