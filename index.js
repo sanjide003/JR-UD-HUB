@@ -537,12 +537,14 @@ function initWatchStyleGrid(categories) {
     let lastMoveTime = 0;
     let lastX = 0;
     let lastY = 0;
-    let startedInZone = false; // Track if drag started in zone
+    let startedInZone = false;
+    let hasMoved = false; // Track if actually dragged
     
     function handleStart(e) {
         if (e.touches && e.touches.length > 1) return;
         
-        startedInZone = true; // Mark that drag started in zone
+        startedInZone = true;
+        hasMoved = false;
         
         const point = e.touches ? e.touches[0] : e;
         startX = point.clientX;
@@ -561,7 +563,6 @@ function initWatchStyleGrid(categories) {
     }
 
     function handleMove(e) {
-        // *** Only allow drag if started in zone ***
         if (!startedInZone) return;
         
         if (e.touches && e.touches.length > 1) {
@@ -577,6 +578,7 @@ function initWatchStyleGrid(categories) {
         
         if (!isDragging && totalDistance > 10) {
             isDragging = true;
+            hasMoved = true;
             if (e.touches) {
                 e.preventDefault();
                 e.stopPropagation();
@@ -609,17 +611,20 @@ function initWatchStyleGrid(categories) {
         scheduleUpdate();
     }
 
-    function handleEnd() {
-        if (!startedInZone) return; // Ignore if didn't start in zone
+    function handleEnd(e) {
+        if (!startedInZone) return;
         
-        startedInZone = false; // Reset
+        startedInZone = false;
         
-        if (!isDragging) {
+        // *** If didn't move, allow link click ***
+        if (!hasMoved && !isDragging) {
             dragZone.classList.remove('dragging');
+            // Let the click pass through to category link
             return;
         }
         
         isDragging = false;
+        hasMoved = false;
         dragZone.classList.remove('dragging');
         
         function animate() {
@@ -641,7 +646,7 @@ function initWatchStyleGrid(categories) {
         animate();
     }
 
-    // *** Events only on drag zone ***
+    // *** Events on drag zone ***
     dragZone.addEventListener('mousedown', handleStart);
     dragZone.addEventListener('mousemove', handleMove);
     dragZone.addEventListener('mouseup', handleEnd);
