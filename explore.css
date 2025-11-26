@@ -10,6 +10,34 @@
     gap: 2rem; 
 }
 
+/* --- പുതിയത്: എക്സ്പ്ലോർ പേജ് ബാനർ --- */
+.explore-top-banner {
+    width: 100%;
+    height: auto;
+    line-height: 0;
+    position: relative;
+    background-color: #000;
+    overflow: hidden;
+    margin-bottom: 2rem; /* കാർഡുകളുമായി അകലം */
+    border-radius: 8px;  /* അല്പം വളവ് */
+    display: none; /* ജാവാസ്ക്രിപ്റ്റ് വഴി ഇമേജ് വന്നാൽ മാത്രം കാണിക്കും */
+}
+
+.explore-top-banner img {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 200px; /* മൊബൈലിൽ അധികം സ്ഥലം എടുക്കാതിരിക്കാൻ */
+    object-fit: cover;
+    animation: fadeIn 0.8s ease-out;
+}
+
+@media (min-width: 768px) {
+    .explore-top-banner img {
+        max-height: 300px; /* ഡെസ്ക്ടോപ്പിൽ വലിപ്പം കൂട്ടാം */
+    }
+}
+
 /* --- 2. പ്രൊഡക്റ്റ് കാർഡ് (പ്രധാനപ്പെട്ടത്) --- */
 .explore-card {
     background-color: var(--card-bg);
