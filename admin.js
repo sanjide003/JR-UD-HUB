@@ -1,5 +1,5 @@
 // ഇതാണ് പുതിയ 'admin.js' ഫയൽ.
-// *** മാറ്റം: Featured Products Search & Remove Only ***
+// മാറ്റം: Dealer & ChatBot നമ്പറുകൾ സേവ് ചെയ്യുന്ന ലോജിക് ചേർത്തു.
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -17,7 +17,7 @@ import {
     setDoc,
     doc,
     deleteDoc,
-    updateDoc, // *** updateDoc ചേർത്തു ***
+    updateDoc, 
     onSnapshot, 
     query,
     where, 
@@ -78,14 +78,13 @@ const confirmBtnDelete = document.getElementById("confirm-btn-delete");
 const confirmTitle = document.getElementById("confirm-title");
 const confirmMessage = document.getElementById("confirm-message");
 
-// *** പുതിയത്: Featured Search Elements ***
 const featuredSearchInput = document.getElementById("featured-product-search");
 const featuredSearchResults = document.getElementById("featured-search-results");
 
 let currentProductsQuery = null;
 let currentFeaturedQuery = null;
 let deleteInfo = { id: null, type: null }; 
-let allProductsCache = []; // സെർച്ച് വേഗത്തിലാക്കാൻ
+let allProductsCache = []; 
 
 function showStatus(element, message, isError = true) {
     element.textContent = message;
@@ -146,7 +145,7 @@ onAuthStateChanged(auth, (user) => {
         loadFeaturedProducts(); 
         loadHeroSlides(); 
         loadAllSettings();
-        cacheAllProductsForSearch(); // *** സെർച്ചിനായി പ്രൊഡക്റ്റുകൾ ലോഡ് ചെയ്യുന്നു ***
+        cacheAllProductsForSearch(); 
         setupImageUploader('product-image-list-container', 'add-image-url-btn');
         if (productImageContainer.children.length === 0) addImageInput('product-image-list-container');
         setupMoreLinksUploader('product-more-links-container', 'add-more-link-btn');
@@ -208,6 +207,11 @@ async function loadAllSettings() {
             document.getElementById("setting-logo-text").value = settings.logoText || '';
             document.getElementById("setting-logo-subtitle").value = settings.logoSubtitle || '';
             document.getElementById("setting-home-banner-url").value = settings.homeBannerUrl || '';
+            
+            // *** ലോഡ് ചെയ്യുന്ന ഭാഗം ***
+            document.getElementById("setting-chatbot-number").value = settings.chatbotNumber || '';
+            document.getElementById("setting-dealer-number").value = settings.dealerChatNumber || '';
+
             document.getElementById("setting-phone").value = settings.phone || '';
             document.getElementById("setting-email").value = settings.email || '';
             document.getElementById("setting-address").value = settings.address || '';
@@ -216,8 +220,9 @@ async function loadAllSettings() {
             document.getElementById("setting-facebook-url").value = settings.facebookUrl || '';
             document.getElementById("setting-instagram-url").value = settings.instagramUrl || '';
             document.getElementById("setting-youtube-url").value = settings.youtubeUrl || '';
+            
             const titleElement = document.getElementById("admin-panel-title");
-            if (titleElement) titleElement.textContent = `${settings.logoText || 'Admin'} - Panel`;
+            if (titleElement && settings.logoText) titleElement.textContent = `${settings.logoText} - Admin`;
             
             document.getElementById("setting-logo-image-url").dispatchEvent(new Event('input'));
             document.getElementById("setting-home-banner-url").dispatchEvent(new Event('input'));
@@ -235,12 +240,15 @@ generalSettingsForm.addEventListener("submit", async (e) => {
             logoText: document.getElementById("setting-logo-text").value,
             logoSubtitle: document.getElementById("setting-logo-subtitle").value,
             homeBannerUrl: document.getElementById("setting-home-banner-url").value,
+            // *** സേവ് ചെയ്യുന്ന ഭാഗം ***
+            chatbotNumber: document.getElementById("setting-chatbot-number").value,
+            dealerChatNumber: document.getElementById("setting-dealer-number").value
         };
         const docRef = doc(db, "settings", "global");
         await setDoc(docRef, settings, { merge: true });
         showStatus(adminStatus, "General settings saved!", false);
         const titleElement = document.getElementById("admin-panel-title");
-        if (titleElement) titleElement.textContent = `${settings.logoText || 'Admin'} - Panel`;
+        if (titleElement && settings.logoText) titleElement.textContent = `${settings.logoText} - Admin`;
     } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
     finally { enableButton(button, "Save General Settings"); }
 });
@@ -339,7 +347,6 @@ function loadProducts(categoryId = "all") {
      }, (error) => { console.error("Error loading products: ", error); showStatus(adminStatus, "Error loading products."); });
 }
 
-// *** പുതിയത്: സെർച്ചിനായി പ്രൊഡക്റ്റുകൾ കാഷ് ചെയ്യുന്നു ***
 function cacheAllProductsForSearch() {
     const q = query(collection(db, "products"));
     onSnapshot(q, (snapshot) => {
@@ -350,7 +357,6 @@ function cacheAllProductsForSearch() {
     });
 }
 
-// *** പുതിയത്: സെർച്ച് ഇൻപുട്ട് ഇവന്റ് ***
 featuredSearchInput.addEventListener('input', (e) => {
     const searchTerm = e.target.value.toLowerCase().trim();
     featuredSearchResults.innerHTML = '';
@@ -361,7 +367,7 @@ featuredSearchInput.addEventListener('input', (e) => {
     }
 
     const filtered = allProductsCache.filter(p => 
-        !p.featured && // നിലവിൽ ഫീച്ചേർഡ് അല്ലാത്തവ മാത്രം
+        !p.featured && 
         p.name.toLowerCase().includes(searchTerm)
     );
 
@@ -387,7 +393,6 @@ featuredSearchInput.addEventListener('input', (e) => {
     }
 });
 
-// *** പുതിയത്: Featured-ലേക്ക് ചേർക്കുന്നു ***
 async function addToFeatured(productId) {
     try {
         const ref = doc(db, "products", productId);
@@ -400,7 +405,6 @@ async function addToFeatured(productId) {
     }
 }
 
-// *** പുതിയത്: Featured-ൽ നിന്ന് മാറ്റുന്നു (Remove Only) ***
 async function removeFromFeatured(productId) {
     if(!confirm("Remove this product from Featured list? (It will not be deleted from database)")) return;
     try {
@@ -412,7 +416,6 @@ async function removeFromFeatured(productId) {
     }
 }
 
-// *** പുതിയത്: Featured List ലോഡ് ചെയ്യുന്നു (Remove Button Only) ***
 function loadFeaturedProducts() {
      const q = query(collection(db, "products"), where("featured", "==", true));
      if (currentFeaturedQuery) currentFeaturedQuery(); 
@@ -435,9 +438,7 @@ function loadFeaturedProducts() {
                 </td>
             `;
             
-            // ഇവന്റ് ലിസണർ ചേർക്കുന്നു (കാരണം HTML string-ൽ onclick വർക്ക് ചെയ്യില്ല module ആയതുകൊണ്ട്)
             row.querySelector('.btn-remove-featured').addEventListener('click', () => removeFromFeatured(id));
-            
             featuredProductsListBody.appendChild(row);
         });
      }, (error) => { console.error("Error loading featured products: ", error); featuredProductsListBody.innerHTML = '<tr><td colspan="4">Error loading featured products.</td></tr>'; });

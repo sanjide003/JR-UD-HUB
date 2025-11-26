@@ -1,4 +1,5 @@
-// മെച്ചപ്പെടുത്തിയ 'index.js' ഫയൽ - 3D Gallery Effect ഉൾപ്പെടെ
+// Apple Watch Style Category Grid - index.js
+// മാറ്റം: Placeholder Image ടെക്സ്റ്റ് 'JR UD HUB' എന്നാക്കി.
 
 import { db } from './firebase-config.js';
 import { 
@@ -28,6 +29,9 @@ document.addEventListener("DOMContentLoaded", () => {
     document.documentElement.style.scrollBehavior = 'smooth';
 });
 
+/**
+ * Scroll Reveal Animation Setup
+ */
 function setupScrollReveal() {
     const observerOptions = {
         root: null,
@@ -51,6 +55,9 @@ function setupScrollReveal() {
     });
 }
 
+/**
+ * ഹോം പേജ് ബാനർ
+ */
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
     if (!bannerContainer) return;
@@ -73,6 +80,9 @@ async function loadHomeBanner() {
     }
 }
 
+/**
+ * 1. ഹീറോ സ്ലൈഡർ
+ */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
     if (!sliderWrapper) return;
@@ -82,7 +92,8 @@ async function loadHeroSlider() {
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-            sliderWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/600x800/000000/D4AF37?text=Al+Ambar" alt="Placeholder"></div>`;
+            // *** മാറ്റം: ടെക്സ്റ്റ് മാറ്റി ***
+            sliderWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/600x800/000000/D4AF37?text=JR+UD+HUB" alt="Placeholder"></div>`;
         } else {
             sliderWrapper.innerHTML = '';
             querySnapshot.forEach((doc) => {
@@ -205,6 +216,9 @@ function setupSmartVideoAutoplay() {
     });
 }
 
+/**
+ * 2. "For You" (Top Sellers)
+ */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
@@ -349,6 +363,9 @@ function showSkeletonLoader(container, count = 5) {
     }
 }
 
+/**
+ * 3. Apple Watch Style Category Grid
+ */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
@@ -370,6 +387,7 @@ async function loadHomeCategories() {
             });
         });
 
+        // Create Watch-style grid
         container.className = 'home-category-grid-wrapper';
         container.innerHTML = `
             <div class="category-grid-canvas" id="category-canvas">
@@ -396,8 +414,10 @@ function initWatchStyleGrid(categories) {
     const centerSize = isMobile ? 140 : 180;
     const spacing = isMobile ? 30 : 40;
 
+    // Calculate honeycomb positions
     const basePositions = calculateHoneycombPositions(categories.length, itemSize, spacing);
     
+    // Calculate grid dimensions properly
     let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
     basePositions.forEach(pos => {
         minX = Math.min(minX, pos.x);
@@ -409,6 +429,7 @@ function initWatchStyleGrid(categories) {
     const gridWidth = (maxX - minX) + itemSize * 3;
     const gridHeight = (maxY - minY) + itemSize * 3;
     
+    // Create 3x3 grid for seamless infinite scroll
     const positions = [];
     const categoryMap = [];
     
@@ -434,8 +455,10 @@ function initWatchStyleGrid(categories) {
     let lastUpdateTime = Date.now();
     let animationFrameId = null;
     
-    const dragMultiplier = 0.5;
+    // *** Fixed drag sensitivity ***
+    const dragMultiplier = 0.5; // Consistent, slower movement
 
+    // Create category items
     positions.forEach((pos, index) => {
         const categoryIndex = categoryMap[index];
         const category = categories[categoryIndex];
@@ -462,6 +485,7 @@ function initWatchStyleGrid(categories) {
     const centerX = canvasRect.width / 2;
     const centerY = canvasRect.height / 2;
 
+    // Smooth wrapping function
     function normalizeOffset(offset, gridSize) {
         const halfGrid = gridSize / 2;
         
@@ -494,6 +518,7 @@ function initWatchStyleGrid(categories) {
         if (deltaTime < 16) return;
         lastUpdateTime = now;
 
+        // Apply smooth wrapping
         offsetX = normalizeOffset(offsetX, gridWidth);
         offsetY = normalizeOffset(offsetY, gridHeight);
 
@@ -537,15 +562,12 @@ function initWatchStyleGrid(categories) {
     let lastMoveTime = 0;
     let lastX = 0;
     let lastY = 0;
-    let startedInZone = false;
-    let hasMoved = false; // Track if actually dragged
     
     function handleStart(e) {
-        if (e.touches && e.touches.length > 1) return;
+        // *** Touch-specific handling ***
+        if (e.touches && e.touches.length > 1) return; // Ignore multi-touch
         
-        startedInZone = true;
-        hasMoved = false;
-        
+        isDragging = true;
         const point = e.touches ? e.touches[0] : e;
         startX = point.clientX;
         startY = point.clientY;
@@ -559,52 +581,49 @@ function initWatchStyleGrid(categories) {
             animationFrameId = null;
         }
         
-        dragZone.classList.add('dragging');
+        // Hide drag hint
+        if (dragZone) dragZone.style.opacity = '0.5';
+        
+        // *** Important: Prevent default for touch ***
+        if (e.touches) {
+            e.preventDefault();
+        }
     }
 
     function handleMove(e) {
-        if (!startedInZone) return;
+        if (!isDragging) return;
         
+        // *** Ignore if multiple touches ***
         if (e.touches && e.touches.length > 1) {
             handleEnd(e);
             return;
         }
         
-        const point = e.touches ? e.touches[0] : e;
-        
-        const distanceX = Math.abs(point.clientX - startX);
-        const distanceY = Math.abs(point.clientY - startY);
-        const totalDistance = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-        
-        if (!isDragging && totalDistance > 10) {
-            isDragging = true;
-            hasMoved = true;
-            if (e.touches) {
-                e.preventDefault();
-                e.stopPropagation();
-            }
-        }
-        
-        if (!isDragging) return;
-        
         const now = Date.now();
         if (now - lastMoveTime < 16) return;
         lastMoveTime = now;
         
+        // *** Prevent default for touch ***
         if (e.touches) {
             e.preventDefault();
             e.stopPropagation();
         }
         
+        const point = e.touches ? e.touches[0] : e;
+        
+        // *** Calculate delta from last position ***
         const deltaX = (point.clientX - lastX) * dragMultiplier;
         const deltaY = (point.clientY - lastY) * dragMultiplier;
         
+        // Update offset
         offsetX += deltaX;
         offsetY += deltaY;
         
+        // Store velocity for inertia
         velocityX = deltaX;
         velocityY = deltaY;
         
+        // Update last position
         lastX = point.clientX;
         lastY = point.clientY;
         
@@ -612,21 +631,14 @@ function initWatchStyleGrid(categories) {
     }
 
     function handleEnd(e) {
-        if (!startedInZone) return;
-        
-        startedInZone = false;
-        
-        // *** If didn't move, allow link click ***
-        if (!hasMoved && !isDragging) {
-            dragZone.classList.remove('dragging');
-            // Let the click pass through to category link
-            return;
-        }
+        if (!isDragging) return;
         
         isDragging = false;
-        hasMoved = false;
-        dragZone.classList.remove('dragging');
         
+        // Show drag hint
+        if (dragZone) dragZone.style.opacity = '1';
+        
+        // Smooth inertia
         function animate() {
             const friction = 0.93;
             
@@ -646,16 +658,29 @@ function initWatchStyleGrid(categories) {
         animate();
     }
 
-    // *** Events on drag zone ***
+    // *** Mouse events ***
     dragZone.addEventListener('mousedown', handleStart);
-    dragZone.addEventListener('mousemove', handleMove);
-    dragZone.addEventListener('mouseup', handleEnd);
-    dragZone.addEventListener('mouseleave', handleEnd);
+    document.addEventListener('mousemove', handleMove);
+    document.addEventListener('mouseup', handleEnd);
     
-    dragZone.addEventListener('touchstart', handleStart, { passive: true });
-    dragZone.addEventListener('touchmove', handleMove, { passive: false });
-    dragZone.addEventListener('touchend', handleEnd);
-    dragZone.addEventListener('touchcancel', handleEnd);
+    // *** Touch events with proper options ***
+    dragZone.addEventListener('touchstart', handleStart, { 
+        passive: false,
+        capture: false 
+    });
+    
+    document.addEventListener('touchmove', handleMove, { 
+        passive: false,
+        capture: false 
+    });
+    
+    document.addEventListener('touchend', handleEnd, { 
+        passive: true 
+    });
+    
+    document.addEventListener('touchcancel', handleEnd, { 
+        passive: true 
+    });
 
     updatePositions();
 
@@ -672,6 +697,7 @@ function calculateHoneycombPositions(count, size, spacing) {
     const positions = [];
     const radius = size + spacing;
     
+    // Center item
     positions.push({ x: 0, y: 0 });
     
     let itemCount = 1;
@@ -696,6 +722,9 @@ function calculateHoneycombPositions(count, size, spacing) {
     return positions;
 }
 
+/**
+ * Cart interactions
+ */
 const topSellersGrid = document.getElementById("top-sellers-grid");
 if (topSellersGrid) {
     topSellersGrid.addEventListener('click', (e) => {

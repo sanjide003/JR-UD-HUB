@@ -1,4 +1,4 @@
-// ഇതാണ് പുതിയ 'explore.js' - ബട്ടൺ സ്റ്റേറ്റുകൾ ശരിയാക്കിയത്
+// ഇതാണ് പുതിയ 'explore.js' ഫയൽ.
 
 import {
     collection,
@@ -189,6 +189,7 @@ function buildCardContent(productId, product) {
     
     const isInCart = isItemInCart(productId);
     const activeClass = isInCart ? 'added-to-cart' : '';
+    const svgFill = isInCart ? 'style="fill: var(--primary-gold); color: var(--primary-gold);"' : '';
     const buttonTitle = isInCart ? 'Remove from Cart' : 'Add to Cart';
 
     return `
@@ -208,22 +209,20 @@ function buildCardContent(productId, product) {
                     <span class="action-count rating-count">0</span>
                 </div>
 
-                <button title="Share" class="share-btn" data-id="${productId}" data-name="${product.name}" data-price="${price}">
-                    <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                </button>
+                <button title="Share" class="share-btn" data-id="${productId}" data-name="${product.name}" data-price="${price}"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
                 
-                <button title="${buttonTitle}" class="bookmark-btn ${activeClass}" data-id="${productId}" data-name="${product.name}" data-price="${price}" data-mrp="${mrp}" data-image="${imageUrl}" data-size="${product.size || ''}">
-                    <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-                </button>
+                <button title="${buttonTitle}" class="bookmark-btn ${activeClass}" data-id="${productId}" data-name="${product.name}" data-price="${price}" data-mrp="${mrp}" data-image="${imageUrl}" data-size="${product.size || ''}"><svg viewBox="0 0 24 24" ${svgFill}><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
             </div>
             
+            <!-- *** റേറ്റിംഗ് ബോക്സ് *** -->
             <div class="rating-box" id="rating-box-${productId}" style="display: none;">
+                <!-- *** മാറ്റം: റേറ്റിംഗ് സമ്മറി (Progress Bars) *** -->
                 <div class="rating-summary" id="rating-summary-${productId}">
-                    <div class="rating-bar-row"><span>5 <span class="star-icon">★</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>4 <span class="star-icon">★</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>3 <span class="star-icon">★</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>2 <span class="star-icon">★</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>1 <span class="star-icon">★</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>5 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>4 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>3 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>2 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>1 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
                 </div>
                 
                 <hr class="rating-divider">
@@ -231,7 +230,7 @@ function buildCardContent(productId, product) {
                 <p class="rating-title">Rate this product</p>
                 <div class="star-rating" data-id="${productId}">
                     ${[1, 2, 3, 4, 5].map(i => `
-                        <span class="star" data-value="${i}">★</span>
+                        <span class="star" data-value="${i}">&#9733;</span>
                     `).join('')}
                 </div>
                 <div class="rating-feedback">Tap a star to rate</div>
@@ -261,12 +260,16 @@ function setupRealtimeListeners(productId) {
         if (currentUser) {
             const isLiked = snapshot.docs.some(doc => doc.id === currentUser.uid);
             const likeBtn = card.querySelector('.like-btn');
+            const svg = likeBtn.querySelector('svg');
             
-            // *** ശരിയാക്കിയത്: Like button state ***
             if (isLiked) {
                 likeBtn.classList.add('liked');
+                svg.style.fill = 'var(--error-red)';
+                svg.style.stroke = 'var(--error-red)';
             } else {
                 likeBtn.classList.remove('liked');
+                svg.style.fill = 'none';
+                svg.style.stroke = 'currentColor';
             }
         }
     });
@@ -278,14 +281,17 @@ function setupRealtimeListeners(productId) {
         const ratingCountSpan = card.querySelector('.rating-count');
         if (ratingCountSpan) ratingCountSpan.textContent = count;
 
+        // *** മാറ്റം: സ്റ്റാർ കൗണ്ട് കണക്കാക്കുന്നു ***
         const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
         snapshot.forEach(doc => {
             const val = doc.data().rating;
             if (counts[val] !== undefined) counts[val]++;
         });
 
+        // *** സമ്മറി അപ്ഡേറ്റ് ചെയ്യുന്നു ***
         updateRatingSummary(card, counts, count);
 
+        // യൂസറുടെ റേറ്റിംഗ് ചെക്ക് ചെയ്യുന്നു
         if (currentUser) {
             const userRatingDoc = snapshot.docs.find(doc => doc.id === currentUser.uid);
             if (userRatingDoc) {
@@ -296,12 +302,14 @@ function setupRealtimeListeners(productId) {
     });
 }
 
+// *** പുതിയത്: സമ്മറി അപ്ഡേറ്റ് ഫംഗ്ഷൻ ***
 function updateRatingSummary(card, counts, total) {
     const summaryRows = card.querySelectorAll('.rating-bar-row');
+    // 5 മുതൽ 1 വരെ താഴേക്ക്
     const keys = [5, 4, 3, 2, 1]; 
     
     keys.forEach((starVal, index) => {
-        const row = summaryRows[index];
+        const row = summaryRows[index]; // 0 -> 5 star, 1 -> 4 star...
         const count = counts[starVal];
         const percentage = total > 0 ? (count / total) * 100 : 0;
         
@@ -311,8 +319,9 @@ function updateRatingSummary(card, counts, total) {
         if (fill) fill.style.width = `${percentage}%`;
         if (countSpan) countSpan.textContent = count;
         
+        // കളർ സെറ്റ് ചെയ്യുന്നു (Progress Bar)
         if (starVal >= 4) fill.style.backgroundColor = 'var(--success-green)';
-        else if (starVal === 3) fill.style.backgroundColor = '#f1c40f';
+        else if (starVal === 3) fill.style.backgroundColor = '#f1c40f'; // Yellow
         else fill.style.backgroundColor = 'var(--error-red)';
     });
 }
@@ -336,6 +345,7 @@ function updateStarUI(card, value) {
     if (feedback) feedback.textContent = `You rated: ${value} stars`;
 }
 
+
 const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !isLoading && lastVisible) { 
         loadProducts();
@@ -358,9 +368,8 @@ feedContainer.addEventListener('click', async (e) => {
                 await deleteDoc(userLikeRef);
             } else {
                 await setDoc(userLikeRef, { timestamp: serverTimestamp() });
-                // Animation
-                likeButton.style.transform = 'scale(1.3)';
-                setTimeout(() => likeButton.style.transform = 'scale(1)', 300);
+                likeButton.style.transform = 'scale(1.2)';
+                setTimeout(() => likeButton.style.transform = 'scale(1)', 200);
             }
         } catch (err) { console.error("Like error:", err); }
     }
@@ -390,23 +399,18 @@ feedContainer.addEventListener('click', async (e) => {
     }
 
     const bookmarkButton = target.closest('.bookmark-btn');
+    const shareButton = target.closest('.share-btn'); 
     
     if (bookmarkButton) {
         e.preventDefault();
         const id = bookmarkButton.dataset.id;
-        
-        // *** ശരിയാക്കിയത്: Cart button toggle ***
+        const svg = bookmarkButton.querySelector('svg');
         if (bookmarkButton.classList.contains('added-to-cart')) {
-            // Remove from cart
             removeFromCart(id);
             bookmarkButton.classList.remove('added-to-cart');
+            if (svg) svg.style.fill = 'none'; 
             bookmarkButton.title = 'Add to Cart';
-            
-            // Animation
-            bookmarkButton.style.transform = 'scale(0.8)';
-            setTimeout(() => bookmarkButton.style.transform = 'scale(1)', 200);
         } else {
-            // Add to cart
             const product = {
                 id: id,
                 name: bookmarkButton.dataset.name,
@@ -417,45 +421,29 @@ feedContainer.addEventListener('click', async (e) => {
             };
             addToCart(id, product);
             bookmarkButton.classList.add('added-to-cart');
+            if (svg) svg.style.fill = 'var(--primary-gold)'; 
             bookmarkButton.title = 'Remove from Cart';
-            
-            // Animation
-            bookmarkButton.style.transform = 'scale(1.3)';
-            setTimeout(() => bookmarkButton.style.transform = 'scale(1)', 200);
         }
     }
 
-    const shareButton = target.closest('.share-btn');
     if (shareButton) {
         e.preventDefault();
         if (!navigator.share) return;
-        
         const id = shareButton.dataset.id;
         const name = shareButton.dataset.name;
         const price = shareButton.dataset.price;
         const productLink = `${window.location.origin}/product.html?id=${id}`;
-        const shareData = { 
-            title: name, 
-            text: `Check out ${name}!\nPrice: ₹${price}\n`, 
-            url: productLink 
-        };
-        
+        const shareData = { title: name, text: `Check out ${name}!\nPrice: ₹${price}\n`, url: productLink };
         try {
             await navigator.share(shareData);
-            // Success feedback
+            const originalIcon = shareButton.innerHTML;
+            shareButton.innerHTML = '<svg viewBox="0 0 24 24" style="stroke: var(--success-green);"><path d="M20 6 9 17l-5-5"></path></svg>'; 
             shareButton.classList.add('shared-success');
             setTimeout(() => {
+                shareButton.innerHTML = originalIcon;
                 shareButton.classList.remove('shared-success');
             }, 2000);
-        } catch (err) { 
-            if (err.name !== 'AbortError') {
-                console.error('Error sharing:', err); 
-                shareButton.classList.add('shared-fail');
-                setTimeout(() => {
-                    shareButton.classList.remove('shared-fail');
-                }, 2000);
-            }
-        }
+        } catch (err) { console.error('Error sharing:', err); }
     }
 
     if (target.classList.contains('read-more-btn')) {

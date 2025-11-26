@@ -1,4 +1,5 @@
 // ഇതാണ് 'cart-page.js' ഫയൽ.
+// മാറ്റം: WhatsApp മെസ്സേജിലെ പേര് 'JR UD HUB' എന്നാക്കി.
 
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -200,7 +201,8 @@ function handleFullOrder() {
 }
 
 function generateWhatsAppMessage(items, totalAmount, totalMRP, discount) {
-    let message = "🎉 *New Order from Al Ambar Website* 🎉\n\n";
+    // *** മാറ്റം: പേര് മാറ്റി ***
+    let message = "🎉 *New Order from JR UD HUB* 🎉\n\n";
     message += "Here are the items:\n";
     message += "----------------------------------\n";
 

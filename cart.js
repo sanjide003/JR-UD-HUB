@@ -1,20 +1,22 @@
 // ഇതാണ് ഷോപ്പിംഗ് കാർട്ടിന്റെ "തലച്ചോർ" (cart.js)
+// മാറ്റം: കാർട്ട് സേവ് ചെയ്യുന്ന കീ 'jrUdHubCart' എന്നാക്കി.
 
 // കാർട്ട് ഡാറ്റ 'localStorage'-ൽ നിന്ന് എടുക്കുന്നു
 function getCart() {
-    const cartData = localStorage.getItem('alAmbarCart');
+    // *** മാറ്റം: പേര് മാറ്റി ***
+    const cartData = localStorage.getItem('jrUdHubCart');
     return cartData ? JSON.parse(cartData) : {};
 }
 
 // കാർട്ട് ഡാറ്റ 'localStorage'-ലേക്ക് സേവ് ചെയ്യുന്നു
 function saveCart(cart) {
-    localStorage.setItem('alAmbarCart', JSON.stringify(cart));
+    // *** മാറ്റം: പേര് മാറ്റി ***
+    localStorage.setItem('jrUdHubCart', JSON.stringify(cart));
     // കാർട്ടിൽ മാറ്റം വരുമ്പോൾ, ഹെഡറിലെ ഐക്കൺ അപ്ഡേറ്റ് ചെയ്യാൻ ഒരു ഇവന്റ് അയക്കുന്നു
     window.dispatchEvent(new CustomEvent('cartUpdated'));
 }
 
 /**
- * *** പുതിയ ഫംഗ്ഷൻ ***
  * ഒരു പ്രൊഡക്റ്റ് കാർട്ടിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു
  * @param {string} productId - പരിശോധിക്കേണ്ട പ്രൊഡക്റ്റ് ID
  * @returns {boolean} - കാർട്ടിൽ ഉണ്ടെങ്കിൽ true, അല്ലെങ്കിൽ false
