@@ -1,4 +1,5 @@
 // ഇതാണ് പുതിയ 'explore.js' ഫയൽ.
+// മാറ്റം: "Explore All Products" ടൈറ്റിലിന് പകരം ഹോം പേജ് ബാനർ ലോഡ് ചെയ്യുന്നു.
 
 import {
     collection,
@@ -16,7 +17,7 @@ import {
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db, auth } from './firebase-config.js';
-import { loadSiteSettings, optimizeImage } from './common.js'; 
+import { loadSiteSettings, fetchSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 import { onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
@@ -40,9 +41,26 @@ onAuthStateChanged(auth, (user) => {
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
+    
+    // *** പുതിയത്: ബാനർ ലോഡ് ചെയ്യുന്നു ***
+    const settings = await fetchSiteSettings();
+    if (settings && settings.homeBannerUrl) {
+        loadExploreBanner(settings.homeBannerUrl);
+    }
+
     await loadCategories();   
     await loadProducts();     
 });
+
+// *** ബാനർ കാണിക്കാനുള്ള ഫംഗ്ഷൻ ***
+function loadExploreBanner(bannerUrl) {
+    const bannerContainer = document.getElementById('explore-top-banner');
+    if (!bannerContainer || !bannerUrl) return;
+    
+    const optimizedUrl = optimizeImage(bannerUrl, 1200, 85);
+    bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Special Offer Banner" loading="lazy">`;
+    bannerContainer.style.display = 'block';
+}
 
 async function loadCategories() {
     try {
