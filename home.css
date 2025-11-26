@@ -368,12 +368,60 @@
     height: 500px;
     position: relative;
     overflow: visible;
+    /* *** Allow page scroll by default *** */
+    touch-action: pan-y;
+    pointer-events: none;
+}
+
+/* *** Drag Zone - Interactive Circle *** */
+.category-drag-zone {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 320px;
+    height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, 
+        rgba(212, 175, 55, 0.05) 0%, 
+        transparent 70%
+    );
+    border: 2px dashed rgba(212, 175, 55, 0.2);
+    pointer-events: auto;
+    z-index: 10;
+    transition: all 0.3s ease;
     cursor: grab;
     touch-action: none;
 }
 
-.category-grid-canvas:active {
+.category-drag-zone:active,
+.category-drag-zone.dragging {
     cursor: grabbing;
+    background: radial-gradient(circle, 
+        rgba(212, 175, 55, 0.08) 0%, 
+        transparent 70%
+    );
+    border-color: rgba(212, 175, 55, 0.35);
+}
+
+.category-drag-zone::before {
+    content: '👆 Drag Here';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.6;
+    pointer-events: none;
+    text-align: center;
+    white-space: nowrap;
+    transition: opacity 0.3s ease;
+}
+
+.category-drag-zone.dragging::before {
+    opacity: 0;
 }
 
 .category-item-watch {
