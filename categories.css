@@ -53,23 +53,21 @@
     margin-left: 0.5rem;
 }
 
-/* --- 1.1 മുകളിലെ കാറ്റഗറി ലിസ്റ്റ് (മാറ്റം: Single Line & Big Size) --- */
+/* --- 1.1 മുകളിലെ കാറ്റഗറി ലിസ്റ്റ് --- */
 .category-grid-mobile,
 .category-grid-desktop {
-    /* *** മാറ്റം: Flex ആക്കി ഒറ്റ വരിയിലാക്കി *** */
     display: flex; 
-    flex-wrap: nowrap; /* താഴേക്ക് വീഴാതിരിക്കാൻ */
-    overflow-x: auto; /* സൈഡിലേക്ക് സ്ക്രോൾ */
+    flex-wrap: nowrap; 
+    overflow-x: auto; 
     overflow-y: hidden; 
-    gap: 10px; /* ഐറ്റങ്ങൾക്കിടയിൽ നല്ല ഗ്യാപ്പ് */
+    gap: 10px; 
     padding: 10px 5px; 
     border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
     scroll-snap-type: x mandatory; 
     height: auto; 
-    justify-content: flex-start; /* ഇടതുവശത്ത് നിന്ന് തുടങ്ങുന്നു */
+    justify-content: flex-start; 
 }
 
-/* സ്ക്രോൾബാർ മറയ്ക്കുന്നു */
 .category-grid-mobile::-webkit-scrollbar,
 .category-grid-desktop::-webkit-scrollbar {
     display: none;
@@ -86,23 +84,19 @@
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    gap: 6px; /* ഐക്കണും പേരും തമ്മിലുള്ള അകലം */
+    gap: 6px; 
     text-decoration: none;
     color: var(--text-muted);
     font-weight: 500;
-    
-    /* *** മാറ്റം: വീതി കൂട്ടി (വലുതായി കാണാൻ) *** */
     min-width: 85px; 
     width: 85px;
-    
     padding: 0;
     cursor: pointer;
     scroll-snap-align: start;
-    flex-shrink: 0; /* ചുരുങ്ങിപ്പോകാതിരിക്കാൻ */
+    flex-shrink: 0; 
 }
 
 .category-grid-image-box {
-    /* *** മാറ്റം: ഐക്കൺ ബോക്സ് വലുതാക്കി (55px) *** */
     width: 55px; 
     height: 55px; 
     border-radius: 14px; 
@@ -124,7 +118,6 @@
 }
 
 .category-grid-name {
-    /* *** മാറ്റം: ഫോണ്ട് വലിപ്പം കൂട്ടി (0.8rem) *** */
     font-size: 0.8rem; 
     text-align: center;
     color: var(--text-muted);
@@ -135,7 +128,6 @@
     width: 100%;
 }
 
-/* Active State */
 .category-grid-item.active .category-grid-name {
     color: var(--primary-gold);
     font-weight: 600;
@@ -143,7 +135,7 @@
 .category-grid-item.active .category-grid-image-box {
     border-color: var(--primary-gold);
     background-color: rgba(212, 175, 55, 0.15);
-    transform: scale(1.05); /* ആക്ടീവ് ആകുമ്പോൾ അല്പം വലുതാകുന്നു */
+    transform: scale(1.05); 
 }
 
 
@@ -157,7 +149,7 @@
 
 .category-product-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* 2 കോളം */
+    grid-template-columns: repeat(2, 1fr); 
     gap: 8px; 
     padding: 0 5px 80px 5px; 
 }
@@ -201,12 +193,11 @@
     justify-content: space-between;
 }
 
-/* *** മാറ്റം: പേരും വിലയും തമ്മിലുള്ള അകലം കുറയ്ക്കുന്നു *** */
 .cat-product-title {
     font-size: 0.85rem; 
     color: var(--text-color); 
     font-weight: 600;
-    margin-bottom: 2px; /* *** മാറ്റം: ഗ്യാപ്പ് കുറച്ചു *** */
+    margin-bottom: 2px; 
     line-height: 1.2;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -215,7 +206,7 @@
     min-height: 34px;
 }
 .cat-product-content .price-container {
-    margin: 0; /* *** മാറ്റം: ഗ്യാപ്പ് കുറച്ചു *** */
+    margin: 0; 
     gap: 0.4rem;
     display: flex;
     align-items: center;
@@ -237,6 +228,9 @@
     gap: 0.4rem;
     margin-top: 0.5rem;
 }
+
+/* *** മാറ്റം: ബട്ടൺ സ്റ്റൈലുകൾ (Black Background Fixed) *** */
+
 .cat-product-buttons .btn-primary-new,
 .cat-product-buttons .btn-secondary-new {
     font-size: 0.75rem; 
@@ -246,10 +240,60 @@
     align-items: center;
     justify-content: center;
     border-radius: 4px;
+    position: relative;
+    overflow: hidden;
 }
+
+/* View Button (Gold) */
+.cat-product-buttons .btn-primary-new {
+    background-color: var(--primary-gold);
+    color: #000;
+    border: 1px solid var(--primary-gold);
+}
+
+/* Cart Button (Black Default) */
+.cat-product-buttons .btn-secondary-new {
+    background-color: #000 !important;
+    color: #fff !important;
+    border: 1px solid #fff !important;
+    transition: all 0.3s ease;
+}
+
 .cat-product-buttons .btn-secondary-new svg.icon-btn {
     width: 14px;
     height: 14px;
+    fill: none !important;
+    stroke: #fff !important;
+}
+
+/* Cart Button (Active/Remove) - Black BG, Gold Text/Border */
+.cat-product-buttons .btn-secondary-new.added-to-cart {
+    background-color: #000 !important;
+    color: var(--primary-gold) !important;
+    border-color: var(--primary-gold) !important;
+}
+
+.cat-product-buttons .btn-secondary-new.added-to-cart svg.icon-btn {
+    stroke: var(--primary-gold) !important;
+    fill: none !important;
+}
+
+/* Ripple effect */
+.cat-product-buttons .btn-secondary-new::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+.cat-product-buttons .btn-secondary-new:active::after {
+    width: 100px;
+    height: 100px;
 }
 
 
