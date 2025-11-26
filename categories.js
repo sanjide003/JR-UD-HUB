@@ -1,5 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// മാറ്റം: സെർച്ച് ലോജിക് (കാറ്റഗറി അടിസ്ഥാനത്തിൽ), ബട്ടൺ സ്റ്റൈൽ ലോജിക്.
+// മാറ്റം: മൾട്ടി-ഫിൽറ്റർ ലോജിക് (Category + Search + Price + Sort + Discount)
 
 import {
     collection,
@@ -9,7 +9,6 @@ import {
     query,
     where,
     limit,
-    startAfter,
     orderBy,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -27,57 +26,48 @@ const loader = document.getElementById("infinite-scroll-loader");
 const searchInput = document.getElementById("product-search-input"); 
 const clearSearchBtn = document.getElementById("clear-search-btn");
 const noResultsMsg = document.getElementById("no-results-message");
+const resetFiltersBtn = document.getElementById("reset-filters-btn");
+
+// Filter Elements
+const priceFilter = document.getElementById("price-range-filter");
+const sortFilter = document.getElementById("sort-by-filter");
+const discountChips = document.querySelectorAll(".discount-chip");
 
 // --- State ---
-let lastVisible = null; 
-let isLoading = false; 
 let currentCategoryId = 'all'; 
-const productsPerPage = 12; 
-let currentQuery = null;
-let whatsappNumber = ''; 
-let allProductsCache = []; 
+let allProductsCache = []; // എല്ലാ പ്രൊഡക്റ്റുകളും ഇവിടെ സൂക്ഷിക്കും
 let categoriesMap = new Map(); 
+let activeDiscount = null; // 10, 25, etc.
 
 // --- പേജ് ലോഡ് ആവുമ്പോൾ ---
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
-    await loadWhatsappNumber();
     await loadCategoryList(); 
     
+    // URL Parameter പരിശോധിക്കുന്നു
     const urlParams = new URLSearchParams(window.location.search);
     const categoryIdFromUrl = urlParams.get('filter');
-    
     if (categoryIdFromUrl) {
         currentCategoryId = categoryIdFromUrl;
     }
     
-    startLoadingProducts(currentCategoryId); 
-    setupSearch(); 
+    // എല്ലാ പ്രൊഡക്റ്റുകളും ലോഡ് ചെയ്യുന്നു (Client-side filtering-നായി)
+    await loadAllProductsCache();
+    
+    setupEventListeners();
+    updateActiveCategoryUI(currentCategoryId);
+    applyFilters(); // ആദ്യത്തെ റെൻഡറിംഗ്
 });
 
-async function loadWhatsappNumber() {
-    try {
-        const docRef = doc(db, "settings", "global");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().whatsapp) {
-            whatsappNumber = docSnap.data().whatsapp;
-        }
-    } catch (error) { console.error("Error fetching WhatsApp number: ", error); }
-}
+// --- 1. ഡാറ്റ ലോഡിംഗ് ---
 
-/**
- * 1. കാറ്റഗറി ലിസ്റ്റ് ലോഡ് ചെയ്യുന്നു
- */
 async function loadCategoryList() {
     if (!categoryNavDesktop || !categoryNavMobile) return;
-
     try {
         const q = query(collection(db, "categories"), orderBy("name"));
         const catSnapshot = await getDocs(q);
 
-        let navHtml = '';
-        
-        navHtml += `
+        let navHtml = `
             <a href="#" class="category-grid-item" data-id="all">
                 <div class="category-grid-image-box">
                     <svg class="category-grid-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
@@ -91,7 +81,6 @@ async function loadCategoryList() {
         catSnapshot.forEach((doc) => {
             const category = doc.data();
             categoriesMap.set(doc.id, category.name);
-
             const rawImage = category.imageUrl || 'https://placehold.co/80x80/333/D4AF37?text=C';
             const optimizedIcon = optimizeImage(rawImage, 150);
 
@@ -107,15 +96,82 @@ async function loadCategoryList() {
 
         categoryNavDesktop.innerHTML = navHtml;
         categoryNavMobile.innerHTML = navHtml;
-
         addNavClickListeners(categoryNavDesktop);
         addNavClickListeners(categoryNavMobile);
-        
-        updateActiveCategoryUI(currentCategoryId);
 
     } catch (error) {
         console.error("Error loading categories: ", error);
-        categoryNavDesktop.innerHTML = '<p class="loading-placeholder">Error loading categories.</p>';
+    }
+}
+
+async function loadAllProductsCache() {
+    if (loader) loader.style.display = 'flex';
+    try {
+        const q = query(collection(db, "products"));
+        const snapshot = await getDocs(q);
+        allProductsCache = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            // ഡിസ്കൗണ്ട് ശതമാനം മുൻകൂട്ടി കണക്കാക്കുന്നു
+            let discountPercent = 0;
+            if (data.mrp && data.mrp > data.price) {
+                discountPercent = Math.round(((data.mrp - data.price) / data.mrp) * 100);
+            }
+            
+            allProductsCache.push({
+                id: doc.id,
+                ...data,
+                discountPercent: discountPercent,
+                categoryName: categoriesMap.get(data.categoryId) || ''
+            });
+        });
+    } catch (error) {
+        console.error("Error loading products cache:", error);
+    } finally {
+        if (loader) loader.style.display = 'none';
+    }
+}
+
+// --- 2. ഇവന്റ് ലിസണേഴ്സ് ---
+
+function setupEventListeners() {
+    // Search Input
+    searchInput.addEventListener('input', (e) => {
+        clearSearchBtn.style.display = e.target.value.length > 0 ? 'block' : 'none';
+        applyFilters();
+    });
+
+    clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        clearSearchBtn.style.display = 'none';
+        applyFilters();
+    });
+
+    // Price & Sort Filters
+    priceFilter.addEventListener('change', applyFilters);
+    sortFilter.addEventListener('change', applyFilters);
+
+    // Discount Chips
+    discountChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const val = parseInt(chip.dataset.value);
+            if (activeDiscount === val) {
+                // Deselect
+                activeDiscount = null;
+                chip.classList.remove('active');
+            } else {
+                // Select
+                activeDiscount = val;
+                discountChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+            }
+            applyFilters();
+        });
+    });
+
+    // Reset Button
+    if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', resetAllFilters);
     }
 }
 
@@ -125,81 +181,96 @@ function addNavClickListeners(navElement) {
         if (!link) return;
         e.preventDefault();
         const categoryId = link.dataset.id;
-        if (categoryId === currentCategoryId) return; 
         
-        if(searchInput) searchInput.value = '';
-        if(clearSearchBtn) clearSearchBtn.style.display = 'none';
-        if(noResultsMsg) noResultsMsg.style.display = 'none';
-
-        currentCategoryId = categoryId;
-        startLoadingProducts(categoryId);
+        if (categoryId !== currentCategoryId) {
+            currentCategoryId = categoryId;
+            updateActiveCategoryUI(categoryId);
+            // കാറ്റഗറി മാറുമ്പോൾ ഫിൽറ്ററുകൾ റീസെറ്റ് ചെയ്യുന്നത് നല്ലതാണ്, അല്ലെങ്കിൽ അത് നിലനിർത്താം.
+            // ഇവിടെ നമ്മൾ നിലനിർത്തുന്നു, പക്ഷെ URL അപ്ഡേറ്റ് ചെയ്യുന്നു.
+            const url = new URL(window.location);
+            if (categoryId === 'all') url.searchParams.delete('filter');
+            else url.searchParams.set('filter', categoryId);
+            window.history.pushState({}, '', url);
+            
+            applyFilters();
+        }
     });
 }
 
-async function startLoadingProducts(categoryId) {
-    if (!productGrid) return;
-    isLoading = false;
-    productGrid.innerHTML = ''; 
-    lastVisible = null; 
-    window.scrollTo(0, 0); 
-    
-    const url = new URL(window.location);
-    if (categoryId === 'all') {
-        url.searchParams.delete('filter');
-    } else {
-        url.searchParams.set('filter', categoryId);
-    }
-    window.history.pushState({}, '', url);
-
-    const productsRef = collection(db, "products");
-    if (categoryId === 'all') {
-        currentQuery = query(productsRef, orderBy("createdAt", "desc"));
-    } else {
-        currentQuery = query(productsRef, where("categoryId", "==", categoryId));
-    }
-    
-    updateActiveCategoryUI(categoryId);
-    await loadProducts();
+function updateActiveCategoryUI(categoryId) {
+    const allLinks = document.querySelectorAll('.category-grid-item'); 
+    allLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.dataset.id === categoryId) {
+            link.classList.add('active');
+        }
+    });
 }
 
-async function loadProducts() {
-    if (isLoading || !currentQuery) return;
-    isLoading = true;
-    if (loader) loader.style.display = 'flex';
+function resetAllFilters() {
+    searchInput.value = '';
+    clearSearchBtn.style.display = 'none';
+    priceFilter.value = 'all';
+    sortFilter.value = 'default';
+    activeDiscount = null;
+    discountChips.forEach(c => c.classList.remove('active'));
+    applyFilters();
+}
 
-    try {
-        let q;
-        if (lastVisible) {
-            q = query(currentQuery, startAfter(lastVisible), limit(productsPerPage));
-        } else {
-            q = query(currentQuery, limit(productsPerPage));
-        }
+// --- 3. ഫിൽറ്ററിംഗ് ലോജിക് (പ്രധാനം) ---
 
-        const documentSnapshots = await getDocs(q);
+function applyFilters() {
+    if (!productGrid) return;
+    productGrid.innerHTML = '';
+    
+    let filtered = [...allProductsCache];
 
-        if (documentSnapshots.empty) {
-            if (productGrid.innerHTML === '') {
-                productGrid.innerHTML = '<p class="loading-placeholder-full">No products found in this category.</p>';
-            }
-            if (loader) loader.style.display = 'none';
-            lastVisible = null; 
-            return; 
-        }
+    // 1. Category Filter
+    if (currentCategoryId !== 'all') {
+        filtered = filtered.filter(p => p.categoryId === currentCategoryId);
+    }
 
-        lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
-
-        documentSnapshots.forEach((doc) => {
-            const product = doc.data();
-            const productId = doc.id;
-            renderProductCard(product, productId); 
+    // 2. Search Text Filter
+    const term = searchInput.value.toLowerCase().trim();
+    if (term.length > 0) {
+        const searchTerms = term.split(/\s+/);
+        filtered = filtered.filter(p => {
+            const text = `${p.name} ${p.price} ${p.description || ''} ${p.specification || ''} ${p.categoryName}`.toLowerCase();
+            return searchTerms.every(t => text.includes(t));
         });
+    }
 
-    } catch (error) {
-        console.error("Error loading products: ", error);
-        productGrid.innerHTML = '<p class="loading-placeholder-full">Error loading products.</p>';
-    } finally {
-        isLoading = false;
-        if (loader) loader.style.display = 'none';
+    // 3. Price Range Filter
+    const priceRange = priceFilter.value;
+    if (priceRange !== 'all') {
+        if (priceRange === '0-500') filtered = filtered.filter(p => p.price < 500);
+        else if (priceRange === '500-1000') filtered = filtered.filter(p => p.price >= 500 && p.price <= 1000);
+        else if (priceRange === '1000-2000') filtered = filtered.filter(p => p.price >= 1000 && p.price <= 2000);
+        else if (priceRange === '2000-5000') filtered = filtered.filter(p => p.price >= 2000 && p.price <= 5000);
+        else if (priceRange === '5000+') filtered = filtered.filter(p => p.price > 5000);
+    }
+
+    // 4. Discount Filter
+    if (activeDiscount !== null) {
+        filtered = filtered.filter(p => p.discountPercent >= activeDiscount);
+    }
+
+    // 5. Sort Order
+    const sortVal = sortFilter.value;
+    if (sortVal === 'low-high') {
+        filtered.sort((a, b) => a.price - b.price);
+    } else if (sortVal === 'high-low') {
+        filtered.sort((a, b) => b.price - a.price);
+    }
+
+    // 6. Render Results
+    if (filtered.length === 0) {
+        noResultsMsg.style.display = 'block';
+    } else {
+        noResultsMsg.style.display = 'none';
+        filtered.forEach(product => {
+            renderProductCard(product, product.id);
+        });
     }
 }
 
@@ -220,8 +291,7 @@ function renderProductCard(product, productId) {
 
     const isInCart = isItemInCart(productId);
     const buttonText = isInCart ? "Remove" : "Cart";
-    
-    // *** മാറ്റം: എപ്പോഴും btn-secondary-new (Black Style) ***
+    // ബട്ടൺ സ്റ്റൈൽ (ബ്ലാക്ക് & ഗോൾഡ് ടോഗിൾ)
     const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
     card.innerHTML = `
@@ -257,95 +327,7 @@ function renderProductCard(product, productId) {
     productGrid.appendChild(card);
 }
 
-function updateActiveCategoryUI(categoryId) {
-    const allLinks = document.querySelectorAll('.category-grid-item'); 
-    allLinks.forEach(link => {
-        link.classList.remove('active');
-        if (link.dataset.id === categoryId) {
-            link.classList.add('active');
-        }
-    });
-}
-
-function setupSearch() {
-    if (!searchInput) return;
-
-    searchInput.addEventListener('input', (e) => {
-        const term = e.target.value.toLowerCase().trim();
-        
-        if (term.length > 0) {
-            clearSearchBtn.style.display = 'block';
-            if (loader) loader.style.display = 'none';
-            currentQuery = null; 
-            
-            performSearch(term);
-        } else {
-            clearSearchBtn.style.display = 'none';
-            noResultsMsg.style.display = 'none';
-            startLoadingProducts(currentCategoryId);
-        }
-    });
-
-    clearSearchBtn.addEventListener('click', () => {
-        searchInput.value = '';
-        clearSearchBtn.style.display = 'none';
-        noResultsMsg.style.display = 'none';
-        startLoadingProducts(currentCategoryId);
-    });
-}
-
-async function performSearch(searchTerm) {
-    productGrid.innerHTML = '';
-    isLoading = true; 
-    if (loader) loader.style.display = 'flex';
-
-    try {
-        if (allProductsCache.length === 0) {
-            const q = query(collection(db, "products")); 
-            const snapshot = await getDocs(q);
-            snapshot.forEach(doc => {
-                allProductsCache.push({ id: doc.id, ...doc.data() });
-            });
-        }
-
-        const searchTerms = searchTerm.split(/\s+/);
-
-        const filteredProducts = allProductsCache.filter(product => {
-            // *** മാറ്റം: നിലവിലെ കാറ്റഗറിയിലുള്ളത് മാത്രം കാണിക്കുക ***
-            if (currentCategoryId !== 'all' && product.categoryId !== currentCategoryId) {
-                return false;
-            }
-
-            const categoryName = categoriesMap.get(product.categoryId) || '';
-            const productString = `
-                ${product.name} 
-                ${product.price} 
-                ${product.description || ''} 
-                ${product.specification || ''} 
-                ${categoryName}
-            `.toLowerCase();
-
-            return searchTerms.every(term => productString.includes(term));
-        });
-
-        if (loader) loader.style.display = 'none';
-
-        if (filteredProducts.length === 0) {
-            noResultsMsg.style.display = 'block';
-        } else {
-            noResultsMsg.style.display = 'none';
-            filteredProducts.forEach(product => {
-                renderProductCard(product, product.id);
-            });
-        }
-
-    } catch (error) {
-        console.error("Search error:", error);
-        if (loader) loader.style.display = 'none';
-    }
-}
-
-// Ripple Effect Helper
+// Ripple Effect Helper (Reused from cart.js logic)
 function createRipple(event, button) {
     const ripple = document.createElement('span');
     const rect = button.getBoundingClientRect();
@@ -364,13 +346,17 @@ function createRipple(event, button) {
     setTimeout(() => ripple.remove(), 600);
 }
 
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes ripple-animation {
-        to { transform: scale(2); opacity: 0; }
-    }
-`;
-document.head.appendChild(style);
+// Ripple CSS Style Injection (if not present)
+if (!document.getElementById('ripple-style')) {
+    const style = document.createElement('style');
+    style.id = 'ripple-style';
+    style.textContent = `
+        @keyframes ripple-animation {
+            to { transform: scale(2); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+}
 
 productGrid.addEventListener('click', (e) => {
     const cartButton = e.target.closest('.btn-add-to-cart');
@@ -379,34 +365,30 @@ productGrid.addEventListener('click', (e) => {
         const id = cartButton.dataset.id;
         const buttonText = cartButton.querySelector('span');
         
-        createRipple(e, cartButton); // Ripple Effect Add ചെയ്തു
+        createRipple(e, cartButton);
 
         if (cartButton.classList.contains('added-to-cart')) {
             removeFromCart(id);
             cartButton.classList.remove('added-to-cart');
-            // *** മാറ്റം: ക്ലാസ് മാറ്റുന്നില്ല, വെറും ടോഗിൾ മാത്രം ***
+            // Text Only Change, Style handled by CSS
             if (buttonText) buttonText.textContent = 'Cart';
         } else {
-            const product = {
-                id: id, 
-                name: cartButton.dataset.name,
-                price: parseFloat(cartButton.dataset.price),
-                mrp: parseFloat(cartButton.dataset.mrp),
-                image: cartButton.dataset.image,
-                size: cartButton.dataset.size 
-            };
-            addToCart(id, product);
-            cartButton.classList.add('added-to-cart');
-            // *** മാറ്റം: ക്ലാസ് മാറ്റുന്നില്ല ***
-            if (buttonText) buttonText.textContent = 'Remove';
+            const product = allProductsCache.find(p => p.id === id); // Cache-ൽ നിന്ന് ഡാറ്റ എടുക്കുന്നു
+            
+            if (product) {
+                // കാർട്ടിലേക്ക് ചേർക്കാൻ ആവശ്യമായ ഡാറ്റ മാത്രം എടുക്കുന്നു
+                const cartProduct = {
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    mrp: product.mrp,
+                    image: product.images && product.images[0] ? product.images[0] : '',
+                    size: product.size || ''
+                };
+                addToCart(id, cartProduct);
+                cartButton.classList.add('added-to-cart');
+                if (buttonText) buttonText.textContent = 'Remove';
+            }
         }
     } 
 });
-
-const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && !isLoading && lastVisible && currentQuery) { 
-        loadProducts();
-    }
-}, { rootMargin: '200px' });
-
-if (loader) { observer.observe(loader); }
