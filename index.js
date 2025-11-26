@@ -283,16 +283,19 @@ async function loadTopSellers() {
             centeredSlides: true,
             pagination: { 
                 el: '.top-sellers-pagination-new', 
-                clickable: true,
-                renderBullet: function (index, className) {
-                    return '<span class="' + className + '"><span class="pagination-progress"></span></span>';
-                }
+                clickable: true
             },
             on: {
-                init: function (swiper) { updateProgressAnimation(swiper, autoplayDelay); },
-                slideChangeTransitionStart: function (swiper) {
-                    resetAllProgress(swiper);
-                    updateProgressAnimation(swiper, autoplayDelay);
+                slideChange: function (swiper) {
+                    // Reset all animations
+                    const bullets = document.querySelectorAll('.top-sellers-pagination-new .swiper-pagination-bullet-active');
+                    bullets.forEach(bullet => {
+                        const before = bullet.querySelector('::before');
+                        if (before) {
+                            before.style.animation = 'none';
+                            void bullet.offsetWidth; // Reflow
+                        }
+                    });
                 }
             },
             breakpoints: { 
@@ -306,27 +309,6 @@ async function loadTopSellers() {
         console.error("Error loading top sellers: ", error); 
         grid.innerHTML = '<p>Error loading products.</p>'; 
     }
-}
-
-function updateProgressAnimation(swiper, delay) {
-    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
-    if (activeBullet) {
-        const progressEl = activeBullet.querySelector('.pagination-progress');
-        if (progressEl) {
-            progressEl.style.animation = `progress-fill ${delay / 1000}s linear forwards`;
-        }
-    }
-}
-
-function resetAllProgress(swiper) {
-    swiper.pagination.bullets.forEach(bullet => {
-        const progressEl = bullet.querySelector('.pagination-progress');
-        if (progressEl) {
-            progressEl.style.animation = 'none';
-            void progressEl.offsetWidth;
-            progressEl.style.transform = 'scaleX(0)';
-        }
-    });
 }
 
 function showSkeletonLoader(container, count = 5) {
@@ -537,16 +519,30 @@ function initWatchStyleGrid(categories) {
     let lastMoveTime = 0;
     let lastX = 0;
     let lastY = 0;
-    let startedInZone = false;
-    let hasMoved = false; // Track if actually dragged
+    let hasMoved = false;
+    
+    function isInsideCircle(x, y) {
+        const rect = dragZone.getBoundingClientRect();
+        const centerX = rect.left + rect.width / 2;
+        const centerY = rect.top + rect.height / 2;
+        const radius = rect.width / 2;
+        const distance = Math.sqrt(
+            Math.pow(x - centerX, 2) + Math.pow(y - centerY, 2)
+        );
+        return distance <= radius;
+    }
     
     function handleStart(e) {
         if (e.touches && e.touches.length > 1) return;
         
-        startedInZone = true;
-        hasMoved = false;
-        
         const point = e.touches ? e.touches[0] : e;
+        
+        // Check if started inside circle
+        if (!isInsideCircle(point.clientX, point.clientY)) {
+            return; // Don't start drag if outside
+        }
+        
+        hasMoved = false;
         startX = point.clientX;
         startY = point.clientY;
         lastX = startX;
@@ -560,11 +556,14 @@ function initWatchStyleGrid(categories) {
         }
         
         dragZone.classList.add('dragging');
+        
+        // Prevent default to allow drag detection
+        if (e.type === 'touchstart') {
+            e.preventDefault();
+        }
     }
 
     function handleMove(e) {
-        if (!startedInZone) return;
-        
         if (e.touches && e.touches.length > 1) {
             handleEnd(e);
             return;
@@ -612,14 +611,9 @@ function initWatchStyleGrid(categories) {
     }
 
     function handleEnd(e) {
-        if (!startedInZone) return;
-        
-        startedInZone = false;
-        
-        // *** If didn't move, allow link click ***
+        // If didn't move, allow link click
         if (!hasMoved && !isDragging) {
             dragZone.classList.remove('dragging');
-            // Let the click pass through to category link
             return;
         }
         
@@ -646,16 +640,14 @@ function initWatchStyleGrid(categories) {
         animate();
     }
 
-    // *** Events on drag zone ***
-    dragZone.addEventListener('mousedown', handleStart);
-    dragZone.addEventListener('mousemove', handleMove);
-    dragZone.addEventListener('mouseup', handleEnd);
-    dragZone.addEventListener('mouseleave', handleEnd);
+    // Attach to canvas to capture all events in circle
+    canvas.addEventListener('mousedown', handleStart);
+    canvas.addEventListener('mousemove', handleMove);
+    canvas.addEventListener('mouseup', handleEnd);
     
-    dragZone.addEventListener('touchstart', handleStart, { passive: true });
-    dragZone.addEventListener('touchmove', handleMove, { passive: false });
-    dragZone.addEventListener('touchend', handleEnd);
-    dragZone.addEventListener('touchcancel', handleEnd);
+    canvas.addEventListener('touchstart', handleStart, { passive: false });
+    canvas.addEventListener('touchmove', handleMove, { passive: false });
+    canvas.addEventListener('touchend', handleEnd);
 
     updatePositions();
 
