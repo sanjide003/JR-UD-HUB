@@ -1,4 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
+// മാറ്റം: സെർച്ച് ലോജിക് (കാറ്റഗറി അടിസ്ഥാനത്തിൽ), ബട്ടൺ സ്റ്റൈൽ ലോജിക്.
 
 import {
     collection,
@@ -76,7 +77,6 @@ async function loadCategoryList() {
 
         let navHtml = '';
         
-        // *** മാറ്റം: പേര് "All" എന്ന് മാത്രമാക്കി ***
         navHtml += `
             <a href="#" class="category-grid-item" data-id="all">
                 <div class="category-grid-image-box">
@@ -220,7 +220,9 @@ function renderProductCard(product, productId) {
 
     const isInCart = isItemInCart(productId);
     const buttonText = isInCart ? "Remove" : "Cart";
-    const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new";
+    
+    // *** മാറ്റം: എപ്പോഴും btn-secondary-new (Black Style) ***
+    const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
     card.innerHTML = `
         <a href="product.html?id=${productId}" class="cat-product-image-link">
@@ -309,8 +311,12 @@ async function performSearch(searchTerm) {
         const searchTerms = searchTerm.split(/\s+/);
 
         const filteredProducts = allProductsCache.filter(product => {
+            // *** മാറ്റം: നിലവിലെ കാറ്റഗറിയിലുള്ളത് മാത്രം കാണിക്കുക ***
+            if (currentCategoryId !== 'all' && product.categoryId !== currentCategoryId) {
+                return false;
+            }
+
             const categoryName = categoriesMap.get(product.categoryId) || '';
-            
             const productString = `
                 ${product.name} 
                 ${product.price} 
@@ -339,17 +345,46 @@ async function performSearch(searchTerm) {
     }
 }
 
+// Ripple Effect Helper
+function createRipple(event, button) {
+    const ripple = document.createElement('span');
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+
+    ripple.style.cssText = `
+        position: absolute; width: ${size}px; height: ${size}px;
+        left: ${x}px; top: ${y}px; border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3); transform: scale(0);
+        animation: ripple-animation 0.6s ease-out; pointer-events: none;
+    `;
+
+    button.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+}
+
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes ripple-animation {
+        to { transform: scale(2); opacity: 0; }
+    }
+`;
+document.head.appendChild(style);
+
 productGrid.addEventListener('click', (e) => {
     const cartButton = e.target.closest('.btn-add-to-cart');
     if (cartButton) {
         e.preventDefault();
         const id = cartButton.dataset.id;
         const buttonText = cartButton.querySelector('span');
+        
+        createRipple(e, cartButton); // Ripple Effect Add ചെയ്തു
+
         if (cartButton.classList.contains('added-to-cart')) {
             removeFromCart(id);
             cartButton.classList.remove('added-to-cart');
-            cartButton.classList.remove('btn-primary-new');
-            cartButton.classList.add('btn-secondary-new');
+            // *** മാറ്റം: ക്ലാസ് മാറ്റുന്നില്ല, വെറും ടോഗിൾ മാത്രം ***
             if (buttonText) buttonText.textContent = 'Cart';
         } else {
             const product = {
@@ -362,8 +397,7 @@ productGrid.addEventListener('click', (e) => {
             };
             addToCart(id, product);
             cartButton.classList.add('added-to-cart');
-            cartButton.classList.add('btn-primary-new');
-            cartButton.classList.remove('btn-secondary-new');
+            // *** മാറ്റം: ക്ലാസ് മാറ്റുന്നില്ല ***
             if (buttonText) buttonText.textContent = 'Remove';
         }
     } 
