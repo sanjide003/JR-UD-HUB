@@ -320,6 +320,7 @@
     font-weight: 600;
 }
 
+/* *** Buttons Styling *** */
 .top-sellers-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -327,12 +328,41 @@
     padding: 0;
 }
 
+/* *** മാറ്റം: For You ബട്ടണുകളുടെ പുതിയ സ്റ്റൈൽ (Black with White/Gold) *** */
 .top-sellers-buttons .btn {
     padding: 0.6rem 0.5rem;
     font-size: 0.85rem;
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
+    
+    /* Default: Black BG, White Text */
+    background-color: #000 !important;
+    color: #fff !important;
+    border: 1px solid #fff !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+/* Icon Default Color */
+.top-sellers-buttons .btn svg {
+    fill: none !important;
+    stroke: #fff !important;
+}
+
+/* *** Active/Remove State *** */
+.top-sellers-buttons .btn.added-to-cart {
+    background-color: #000 !important; /* Always Black */
+    color: var(--primary-gold) !important; /* Gold Text */
+    border-color: var(--primary-gold) !important; /* Gold Border */
+}
+
+/* Icon Active Color (No Fill) */
+.top-sellers-buttons .btn.added-to-cart svg {
+    fill: none !important;
+    stroke: var(--primary-gold) !important;
 }
 
 /* Ripple effect on button click */
