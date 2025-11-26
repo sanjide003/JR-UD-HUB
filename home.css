@@ -432,7 +432,7 @@
     backface-visibility: hidden;
     -webkit-backface-visibility: hidden;
     transition: opacity 0.2s ease;
-    pointer-events: none; /* *** Don't block drag zone *** */
+    pointer-events: auto; /* *** Allow clicks *** */
     z-index: 2;
 }
 
@@ -454,7 +454,6 @@
     -webkit-transform: translateZ(0);
     will-change: border-color, box-shadow;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    pointer-events: auto; /* *** Links clickable *** */
     cursor: pointer;
 }
 
