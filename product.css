@@ -297,7 +297,7 @@
     fill: currentColor;
 }
 
-/* *** മാറ്റം: Add to Cart Button Styles (Black Background Always) *** */
+/* *** Add to Cart Button Styles (Black Background Always) *** */
 
 /* 1. Default State (Add to Cart) - White Text & Border */
 .product-actions-grid .btn-secondary-new,
@@ -314,7 +314,7 @@
     stroke: #ffffff !important; /* White Icon Stroke */
 }
 
-/* 2. Active State (Remove) - Gold Text & Border */
+/* 2. Active State (Remove) - Gold Text & Border, NO FILL */
 .product-actions-grid .btn-secondary-new.added-to-cart,
 .related-products-section .cat-product-buttons .btn-secondary-new.added-to-cart {
     background-color: #000 !important; /* Stay Black */
@@ -322,10 +322,11 @@
     border-color: var(--primary-gold) !important; /* Gold Border */
 }
 
+/* *** മാറ്റം: ഇവിടെ fill: none നൽകുന്നു *** */
 .product-actions-grid .btn-secondary-new.added-to-cart svg.icon-btn,
 .related-products-section .cat-product-buttons .btn-secondary-new.added-to-cart svg.icon-btn {
-    fill: var(--primary-gold) !important; /* Gold Fill */
-    stroke: var(--primary-gold) !important;
+    fill: none !important; /* No Fill! */
+    stroke: var(--primary-gold) !important; /* Gold Stroke */
 }
 
 #add-to-cart-feedback {
