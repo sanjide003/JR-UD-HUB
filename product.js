@@ -1,4 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
+// മാറ്റം: 'Buy on WhatsApp' ക്ലിക്ക് ചെയ്യുമ്പോൾ കാർട്ട് പേജിലെ അതേ ഫോർമാറ്റിൽ മെസ്സേജ് അയക്കുന്നു.
 
 import { 
     collection, 
@@ -168,7 +169,6 @@ async function loadProductDetails() {
 
         const isInCart = isItemInCart(productIdStr);
         const cartButtonText = isInCart ? "Remove" : "Add to Cart";
-        // *** മാറ്റം: എപ്പോഴും btn-secondary-new (Black Style) ***
         const cartButtonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
         // ആക്ഷൻ ബാർ HTML
@@ -234,7 +234,7 @@ async function loadProductDetails() {
                 </div>
                 
                 <div class="product-actions-grid">
-                    <!-- *** Add to Cart Button *** -->
+                    <!-- Add to Cart Button -->
                     <button class="btn ${cartButtonClass}" id="add-to-cart-btn">
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -244,7 +244,7 @@ async function loadProductDetails() {
                         <span>${cartButtonText}</span>
                     </button>
                     
-                    <!-- *** WhatsApp Button *** -->
+                    <!-- WhatsApp Button -->
                     <a class="btn btn-whatsapp" id="buy-on-whatsapp-btn" href="#">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg>
                         Buy on WhatsApp
@@ -451,7 +451,7 @@ function setupProductActionButtons() {
             } catch(err) { console.error(err); }
         }
         
-        // *** മാറ്റം: Cart Logic (Ensure CSS handles colors) ***
+        // Cart Logic
         const cartButton = target.closest('#add-to-cart-btn');
         if (cartButton) {
             if (!currentProduct) return;
@@ -471,21 +471,77 @@ function setupProductActionButtons() {
             }
         }
         
-        // WhatsApp Logic
+        // WhatsApp Logic (പുതിയ ഫോർമാറ്റ്)
         const whatsappButton = target.closest('#buy-on-whatsapp-btn');
         if (whatsappButton) {
             e.preventDefault();
             if (whatsappNumber && currentProduct) {
-                let message = `Hi, I'm interested in this product:\n\n*${currentProduct.name}*\n`;
-                if(currentProduct.specification) message += `*Specs: ${currentProduct.specification.replace(/\n/g, ', ')}*\n`;
-                message += `*Price: ₹${currentProduct.price.toFixed(2)}*\n\nProduct Link:\n${window.location.href}`;
+                // *** മാറ്റം: പുതിയ ഫോർമാറ്റ് ജനറേഷൻ ***
+                const itemTotal = currentProduct.price;
+                const itemMRP = (currentProduct.mrp > currentProduct.price) ? currentProduct.mrp : currentProduct.price;
+                const itemDiscount = itemMRP - itemTotal;
+                
+                // ക്വാണ്ടിറ്റി 1 എന്ന് കണക്കാക്കുന്നു (സിംഗിൾ പ്രോഡക്റ്റ് ബൈ ആയതിനാൽ)
+                // വേണമെങ്കിൽ കാർട്ടിലെ ക്വാണ്ടിറ്റി ചെക്ക് ചെയ്യാം, പക്ഷെ ഇത് 'Buy Now' ആണ്.
+                const qty = 1; 
+                const finalTotal = itemTotal * qty;
+                const finalMRP = itemMRP * qty;
+                const finalDiscount = itemDiscount * qty;
+
+                // currentProduct-ൽ quantity ഫീൽഡ് ഇല്ല, അതിനാൽ താൽക്കാലികമായി ചേർക്കുന്നു
+                const productForMsg = { ...currentProduct, quantity: qty };
+
+                const message = generateWhatsAppMessage([productForMsg], finalTotal, finalMRP, finalDiscount);
                 window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
             }
         }
     });
 }
 
-// *** മാറ്റം: Related Products (Fast & Color logic handled by CSS) ***
+// *** WhatsApp Message Generator Function (Reused from Cart Page Logic) ***
+function generateWhatsAppMessage(items, totalAmount, totalMRP, discount) {
+    let message = "ഹായ് 👋\n";
+    message += "ഞാൻ താഴെയുള്ള പ്രോഡക്റ്റ് ഓർഡർ ചെയ്യാൻ ആഗ്രഹിക്കുന്നു.\n";
+    message += "____________________\n\n";
+
+    items.forEach(item => {
+        const itemId = item.id; 
+        const productLink = `${window.location.origin}/product.html?id=${itemId}`;
+        
+        message += `🛍️ ${item.name}\n`;
+        
+        if (item.size) {
+            message += `Size : ${item.size}\n`; 
+        }
+        
+        message += `Qty : ${item.quantity}\n`;
+        message += `Price : ₹${item.price.toFixed(2)}\n\n`;
+        message += `🔗 Product link :  ${productLink}\n\n`; 
+    });
+
+    // Summary Section
+    message += `💰 *Total : ₹${totalMRP.toFixed(2)}*\n`;
+    
+    if (discount > 0) {
+        message += `🎁 Discount : ₹${discount.toFixed(2)}\n\n`;
+    } else {
+        message += `\n`;
+    }
+
+    message += `✅ \`Payable amount : ₹${totalAmount.toFixed(2)}\`\n`;
+    
+    message += "\n____________________\n\n";
+    
+    // Footer
+    message += "ദയവായി എത്രയും പെട്ടെന്ന് പ്രോസസ് ചെയ്യുക.\n\n";
+    
+    if (discount > 0) {
+        message += `\`You saved ₹${discount.toFixed(2)} on this order!\``;
+    }
+
+    return message;
+}
+
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
     try {
@@ -521,7 +577,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
 
             const isInCart = isItemInCart(productId);
             const buttonText = isInCart ? "Remove" : "Cart";
-            // *** മാറ്റം: Use CSS classes for colors ***
             const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
             card.innerHTML = `
@@ -572,7 +627,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
     } catch (error) { console.error("Error loading related products: ", error); }
 }
 
-// Related Product Event Listener
 relatedProductsGrid.addEventListener('click', (e) => {
     const cartButton = e.target.closest('.btn-add-to-cart');
     if (cartButton) {
@@ -585,7 +639,6 @@ relatedProductsGrid.addEventListener('click', (e) => {
         if (cartButton.classList.contains('added-to-cart')) {
             removeFromCart(id);
             cartButton.classList.remove('added-to-cart');
-            // *** മാറ്റം: ടെക്സ്റ്റ് മാത്രം മാറ്റുന്നു, കളർ CSS കൈകാര്യം ചെയ്യും ***
             if (buttonText) buttonText.textContent = 'Cart';
         } else {
             const product = {
