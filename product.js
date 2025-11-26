@@ -169,7 +169,7 @@ async function loadProductDetails() {
         const isInCart = isItemInCart(productIdStr);
         const cartButtonText = isInCart ? "Remove" : "Add to Cart";
         
-        // *** മാറ്റം: കളർ സ്കീം (എപ്പോഴും btn-secondary-new അഥവാ Black ഉപയോഗിക്കുന്നു) ***
+        // *** മാറ്റം: ക്ലാസ്സ് ലോജിക് (CSS വഴി സ്റ്റൈൽ നിയന്ത്രിക്കുന്നു) ***
         const cartButtonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
         // ആക്ഷൻ ബാർ HTML
@@ -235,7 +235,7 @@ async function loadProductDetails() {
                 </div>
                 
                 <div class="product-actions-grid">
-                    <!-- *** മാറ്റം: Add to Cart ബട്ടൺ (Black Style Only) *** -->
+                    <!-- *** മാറ്റം: Add to Cart ബട്ടൺ *** -->
                     <button class="btn ${cartButtonClass}" id="add-to-cart-btn">
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -452,7 +452,7 @@ function setupProductActionButtons() {
             } catch(err) { console.error(err); }
         }
         
-        // *** മാറ്റം: Cart Logic (Keep Button Black) ***
+        // *** മാറ്റം: Cart Logic (Keep Button Black with new style) ***
         const cartButton = target.closest('#add-to-cart-btn');
         if (cartButton) {
             if (!currentProduct) return;
@@ -464,12 +464,10 @@ function setupProductActionButtons() {
             if (cartButton.classList.contains('added-to-cart')) {
                 removeFromCart(id);
                 cartButton.classList.remove('added-to-cart');
-                // *** മാറ്റം: btn-primary-new (Gold) ഉപയോഗിക്കുന്നില്ല, btn-secondary-new (Black) തന്നെ ***
                 if (buttonText) buttonText.textContent = 'Add to Cart';
             } else {
                 addToCart(id, currentProduct);
                 cartButton.classList.add('added-to-cart');
-                // *** മാറ്റം: btn-primary-new ചേർക്കുന്നില്ല ***
                 if (buttonText) buttonText.textContent = 'Remove';
             }
         }
@@ -488,7 +486,7 @@ function setupProductActionButtons() {
     });
 }
 
-// *** മാറ്റം: Related Products-ലും ഇതേ രീതി (Fast & Black) ***
+// *** മാറ്റം: Related Products (Fast & New Style) ***
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
     try {
@@ -524,7 +522,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
 
             const isInCart = isItemInCart(productId);
             const buttonText = isInCart ? "Remove" : "Cart";
-            // *** മാറ്റം: എപ്പോഴും btn-secondary-new (Black) ***
             const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
             card.innerHTML = `
@@ -575,7 +572,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
     } catch (error) { console.error("Error loading related products: ", error); }
 }
 
-// Related Product Event Listener
+// Related Product Event Listener (Updated for fast toggle)
 relatedProductsGrid.addEventListener('click', (e) => {
     const cartButton = e.target.closest('.btn-add-to-cart');
     if (cartButton) {
@@ -588,7 +585,6 @@ relatedProductsGrid.addEventListener('click', (e) => {
         if (cartButton.classList.contains('added-to-cart')) {
             removeFromCart(id);
             cartButton.classList.remove('added-to-cart');
-            // *** മാറ്റം: നിറം മാറ്റുന്നില്ല ***
             if (buttonText) buttonText.textContent = 'Cart';
         } else {
             const product = {
@@ -601,7 +597,6 @@ relatedProductsGrid.addEventListener('click', (e) => {
             };
             addToCart(id, product);
             cartButton.classList.add('added-to-cart');
-            // *** മാറ്റം: നിറം മാറ്റുന്നില്ല ***
             if (buttonText) buttonText.textContent = 'Remove';
         }
     } 
