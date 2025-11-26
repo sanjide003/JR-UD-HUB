@@ -5,7 +5,7 @@
 .category-page-layout {
     display: flex;
     flex-direction: column;
-    gap: 5px; /* സെർച്ച് ബാറും കാറ്റഗറിയും തമ്മിലുള്ള അകലം */
+    gap: 5px; 
 }
 
 /* --- 1.0 സെർച്ച് ബാർ സ്റ്റൈലുകൾ --- */
@@ -52,6 +52,90 @@
     padding: 0;
     margin-left: 0.5rem;
 }
+
+/* --- 1.0.1 പുതിയ ഫിൽറ്റർ സെക്ഷൻ --- */
+.filter-section {
+    padding: 0.5rem;
+    background-color: var(--bg-color);
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 0.5rem;
+}
+
+.filter-row-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.filter-select {
+    background-color: var(--card-bg);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 0.6rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    outline: none;
+    width: 100%;
+    appearance: none; /* Default arrow കളയാൻ */
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23D4AF37%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
+    background-repeat: no-repeat;
+    background-position: right .7em top 50%;
+    background-size: .65em auto;
+}
+
+.filter-select:focus {
+    border-color: var(--primary-gold);
+}
+
+.filter-row-discount {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+}
+
+.filter-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.discount-chips-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: nowrap;
+}
+
+.discount-chip {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
+    padding: 4px 10px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s ease;
+}
+
+.discount-chip:hover {
+    border-color: var(--primary-gold);
+    color: var(--text-color);
+}
+
+.discount-chip.active {
+    background-color: var(--primary-gold);
+    color: #000;
+    border-color: var(--primary-gold);
+    font-weight: 600;
+}
+
+/* Hide Scrollbars */
+.filter-row-discount::-webkit-scrollbar { display: none; }
+.filter-row-discount { -ms-overflow-style: none; scrollbar-width: none; }
+
 
 /* --- 1.1 മുകളിലെ കാറ്റഗറി ലിസ്റ്റ് --- */
 .category-grid-mobile,
@@ -143,7 +227,7 @@
 .category-page-content {
     flex-grow: 1;
     padding-top: 5px;
-    height: calc(100vh - 220px); 
+    height: calc(100vh - 280px); /* Adjusted height for filters */
     overflow-y: auto; 
 }
 
@@ -229,7 +313,7 @@
     margin-top: 0.5rem;
 }
 
-/* *** മാറ്റം: ബട്ടൺ സ്റ്റൈലുകൾ (Black Background Fixed) *** */
+/* *** ബട്ടൺ സ്റ്റൈലുകൾ (Black Background Fixed) *** */
 
 .cat-product-buttons .btn-primary-new,
 .cat-product-buttons .btn-secondary-new {
