@@ -173,7 +173,6 @@
     animation: fadeInUp 1s ease-out 0.5s forwards;
 }
 
-/* *** മാറ്റം: Heading Center & Underline നീക്കം *** */
 .section-title-new {
     position: relative;
     display: block;
@@ -182,7 +181,6 @@
     padding-bottom: 0;
 }
 
-/* Underline നീക്കം ചെയ്തു */
 .section-title-new::after {
     display: none;
 }
@@ -328,41 +326,58 @@
     padding: 0;
 }
 
-/* *** മാറ്റം: For You ബട്ടണുകളുടെ പുതിയ സ്റ്റൈൽ (Black with White/Gold) *** */
 .top-sellers-buttons .btn {
     padding: 0.6rem 0.5rem;
     font-size: 0.85rem;
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
-    
-    /* Default: Black BG, White Text */
-    background-color: #000 !important;
-    color: #fff !important;
-    border: 1px solid #fff !important;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 5px;
+    border-radius: 5px;
+    text-decoration: none;
 }
 
-/* Icon Default Color */
-.top-sellers-buttons .btn svg {
-    fill: none !important;
-    stroke: #fff !important;
+/* 1. Cart Button (Black Background) */
+.top-sellers-buttons .btn-add-to-cart {
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #fff;
+    cursor: pointer;
 }
 
-/* *** Active/Remove State *** */
-.top-sellers-buttons .btn.added-to-cart {
-    background-color: #000 !important; /* Always Black */
-    color: var(--primary-gold) !important; /* Gold Text */
-    border-color: var(--primary-gold) !important; /* Gold Border */
+.top-sellers-buttons .btn-add-to-cart svg {
+    fill: none;
+    stroke: #fff;
 }
 
-/* Icon Active Color (No Fill) */
-.top-sellers-buttons .btn.added-to-cart svg {
+/* Cart Button Active (Remove) - Gold Text, Black BG */
+.top-sellers-buttons .btn-add-to-cart.added-to-cart {
+    background-color: #000;
+    color: var(--primary-gold);
+    border-color: var(--primary-gold);
+}
+
+/* *** മാറ്റം: ഐക്കൺ ഫിൽ ആകില്ല (No Fill) *** */
+.top-sellers-buttons .btn-add-to-cart.added-to-cart svg {
     fill: none !important;
     stroke: var(--primary-gold) !important;
+}
+
+/* 2. View Button (Gold Background - Old Style) */
+.top-sellers-buttons a.btn {
+    background-color: var(--primary-gold);
+    color: #000; /* Black Text */
+    border: 1px solid var(--primary-gold);
+    font-weight: 600;
+}
+
+.top-sellers-buttons a.btn:hover {
+    background-color: var(--secondary-gold);
+    border-color: var(--secondary-gold);
+    color: #000;
 }
 
 /* Ripple effect on button click */
