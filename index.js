@@ -1,5 +1,5 @@
 // Apple Watch Style Category Grid - index.js
-// മാറ്റം: Placeholder Image ടെക്സ്റ്റ് 'JR UD HUB' എന്നാക്കി.
+// മാറ്റം: Placeholder Image Text Fix & For You Button Fix (Black/Gold toggle)
 
 import { db } from './firebase-config.js';
 import { 
@@ -92,7 +92,7 @@ async function loadHeroSlider() {
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-            // *** മാറ്റം: ടെക്സ്റ്റ് മാറ്റി ***
+            // Placeholder Text: JR UD HUB
             sliderWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/600x800/000000/D4AF37?text=JR+UD+HUB" alt="Placeholder"></div>`;
         } else {
             sliderWrapper.innerHTML = '';
@@ -250,7 +250,9 @@ async function loadTopSellers() {
             
             const isInCart = isItemInCart(productId);
             const buttonText = isInCart ? "Remove" : "Cart";
-            const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-secondary-new"; 
+            
+            // *** മാറ്റം: എപ്പോഴും ഒരേ ക്ലാസ് (btn), ആക്ടീവ് ആണെങ്കിൽ added-to-cart ചേർക്കും ***
+            const buttonClass = isInCart ? "btn added-to-cart" : "btn"; 
             
             card.innerHTML = `
                 <a href="product.html?id=${productId}">
@@ -264,7 +266,7 @@ async function loadTopSellers() {
                     <div class="top-sellers-product-name">${product.name}</div>
                     <div class="top-sellers-product-price">₹${product.price || 0}</div>
                     <div class="top-sellers-buttons">
-                        <button class="btn ${buttonClass} btn-add-to-cart"
+                        <button class="${buttonClass} btn-add-to-cart"
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${product.price}"
@@ -278,7 +280,7 @@ async function loadTopSellers() {
                             </svg>
                             <span>${buttonText}</span>
                         </button>
-                        <a href="product.html?id=${productId}" class="btn btn-primary-new">
+                        <a href="product.html?id=${productId}" class="btn">
                             <span>View</span>
                         </a>
                     </div>
@@ -740,8 +742,7 @@ if (topSellersGrid) {
         if (button.classList.contains('added-to-cart')) {
             removeFromCart(id);
             button.classList.remove('added-to-cart');
-            button.classList.remove('btn-primary-new');
-            button.classList.add('btn-secondary-new'); 
+            // *** മാറ്റം: ക്ലാസ് മാറ്റുന്നില്ല, വെറും ടോഗിൾ മാത്രം ***
             if (buttonText) buttonText.textContent = 'Cart';
         } else {
             const product = {
@@ -754,8 +755,7 @@ if (topSellersGrid) {
             };
             addToCart(id, product);
             button.classList.add('added-to-cart');
-            button.classList.add('btn-primary-new');
-            button.classList.remove('btn-secondary-new'); 
+            // *** മാറ്റം: ക്ലാസ് മാറ്റുന്നില്ല, വെറും ടോഗിൾ മാത്രം ***
             if (buttonText) buttonText.textContent = 'Remove';
             showToast('Added to cart!');
         }
