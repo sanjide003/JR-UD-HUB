@@ -1,5 +1,5 @@
 /* ഇത് കാർട്ട് cart.CSS ഫയലാണ്.
-   മാറ്റം: ബട്ടണുകൾക്ക് WhatsApp പച്ച നിറം നൽകി.
+   മാറ്റം: ബട്ടണുകൾക്ക് പുതിയ നിറം (#038c74) നൽകി.
 */
 
 /* --- 1. കാർട്ട് പേജ് ലേഔട്ട് --- */
@@ -119,16 +119,16 @@
     color: var(--error-red);
 }
 
-/* *** മാറ്റം: Buy Now ബട്ടൺ പച്ച നിറത്തിൽ *** */
+/* *** മാറ്റം: Buy Now ബട്ടൺ പുതിയ നിറത്തിൽ (#038c74) *** */
 .cart-item-actions .buy-now-btn {
-    color: #25D366; /* WhatsApp Green Text */
+    color: #038c74; /* New Teal Green Color */
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
 }
 .cart-item-actions .buy-now-btn:hover {
-    background-color: rgba(37, 211, 102, 0.1); /* Light Green Background on Hover */
+    background-color: rgba(3, 140, 116, 0.1); /* Light Teal Background on Hover */
 }
 
 /* --- 3. വിലവിവരപ്പട്ടിക (വലതുവശം) --- */
@@ -167,14 +167,14 @@
     display: none; /* JS വഴി കാണിക്കും */
 }
 
-/* *** മാറ്റം: Place Order ബട്ടൺ പച്ച നിറത്തിൽ *** */
+/* *** മാറ്റം: Place Order ബട്ടൺ പുതിയ നിറത്തിൽ (#038c74) *** */
 .btn-checkout-full {
     width: 100%;
     padding: 1rem;
     font-size: 1.1rem;
     margin-top: 1rem;
-    background-color: #25D366 !important; /* WhatsApp Green */
-    border-color: #25D366 !important;
+    background-color: #038c74 !important; /* New Teal Green */
+    border-color: #038c74 !important;
     color: white !important;
     display: flex;
     align-items: center;
@@ -182,8 +182,8 @@
     gap: 8px;
 }
 .btn-checkout-full:hover {
-    background-color: #128C7E !important; /* Darker Green */
-    border-color: #128C7E !important;
+    background-color: #026f5c !important; /* Darker Teal for Hover */
+    border-color: #026f5c !important;
 }
 
 /* --- 4. മറ്റ് സ്റ്റൈലുകൾ --- */
