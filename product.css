@@ -297,14 +297,35 @@
     fill: currentColor;
 }
 
-/* Cart Button Icon Fixes */
-.product-actions-grid .btn-secondary-new svg.icon-btn {
-    fill: none;
-    stroke: currentColor;
+/* *** മാറ്റം: Add to Cart Button Styles (Black Background Always) *** */
+
+/* 1. Default State (Add to Cart) - White Text & Border */
+.product-actions-grid .btn-secondary-new,
+.related-products-section .cat-product-buttons .btn-secondary-new {
+    background-color: #000 !important; /* Always Black */
+    color: #ffffff !important; /* White Text */
+    border: 1px solid #ffffff !important; /* White Border */
+    transition: all 0.3s ease;
 }
-.product-actions-grid .btn-secondary-new.added-to-cart svg.icon-btn {
-    fill: var(--primary-gold);
-    stroke: var(--primary-gold);
+
+.product-actions-grid .btn-secondary-new svg.icon-btn,
+.related-products-section .cat-product-buttons .btn-secondary-new svg.icon-btn {
+    fill: none !important;
+    stroke: #ffffff !important; /* White Icon Stroke */
+}
+
+/* 2. Active State (Remove) - Gold Text & Border */
+.product-actions-grid .btn-secondary-new.added-to-cart,
+.related-products-section .cat-product-buttons .btn-secondary-new.added-to-cart {
+    background-color: #000 !important; /* Stay Black */
+    color: var(--primary-gold) !important; /* Gold Text */
+    border-color: var(--primary-gold) !important; /* Gold Border */
+}
+
+.product-actions-grid .btn-secondary-new.added-to-cart svg.icon-btn,
+.related-products-section .cat-product-buttons .btn-secondary-new.added-to-cart svg.icon-btn {
+    fill: var(--primary-gold) !important; /* Gold Fill */
+    stroke: var(--primary-gold) !important;
 }
 
 #add-to-cart-feedback {
@@ -314,7 +335,7 @@
     display: none; 
 }
 
-/* --- 5. 'You May Also Like' & Product Grid Cards --- */
+/* --- 5. 'You May Also Like' സെക്ഷൻ --- */
 .related-products-section {
     margin-top: 4rem;
     padding-top: 2rem;
@@ -325,6 +346,7 @@
     overflow: hidden;
 }
 
+/* Card styles copied for consistency */
 .related-products-section .category-product-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -392,18 +414,6 @@
 .related-products-section .cat-product-buttons .btn-secondary-new svg.icon-btn {
     width: 16px;
     height: 16px;
-}
-
-/* *** മാറ്റം: Remove അവസ്ഥയിൽ ഗോൾഡ് ബോർഡറും റെഡ് ഐക്കണും *** */
-.cat-product-buttons .btn-secondary-new.added-to-cart {
-    border-color: var(--primary-gold) !important; /* Gold Border */
-    color: var(--text-color) !important; /* White Text */
-    background-color: transparent !important; /* Black Background */
-}
-
-.cat-product-buttons .btn-secondary-new.added-to-cart svg.icon-btn {
-    stroke: var(--error-red) !important; /* Red Icon */
-    fill: none;
 }
 
 
