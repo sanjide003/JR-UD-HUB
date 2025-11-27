@@ -1,5 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// മാറ്റം: Smart Scroll Logic & Expanded Filters
+// മാറ്റം: Scroll Animation (Compact Mode) ലോജിക് ചേർത്തു.
 
 import {
     collection,
@@ -20,17 +20,17 @@ setLogLevel('Debug');
 
 // --- DOM Elements ---
 const productGrid = document.getElementById("category-product-grid");
-const categoryNavDesktop = document.getElementById("category-nav-desktop");
-const categoryNavMobile = document.getElementById("category-nav-mobile");
+const categoryNavSection = document.getElementById("category-nav-section");
+const stickyHeader = document.getElementById("sticky-header-container");
+const productsScrollContainer = document.getElementById("products-scroll-container");
+const searchWrapper = document.getElementById("search-wrapper");
+const searchIconBtn = document.getElementById("search-icon-btn");
+
 const loader = document.getElementById("infinite-scroll-loader");
 const searchInput = document.getElementById("product-search-input"); 
 const clearSearchBtn = document.getElementById("clear-search-btn");
 const noResultsMsg = document.getElementById("no-results-message");
 const resetFiltersBtn = document.getElementById("reset-filters-btn");
-
-// Sticky Elements
-const stickyHeader = document.getElementById("sticky-header");
-const searchWrapper = document.getElementById("search-input-wrapper");
 
 // Filter Elements
 const priceFilter = document.getElementById("price-range-filter");
@@ -41,7 +41,7 @@ const discountChips = document.querySelectorAll(".discount-chip");
 let currentCategoryId = 'all'; 
 let allProductsCache = []; 
 let categoriesMap = new Map(); 
-let activeDiscount = null; 
+let activeDiscount = null;
 
 // --- പേജ് ലോഡ് ആവുമ്പോൾ ---
 document.addEventListener("DOMContentLoaded", async () => {
@@ -55,41 +55,44 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     await loadAllProductsCache();
+    
     setupEventListeners();
+    setupScrollAnimation(); // *** പുതിയത്: സ്ക്രോൾ ആനിമേഷൻ ***
     updateActiveCategoryUI(currentCategoryId);
     applyFilters(); 
-    setupScrollBehavior(); // *** സ്ക്രോൾ ലോജിക് ***
 });
 
-// --- Scroll Behavior ---
-function setupScrollBehavior() {
-    let lastScrollY = window.scrollY;
-    const threshold = 50; // 50px സ്ക്രോൾ ചെയ്താൽ മാറ്റം തുടങ്ങും
+// --- SCROLL ANIMATION LOGIC ---
+function setupScrollAnimation() {
+    if (!productsScrollContainer) return;
 
-    window.addEventListener('scroll', () => {
-        const currentScrollY = window.scrollY;
+    productsScrollContainer.addEventListener('scroll', () => {
+        const scrollTop = productsScrollContainer.scrollTop;
         
-        if (currentScrollY > threshold) {
-            stickyHeader.classList.add('scrolled');
+        // 50px താഴേക്ക് സ്ക്രോൾ ചെയ്താൽ Compact Mode ആക്കുക
+        if (scrollTop > 50) {
+            stickyHeader.classList.add('compact');
         } else {
-            stickyHeader.classList.remove('scrolled');
-            stickyHeader.classList.remove('search-expanded'); // Reset search expansion
+            stickyHeader.classList.remove('compact');
+            // സ്ക്രോൾ തിരിച്ചു മുകളിലെത്തുമ്പോൾ സെർച്ച് ബാർ റീസെറ്റ് ചെയ്യുക
+            searchWrapper.classList.remove('expanded');
         }
-        lastScrollY = currentScrollY;
     });
 
-    // Scrolled Mode-ൽ Search Icon ക്ലിക്ക് ചെയ്താൽ വികസിക്കാൻ
-    searchWrapper.addEventListener('click', () => {
-        if (stickyHeader.classList.contains('scrolled')) {
-            stickyHeader.classList.add('search-expanded');
-            searchInput.focus();
+    // Compact Mode-ൽ സെർച്ച് ഐക്കണിൽ ക്ലിക്ക് ചെയ്താൽ വലുതാകാൻ
+    searchIconBtn.addEventListener('click', () => {
+        if (stickyHeader.classList.contains('compact')) {
+            searchWrapper.classList.toggle('expanded');
+            if (searchWrapper.classList.contains('expanded')) {
+                searchInput.focus();
+            }
         }
     });
 }
 
-// --- 1. ഡാറ്റ ലോഡിംഗ് ---
+// --- Data Loading ---
 async function loadCategoryList() {
-    if (!categoryNavDesktop || !categoryNavMobile) return;
+    if (!categoryNavSection) return;
     try {
         const q = query(collection(db, "categories"), orderBy("name"));
         const catSnapshot = await getDocs(q);
@@ -121,10 +124,8 @@ async function loadCategoryList() {
             `;
         });
 
-        categoryNavDesktop.innerHTML = navHtml;
-        categoryNavMobile.innerHTML = navHtml;
-        addNavClickListeners(categoryNavDesktop);
-        addNavClickListeners(categoryNavMobile);
+        categoryNavSection.innerHTML = navHtml;
+        addNavClickListeners(categoryNavSection);
 
     } catch (error) {
         console.error("Error loading categories: ", error);
@@ -158,15 +159,13 @@ async function loadAllProductsCache() {
     }
 }
 
-// --- 2. ഇവന്റ് ലിസണേഴ്സ് ---
 function setupEventListeners() {
     searchInput.addEventListener('input', (e) => {
         clearSearchBtn.style.display = e.target.value.length > 0 ? 'block' : 'none';
         applyFilters();
     });
 
-    clearSearchBtn.addEventListener('click', (e) => {
-        e.stopPropagation(); // Prevent wrapper click
+    clearSearchBtn.addEventListener('click', () => {
         searchInput.value = '';
         clearSearchBtn.style.display = 'none';
         applyFilters();
@@ -210,9 +209,10 @@ function addNavClickListeners(navElement) {
             else url.searchParams.set('filter', categoryId);
             window.history.pushState({}, '', url);
             
-            // കാറ്റഗറി മാറുമ്പോൾ സ്ക്രോൾ മുകളിലേക്ക്
-            window.scrollTo({ top: 0, behavior: 'smooth' });
             applyFilters();
+            
+            // കാറ്റഗറി മാറ്റുമ്പോൾ സ്ക്രോൾ മുകളിലേക്ക്
+            productsScrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
         }
     });
 }
@@ -237,7 +237,6 @@ function resetAllFilters() {
     applyFilters();
 }
 
-// --- 3. ഫിൽറ്ററിംഗ് ലോജിക് ---
 function applyFilters() {
     if (!productGrid) return;
     productGrid.innerHTML = '';
@@ -339,7 +338,7 @@ function renderProductCard(product, productId) {
     productGrid.appendChild(card);
 }
 
-// Ripple Effect
+// Ripple Effect (Reused)
 function createRipple(event, button) {
     const ripple = document.createElement('span');
     const rect = button.getBoundingClientRect();
@@ -379,7 +378,7 @@ productGrid.addEventListener('click', (e) => {
             cartButton.classList.remove('added-to-cart');
             if (buttonText) buttonText.textContent = 'Cart';
         } else {
-            const product = allProductsCache.find(p => p.id === id);
+            const product = allProductsCache.find(p => p.id === id); 
             if (product) {
                 const cartProduct = {
                     id: product.id,
