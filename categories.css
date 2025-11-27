@@ -1,18 +1,13 @@
 /* ഇത് categories.CSS
+   മാറ്റം: Floating Pills Design (Transparent Background)
 */
 
-/* --- 1. പേജ് ലേഔട്ട് & Spacing Fix --- */
+/* --- 1. കാറ്റഗറി പേജ് ലേഔട്ട് --- */
 .category-page-layout {
     display: flex;
     flex-direction: column;
     height: calc(100vh - var(--header-height)); 
     overflow: hidden; 
-}
-
-/* *** മാറ്റം: മുകളിലെ സ്പേസ് കുറച്ചു *** */
-.container.page-container {
-    padding-top: 0.5rem !important; /* Header-ന് തൊട്ടുതാഴെ */
-    padding-bottom: 0 !important;
 }
 
 /* --- STICKY HEADER CONTAINER --- */
@@ -22,75 +17,76 @@
     border-bottom: 1px solid var(--border-color);
     transition: all 0.3s ease;
     flex-shrink: 0;
+    padding-bottom: 10px;
 }
 
-/* --- 1.1 കാറ്റഗറി ഗ്രിഡ് --- */
+/* --- 1.1 കാറ്റഗറി ഗ്രിഡ് (Floating Pills Style) --- */
 .category-grid-section {
     display: flex; 
     flex-wrap: nowrap; 
     overflow-x: auto; 
     overflow-y: hidden; 
-    gap: 12px; 
-    padding: 5px 10px 10px 10px; /* പാഡിംഗ് കുറച്ചു */
+    gap: 10px; /* ബട്ടണുകൾക്കിടയിലുള്ള അകലം */
+    padding: 15px 10px; 
     scroll-snap-type: x mandatory; 
     height: auto;
     transition: all 0.3s ease;
+    align-items: center;
 }
 
+/* Hide Scrollbars */
 .category-grid-section::-webkit-scrollbar { display: none; }
 .category-grid-section { -ms-overflow-style: none; scrollbar-width: none; }
 
+/* കാറ്റഗറി ഐറ്റം (Pill Shape) */
 .category-grid-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 6px; 
-    text-decoration: none;
-    color: var(--text-muted);
-    min-width: 70px; 
-    cursor: pointer;
-    scroll-snap-align: start;
-    transition: all 0.3s ease;
-}
-
-.category-grid-image-box {
-    width: 50px; 
-    height: 50px; 
-    border-radius: 12px; 
-    background-color: rgba(255, 255, 255, 0.05); 
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    /* *** മാറ്റം: ഇമേജ് ഫിറ്റ് ആകാൻ പാഡിംഗ് 5px നൽകി *** */
-    padding: 5px;
-    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
+    text-decoration: none;
+    color: var(--text-muted);
+    min-width: auto; /* ഫിക്സഡ് വീതി ഒഴിവാക്കി */
+    cursor: pointer;
+    scroll-snap-align: start;
     transition: all 0.3s ease;
+    
+    /* *** പുതിയ ഫ്ലോട്ടിംഗ് സ്റ്റൈൽ *** */
+    background-color: rgba(255, 255, 255, 0.05); /* സുതാര്യമായ ബാഗ്രൗണ്ട് */
+    border: 1px solid rgba(255, 255, 255, 0.15); /* നേരിയ ബോർഡർ */
+    padding: 8px 16px; /* ഉള്ളിൽ സ്ഥലം */
+    border-radius: 25px; /* ഉരുണ്ട അറ്റങ്ങൾ (Pill Shape) */
+    white-space: nowrap;
 }
 
-/* *** മാറ്റം: ഇമേജ് കൃത്യമായി ഫിറ്റ് ചെയ്യാൻ *** */
+/* ഐക്കൺ ബോക്സ് (ഇപ്പോൾ ആവശ്യമില്ല, എങ്കിലും സപ്പോർട്ടിനായി വെക്കുന്നു) */
+.category-grid-image-box {
+    display: none; /* ഐക്കൺ ഇമേജ് ബോക്സ് ഒഴിവാക്കി, ടെക്സ്റ്റ് മാത്രം മതിയാകും */
+}
+
+/* ഐക്കൺ ഇമേജ് (Optional: വേണമെങ്കിൽ ചെറിയ ഐക്കൺ ടെക്സ്റ്റിനൊപ്പം നൽകാം) */
 .category-grid-image {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; 
-    display: block;
+    display: none; 
 }
 
 .category-grid-name {
-    font-size: 0.75rem; 
+    font-size: 0.9rem; 
     text-align: center;
-    white-space: nowrap; 
-    overflow: hidden;
-    text-overflow: ellipsis; 
-    width: 100%;
-    transition: all 0.3s ease;
+    font-weight: 500;
+    text-transform: uppercase; /* വലിയ അക്ഷരങ്ങൾ */
+    letter-spacing: 0.5px;
 }
 
-.category-grid-item.active .category-grid-name { color: var(--primary-gold); font-weight: 600; }
-.category-grid-item.active .category-grid-image-box { border-color: var(--primary-gold); background-color: rgba(212, 175, 55, 0.15); }
+/* Active State (Gold Fill) */
+.category-grid-item.active {
+    background-color: var(--primary-gold);
+    color: #000; /* കറുപ്പ് ടെക്സ്റ്റ് */
+    border-color: var(--primary-gold);
+    font-weight: 700;
+    box-shadow: 0 4px 10px rgba(212, 175, 55, 0.3); /* ചെറിയ നിഴൽ */
+}
 
 
-/* --- TOOLS LAYOUT (Search & Filter Container) --- */
+/* --- TOOLS LAYOUT --- */
 .tools-layout {
     display: flex;
     flex-direction: column;
@@ -99,7 +95,7 @@
 
 /* --- 1.2 സെർച്ച് ബാർ --- */
 .search-bar-container {
-    padding: 0.5rem 10px;
+    padding: 0 10px 10px 10px;
     transition: all 0.3s ease;
     width: 100%;
 }
@@ -108,18 +104,23 @@
     position: relative;
     display: flex;
     align-items: center;
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 0.6rem 1rem;
+    background-color: transparent; /* സുതാര്യം */
+    border: 1px solid rgba(255, 255, 255, 0.2); /* ബോർഡർ */
+    border-radius: 25px; /* ഉരുണ്ടത് */
+    padding: 0.5rem 1rem;
     transition: all 0.3s ease;
     width: 100%;
+}
+
+.search-input-wrapper:focus-within {
+    border-color: var(--primary-gold);
+    background-color: rgba(255, 255, 255, 0.05);
 }
 
 .search-icon {
     width: 20px;
     height: 20px;
-    color: var(--text-muted);
+    color: var(--primary-gold);
     flex-shrink: 0;
 }
 
@@ -127,50 +128,26 @@
     background: none;
     border: none;
     color: var(--text-color);
-    font-size: 1rem;
+    font-size: 0.95rem;
     width: 100%;
     outline: none;
     margin-left: 10px;
     transition: all 0.3s ease;
 }
 
-/* --- 1.3 ഫിൽറ്റർ സെക്ഷൻ --- */
+/* --- 1.3 ഫിൽറ്റർ സെക്ഷൻ (Floating Chips) --- */
 .filter-section {
-    padding: 0 10px 10px 10px;
+    padding: 0 10px;
     transition: all 0.3s ease;
     width: 100%;
 }
 
+/* Price & Sort Dropdowns (Hidden by default in this design, or styled minimal) */
 .filter-row-main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 10px;
-    transition: all 0.3s ease;
+    display: none; /* തൽക്കാലം മറയ്ക്കുന്നു, ഡിസ്കൗണ്ട് ഫോക്കസ് ചെയ്യാൻ */
 }
 
-/* ഡ്രോപ്പ് ഡൗൺ സ്റ്റൈൽ */
-.filter-select {
-    appearance: none;
-    -webkit-appearance: none;
-    background-color: #000;
-    color: #fff;
-    border: 1px solid #333;
-    padding: 0.7rem 1rem;
-    border-radius: 6px;
-    font-size: 0.85rem;
-    width: 100%;
-    outline: none;
-    cursor: pointer;
-    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D4AF37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-    background-repeat: no-repeat;
-    background-position: right 0.7rem center;
-    background-size: 1em;
-}
-
-.filter-select:focus { border-color: var(--primary-gold); }
-
-/* ഡിസ്കൗണ്ട് ചിപ്പുകൾ */
+/* ഡിസ്കൗണ്ട് ചിപ്പുകൾ (Floating Style) */
 .filter-row-discount {
     display: flex;
     align-items: center;
@@ -182,32 +159,36 @@
 .filter-row-discount::-webkit-scrollbar { display: none; }
 
 .filter-label {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    white-space: nowrap;
+    display: none; /* ലേബൽ വേണ്ട */
 }
 
 .discount-chips-container {
     display: flex;
-    gap: 8px;
+    gap: 10px;
 }
 
 .discount-chip {
-    background-color: #000;
-    border: 1px solid #333;
+    background-color: transparent; /* സുതാര്യം */
+    border: 1px solid rgba(255, 255, 255, 0.2);
     color: var(--text-muted);
-    padding: 6px 12px;
+    padding: 6px 14px;
     border-radius: 20px;
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     cursor: pointer;
     white-space: nowrap;
     transition: all 0.3s ease;
 }
 
+.discount-chip:hover {
+    border-color: var(--primary-gold);
+    color: var(--text-color);
+}
+
+/* Active State (Green Fill for Discount) */
 .discount-chip.active {
-    background-color: #24a66e;
+    background-color: rgba(36, 166, 110, 0.2); /* സുതാര്യമായ പച്ച */
     border-color: #24a66e;
-    color: #fff;
+    color: #24a66e;
     font-weight: 600;
 }
 
@@ -216,54 +197,25 @@
    COMPACT MODE (SCROLL ANIMATION)
    ========================================= */
 
-/* 1. കാറ്റഗറി ചുരുങ്ങുന്നു */
-.sticky-header-container.compact .category-grid-image-box {
-    height: 0;
-    padding: 0;
-    border: none;
-    opacity: 0;
-    margin: 0;
+/* സ്ക്രോൾ ചെയ്യുമ്പോൾ കാറ്റഗറി ബാർ ചെറുതാകുന്നു */
+.sticky-header-container.compact .category-grid-section {
+    padding: 10px;
 }
 .sticky-header-container.compact .category-grid-item {
-    min-width: auto;
-    gap: 0;
-}
-.sticky-header-container.compact .category-grid-name {
-    font-size: 0.85rem;
-    background-color: #1a1a1a;
     padding: 5px 12px;
-    border-radius: 15px;
-    border: 1px solid #333;
-}
-.sticky-header-container.compact .category-grid-item.active .category-grid-name {
-    background-color: var(--primary-gold);
-    color: #000;
-    border-color: var(--primary-gold);
-}
-.sticky-header-container.compact .category-grid-section {
-    padding: 10px 10px 5px 10px;
+    font-size: 0.8rem;
 }
 
-/* 2. ലേഔട്ട് മാറ്റം: സെർച്ചും ഡിസ്കൗണ്ടും ഒരേ വരിയിൽ */
-.sticky-header-container.compact .tools-layout {
-    display: flex;
-    flex-direction: row; /* Row Direction */
-    align-items: center;
-    padding: 0 10px 10px 10px;
-}
-
-/* 3. സെർച്ച് ബാർ ചുരുങ്ങുന്നു */
+/* സെർച്ച് ഐക്കൺ മാത്രമാകുന്നു */
 .sticky-header-container.compact .search-bar-container {
-    width: auto; /* Auto Width */
-    padding: 0;
-    margin-right: 10px;
+    width: auto;
+    padding: 0 10px 0 0;
 }
 .sticky-header-container.compact .search-input-wrapper {
-    width: 40px; /* Icon Size Only */
+    width: 40px;
     height: 40px;
     padding: 0;
     justify-content: center;
-    background-color: transparent;
     border-color: transparent;
 }
 .sticky-header-container.compact #product-search-input {
@@ -272,44 +224,23 @@
     opacity: 0;
     margin: 0;
 }
-.sticky-header-container.compact .search-icon {
-    color: var(--primary-gold);
-    width: 24px;
-    height: 24px;
+
+/* ടൂൾസ് ലേഔട്ട് ഒരേ വരിയിൽ */
+.sticky-header-container.compact .tools-layout {
+    flex-direction: row;
+    align-items: center;
+    padding: 0 10px 10px 10px;
 }
 
-/* Expanded Search in Compact Mode */
-.sticky-header-container.compact .search-input-wrapper.expanded {
-    width: 200px; /* Fixed width when expanded */
-    background-color: var(--card-bg);
-    border-color: var(--border-color);
-    padding: 0.6rem 1rem;
-}
-.sticky-header-container.compact .search-input-wrapper.expanded #product-search-input {
-    width: 100%;
-    opacity: 1;
-    margin-left: 10px;
-}
-
-/* 4. ഫിൽറ്റർ സെക്ഷൻ മാറ്റങ്ങൾ */
+/* ഡിസ്കൗണ്ട് ചിപ്പുകൾ തുടരുന്നു */
 .sticky-header-container.compact .filter-section {
     padding: 0;
-    width: auto;
-    flex-grow: 1; /* ബാക്കി സ്ഥലം എടുക്കുന്നു */
+    flex-grow: 1;
     overflow: hidden;
 }
-.sticky-header-container.compact .filter-row-main {
-    display: none !important; /* Hide Price/Sort */
-}
-.sticky-header-container.compact .filter-label {
-    display: none; /* Hide "Discount:" Label */
-}
-.sticky-header-container.compact .filter-row-discount {
-    padding-bottom: 0;
-}
 
 
-/* --- PRODUCT GRID --- */
+/* --- PRODUCT GRID (മാറ്റമില്ല) --- */
 .category-page-content {
     flex-grow: 1;
     overflow-y: auto; 
@@ -324,7 +255,6 @@
     padding: 0 5px; 
 }
 
-/* ... (കാർഡ് സ്റ്റൈലുകൾ മാറ്റമില്ല) ... */
 .category-product-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
@@ -422,6 +352,6 @@
 }
 
 @media (min-width: 769px) {
-    .category-grid-item { min-width: 100px; }
+    .category-grid-item { min-width: auto; padding: 10px 20px; }
     .category-product-grid { grid-template-columns: repeat(5, 1fr); gap: 1rem; padding: 0 10px; }
 }
