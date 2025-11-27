@@ -1,6 +1,6 @@
-/* ഇത് മെച്ചപ്പെടുത്തിയ home.css - Apple Watch Style Category Grid */
+/* ഇത് മെച്ചപ്പെടുത്തിയ home.css */
 
-/* --- 1. ഹോം പേജ് ടോപ്പ് ബാനർ - മെച്ചപ്പെടുത്തിയത് --- */
+/* --- 1. ഹോം പേജ് ടോപ്പ് ബാനർ --- */
 .home-top-banner {
     width: 100%;
     height: auto;
@@ -42,7 +42,7 @@
     animation: fadeIn 0.8s ease-out;
 }
 
-/* --- 2. ഹീറോ സ്ലൈഡർ - Parallax & Smooth Effects --- */
+/* --- 2. ഹീറോ സ്ലൈഡർ --- */
 .hero-section-new {
     width: 100%;
     height: 70vh; 
@@ -71,7 +71,6 @@
     transition: transform 8s ease-out;
 }
 
-/* Zoom-in effect on active slide */
 .hero-slider-new .swiper-slide-active img,
 .hero-slider-new .swiper-slide-active video {
     animation: kenBurns 8s ease-out forwards;
@@ -90,7 +89,6 @@
     pointer-events: none; 
 }
 
-/* Overlay gradient for better text readability */
 .hero-slider-new .swiper-slide::before {
     content: '';
     position: absolute;
@@ -105,18 +103,6 @@
     z-index: 1;
 }
 
-.hero-slider-new .swiper-slide::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: transparent;
-    z-index: 5;
-}
-
-/* Enhanced pagination dots */
 .hero-slider-new .hero-pagination-dots {
     position: absolute;
     bottom: 20px;
@@ -144,7 +130,7 @@
     box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
 }
 
-/* --- 3. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ - Fade In Animation --- */
+/* --- 3. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ --- */
 .hero-text-section {
     text-align: center;
     padding: 2.5rem 1.5rem;
@@ -157,20 +143,15 @@
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-/* --- 4. 'For You' (ടോപ്പ് സെല്ലേഴ്സ്) - Enhanced Cards --- */
+/* --- 4. 'For You' (Top Sellers) --- */
 .home-section {
     opacity: 0;
     animation: fadeInUp 1s ease-out 0.5s forwards;
+    margin-bottom: 3rem;
 }
 
 .section-title-new {
@@ -179,10 +160,6 @@
     text-align: center;
     margin: 0 auto 2rem;
     padding-bottom: 0;
-}
-
-.section-title-new::after {
-    display: none;
 }
 
 .top-sellers-swiper-new {
@@ -199,31 +176,10 @@
     position: relative;
 }
 
-.top-sellers-swiper-new .swiper-slide::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, 
-        rgba(212, 175, 55, 0.1) 0%, 
-        transparent 50%
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    z-index: 1;
-    pointer-events: none;
-}
-
 .top-sellers-swiper-new .swiper-slide:hover {
     transform: translateY(-8px);
     border-color: var(--primary-gold);
     box-shadow: 0 12px 24px rgba(212, 175, 55, 0.2);
-}
-
-.top-sellers-swiper-new .swiper-slide:hover::before {
-    opacity: 1;
 }
 
 .top-sellers-product-image {
@@ -244,7 +200,6 @@
     z-index: 2;
 }
 
-/* ആനിമേറ്റഡ് പുരോഗതി ഡോട്ടുകൾ */
 .top-sellers-pagination-new {
     position: relative; 
     margin-top: 1.5rem; 
@@ -263,37 +218,10 @@
     overflow: hidden; 
     cursor: pointer;
     transition: all 0.3s ease;
-    position: relative;
-}
-
-.top-sellers-pagination-new .swiper-pagination-bullet:hover {
-    background-color: rgba(212, 175, 55, 0.3);
-}
-
-.top-sellers-pagination-new .pagination-progress {
-    display: block;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, 
-        var(--primary-gold) 0%, 
-        var(--secondary-gold) 100%
-    );
-    transform: scaleX(0); 
-    transform-origin: left;
-    box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
 }
 
 .top-sellers-pagination-new .swiper-pagination-bullet-active {
     background-color: rgba(212, 175, 55, 0.2);
-}
-
-.top-sellers-pagination-new .swiper-pagination-bullet-active .pagination-progress {
-    animation: progress-fill 4s linear forwards; 
-}
-
-@keyframes progress-fill {
-    from { transform: scaleX(0); }
-    to { transform: scaleX(1); }
 }
 
 .top-sellers-product-name {
@@ -304,11 +232,6 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: color 0.3s ease;
-}
-
-.top-sellers-swiper-new .swiper-slide:hover .top-sellers-product-name {
-    color: var(--primary-gold);
 }
 
 .top-sellers-product-price {
@@ -318,7 +241,6 @@
     font-weight: 600;
 }
 
-/* *** Buttons Styling *** */
 .top-sellers-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -332,6 +254,9 @@
     position: relative;
     overflow: hidden;
     transition: all 0.3s ease;
+    background-color: #000 !important;
+    color: #fff !important;
+    border: 1px solid #fff !important;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -340,238 +265,115 @@
     text-decoration: none;
 }
 
-/* 1. Cart Button (Black Background) */
-.top-sellers-buttons .btn-add-to-cart {
-    background-color: #000;
-    color: #fff;
-    border: 1px solid #fff;
-    cursor: pointer;
+.top-sellers-buttons .btn svg { fill: none !important; stroke: #fff !important; }
+
+.top-sellers-buttons .btn.added-to-cart {
+    background-color: #000 !important;
+    color: var(--primary-gold) !important;
+    border-color: var(--primary-gold) !important;
 }
 
-.top-sellers-buttons .btn-add-to-cart svg {
-    fill: none;
-    stroke: #fff;
-}
-
-/* Cart Button Active (Remove) - Gold Text, Black BG */
-.top-sellers-buttons .btn-add-to-cart.added-to-cart {
-    background-color: #000;
-    color: var(--primary-gold);
-    border-color: var(--primary-gold);
-}
-
-/* *** മാറ്റം: ഐക്കൺ ഫിൽ ആകില്ല (No Fill) *** */
-.top-sellers-buttons .btn-add-to-cart.added-to-cart svg {
+.top-sellers-buttons .btn.added-to-cart svg {
     fill: none !important;
     stroke: var(--primary-gold) !important;
 }
 
-/* 2. View Button (Gold Background - Old Style) */
 .top-sellers-buttons a.btn {
     background-color: var(--primary-gold);
-    color: #000; /* Black Text */
+    color: #000;
     border: 1px solid var(--primary-gold);
     font-weight: 600;
 }
 
-.top-sellers-buttons a.btn:hover {
-    background-color: var(--secondary-gold);
-    border-color: var(--secondary-gold);
+/* --- 5. SHOP BY CATEGORY (പുതിയ ലേഔട്ട്) --- */
+
+/* കണ്ടെയ്നർ */
+.home-category-grid-wrapper {
+    width: 100%;
+    padding: 0 20px 40px 20px; /* ഇരുവശത്തും പാഡിംഗ് */
+}
+
+/* ഗ്രിഡ് ലേഔട്ട്: ഒന്നിന് താഴെ ഒന്ന് */
+.category-grid-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; /* കാർഡുകൾ തമ്മിലുള്ള അകലം */
+    width: 100%;
+    max-width: 500px; /* മൊബൈലിൽ നല്ല ഭംഗി കിട്ടാൻ */
+    margin: 0 auto;   /* മധ്യത്തിൽ വരാൻ */
+}
+
+/* കാർഡ് സ്റ്റൈൽ (3:4 Ratio) */
+.category-card-portrait {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4; /* 3:4 അനുപാതം */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card-portrait:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+    border-color: var(--primary-gold);
+}
+
+/* കാർഡ് ഇമേജ് */
+.category-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.category-card-portrait:hover .category-card-img {
+    transform: scale(1.05);
+}
+
+/* പേര് കാണിക്കുന്ന ഓവർലേ */
+.category-card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    padding: 2rem 1rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.category-card-title {
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.category-card-btn {
+    font-size: 0.8rem;
+    color: var(--primary-gold);
+    border: 1px solid var(--primary-gold);
+    padding: 5px 15px;
+    border-radius: 20px;
+    background-color: rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+}
+
+.category-card-portrait:hover .category-card-btn {
+    background-color: var(--primary-gold);
     color: #000;
 }
 
-/* Ripple effect on button click */
-.top-sellers-buttons .btn::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.top-sellers-buttons .btn:active::after {
-    width: 200px;
-    height: 200px;
-}
-
-/* --- 5. Apple Watch Style Category Grid --- */
-.home-category-grid-wrapper {
-    width: 100%;
-    padding: 3rem 0;
-    position: relative;
-    overflow: hidden;
-    min-height: 500px;
-}
-
-.category-grid-canvas {
-    width: 100%;
-    height: 500px;
-    position: relative;
-    overflow: visible;
-    /* *** മാറ്റം: Default cursor, no grab *** */
-    touch-action: pan-y; /* Allow vertical scrolling */
-    pointer-events: none; /* Pass through by default */
-}
-
-/* *** പുതിയത്: Drag Zone - Center Circle *** */
-.category-drag-zone {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 280px;
-    height: 280px;
-    border-radius: 50%;
-    /* *** Visible drag area indicator *** */
-    background: radial-gradient(circle, 
-        rgba(212, 175, 55, 0.05) 0%, 
-        transparent 70%
-    );
-    border: 2px dashed rgba(212, 175, 55, 0.2);
-    cursor: grab;
-    pointer-events: auto;
-    z-index: 5;
-    transition: all 0.3s ease;
-    
-    /* *** Critical for mobile touch *** */
-    touch-action: none;
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
-}
-
-.category-drag-zone:active {
-    cursor: grabbing;
-    background: radial-gradient(circle, 
-        rgba(212, 175, 55, 0.1) 0%, 
-        transparent 70%
-    );
-    border-color: rgba(212, 175, 55, 0.4);
-}
-
-/* Drag hint */
-.category-drag-zone::before {
-    content: '👆 Drag Here';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    font-weight: 600;
-    opacity: 0.6;
-    pointer-events: none;
-    text-align: center;
-    white-space: nowrap;
-}
-
-.category-item-watch {
-    position: absolute;
-    transform-origin: center;
-    /* *** GPU Acceleration *** */
-    will-change: transform, opacity;
-    transform: translate3d(0, 0, 0);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    /* Smooth transitions only when not dragging */
-    transition: opacity 0.2s ease;
-    pointer-events: auto; /* Items are clickable */
-}
-
-.category-card-watch {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    overflow: hidden;
-    position: relative;
-    background-color: var(--card-bg);
-    background-size: cover;
-    background-position: center;
-    border: 2px solid var(--border-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* *** GPU Acceleration *** */
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    will-change: border-color, box-shadow;
-    /* Remove transition during drag */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
-
-.category-card-watch::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, 
-        transparent 0%, 
-        rgba(0,0,0,0.6) 100%
-    );
-    z-index: 1;
-}
-
-.category-card-watch h3 {
-    position: relative;
-    z-index: 2;
-    color: var(--primary-gold);
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-align: center;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-    padding: 0.5rem;
-    word-wrap: break-word;
-    max-width: 90%;
-}
-
-/* Center item - വലുതാക്കുന്നു */
-.category-item-watch.center .category-card-watch {
-    border-color: var(--primary-gold);
-    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
-}
-
-.category-item-watch.center .category-card-watch h3 {
-    font-size: 1rem;
-}
-
-.category-item-watch.center .category-card-watch::before {
-    background: radial-gradient(circle at center, 
-        rgba(212, 175, 55, 0.1) 0%, 
-        rgba(0,0,0,0.5) 100%
-    );
-}
-
-/* Scroll indicator */
-.category-scroll-hint {
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin-top: 1rem;
-    opacity: 0.7;
-    animation: pulse 2s infinite;
-}
-
-@keyframes pulse {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 0.3; }
-}
-
 /* --- 6. Scroll Reveal Animations --- */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
-
-/* Initial hidden state for scroll animations */
 .scroll-reveal {
     opacity: 0;
     transform: translateY(40px);
@@ -583,86 +385,15 @@
     transform: translateY(0);
 }
 
-/* --- 7. Loading States & Skeletons --- */
-.skeleton {
-    background: linear-gradient(
-        90deg,
-        var(--card-bg) 0%,
-        rgba(255,255,255,0.05) 50%,
-        var(--card-bg) 100%
-    );
-    background-size: 200% 100%;
-    animation: skeleton-loading 1.5s infinite;
-    border-radius: 8px;
-}
-
-@keyframes skeleton-loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* --- 8. Responsive Adjustments --- */
-@media (max-width: 768px) {
-    .hero-section-new {
-        height: 60vh;
+/* --- 7. Responsive --- */
+@media (min-width: 768px) {
+    .category-grid-vertical {
+        /* ഡെസ്ക്ടോപ്പിൽ 3 കോളം */
+        flex-direction: row;
+        justify-content: center;
+        max-width: 1000px;
     }
-    
-    .hero-text-section {
-        padding: 2rem 1rem;
-        font-size: 0.9rem;
-    }
-    
-    .top-sellers-swiper-new {
-        padding: 0 20px;
-    }
-    
-    .category-grid-canvas {
-        height: 400px;
-    }
-    
-    .home-category-grid-wrapper {
-        min-height: 400px;
-    }
-}
-
-/* Tablet & Small Desktop */
-@media (min-width: 769px) and (max-width: 1199px) {
-    .top-sellers-swiper-new {
-        padding: 0;
-    }
-    
-    .top-sellers-swiper-new .swiper-slide {
-        text-align: center;
-    }
-    
-    .hero-section-new {
-        height: 75vh;
-    }
-    
-    .category-grid-canvas {
-        height: 550px;
-    }
-    
-    .home-category-grid-wrapper {
-        min-height: 550px;
-    }
-}
-
-/* Large Desktop */
-@media (min-width: 1200px) {
-    .hero-section-new {
-        height: 80vh;
-    }
-    
-    .container {
-        max-width: 1400px;
-    }
-    
-    .category-grid-canvas {
-        height: 600px;
-    }
-    
-    .home-category-grid-wrapper {
-        min-height: 600px;
+    .category-card-portrait {
+        flex: 1;
     }
 }
