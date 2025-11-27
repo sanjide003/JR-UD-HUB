@@ -1,87 +1,63 @@
-/* ഇത് മെച്ചപ്പെടുത്തിയ home.css - Apple Watch Style Category Grid */
+/* ഇത് index.css
+*/
 
-/* --- 1. ഹോം പേജ് ടോപ്പ് ബാനർ - മെച്ചപ്പെടുത്തിയത് --- */
+/* --- 1. ഹോം പേജ് ടോപ്പ് ബാനർ --- */
 .home-top-banner {
     width: 100%;
     height: auto;
     line-height: 0; 
-    position: relative; 
-    padding-bottom: 4px; 
-    background-color: #000;
-    overflow: hidden;
+    position: relative; /* ::after എലമെന്റിന് വേണ്ടി */
+    padding-bottom: 4px; /* പുതിയ ഡിസൈൻ ബോർഡറിന് സ്ഥലം നൽകാൻ */
+    background-color: #000; /* കറുത്ത പശ്ചാത്തലം */
 }
-
+/* ::after എലമെന്റ് ഉപയോഗിച്ച് ഒരു ഗ്രേഡിയന്റ് ബോർഡർ ഉണ്ടാക്കുന്നു */
 .home-top-banner::after {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 4px; 
+    height: 4px; /* ബോർഡറിന്റെ കനം */
     background: linear-gradient(90deg, 
         var(--bg-color) 0%, 
         var(--primary-gold) 25%, 
         var(--primary-gold) 75%, 
         var(--bg-color) 100%
-    ); 
+    ); /* ബ്ലാക്ക് -> ഗോൾഡ് -> ബ്ലാക്ക് ഗ്രേഡിയന്റ് */
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
-    animation: shimmer 3s infinite;
 }
-
-@keyframes shimmer {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
-}
-
 .home-top-banner img {
     width: 100%;
     height: auto;
     display: block;
-    max-height: 100px; 
-    object-fit: cover;
-    animation: fadeIn 0.8s ease-out;
+    max-height: 100px; /* ഉയരം 100px ആയി കുറച്ചു */
+    object-fit: cover; 
 }
 
-/* --- 2. ഹീറോ സ്ലൈഡർ - Parallax & Smooth Effects --- */
+
+/* --- 2. ഹീറോ സ്ലൈഡർ --- */
 .hero-section-new {
     width: 100%;
     height: 70vh; 
     overflow: hidden;
     position: relative;
 }
-
 .hero-slider-new {
     width: 100%;
     height: 100%;
 }
-
 .hero-slider-new .swiper-slide {
     width: 100%;
     height: 100%;
     position: relative;
-    overflow: hidden;
 }
-
 .hero-slider-new .swiper-slide img,
 .hero-slider-new .swiper-slide video {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transform: scale(1.05);
-    transition: transform 8s ease-out;
 }
-
-/* Zoom-in effect on active slide */
-.hero-slider-new .swiper-slide-active img,
-.hero-slider-new .swiper-slide-active video {
-    animation: kenBurns 8s ease-out forwards;
-}
-
-@keyframes kenBurns {
-    0% { transform: scale(1.05); }
-    100% { transform: scale(1.1); }
-}
-
+/* YouTube/Shorts ശരിയാക്കാൻ */
 .hero-slider-new .swiper-slide iframe {
     width: 100%;
     height: 100%;
@@ -89,22 +65,7 @@
     aspect-ratio: 9 / 16; 
     pointer-events: none; 
 }
-
-/* Overlay gradient for better text readability */
-.hero-slider-new .swiper-slide::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(to bottom, 
-        rgba(0,0,0,0.2) 0%, 
-        rgba(0,0,0,0.5) 100%
-    );
-    z-index: 1;
-}
-
+/* സ്വൈപ്പ് ശരിയാക്കാൻ */
 .hero-slider-new .swiper-slide::after {
     content: '';
     position: absolute;
@@ -115,8 +76,7 @@
     background: transparent;
     z-index: 5;
 }
-
-/* Enhanced pagination dots */
+/* ഡോട്ടുകൾ (Pagination) */
 .hero-slider-new .hero-pagination-dots {
     position: absolute;
     bottom: 20px;
@@ -125,26 +85,20 @@
     text-align: center;
     z-index: 10;
 }
-
 .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet {
-    background-color: rgba(255, 255, 255, 0.5);
-    width: 8px;
-    height: 8px;
-    opacity: 1;
-    margin: 0 6px;
-    transition: all 0.3s ease;
-    border: 2px solid transparent;
+    background-color: rgba(255, 255, 255, 0.7);
+    width: 10px;
+    height: 10px;
+    opacity: 0.8;
+    margin: 0 5px;
+    transition: background-color 0.3s ease;
 }
-
 .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active {
     background-color: var(--primary-gold);
-    width: 24px;
-    border-radius: 10px;
-    border-color: var(--primary-gold);
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+    opacity: 1;
 }
 
-/* --- 3. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ - Fade In Animation --- */
+/* --- 3. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ --- */
 .hero-text-section {
     text-align: center;
     padding: 2.5rem 1.5rem;
@@ -152,173 +106,76 @@
     font-size: 1rem;
     line-height: 1.7;
     max-width: 800px;
-    opacity: 0;
-    animation: fadeInUp 1s ease-out 0.3s forwards;
 }
 
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-/* --- 4. 'For You' (ടോപ്പ് സെല്ലേഴ്സ്) - Enhanced Cards --- */
-.home-section {
-    opacity: 0;
-    animation: fadeInUp 1s ease-out 0.5s forwards;
-}
-
-.section-title-new {
-    position: relative;
-    display: block;
-    text-align: center;
-    margin: 0 auto 2rem;
-    padding-bottom: 0;
-}
-
-.section-title-new::after {
-    display: none;
-}
-
+/* --- 4. 'For You' (ടോപ്പ് സെല്ലേഴ്സ്) --- */
 .top-sellers-swiper-new {
-    padding: 0 30px; 
+    padding-bottom: 0; 
 }
-
 .top-sellers-swiper-new .swiper-slide {
     text-align: center;
     border: 1px solid var(--border-color);
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
-    background-color: var(--card-bg);
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    position: relative;
 }
-
-.top-sellers-swiper-new .swiper-slide::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, 
-        rgba(212, 175, 55, 0.1) 0%, 
-        transparent 50%
-    );
-    opacity: 0;
-    transition: opacity 0.4s ease;
-    z-index: 1;
-    pointer-events: none;
-}
-
-.top-sellers-swiper-new .swiper-slide:hover {
-    transform: translateY(-8px);
-    border-color: var(--primary-gold);
-    box-shadow: 0 12px 24px rgba(212, 175, 55, 0.2);
-}
-
-.top-sellers-swiper-new .swiper-slide:hover::before {
-    opacity: 1;
-}
-
 .top-sellers-product-image {
     width: 100%;
     aspect-ratio: 4 / 5; 
     object-fit: cover;
-    margin-bottom: 0;
-    transition: transform 0.6s ease;
+    margin-bottom: 0; 
 }
-
-.top-sellers-swiper-new .swiper-slide:hover .top-sellers-product-image {
-    transform: scale(1.08);
-}
-
 .top-sellers-product-info {
-    padding: 1rem;
-    position: relative;
-    z-index: 2;
+    padding: 1rem; 
 }
 
-/* ആനിമേറ്റഡ് പുരോഗതി ഡോട്ടുകൾ */
+/* ആനിമേറ്റഡ് ഡോട്ടുകൾ (പ്രോഗ്രസ് ബാർ) */
 .top-sellers-pagination-new {
     position: relative; 
     margin-top: 1.5rem; 
     margin-bottom: 1.5rem; 
     display: flex;
     justify-content: center;
-    gap: 10px; 
+    gap: 8px; 
 }
-
 .top-sellers-pagination-new .swiper-pagination-bullet {
-    width: 40px; 
-    height: 6px;
+    width: 30px; 
+    height: 5px;
     border-radius: 3px;
     background-color: var(--border-color); 
     opacity: 1;
     overflow: hidden; 
     cursor: pointer;
-    transition: all 0.3s ease;
-    position: relative;
 }
-
-.top-sellers-pagination-new .swiper-pagination-bullet:hover {
-    background-color: rgba(212, 175, 55, 0.3);
-}
-
+/* പ്രോഗ്രസ് ബാർ (നിറയുന്നത്) */
 .top-sellers-pagination-new .pagination-progress {
     display: block;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, 
-        var(--primary-gold) 0%, 
-        var(--secondary-gold) 100%
-    );
+    background-color: var(--primary-gold); 
     transform: scaleX(0); 
-    transform-origin: left;
-    box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+    transform-origin: left; 
 }
-
-.top-sellers-pagination-new .swiper-pagination-bullet-active {
-    background-color: rgba(212, 175, 55, 0.2);
-}
-
+/* ആക്ടീവ് ആയ ഡോട്ട് മാത്രം ആനിമേഷൻ കാണിക്കും */
 .top-sellers-pagination-new .swiper-pagination-bullet-active .pagination-progress {
     animation: progress-fill 4s linear forwards; 
 }
-
+/* ആനിമേഷൻ കീഫ്രെയിം */
 @keyframes progress-fill {
     from { transform: scaleX(0); }
     to { transform: scaleX(1); }
 }
 
 .top-sellers-product-name {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: var(--text-color);
     font-weight: 500;
     margin-bottom: 0.5rem;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    transition: color 0.3s ease;
 }
-
-.top-sellers-swiper-new .swiper-slide:hover .top-sellers-product-name {
-    color: var(--primary-gold);
-}
-
 .top-sellers-product-price {
-    font-size: 1.1rem; 
-    color: var(--primary-gold);
-    margin-bottom: 1rem;
-    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
 }
-
-/* *** Buttons Styling *** */
 .top-sellers-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -326,343 +183,76 @@
     padding: 0;
 }
 
-.top-sellers-buttons .btn {
-    padding: 0.6rem 0.5rem;
-    font-size: 0.85rem;
-    position: relative;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    border-radius: 5px;
+
+/* --- 5. ഹോം പേജിലെ കാറ്റഗറി ഗ്രിഡ് (വെർട്ടിക്കൽ ലിസ്റ്റ്) --- */
+.category-grid-vertical {
+    display: grid;
+    grid-template-columns: 1fr; 
+    gap: 1.5rem; 
+}
+
+/* കാർഡ് സ്റ്റൈൽ (4:5 അനുപാതം) */
+.category-card-home-new {
     text-decoration: none;
-}
-
-/* 1. Cart Button (Black Background) */
-.top-sellers-buttons .btn-add-to-cart {
-    background-color: #000;
-    color: #fff;
-    border: 1px solid #fff;
-    cursor: pointer;
-}
-
-.top-sellers-buttons .btn-add-to-cart svg {
-    fill: none;
-    stroke: #fff;
-}
-
-/* Cart Button Active (Remove) - Gold Text, Black BG */
-.top-sellers-buttons .btn-add-to-cart.added-to-cart {
-    background-color: #000;
-    color: var(--primary-gold);
-    border-color: var(--primary-gold);
-}
-
-/* *** മാറ്റം: ഐക്കൺ ഫിൽ ആകില്ല (No Fill) *** */
-.top-sellers-buttons .btn-add-to-cart.added-to-cart svg {
-    fill: none !important;
-    stroke: var(--primary-gold) !important;
-}
-
-/* 2. View Button (Gold Background - Old Style) */
-.top-sellers-buttons a.btn {
-    background-color: var(--primary-gold);
-    color: #000; /* Black Text */
-    border: 1px solid var(--primary-gold);
-    font-weight: 600;
-}
-
-.top-sellers-buttons a.btn:hover {
-    background-color: var(--secondary-gold);
-    border-color: var(--secondary-gold);
-    color: #000;
-}
-
-/* Ripple effect on button click */
-.top-sellers-buttons .btn::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.top-sellers-buttons .btn:active::after {
-    width: 200px;
-    height: 200px;
-}
-
-/* --- 5. Apple Watch Style Category Grid --- */
-.home-category-grid-wrapper {
-    width: 100%;
-    padding: 3rem 0;
-    position: relative;
-    overflow: hidden;
-    min-height: 500px;
-}
-
-.category-grid-canvas {
-    width: 100%;
-    height: 500px;
-    position: relative;
-    overflow: visible;
-    /* *** മാറ്റം: Default cursor, no grab *** */
-    touch-action: pan-y; /* Allow vertical scrolling */
-    pointer-events: none; /* Pass through by default */
-}
-
-/* *** പുതിയത്: Drag Zone - Center Circle *** */
-.category-drag-zone {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 280px;
-    height: 280px;
-    border-radius: 50%;
-    /* *** Visible drag area indicator *** */
-    background: radial-gradient(circle, 
-        rgba(212, 175, 55, 0.05) 0%, 
-        transparent 70%
-    );
-    border: 2px dashed rgba(212, 175, 55, 0.2);
-    cursor: grab;
-    pointer-events: auto;
-    z-index: 5;
-    transition: all 0.3s ease;
-    
-    /* *** Critical for mobile touch *** */
-    touch-action: none;
-    -webkit-user-select: none;
-    user-select: none;
-    -webkit-touch-callout: none;
-}
-
-.category-drag-zone:active {
-    cursor: grabbing;
-    background: radial-gradient(circle, 
-        rgba(212, 175, 55, 0.1) 0%, 
-        transparent 70%
-    );
-    border-color: rgba(212, 175, 55, 0.4);
-}
-
-/* Drag hint */
-.category-drag-zone::before {
-    content: '👆 Drag Here';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
     color: var(--text-muted);
-    font-size: 0.85rem;
-    font-weight: 600;
-    opacity: 0.6;
-    pointer-events: none;
-    text-align: center;
-    white-space: nowrap;
-}
-
-.category-item-watch {
-    position: absolute;
-    transform-origin: center;
-    /* *** GPU Acceleration *** */
-    will-change: transform, opacity;
-    transform: translate3d(0, 0, 0);
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
-    /* Smooth transitions only when not dragging */
-    transition: opacity 0.2s ease;
-    pointer-events: auto; /* Items are clickable */
-}
-
-.category-card-watch {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
+    transition: all 0.3s ease;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
     overflow: hidden;
-    position: relative;
+    aspect-ratio: 4 / 5; 
+    position: relative; 
+    
     background-color: var(--card-bg);
     background-size: cover;
     background-position: center;
-    border: 2px solid var(--border-color);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    /* *** GPU Acceleration *** */
-    transform: translateZ(0);
-    -webkit-transform: translateZ(0);
-    will-change: border-color, box-shadow;
-    /* Remove transition during drag */
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    background-repeat: no-repeat;
 }
-
-.category-card-watch::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(circle at center, 
-        transparent 0%, 
-        rgba(0,0,0,0.6) 100%
-    );
-    z-index: 1;
-}
-
-.category-card-watch h3 {
-    position: relative;
-    z-index: 2;
+.category-card-home-new:hover {
     color: var(--primary-gold);
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-align: center;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
-    padding: 0.5rem;
-    word-wrap: break-word;
-    max-width: 90%;
-}
-
-/* Center item - വലുതാക്കുന്നു */
-.category-item-watch.center .category-card-watch {
     border-color: var(--primary-gold);
-    box-shadow: 0 8px 24px rgba(212, 175, 55, 0.4);
+    transform: translateY(-3px);
 }
 
-.category-item-watch.center .category-card-watch h3 {
-    font-size: 1rem;
-}
-
-.category-item-watch.center .category-card-watch::before {
-    background: radial-gradient(circle at center, 
-        rgba(212, 175, 55, 0.1) 0%, 
-        rgba(0,0,0,0.5) 100%
-    );
-}
-
-/* Scroll indicator */
-.category-scroll-hint {
+.category-card-home-new h3 {
+    font-family: var(--font-main);
+    font-weight: 500;
+    font-size: 1rem; 
     text-align: center;
-    color: var(--text-muted);
-    font-size: 0.85rem;
-    margin-top: 1rem;
-    opacity: 0.7;
-    animation: pulse 2s infinite;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--primary-gold);
+    
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 0.75rem;
+    margin: 0;
+    background: rgba(0, 0, 0, 0.5); 
+    -webkit-backdrop-filter: blur(5px); 
+    backdrop-filter: blur(5px);
 }
 
-@keyframes pulse {
-    0%, 100% { opacity: 0.7; }
-    50% { opacity: 0.3; }
-}
 
-/* --- 6. Scroll Reveal Animations --- */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
+/* --- 6. റെസ്പോൺസീവ് (Responsive) --- */
 
-/* Initial hidden state for scroll animations */
-.scroll-reveal {
-    opacity: 0;
-    transform: translateY(40px);
-    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.scroll-reveal.revealed {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-/* --- 7. Loading States & Skeletons --- */
-.skeleton {
-    background: linear-gradient(
-        90deg,
-        var(--card-bg) 0%,
-        rgba(255,255,255,0.05) 50%,
-        var(--card-bg) 100%
-    );
-    background-size: 200% 100%;
-    animation: skeleton-loading 1.5s infinite;
-    border-radius: 8px;
-}
-
-@keyframes skeleton-loading {
-    0% { background-position: 200% 0; }
-    100% { background-position: -200% 0; }
-}
-
-/* --- 8. Responsive Adjustments --- */
 @media (max-width: 768px) {
     .hero-section-new {
         height: 60vh;
     }
-    
     .hero-text-section {
         padding: 2rem 1rem;
         font-size: 0.9rem;
     }
-    
-    .top-sellers-swiper-new {
-        padding: 0 20px;
-    }
-    
-    .category-grid-canvas {
-        height: 400px;
-    }
-    
-    .home-category-grid-wrapper {
-        min-height: 400px;
-    }
-}
-
-/* Tablet & Small Desktop */
-@media (min-width: 769px) and (max-width: 1199px) {
-    .top-sellers-swiper-new {
+    .top-sellers-buttons {
         padding: 0;
     }
-    
-    .top-sellers-swiper-new .swiper-slide {
-        text-align: center;
-    }
-    
-    .hero-section-new {
-        height: 75vh;
-    }
-    
-    .category-grid-canvas {
-        height: 550px;
-    }
-    
-    .home-category-grid-wrapper {
-        min-height: 550px;
-    }
 }
 
-/* Large Desktop */
-@media (min-width: 1200px) {
-    .hero-section-new {
-        height: 80vh;
-    }
-    
-    .container {
-        max-width: 1400px;
-    }
-    
-    .category-grid-canvas {
-        height: 600px;
-    }
-    
-    .home-category-grid-wrapper {
-        min-height: 600px;
+/* ടാബ്ലെറ്റ് & ചെറിയ ഡെസ്ക്ടോപ്പ് */
+@media (min-width: 769px) {
+    .top-sellers-swiper-new .swiper-slide {
+        text-align: center;
     }
 }
