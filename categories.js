@@ -1,5 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// മാറ്റം: മൾട്ടി-ഫിൽറ്റർ ലോജിക് (Category + Search + Price + Sort + Discount)
+// മാറ്റം: Smart Scroll Logic & Expanded Filters
 
 import {
     collection,
@@ -28,6 +28,10 @@ const clearSearchBtn = document.getElementById("clear-search-btn");
 const noResultsMsg = document.getElementById("no-results-message");
 const resetFiltersBtn = document.getElementById("reset-filters-btn");
 
+// Sticky Elements
+const stickyHeader = document.getElementById("sticky-header");
+const searchWrapper = document.getElementById("search-input-wrapper");
+
 // Filter Elements
 const priceFilter = document.getElementById("price-range-filter");
 const sortFilter = document.getElementById("sort-by-filter");
@@ -35,32 +39,55 @@ const discountChips = document.querySelectorAll(".discount-chip");
 
 // --- State ---
 let currentCategoryId = 'all'; 
-let allProductsCache = []; // എല്ലാ പ്രൊഡക്റ്റുകളും ഇവിടെ സൂക്ഷിക്കും
+let allProductsCache = []; 
 let categoriesMap = new Map(); 
-let activeDiscount = null; // 10, 25, etc.
+let activeDiscount = null; 
 
 // --- പേജ് ലോഡ് ആവുമ്പോൾ ---
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
     await loadCategoryList(); 
     
-    // URL Parameter പരിശോധിക്കുന്നു
     const urlParams = new URLSearchParams(window.location.search);
     const categoryIdFromUrl = urlParams.get('filter');
     if (categoryIdFromUrl) {
         currentCategoryId = categoryIdFromUrl;
     }
     
-    // എല്ലാ പ്രൊഡക്റ്റുകളും ലോഡ് ചെയ്യുന്നു (Client-side filtering-നായി)
     await loadAllProductsCache();
-    
     setupEventListeners();
     updateActiveCategoryUI(currentCategoryId);
-    applyFilters(); // ആദ്യത്തെ റെൻഡറിംഗ്
+    applyFilters(); 
+    setupScrollBehavior(); // *** സ്ക്രോൾ ലോജിക് ***
 });
 
-// --- 1. ഡാറ്റ ലോഡിംഗ് ---
+// --- Scroll Behavior ---
+function setupScrollBehavior() {
+    let lastScrollY = window.scrollY;
+    const threshold = 50; // 50px സ്ക്രോൾ ചെയ്താൽ മാറ്റം തുടങ്ങും
 
+    window.addEventListener('scroll', () => {
+        const currentScrollY = window.scrollY;
+        
+        if (currentScrollY > threshold) {
+            stickyHeader.classList.add('scrolled');
+        } else {
+            stickyHeader.classList.remove('scrolled');
+            stickyHeader.classList.remove('search-expanded'); // Reset search expansion
+        }
+        lastScrollY = currentScrollY;
+    });
+
+    // Scrolled Mode-ൽ Search Icon ക്ലിക്ക് ചെയ്താൽ വികസിക്കാൻ
+    searchWrapper.addEventListener('click', () => {
+        if (stickyHeader.classList.contains('scrolled')) {
+            stickyHeader.classList.add('search-expanded');
+            searchInput.focus();
+        }
+    });
+}
+
+// --- 1. ഡാറ്റ ലോഡിംഗ് ---
 async function loadCategoryList() {
     if (!categoryNavDesktop || !categoryNavMobile) return;
     try {
@@ -112,7 +139,6 @@ async function loadAllProductsCache() {
         allProductsCache = [];
         snapshot.forEach(doc => {
             const data = doc.data();
-            // ഡിസ്കൗണ്ട് ശതമാനം മുൻകൂട്ടി കണക്കാക്കുന്നു
             let discountPercent = 0;
             if (data.mrp && data.mrp > data.price) {
                 discountPercent = Math.round(((data.mrp - data.price) / data.mrp) * 100);
@@ -133,34 +159,29 @@ async function loadAllProductsCache() {
 }
 
 // --- 2. ഇവന്റ് ലിസണേഴ്സ് ---
-
 function setupEventListeners() {
-    // Search Input
     searchInput.addEventListener('input', (e) => {
         clearSearchBtn.style.display = e.target.value.length > 0 ? 'block' : 'none';
         applyFilters();
     });
 
-    clearSearchBtn.addEventListener('click', () => {
+    clearSearchBtn.addEventListener('click', (e) => {
+        e.stopPropagation(); // Prevent wrapper click
         searchInput.value = '';
         clearSearchBtn.style.display = 'none';
         applyFilters();
     });
 
-    // Price & Sort Filters
     priceFilter.addEventListener('change', applyFilters);
     sortFilter.addEventListener('change', applyFilters);
 
-    // Discount Chips
     discountChips.forEach(chip => {
         chip.addEventListener('click', () => {
             const val = parseInt(chip.dataset.value);
             if (activeDiscount === val) {
-                // Deselect
                 activeDiscount = null;
                 chip.classList.remove('active');
             } else {
-                // Select
                 activeDiscount = val;
                 discountChips.forEach(c => c.classList.remove('active'));
                 chip.classList.add('active');
@@ -169,7 +190,6 @@ function setupEventListeners() {
         });
     });
 
-    // Reset Button
     if (resetFiltersBtn) {
         resetFiltersBtn.addEventListener('click', resetAllFilters);
     }
@@ -185,13 +205,13 @@ function addNavClickListeners(navElement) {
         if (categoryId !== currentCategoryId) {
             currentCategoryId = categoryId;
             updateActiveCategoryUI(categoryId);
-            // കാറ്റഗറി മാറുമ്പോൾ ഫിൽറ്ററുകൾ റീസെറ്റ് ചെയ്യുന്നത് നല്ലതാണ്, അല്ലെങ്കിൽ അത് നിലനിർത്താം.
-            // ഇവിടെ നമ്മൾ നിലനിർത്തുന്നു, പക്ഷെ URL അപ്ഡേറ്റ് ചെയ്യുന്നു.
             const url = new URL(window.location);
             if (categoryId === 'all') url.searchParams.delete('filter');
             else url.searchParams.set('filter', categoryId);
             window.history.pushState({}, '', url);
             
+            // കാറ്റഗറി മാറുമ്പോൾ സ്ക്രോൾ മുകളിലേക്ക്
+            window.scrollTo({ top: 0, behavior: 'smooth' });
             applyFilters();
         }
     });
@@ -217,20 +237,17 @@ function resetAllFilters() {
     applyFilters();
 }
 
-// --- 3. ഫിൽറ്ററിംഗ് ലോജിക് (പ്രധാനം) ---
-
+// --- 3. ഫിൽറ്ററിംഗ് ലോജിക് ---
 function applyFilters() {
     if (!productGrid) return;
     productGrid.innerHTML = '';
     
     let filtered = [...allProductsCache];
 
-    // 1. Category Filter
     if (currentCategoryId !== 'all') {
         filtered = filtered.filter(p => p.categoryId === currentCategoryId);
     }
 
-    // 2. Search Text Filter
     const term = searchInput.value.toLowerCase().trim();
     if (term.length > 0) {
         const searchTerms = term.split(/\s+/);
@@ -240,7 +257,6 @@ function applyFilters() {
         });
     }
 
-    // 3. Price Range Filter
     const priceRange = priceFilter.value;
     if (priceRange !== 'all') {
         if (priceRange === '0-500') filtered = filtered.filter(p => p.price < 500);
@@ -250,12 +266,10 @@ function applyFilters() {
         else if (priceRange === '5000+') filtered = filtered.filter(p => p.price > 5000);
     }
 
-    // 4. Discount Filter
     if (activeDiscount !== null) {
         filtered = filtered.filter(p => p.discountPercent >= activeDiscount);
     }
 
-    // 5. Sort Order
     const sortVal = sortFilter.value;
     if (sortVal === 'low-high') {
         filtered.sort((a, b) => a.price - b.price);
@@ -263,7 +277,6 @@ function applyFilters() {
         filtered.sort((a, b) => b.price - a.price);
     }
 
-    // 6. Render Results
     if (filtered.length === 0) {
         noResultsMsg.style.display = 'block';
     } else {
@@ -291,7 +304,6 @@ function renderProductCard(product, productId) {
 
     const isInCart = isItemInCart(productId);
     const buttonText = isInCart ? "Remove" : "Cart";
-    // ബട്ടൺ സ്റ്റൈൽ (ബ്ലാക്ക് & ഗോൾഡ് ടോഗിൾ)
     const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
     card.innerHTML = `
@@ -327,7 +339,7 @@ function renderProductCard(product, productId) {
     productGrid.appendChild(card);
 }
 
-// Ripple Effect Helper (Reused from cart.js logic)
+// Ripple Effect
 function createRipple(event, button) {
     const ripple = document.createElement('span');
     const rect = button.getBoundingClientRect();
@@ -346,15 +358,10 @@ function createRipple(event, button) {
     setTimeout(() => ripple.remove(), 600);
 }
 
-// Ripple CSS Style Injection (if not present)
 if (!document.getElementById('ripple-style')) {
     const style = document.createElement('style');
     style.id = 'ripple-style';
-    style.textContent = `
-        @keyframes ripple-animation {
-            to { transform: scale(2); opacity: 0; }
-        }
-    `;
+    style.textContent = `@keyframes ripple-animation { to { transform: scale(2); opacity: 0; } }`;
     document.head.appendChild(style);
 }
 
@@ -370,13 +377,10 @@ productGrid.addEventListener('click', (e) => {
         if (cartButton.classList.contains('added-to-cart')) {
             removeFromCart(id);
             cartButton.classList.remove('added-to-cart');
-            // Text Only Change, Style handled by CSS
             if (buttonText) buttonText.textContent = 'Cart';
         } else {
-            const product = allProductsCache.find(p => p.id === id); // Cache-ൽ നിന്ന് ഡാറ്റ എടുക്കുന്നു
-            
+            const product = allProductsCache.find(p => p.id === id);
             if (product) {
-                // കാർട്ടിലേക്ക് ചേർക്കാൻ ആവശ്യമായ ഡാറ്റ മാത്രം എടുക്കുന്നു
                 const cartProduct = {
                     id: product.id,
                     name: product.name,
