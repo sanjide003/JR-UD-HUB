@@ -1,197 +1,78 @@
 /* ഇത് categories.CSS
+   മാറ്റം: Smart Scroll Header, Green Discount Chips, Custom Dropdowns
 */
 
 /* --- 1. കാറ്റഗറി പേജ് ലേഔട്ട് --- */
 .category-page-layout {
     display: flex;
     flex-direction: column;
-    gap: 5px; 
+    gap: 0; 
+    position: relative;
 }
 
-/* --- 1.0 സെർച്ച് ബാർ സ്റ്റൈലുകൾ --- */
-.search-bar-container {
-    padding: 0.5rem;
-    background-color: var(--bg-color);
+/* --- Header Container (Sticky Wrapper) --- */
+.category-header-wrapper {
     position: sticky;
     top: 0;
-    z-index: 10; 
-}
-.search-input-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 0.5rem 1rem;
-}
-.search-input-wrapper:focus-within {
-    border-color: var(--primary-gold);
-}
-.search-icon {
-    width: 20px;
-    height: 20px;
-    color: var(--text-muted);
-    margin-right: 0.75rem;
-}
-#product-search-input {
-    background: none;
-    border: none;
-    color: var(--text-color);
-    font-family: var(--font-main);
-    font-size: 1rem;
-    width: 100%;
-    outline: none;
-}
-#clear-search-btn {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 1.5rem;
-    cursor: pointer;
-    padding: 0;
-    margin-left: 0.5rem;
-}
-
-/* --- 1.0.1 പുതിയ ഫിൽറ്റർ സെക്ഷൻ --- */
-.filter-section {
-    padding: 0.5rem;
+    z-index: 20;
     background-color: var(--bg-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     border-bottom: 1px solid var(--border-color);
-    margin-bottom: 0.5rem;
-}
-
-.filter-row-main {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-bottom: 10px;
-}
-
-.filter-select {
-    background-color: var(--card-bg);
-    color: var(--text-color);
-    border: 1px solid var(--border-color);
-    padding: 0.6rem;
-    border-radius: 6px;
-    font-size: 0.9rem;
-    outline: none;
-    width: 100%;
-    appearance: none; /* Default arrow കളയാൻ */
-    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23D4AF37%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E");
-    background-repeat: no-repeat;
-    background-position: right .7em top 50%;
-    background-size: .65em auto;
-}
-
-.filter-select:focus {
-    border-color: var(--primary-gold);
-}
-
-.filter-row-discount {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    overflow-x: auto;
     padding-bottom: 5px;
 }
 
-.filter-label {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    white-space: nowrap;
+/* സ്ക്രോൾ ചെയ്യുമ്പോൾ ഷാഡോ വരാൻ */
+.category-header-wrapper.scrolled {
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
 }
 
-.discount-chips-container {
-    display: flex;
-    gap: 8px;
-    flex-wrap: nowrap;
-}
-
-.discount-chip {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    color: var(--text-muted);
-    padding: 4px 10px;
-    border-radius: 15px;
-    font-size: 0.8rem;
-    cursor: pointer;
-    white-space: nowrap;
+/* --- 1.1 കാറ്റഗറി ലിസ്റ്റ് (Navigation) --- */
+.category-nav-container {
     transition: all 0.3s ease;
+    overflow: hidden;
 }
 
-.discount-chip:hover {
-    border-color: var(--primary-gold);
-    color: var(--text-color);
-}
-
-.discount-chip.active {
-    background-color: var(--primary-gold);
-    color: #000;
-    border-color: var(--primary-gold);
-    font-weight: 600;
-}
-
-/* Hide Scrollbars */
-.filter-row-discount::-webkit-scrollbar { display: none; }
-.filter-row-discount { -ms-overflow-style: none; scrollbar-width: none; }
-
-
-/* --- 1.1 മുകളിലെ കാറ്റഗറി ലിസ്റ്റ് --- */
 .category-grid-mobile,
 .category-grid-desktop {
     display: flex; 
     flex-wrap: nowrap; 
     overflow-x: auto; 
     overflow-y: hidden; 
-    gap: 10px; 
-    padding: 10px 5px; 
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+    gap: 15px; 
+    padding: 15px 10px; 
     scroll-snap-type: x mandatory; 
-    height: auto; 
     justify-content: flex-start; 
-}
-
-.category-grid-mobile::-webkit-scrollbar,
-.category-grid-desktop::-webkit-scrollbar {
-    display: none;
-}
-.category-grid-mobile,
-.category-grid-desktop {
     -ms-overflow-style: none;  
-    scrollbar-width: none;  
+    scrollbar-width: none; 
 }
+.category-grid-mobile::-webkit-scrollbar { display: none; }
 
-/* --- 1.3 കാറ്റഗറി ഐറ്റം സ്റ്റൈലുകൾ --- */
 .category-grid-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start;
-    gap: 6px; 
+    gap: 8px; 
     text-decoration: none;
     color: var(--text-muted);
     font-weight: 500;
-    min-width: 85px; 
-    width: 85px;
-    padding: 0;
+    min-width: 75px; 
     cursor: pointer;
     scroll-snap-align: start;
-    flex-shrink: 0; 
+    transition: all 0.3s ease;
 }
 
+/* ഐക്കൺ ബോക്സ് */
 .category-grid-image-box {
     width: 55px; 
     height: 55px; 
-    border-radius: 14px; 
-    background-color: rgba(233, 213, 255, 0.05); 
-    border: 1px solid rgba(233, 213, 255, 0.1);
-    padding: 10px;
+    border-radius: 18px; 
+    background-color: #1a1a1a; 
+    border: 1px solid #333;
+    padding: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
-    transition: border-color 0.3s ease, transform 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .category-grid-image {
@@ -202,227 +83,321 @@
 }
 
 .category-grid-name {
-    font-size: 0.8rem; 
+    font-size: 0.85rem; 
     text-align: center;
-    color: var(--text-muted);
-    line-height: 1.2;
     white-space: nowrap; 
-    overflow: hidden;
-    text-overflow: ellipsis; 
-    width: 100%;
 }
 
+/* Active State */
 .category-grid-item.active .category-grid-name {
     color: var(--primary-gold);
     font-weight: 600;
 }
 .category-grid-item.active .category-grid-image-box {
     border-color: var(--primary-gold);
-    background-color: rgba(212, 175, 55, 0.15);
-    transform: scale(1.05); 
+    background-color: rgba(212, 175, 55, 0.1);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+}
+
+/* *** SCROLLED MODE (Compact Header) *** */
+.category-header-wrapper.scrolled .category-grid-image-box {
+    display: none; /* ഐക്കൺ മറയ്ക്കുന്നു */
+}
+
+.category-header-wrapper.scrolled .category-grid-mobile,
+.category-header-wrapper.scrolled .category-grid-desktop {
+    padding: 10px 5px;
+    gap: 10px;
+}
+
+.category-header-wrapper.scrolled .category-grid-item {
+    min-width: auto; /* വലിപ്പം കുറയ്ക്കുന്നു */
+    padding: 5px 12px;
+    border-radius: 20px;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+}
+
+.category-header-wrapper.scrolled .category-grid-item.active {
+    background-color: var(--primary-gold);
+    border-color: var(--primary-gold);
+}
+
+.category-header-wrapper.scrolled .category-grid-item.active .category-grid-name {
+    color: #000; /* പേര് കറുപ്പിലേക്ക് */
 }
 
 
-/* --- 2. പ്രൊഡക്റ്റ് ഗ്രിഡ് --- */
+/* --- 1.0 സെർച്ച് ബാർ --- */
+.search-bar-container {
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 10px;
+    padding: 0.6rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.search-icon {
+    width: 20px; height: 20px; color: var(--text-muted); margin-right: 10px;
+    flex-shrink: 0;
+}
+
+#product-search-input {
+    background: none; border: none; color: var(--text-color);
+    font-size: 1rem; width: 100%; outline: none;
+}
+
+/* SCROLLED MODE: Search shrinks to Icon */
+.category-header-wrapper.scrolled .search-bar-container {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 0;
+    width: auto;
+    z-index: 25;
+}
+
+.category-header-wrapper.scrolled .search-input-wrapper {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--card-bg);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    border-color: var(--primary-gold);
+    cursor: pointer;
+}
+
+.category-header-wrapper.scrolled #product-search-input,
+.category-header-wrapper.scrolled #clear-search-btn {
+    display: none !important; /* ഇൻപുട്ട് മറയ്ക്കുന്നു */
+}
+
+.category-header-wrapper.scrolled .search-icon {
+    margin: 0;
+    color: var(--primary-gold);
+}
+
+/* സ്ക്രോൾ ചെയ്യുമ്പോൾ സെർച്ച് ബാർ വലുതാക്കാൻ (Toggle Class) */
+.category-header-wrapper.scrolled.search-expanded .search-bar-container {
+    position: relative; top: 0; right: 0; width: 100%; padding: 0.5rem 1rem;
+}
+.category-header-wrapper.scrolled.search-expanded .search-input-wrapper {
+    width: 100%; border-radius: 10px; padding: 0.6rem 1rem; height: auto;
+}
+.category-header-wrapper.scrolled.search-expanded #product-search-input {
+    display: block !important;
+}
+
+
+/* --- 1.0.1 ഫിൽറ്റർ സെക്ഷൻ (പുതിയത്) --- */
+.filter-section {
+    padding: 0 1rem 0.5rem 1rem;
+    background-color: var(--bg-color);
+    transition: all 0.3s ease;
+}
+
+/* സ്ക്രോൾ ചെയ്യുമ്പോൾ ഫിൽറ്റർ ചെറുതാക്കുന്നു */
+.category-header-wrapper.scrolled .filter-section {
+    display: none; /* സ്ക്രോൾ ചെയ്യുമ്പോൾ ഫിൽറ്റർ മുഴുവനായി മറയ്ക്കുന്നു (കൂടുതൽ സ്ഥലം കിട്ടാൻ) */
+    /* അല്ലെങ്കിൽ വളരെ ചെറുതാക്കാം. User "വളരെ ചെറുതാക്കി കാണിക്കുക" എന്ന് പറഞ്ഞതുകൊണ്ട് വേണമെങ്കിൽ ഒരു ചെറിയ ബാർ ആക്കാം */
+}
+
+/* പക്ഷെ, യൂസർ പറഞ്ഞത് "ഡിസ്കൗണ്ട് എന്നത് വളരെ ചെറുതാക്കി കാണിക്കുക" എന്നാണ്.
+   അതുകൊണ്ട് താഴെ ഒരു മിനി-ഫിൽറ്റർ ബാർ ഉണ്ടാക്കാം.
+*/
+
+.filter-row-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+}
+
+/* *** Custom Dropdown Design (Black & Gold) *** */
+.filter-select {
+    background-color: #1a1a1a;
+    color: #fff;
+    border: 1px solid #333;
+    padding: 0.7rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    outline: none;
+    width: 100%;
+    cursor: pointer;
+    appearance: none;
+    /* Custom Arrow */
+    background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23D4AF37' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1em;
+    transition: border-color 0.3s;
+}
+
+.filter-select:focus {
+    border-color: var(--primary-gold);
+}
+
+/* Discount Row */
+.filter-row-discount {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    -ms-overflow-style: none; scrollbar-width: none;
+}
+.filter-row-discount::-webkit-scrollbar { display: none; }
+
+.filter-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    font-weight: 600;
+}
+
+.discount-chips-container {
+    display: flex;
+    gap: 8px;
+}
+
+/* *** Discount Chips (Green Active) *** */
+.discount-chip {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    color: var(--text-muted);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.discount-chip:hover {
+    border-color: #24a66e;
+    color: #fff;
+}
+
+.discount-chip.active {
+    background-color: #24a66e; /* Green */
+    color: #fff;
+    border-color: #24a66e;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(36, 166, 110, 0.4);
+}
+
+
+/* --- 2. പ്രൊഡക്റ്റ് ഗ്രിഡ് (Scrollable Area) --- */
 .category-page-content {
     flex-grow: 1;
-    padding-top: 5px;
-    height: calc(100vh - 280px); /* Adjusted height for filters */
-    overflow-y: auto; 
+    padding-top: 10px;
+    /* Header is sticky, so no height calculation needed here usually, but for safety */
+    min-height: 80vh; 
 }
 
 .category-product-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr); 
-    gap: 8px; 
-    padding: 0 5px 80px 5px; 
-}
-.loader-container {
-    display: none;
-    justify-content: center;
-    padding: 1rem;
+    gap: 10px; 
+    padding: 0 10px 80px 10px; 
 }
 
 /* 2.1 പ്രൊഡക്റ്റ് കാർഡ് */
 .category-product-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px; 
+    border-radius: 12px; 
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    height: auto; 
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 .cat-product-image-link {
-    display: block;
-    width: 100%;
-    aspect-ratio: 1 / 1; 
-    height: auto; 
-    overflow: hidden;
+    display: block; width: 100%; aspect-ratio: 1 / 1; overflow: hidden;
 }
 .cat-product-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    background-color: #222;
+    width: 100%; height: 100%; object-fit: cover; background-color: #222;
 }
 
 .cat-product-content {
-    padding: 0.6rem; 
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-    justify-content: space-between;
+    padding: 0.8rem; display: flex; flex-direction: column; flex-grow: 1;
 }
 
 .cat-product-title {
-    font-size: 0.85rem; 
-    color: var(--text-color); 
-    font-weight: 600;
-    margin-bottom: 2px; 
-    line-height: 1.2;
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    min-height: 34px;
+    font-size: 0.9rem; color: var(--text-color); font-weight: 500;
+    margin-bottom: 4px; line-height: 1.3;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; min-height: 38px;
 }
 .cat-product-content .price-container {
-    margin: 0; 
-    gap: 0.4rem;
-    display: flex;
-    align-items: center;
+    margin: 0; gap: 6px; display: flex; align-items: center;
 }
 .cat-product-content .price-main {
-    font-size: 1rem;
-    font-weight: 700;
-    color: var(--primary-gold);
+    font-size: 1rem; font-weight: 700; color: var(--primary-gold);
 }
 .cat-product-content .price-mrp {
-    font-size: 0.75rem;
-    text-decoration: line-through;
-    color: var(--text-muted);
+    font-size: 0.8rem; text-decoration: line-through; color: var(--text-muted);
 }
 
 .cat-product-buttons {
-    display: grid;
-    grid-template-columns: 1fr 1fr; 
-    gap: 0.4rem;
-    margin-top: 0.5rem;
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 8px;
 }
 
-/* *** ബട്ടൺ സ്റ്റൈലുകൾ (Black Background Fixed) *** */
-
+/* ബട്ടൺ സ്റ്റൈലുകൾ (Black & Gold) */
 .cat-product-buttons .btn-primary-new,
 .cat-product-buttons .btn-secondary-new {
-    font-size: 0.75rem; 
-    padding: 0;
-    height: 30px; 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 4px;
-    position: relative;
-    overflow: hidden;
+    font-size: 0.8rem; padding: 0; height: 34px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 6px; position: relative; overflow: hidden;
 }
 
 /* View Button (Gold) */
 .cat-product-buttons .btn-primary-new {
-    background-color: var(--primary-gold);
-    color: #000;
-    border: 1px solid var(--primary-gold);
+    background-color: var(--primary-gold); color: #000; border: 1px solid var(--primary-gold); font-weight: 600;
 }
 
 /* Cart Button (Black Default) */
 .cat-product-buttons .btn-secondary-new {
-    background-color: #000 !important;
-    color: #fff !important;
-    border: 1px solid #fff !important;
-    transition: all 0.3s ease;
+    background-color: #000 !important; color: #fff !important;
+    border: 1px solid #fff !important; transition: all 0.3s ease;
 }
-
 .cat-product-buttons .btn-secondary-new svg.icon-btn {
-    width: 14px;
-    height: 14px;
-    fill: none !important;
-    stroke: #fff !important;
+    width: 16px; height: 16px; fill: none !important; stroke: #fff !important;
 }
 
-/* Cart Button (Active/Remove) - Black BG, Gold Text/Border */
+/* Active (Remove) - Gold Text/Border */
 .cat-product-buttons .btn-secondary-new.added-to-cart {
-    background-color: #000 !important;
-    color: var(--primary-gold) !important;
+    background-color: #000 !important; color: var(--primary-gold) !important;
     border-color: var(--primary-gold) !important;
 }
-
 .cat-product-buttons .btn-secondary-new.added-to-cart svg.icon-btn {
-    stroke: var(--primary-gold) !important;
-    fill: none !important;
+    stroke: var(--primary-gold) !important; fill: none !important;
 }
 
-/* Ripple effect */
-.cat-product-buttons .btn-secondary-new::after {
-    content: '';
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-.cat-product-buttons .btn-secondary-new:active::after {
-    width: 100px;
-    height: 100px;
-}
-
-
-/* --- 3. റെസ്പോൺസീവ് (Responsive) --- */
-@media (max-width: 768px) {
-    .category-grid-desktop { display: none; }
-}
-
+/* --- Responsive --- */
 @media (min-width: 769px) {
     .category-grid-mobile { display: none; }
-    .category-grid-desktop {
-        display: flex;
-        overflow-x: auto;
-        gap: 1rem;
-        justify-content: flex-start;
-        height: auto;
-    }
+    .category-grid-desktop { display: flex; }
+    .category-product-grid { grid-template-columns: repeat(5, 1fr); gap: 20px; padding: 0 20px 80px 20px; }
     
-    /* ഡെസ്ക്ടോപ്പിൽ വലിപ്പം */
-    .category-grid-item {
-        width: 100px;
-        min-width: 100px;
-    }
-    .category-grid-image-box {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .category-product-grid {
-        grid-template-columns: repeat(5, 1fr); 
-        gap: 1rem;
-        padding: 0 0 80px 0;
-    }
-    
-    .category-page-content {
-        height: auto; 
-        overflow-y: visible;
-    }
-
-    .cat-product-image-link { height: 200px; aspect-ratio: auto; }
-    .cat-product-title { font-size: 1rem; min-height: auto; }
-    .cat-product-content { padding: 1rem; }
-    .cat-product-buttons .btn-primary-new,
-    .cat-product-buttons .btn-secondary-new {
-        height: 36px;
-        font-size: 0.9rem;
-    }
+    /* ഡെസ്ക്ടോപ്പിൽ സ്ക്രോൾ മാറ്റങ്ങൾ വേണ്ട */
+    .category-header-wrapper { position: relative; }
+    .category-header-wrapper.scrolled .category-grid-image-box { display: flex; }
+    .category-header-wrapper.scrolled .category-grid-item { min-width: 100px; background: none; border: none; }
+    .category-header-wrapper.scrolled .search-bar-container { position: relative; top: 0; width: 100%; }
+    .category-header-wrapper.scrolled .search-input-wrapper { width: 100%; border-radius: 10px; height: auto; }
+    .category-header-wrapper.scrolled #product-search-input { display: block !important; }
+}
+@media (max-width: 768px) {
+    .category-grid-desktop { display: none; }
 }
