@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് കാറ്റഗറി പേജ്. categories.html
-  മാറ്റം: ഫിൽറ്റർ ഓപ്ഷനുകൾ (Price, Sort, Discount) ചേർത്തു.
+  മാറ്റം: Scroll ചെയ്യുമ്പോൾ ചുരുങ്ങുന്ന ഹെഡർ ഘടന.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -31,66 +31,72 @@
     <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main class="container page-container">
         
-        <!-- കാറ്റഗറി പേജ് ലേഔട്ട് -->
         <div class="category-page-layout">
             
-            <!-- 3.1 കാറ്റഗറി ഗ്രിഡ് (ഏറ്റവും മുകളിൽ) -->
-            <div class="category-grid-mobile" id="category-nav-mobile">
-                <span class="loading-placeholder">Loading categories...</span>
-            </div>
-            
-            <div class="category-grid-desktop" id="category-nav-desktop">
-                <span class="loading-placeholder">Loading categories...</span>
-            </div>
-
-            <!-- 3.0 സെർച്ച് ബാർ -->
-            <div class="search-bar-container">
-                <div class="search-input-wrapper">
-                    <svg class="search-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="11" cy="11" r="8"></circle>
-                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                    </svg>
-                    <input type="text" id="product-search-input" placeholder="Search in selected category...">
-                    <button id="clear-search-btn" style="display: none;">&times;</button>
-                </div>
-            </div>
-
-            <!-- *** പുതിയത്: ഫിൽറ്റർ സെക്ഷൻ *** -->
-            <div class="filter-section">
-                <!-- വരി 1: പ്രൈസ് റേഞ്ചും സോർട്ടിംഗും -->
-                <div class="filter-row-main">
-                    <select id="price-range-filter" class="filter-select">
-                        <option value="all">Price: All</option>
-                        <option value="0-500">Under ₹500</option>
-                        <option value="500-1000">₹500 - ₹1000</option>
-                        <option value="1000-2000">₹1000 - ₹2000</option>
-                        <option value="2000-5000">₹2000 - ₹5000</option>
-                        <option value="5000+">Above ₹5000</option>
-                    </select>
-                    
-                    <select id="sort-by-filter" class="filter-select">
-                        <option value="default">Sort By</option>
-                        <option value="low-high">Price: Low to High</option>
-                        <option value="high-low">Price: High to Low</option>
-                    </select>
+            <!-- *** STICKY HEADER CONTAINER *** -->
+            <div id="sticky-header-container" class="sticky-header-container">
+                
+                <!-- 3.1 കാറ്റഗറി ഗ്രിഡ് -->
+                <div class="category-grid-section" id="category-nav-section">
+                    <!-- JS വഴി ഇവിടെ കാറ്റഗറികൾ വരും -->
+                    <span class="loading-placeholder">Loading...</span>
                 </div>
 
-                <!-- വരി 2: ഡിസ്കൗണ്ട് ചിപ്പുകൾ -->
-                <div class="filter-row-discount">
-                    <span class="filter-label">Min Discount:</span>
-                    <div class="discount-chips-container" id="discount-filters">
-                        <button class="discount-chip" data-value="10">10%+</button>
-                        <button class="discount-chip" data-value="25">25%+</button>
-                        <button class="discount-chip" data-value="35">35%+</button>
-                        <button class="discount-chip" data-value="50">50%+</button>
-                        <button class="discount-chip" data-value="60">60%+</button>
-                        <button class="discount-chip" data-value="70">70%+</button>
+                <!-- 3.0 സെർച്ച് ബാർ -->
+                <div class="search-bar-container">
+                    <div class="search-input-wrapper" id="search-wrapper">
+                        <svg class="search-icon" id="search-icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="product-search-input" placeholder="Search...">
+                        <button id="clear-search-btn" style="display: none;">&times;</button>
                     </div>
                 </div>
-            </div>
+
+                <!-- ഫിൽറ്റർ സെക്ഷൻ -->
+                <div class="filter-section">
+                    <!-- വരി 1: പ്രൈസ് റേഞ്ചും സോർട്ടിംഗും -->
+                    <div class="filter-row-main">
+                        <div class="custom-select-wrapper">
+                            <select id="price-range-filter" class="filter-select">
+                                <option value="all">Price: All</option>
+                                <option value="0-500">Under ₹500</option>
+                                <option value="500-1000">₹500 - ₹1000</option>
+                                <option value="1000-2000">₹1000 - ₹2000</option>
+                                <option value="2000-5000">₹2000 - ₹5000</option>
+                                <option value="5000+">Above ₹5000</option>
+                            </select>
+                        </div>
+                        
+                        <div class="custom-select-wrapper">
+                            <select id="sort-by-filter" class="filter-select">
+                                <option value="default">Sort By</option>
+                                <option value="low-high">Price: Low to High</option>
+                                <option value="high-low">Price: High to Low</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- വരി 2: ഡിസ്കൗണ്ട് ചിപ്പുകൾ -->
+                    <div class="filter-row-discount">
+                        <span class="filter-label">Discount:</span>
+                        <div class="discount-chips-container" id="discount-filters">
+                            <!-- ടെക്സ്റ്റ് മാറ്റി -->
+                            <button class="discount-chip" data-value="10">10% above</button>
+                            <button class="discount-chip" data-value="25">25% above</button>
+                            <button class="discount-chip" data-value="35">35% above</button>
+                            <button class="discount-chip" data-value="50">50% above</button>
+                            <button class="discount-chip" data-value="60">60% above</button>
+                            <button class="discount-chip" data-value="70">70% above</button>
+                        </div>
+                    </div>
+                </div>
+            </div> 
+            <!-- End Sticky Header -->
 
             <!-- 3.2 ഉൽപ്പന്നങ്ങൾ കാണിക്കുന്ന ഗ്രിഡ് -->
-            <div class="category-page-content">
+            <div class="category-page-content" id="products-scroll-container">
                 <div class="category-product-grid" id="category-product-grid">
                     <div class="loading-placeholder-full">Loading products...</div>
                 </div>
@@ -98,9 +104,9 @@
                 <div class="loader-container" id="infinite-scroll-loader" style="display: none;">
                     <div class="loader-small"></div>
                 </div>
-                <!-- സെർച്ച്/ഫിൽറ്റർ ഫലങ്ങൾ ഇല്ലെങ്കിൽ കാണിക്കാൻ -->
+                
                 <div id="no-results-message" style="display: none; text-align: center; padding: 3rem 1rem; color: var(--text-muted);">
-                    <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No products found matching your criteria.</p>
+                    <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No products found.</p>
                     <button id="reset-filters-btn" class="btn btn-secondary-new">Reset Filters</button>
                 </div>
             </div>
