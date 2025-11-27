@@ -1,5 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// മാറ്റം: Scroll Animation (Compact Mode) ലോജിക് ചേർത്തു.
+// മാറ്റം: സ്ക്രോൾ ആനിമേഷൻ കൂടുതൽ സ്മൂത്ത് ആക്കി.
 
 import {
     collection,
@@ -57,20 +57,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadAllProductsCache();
     
     setupEventListeners();
-    setupScrollAnimation(); // *** പുതിയത്: സ്ക്രോൾ ആനിമേഷൻ ***
+    setupScrollAnimation(); 
     updateActiveCategoryUI(currentCategoryId);
     applyFilters(); 
 });
 
-// --- SCROLL ANIMATION LOGIC ---
+// --- SCROLL ANIMATION LOGIC (IMPROVED) ---
 function setupScrollAnimation() {
     if (!productsScrollContainer) return;
 
     productsScrollContainer.addEventListener('scroll', () => {
         const scrollTop = productsScrollContainer.scrollTop;
         
-        // 50px താഴേക്ക് സ്ക്രോൾ ചെയ്താൽ Compact Mode ആക്കുക
-        if (scrollTop > 50) {
+        // 30px താഴേക്ക് സ്ക്രോൾ ചെയ്താൽ ഉടൻ Compact Mode ആക്കുക
+        if (scrollTop > 30) {
             stickyHeader.classList.add('compact');
         } else {
             stickyHeader.classList.remove('compact');
