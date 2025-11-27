@@ -1,4 +1,5 @@
 /* ഇത് categories.CSS
+   മാറ്റം: ഫ്ലോട്ടിംഗ് ഹെഡർ, ട്രാൻസ്പരന്റ് ബാക്ക്ഗ്രൗണ്ട്, കോംപാക്ട് മോഡ്.
 */
 
 /* --- 1. പേജ് ലേഔട്ട് --- */
@@ -7,34 +8,40 @@
     flex-direction: column;
     height: calc(100vh - var(--header-height)); 
     overflow: hidden; 
-    background-color: var(--bg-color);
+    position: relative; /* For absolute positioning of floating elements if needed */
 }
 
 .container.page-container {
-    padding-top: 0.5rem !important;
+    padding-top: 0 !important; 
     padding-bottom: 0 !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
 }
 
-/* --- STICKY HEADER CONTAINER (Floating & Transparent) --- */
+/* --- STICKY HEADER CONTAINER (Floating Effect) --- */
 .sticky-header-container {
-    background-color: var(--bg-color); /* Default Black */
-    z-index: 10;
-    border-bottom: 1px solid var(--border-color);
-    transition: all 0.3s ease;
+    background-color: rgba(0, 0, 0, 0.9); /* Slight transparency */
+    backdrop-filter: blur(10px); /* Glass effect */
+    z-index: 100;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
     flex-shrink: 0;
+    padding-bottom: 10px;
+    width: 100%;
 }
 
-/* --- 1.1 കാറ്റഗറി ഗ്രിഡ് (Default View) --- */
+/* --- 1.1 കാറ്റഗറി ഗ്രിഡ് (Default: Big Icons) --- */
 .category-grid-section {
     display: flex; 
     flex-wrap: nowrap; 
     overflow-x: auto; 
     overflow-y: hidden; 
     gap: 15px; 
-    padding: 10px 15px; 
+    padding: 15px; 
     scroll-snap-type: x mandatory; 
     height: auto;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .category-grid-section::-webkit-scrollbar { display: none; }
@@ -60,7 +67,6 @@
     background-color: rgba(255, 255, 255, 0.05); 
     border: 1px solid rgba(255, 255, 255, 0.1);
     padding: 10px;
-    box-sizing: border-box;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -71,22 +77,25 @@
     width: 100%;
     height: 100%;
     object-fit: contain; 
-    display: block;
 }
 
 .category-grid-name {
-    font-size: 0.8rem; 
+    font-size: 0.75rem; 
     text-align: center;
     white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis; 
     width: 100%;
     transition: all 0.3s ease;
-    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 12px;
 }
 
-/* Active State (Normal) */
-.category-grid-item.active .category-grid-name { color: var(--primary-gold); font-weight: 700; }
+/* Active State (Big) */
+.category-grid-item.active .category-grid-name { 
+    color: var(--primary-gold); 
+    font-weight: 600; 
+}
 .category-grid-item.active .category-grid-image-box { 
     border-color: var(--primary-gold); 
     background-color: rgba(212, 175, 55, 0.15); 
@@ -94,30 +103,31 @@
 }
 
 
-/* --- TOOLS LAYOUT (Search & Filter) --- */
+/* --- TOOLS LAYOUT (Search & Filters) --- */
 .tools-layout {
     display: flex;
     flex-direction: column;
-    transition: all 0.3s ease;
-    padding-bottom: 10px;
+    transition: all 0.4s ease;
+    padding: 10px 15px 0 15px;
 }
 
 /* Search Bar */
 .search-bar-container {
-    padding: 0.5rem 15px;
-    transition: all 0.3s ease;
+    padding: 0;
+    transition: all 0.4s ease;
     width: 100%;
+    margin-bottom: 10px;
 }
 
 .search-input-wrapper {
     position: relative;
     display: flex;
     align-items: center;
-    background-color: var(--card-bg);
+    background-color: rgba(255, 255, 255, 0.05);
     border: 1px solid var(--border-color);
     border-radius: 10px;
     padding: 0.7rem 1rem;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
     width: 100%;
 }
 
@@ -136,13 +146,12 @@
     width: 100%;
     outline: none;
     margin-left: 10px;
-    transition: all 0.3s ease;
 }
 
 /* Filter Section */
 .filter-section {
-    padding: 0 15px;
-    transition: all 0.3s ease;
+    padding: 0;
+    transition: all 0.4s ease;
     width: 100%;
 }
 
@@ -151,16 +160,19 @@
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     margin-bottom: 10px;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
+    opacity: 1;
+    max-height: 50px; /* For smooth collapse */
 }
 
+/* Dropdown Style */
 .filter-select {
     appearance: none;
     -webkit-appearance: none;
-    background-color: #1a1a1a;
+    background-color: rgba(0, 0, 0, 0.5);
     color: #fff;
-    border: 1px solid #333;
-    padding: 0.7rem 1rem;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.6rem 1rem;
     border-radius: 8px;
     font-size: 0.85rem;
     width: 100%;
@@ -179,7 +191,7 @@
     gap: 8px;
     overflow-x: auto;
     padding-bottom: 5px;
-    transition: all 0.3s ease;
+    transition: all 0.4s ease;
 }
 .filter-row-discount::-webkit-scrollbar { display: none; }
 
@@ -195,11 +207,11 @@
 }
 
 .discount-chip {
-    background-color: #1a1a1a;
-    border: 1px solid #333;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-muted);
-    padding: 6px 14px;
-    border-radius: 20px; /* Pill Shape */
+    padding: 6px 12px;
+    border-radius: 20px;
     font-size: 0.75rem;
     cursor: pointer;
     white-space: nowrap;
@@ -214,37 +226,39 @@
 }
 
 
-/* =================================================
-   COMPACT / FLOATING MODE (SCROLL ANIMATION)
-   സ്ക്രോൾ ചെയ്യുമ്പോൾ സംഭവിക്കുന്ന മാറ്റങ്ങൾ
-   ================================================= */
+/* =========================================
+   COMPACT MODE (SCROLL ANIMATION) - FLOATING STYLE
+   ========================================= */
 
 .sticky-header-container.compact {
-    /* *** മാറ്റം: പശ്ചാത്തലം ട്രാൻസ്പരന്റ് ആക്കുന്നു (Glass Effect) *** */
-    background-color: rgba(0, 0, 0, 0.85);
+    background-color: rgba(0, 0, 0, 0.85); /* More transparent on scroll */
     backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    padding-bottom: 5px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-/* 1. കാറ്റഗറി ഐക്കണുകൾ അപ്രത്യക്ഷമാകുന്നു, പേര് ബട്ടൺ (Pill) പോലെയാകുന്നു */
+/* 1. കാറ്റഗറി ഗ്രിഡ് ചുരുങ്ങുന്നു (Pills പോലെ) */
+.sticky-header-container.compact .category-grid-section {
+    padding: 8px 15px;
+    gap: 8px;
+    border-bottom: none; /* Remove separator line */
+}
+
 .sticky-header-container.compact .category-grid-image-box {
-    display: none; /* ഐക്കൺ ബോക്സ് പൂർണ്ണമായും ഒഴിവാക്കുന്നു */
+    display: none; /* Hide Icons */
 }
 
 .sticky-header-container.compact .category-grid-item {
     min-width: auto;
-    margin: 0;
-    padding: 0;
+    gap: 0;
 }
 
+/* Floating Pill Style for Category Name */
 .sticky-header-container.compact .category-grid-name {
-    font-size: 0.85rem;
-    /* *** Floating Pill Style *** */
-    background-color: rgba(255, 255, 255, 0.1);
-    padding: 8px 16px;
-    border-radius: 25px;
+    font-size: 0.8rem;
+    background-color: rgba(255, 255, 255, 0.08);
+    padding: 6px 14px;
+    border-radius: 20px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     color: var(--text-muted);
 }
@@ -253,61 +267,48 @@
     background-color: var(--primary-gold);
     color: #000;
     border-color: var(--primary-gold);
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
 }
 
-.sticky-header-container.compact .category-grid-section {
-    padding: 10px 15px;
-    border-bottom: none;
-}
-
-/* 2. ലേഔട്ട് മാറ്റം: സെർച്ച് ഐക്കണും ഡിസ്കൗണ്ടും ഒരേ വരിയിൽ */
+/* 2. ടൂൾസ് ലേഔട്ട് (Horizontal Line) */
 .sticky-header-container.compact .tools-layout {
-    flex-direction: row;
+    flex-direction: row; /* Row Direction */
     align-items: center;
-    padding: 0 15px 10px 15px;
+    padding: 0 15px 8px 15px;
     gap: 10px;
 }
 
-/* 3. സെർച്ച് ബാർ ചുരുങ്ങുന്നു (ഐക്കൺ മാത്രം) */
+/* 3. സെർച്ച് ബാർ - ഐക്കൺ മാത്രം */
 .sticky-header-container.compact .search-bar-container {
     width: auto;
-    padding: 0;
     margin: 0;
 }
-
 .sticky-header-container.compact .search-input-wrapper {
-    width: 40px;
-    height: 40px;
+    width: 36px;
+    height: 36px;
     padding: 0;
     justify-content: center;
-    background-color: rgba(255, 255, 255, 0.1); /* Transparent BG */
-    border-color: transparent;
-    border-radius: 50%; /* Circle Shape */
+    background-color: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%; /* Circle */
 }
-
 .sticky-header-container.compact #product-search-input {
     width: 0;
     padding: 0;
     opacity: 0;
+    margin: 0;
 }
-
 .sticky-header-container.compact .search-icon {
     color: var(--primary-gold);
-    width: 20px;
-    height: 20px;
 }
 
-/* സെർച്ച് ക്ലിക്ക് ചെയ്യുമ്പോൾ വികസിക്കാൻ */
+/* സെർച്ച് ക്ലിക്ക് ചെയ്യുമ്പോൾ വലുതാകാൻ */
 .sticky-header-container.compact .search-input-wrapper.expanded {
-    width: 220px;
-    background-color: var(--card-bg);
-    border-color: var(--primary-gold);
-    padding: 0.5rem 1rem;
+    width: 200px;
     border-radius: 20px;
-    position: absolute;
-    left: 15px;
-    z-index: 20;
+    padding: 0 1rem;
+    justify-content: flex-start;
 }
 .sticky-header-container.compact .search-input-wrapper.expanded #product-search-input {
     width: 100%;
@@ -315,40 +316,34 @@
     margin-left: 8px;
 }
 
-/* 4. ഫിൽറ്ററുകൾ ഒളിക്കുന്നു, ഡിസ്കൗണ്ട് മാത്രം കാണിക്കുന്നു */
+/* 4. ഫിൽറ്ററുകൾ (വില മറയ്ക്കുന്നു, ഡിസ്കൗണ്ട് ചെറുതാക്കുന്നു) */
 .sticky-header-container.compact .filter-section {
     padding: 0;
-    width: auto;
     flex-grow: 1;
-    overflow: hidden; /* അധികമുള്ളത് മറയ്ക്കാൻ */
+    overflow: hidden; /* Hide overflowing content */
 }
 
+/* Price & Sort - മറയ്ക്കുന്നു */
 .sticky-header-container.compact .filter-row-main {
-    display: none !important; /* പ്രൈസും സോർട്ടും മറയ്ക്കുന്നു */
+    display: none; 
 }
 
+/* Discount Label - മറയ്ക്കുന്നു */
 .sticky-header-container.compact .filter-label {
-    display: none;
+    display: none; 
 }
 
+/* Discount Chips - ചെറുതാക്കുന്നു */
 .sticky-header-container.compact .filter-row-discount {
-    padding-bottom: 0;
-    /* സ്ക്രോൾ ബാർ ഇല്ലാതാക്കുന്നു */
-    -ms-overflow-style: none; 
-    scrollbar-width: none; 
+    padding: 0;
 }
-
 .sticky-header-container.compact .discount-chip {
-    background-color: rgba(255, 255, 255, 0.05);
-    border-color: rgba(255, 255, 255, 0.1);
-    padding: 6px 12px;
+    padding: 4px 10px;
     font-size: 0.7rem;
+    background-color: rgba(255, 255, 255, 0.05);
 }
-
 .sticky-header-container.compact .discount-chip.active {
     background-color: #24a66e;
-    color: #fff;
-    border-color: #24a66e;
 }
 
 
@@ -356,22 +351,20 @@
 .category-page-content {
     flex-grow: 1;
     overflow-y: auto; 
-    padding-top: 10px;
-    padding-bottom: 80px;
+    padding: 10px 15px 80px 15px; /* Consistent Padding */
 }
 
 .category-product-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr); 
-    gap: 8px; 
-    padding: 0 5px; 
+    gap: 12px; 
 }
 
-/* ... (കാർഡ് സ്റ്റൈലുകൾക്ക് മാറ്റമില്ല) ... */
+/* Product Card Styles (Unchanged) */
 .category-product-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px; 
+    border-radius: 10px; /* More rounded */
     overflow: hidden;
     display: flex;
     flex-direction: column;
@@ -391,7 +384,7 @@
     background-color: #222;
 }
 .cat-product-content {
-    padding: 0.6rem; 
+    padding: 0.7rem; 
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -401,17 +394,17 @@
     font-size: 0.85rem; 
     color: var(--text-color); 
     font-weight: 600;
-    margin-bottom: 2px; 
-    line-height: 1.2;
+    margin-bottom: 4px; 
+    line-height: 1.3;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    min-height: 34px;
+    min-height: 36px;
 }
 .cat-product-content .price-container {
     margin: 0; 
-    gap: 0.4rem;
+    gap: 0.5rem;
     display: flex;
     align-items: center;
 }
@@ -428,18 +421,18 @@
 .cat-product-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr; 
-    gap: 0.4rem;
-    margin-top: 0.5rem;
+    gap: 0.5rem;
+    margin-top: 0.6rem;
 }
 .cat-product-buttons .btn-primary-new,
 .cat-product-buttons .btn-secondary-new {
     font-size: 0.75rem; 
     padding: 0;
-    height: 30px; 
+    height: 32px; 
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 4px;
+    border-radius: 6px;
     position: relative;
     overflow: hidden;
 }
@@ -466,5 +459,5 @@
 
 @media (min-width: 769px) {
     .category-grid-item { min-width: 100px; }
-    .category-product-grid { grid-template-columns: repeat(5, 1fr); gap: 1rem; padding: 0 10px; }
+    .category-product-grid { grid-template-columns: repeat(5, 1fr); gap: 1.5rem; }
 }
