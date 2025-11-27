@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് കാറ്റഗറി പേജ്. categories.html
-  മാറ്റം: Scroll ചെയ്യുമ്പോൾ ചുരുങ്ങുന്ന ഹെഡർ ഘടന.
+  മാറ്റം: സ്ക്രോൾ ചെയ്യുമ്പോൾ സെർച്ചും ഡിസ്കൗണ്ടും ഒരേ വരിയിൽ വരാനായി ഘടന മാറ്റി.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -42,56 +42,61 @@
                     <span class="loading-placeholder">Loading...</span>
                 </div>
 
-                <!-- 3.0 സെർച്ച് ബാർ -->
-                <div class="search-bar-container">
-                    <div class="search-input-wrapper" id="search-wrapper">
-                        <svg class="search-icon" id="search-icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                        <input type="text" id="product-search-input" placeholder="Search...">
-                        <button id="clear-search-btn" style="display: none;">&times;</button>
-                    </div>
-                </div>
-
-                <!-- ഫിൽറ്റർ സെക്ഷൻ -->
-                <div class="filter-section">
-                    <!-- വരി 1: പ്രൈസ് റേഞ്ചും സോർട്ടിംഗും -->
-                    <div class="filter-row-main">
-                        <div class="custom-select-wrapper">
-                            <select id="price-range-filter" class="filter-select">
-                                <option value="all">Price: All</option>
-                                <option value="0-500">Under ₹500</option>
-                                <option value="500-1000">₹500 - ₹1000</option>
-                                <option value="1000-2000">₹1000 - ₹2000</option>
-                                <option value="2000-5000">₹2000 - ₹5000</option>
-                                <option value="5000+">Above ₹5000</option>
-                            </select>
-                        </div>
-                        
-                        <div class="custom-select-wrapper">
-                            <select id="sort-by-filter" class="filter-select">
-                                <option value="default">Sort By</option>
-                                <option value="low-high">Price: Low to High</option>
-                                <option value="high-low">Price: High to Low</option>
-                            </select>
+                <!-- പുതിയ ലേഔട്ട് കണ്ടെയ്നർ (സെർച്ച് + ഫിൽറ്റർ) -->
+                <div class="tools-layout">
+                    
+                    <!-- 3.0 സെർച്ച് ബാർ -->
+                    <div class="search-bar-container">
+                        <div class="search-input-wrapper" id="search-wrapper">
+                            <svg class="search-icon" id="search-icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" id="product-search-input" placeholder="Search...">
+                            <button id="clear-search-btn" style="display: none;">&times;</button>
                         </div>
                     </div>
 
-                    <!-- വരി 2: ഡിസ്കൗണ്ട് ചിപ്പുകൾ -->
-                    <div class="filter-row-discount">
-                        <span class="filter-label">Discount:</span>
-                        <div class="discount-chips-container" id="discount-filters">
-                            <!-- ടെക്സ്റ്റ് മാറ്റി -->
-                            <button class="discount-chip" data-value="10">10% above</button>
-                            <button class="discount-chip" data-value="25">25% above</button>
-                            <button class="discount-chip" data-value="35">35% above</button>
-                            <button class="discount-chip" data-value="50">50% above</button>
-                            <button class="discount-chip" data-value="60">60% above</button>
-                            <button class="discount-chip" data-value="70">70% above</button>
+                    <!-- ഫിൽറ്റർ സെക്ഷൻ -->
+                    <div class="filter-section">
+                        <!-- വരി 1: പ്രൈസ് റേഞ്ചും സോർട്ടിംഗും (സ്ക്രോൾ ചെയ്യുമ്പോൾ ഇത് മറയും) -->
+                        <div class="filter-row-main">
+                            <div class="custom-select-wrapper">
+                                <select id="price-range-filter" class="filter-select">
+                                    <option value="all">Price: All</option>
+                                    <option value="0-500">Under ₹500</option>
+                                    <option value="500-1000">₹500 - ₹1000</option>
+                                    <option value="1000-2000">₹1000 - ₹2000</option>
+                                    <option value="2000-5000">₹2000 - ₹5000</option>
+                                    <option value="5000+">Above ₹5000</option>
+                                </select>
+                            </div>
+                            
+                            <div class="custom-select-wrapper">
+                                <select id="sort-by-filter" class="filter-select">
+                                    <option value="default">Sort By</option>
+                                    <option value="low-high">Price: Low to High</option>
+                                    <option value="high-low">Price: High to Low</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- വരി 2: ഡിസ്കൗണ്ട് ചിപ്പുകൾ -->
+                        <div class="filter-row-discount">
+                            <span class="filter-label">Discount:</span>
+                            <div class="discount-chips-container" id="discount-filters">
+                                <button class="discount-chip" data-value="10">10% above</button>
+                                <button class="discount-chip" data-value="25">25% above</button>
+                                <button class="discount-chip" data-value="35">35% above</button>
+                                <button class="discount-chip" data-value="50">50% above</button>
+                                <button class="discount-chip" data-value="60">60% above</button>
+                                <button class="discount-chip" data-value="70">70% above</button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                
+                </div> <!-- End Tools Layout -->
+
             </div> 
             <!-- End Sticky Header -->
 
