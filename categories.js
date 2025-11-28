@@ -1,4 +1,4 @@
-// categories.js - With Updated HTML Structure for New Design
+// categories.js - Fixed Sizes & Dummy Cards Logic
 
 import {
     collection,
@@ -62,7 +62,8 @@ function setupScrollAnimation() {
         const scrollHeight = productsScrollContainer.scrollHeight;
         const clientHeight = productsScrollContainer.clientHeight;
         
-        const isScrollable = (scrollHeight - clientHeight) > 50;
+        // Ensure scrolling is possible (Dummy cards ensure height)
+        const isScrollable = (scrollHeight - clientHeight) > 20;
 
         if (scrollTop > 20 && isScrollable) {
             stickyHeader.classList.add('compact');
@@ -267,7 +268,9 @@ function applyFilters() {
         renderProductCard(product, product.id);
     });
 
-    const MIN_CARDS = 8;
+    // *** DUMMY CARDS LOGIC (Scroll Fix) ***
+    // Ensure always enough cards (e.g. 10) to make the page scrollable
+    const MIN_CARDS = 10;
     const remainingSlots = MIN_CARDS - filtered.length;
 
     if (remainingSlots > 0) {
@@ -280,7 +283,8 @@ function applyFilters() {
 function renderDummyCard() {
     const card = document.createElement('div');
     card.className = 'category-product-card dummy-card';
-    card.style.opacity = '0'; // Completely invisible but takes space
+    // Transparent dummy card that takes up space but isn't visible
+    card.style.opacity = '0'; 
     productGrid.appendChild(card);
 }
 
@@ -322,6 +326,7 @@ function renderProductCard(product, productId) {
                 data-mrp="${mrp}"
                 data-image="${imageUrl}"
                 data-size="${product.size || ''}">
+                <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                 <span>${buttonText}</span>
             </button>
             <a href="product.html?id=${productId}" class="btn btn-primary-new"><span>VIEW</span></a>
