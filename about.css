@@ -1,103 +1,13 @@
-/* ഇത് about.css
-   About, Policies, Store Locator പേജുകൾക്കുള്ള സ്റ്റൈലുകൾ
-*/
+/* about.css */
 
 .about-page-layout {
-    max-width: 800px;
-    margin: 0 auto;
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 2rem;
+    max-width: 800px; margin: 0 auto; background: #111; padding: 2rem;
+    border-radius: 8px; border: 1px solid #333;
 }
-
-.policy-section {
-    padding: 1rem 0;
-    /* ഐഡി വെച്ച് ലിങ്ക് ചെയ്യുമ്പോൾ ഹെഡർ മറയാതിരിക്കാൻ (Scroll Margin) */
-    scroll-margin-top: calc(var(--header-height) + 20px);
-}
-
+.policy-section { margin-bottom: 2rem; }
 .policy-title {
-    color: var(--primary-gold);
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
-    border-left: 4px solid var(--primary-gold);
-    padding-left: 10px;
+    color: var(--primary-gold); font-size: 1.4rem; margin-bottom: 1rem;
+    border-left: 3px solid var(--primary-gold); padding-left: 10px;
 }
-
-.policy-content {
-    color: var(--text-muted);
-    font-size: 1rem;
-    line-height: 1.7;
-}
-
-.policy-content ul {
-    list-style-type: disc;
-    padding-left: 1.5rem;
-    margin-top: 0.5rem;
-}
-
-.policy-content li {
-    margin-bottom: 0.5rem;
-}
-
-.policy-divider {
-    border: 0;
-    height: 1px;
-    background-color: var(--border-color);
-    margin: 2rem 0;
-}
-
-/* --- Store Locator Card --- */
-.store-card {
-    background-color: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 1.5rem;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1.5rem;
-}
-
-.store-info h3 {
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
-    font-size: 1.2rem;
-}
-
-.store-info p {
-    color: var(--text-muted);
-    margin-bottom: 0.5rem;
-    font-size: 0.95rem;
-}
-
-.store-map-placeholder {
-    background-color: #222;
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    min-height: 150px;
-    border: 1px dashed var(--border-color);
-}
-
-.btn-sm {
-    padding: 0.4rem 0.8rem;
-    font-size: 0.8rem;
-    margin-top: 0.5rem;
-}
-
-/* റെസ്പോൺസീവ് */
-@media (max-width: 768px) {
-    .about-page-layout {
-        padding: 1.5rem;
-    }
-    .store-card {
-        grid-template-columns: 1fr; /* മൊബൈലിൽ ഒറ്റ വരി */
-    }
-    .store-map-placeholder {
-        min-height: 120px;
-    }
-}
+.policy-content { color: #ccc; line-height: 1.7; font-size: 0.95rem; }
+.policy-divider { border: 0; border-top: 1px solid #333; margin: 2rem 0; }
