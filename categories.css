@@ -1,4 +1,4 @@
-/* categories.css - Screenshot Match Design */
+/* categories.css - Fixed Size, Gold View Button, Red Discount */
 
 /* === 1. പേജ് ലേഔട്ട് === */
 .category-page-layout {
@@ -10,9 +10,7 @@
     background-color: var(--bg-color);
 }
 
-.container.page-container {
-    padding: 0 !important;
-}
+.container.page-container { padding: 0 !important; }
 
 /* === 2. STICKY HEADER === */
 .sticky-header-container {
@@ -24,7 +22,6 @@
     padding-bottom: 10px;
     width: 100%;
 }
-
 .sticky-header-container::before { display: none; }
 
 /* === 3. കാറ്റഗറി ഗ്രിഡ് === */
@@ -42,7 +39,6 @@
     position: relative; padding-bottom: 5px; 
 }
 
-/* Underline Animation */
 .category-grid-item::after {
     content: ''; position: absolute; bottom: 0; left: 0; width: 0; height: 2px;
     background-color: var(--primary-gold); transition: width 0.3s ease;
@@ -127,47 +123,55 @@
     display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; min-height: 80vh; 
 }
 
-/* === 7. PREMIUM CARD DESIGN (Screenshot Match) === */
+/* === 7. FIXED SIZE PRODUCT CARD === */
 .category-product-card {
-    background-color: #080808; /* Darker black like screenshot */
+    background-color: #080808;
     border: 1px solid #222;
     border-radius: 8px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-    height: 100%;
+    /* FIX: Fixed height for card to ensure uniformity */
+    height: 320px; 
+    width: 100%;
 }
 
 .category-product-card.dummy-card {
-    background-color: #000; border-color: transparent; pointer-events: none; opacity: 0.3;
+    background-color: transparent; border-color: transparent; pointer-events: none; opacity: 0;
 }
 
-/* Bigger Image (4:5 Aspect Ratio) */
+/* Fixed Image Container */
 .cat-product-image-link {
     width: 100%;
-    aspect-ratio: 4 / 5; /* Taller image as requested */
+    /* FIX: Fixed height for image area */
+    height: 200px; 
     overflow: hidden;
     background-color: #000;
     position: relative;
+    flex-shrink: 0; /* Don't shrink image */
 }
 
-.cat-product-image { width: 100%; height: 100%; object-fit: cover; }
+.cat-product-image { 
+    width: 100%; height: 100%; object-fit: cover; 
+}
 
-/* Green Discount Badge (Top Left) */
+/* Red Discount Badge */
 .discount-badge {
     position: absolute; top: 8px; left: 8px;
-    background-color: var(--success-green); color: #fff;
+    background-color: var(--error-red); /* RED COLOR */
+    color: #fff; /* WHITE TEXT */
     font-size: 0.65rem; font-weight: 700; padding: 2px 6px;
     border-radius: 4px; z-index: 2;
 }
 
-/* Compact Content Area */
+/* Content Area */
 .cat-product-content {
-    padding: 8px 10px; /* Slight padding */
+    padding: 8px 10px;
     display: flex; flex-direction: column; 
-    gap: 0; /* No gap between name and price */
+    gap: 0; 
     background-color: #080808;
     flex-grow: 1;
+    justify-content: space-between; /* Distribute space */
 }
 
 .cat-product-title {
@@ -188,37 +192,47 @@
     font-size: 0.75rem; text-decoration: line-through; color: #555;
 }
 
-/* Bottom Buttons (Screenshot Style) */
+/* Bottom Buttons */
 .cat-product-buttons {
     display: grid; grid-template-columns: 1fr 1fr;
-    border-top: 1px solid #222;
+    border-top: 1px solid #333;
     background-color: #080808;
+    margin-top: auto; /* Push to bottom */
 }
 
 .cat-product-buttons .btn-primary-new,
 .cat-product-buttons .btn-secondary-new {
-    font-size: 0.75rem; padding: 10px 0; height: auto;
+    font-size: 0.75rem; padding: 10px 0; height: 40px; /* Fixed height for buttons */
     border-radius: 0; font-weight: 600; text-transform: uppercase;
     display: flex; align-items: center; justify-content: center;
-    background-color: transparent; border: none; color: var(--primary-gold);
-    cursor: pointer;
+    cursor: pointer; gap: 5px;
 }
 
-/* Divider Line */
+/* Cart Button (Icon Added via JS) */
 .cat-product-buttons .btn-secondary-new {
-    border-right: 1px solid #222; 
+    background-color: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-right: 1px solid #333;
+}
+.cat-product-buttons .btn-secondary-new.added-to-cart {
+    color: var(--primary-gold);
 }
 
-/* Active State */
-.cat-product-buttons .btn-secondary-new.added-to-cart {
-    background-color: #111;
+/* View Button (Gold Fill) */
+.cat-product-buttons .btn-primary-new {
+    background-color: var(--primary-gold); /* GOLD FILL */
+    color: #000; /* BLACK TEXT */
+    border: none;
 }
 
 .cat-product-buttons .btn-primary-new:active,
 .cat-product-buttons .btn-secondary-new:active {
-    background-color: #111;
+    opacity: 0.8;
 }
 
 @media (min-width: 769px) {
     .category-product-grid { grid-template-columns: repeat(5, 1fr); gap: 20px; padding: 20px; }
+    .category-product-card { height: 380px; } /* Taller on desktop */
+    .cat-product-image-link { height: 250px; }
 }
