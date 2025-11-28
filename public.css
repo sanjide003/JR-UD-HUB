@@ -1,6 +1,7 @@
-/* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും. */
+/* Global Styles - Optimized for Performance
+   public.css
+*/
 
-/* --- 1. പ്രധാന വേരിയബിളുകൾ & ഫോണ്ടുകൾ --- */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
@@ -21,77 +22,55 @@
     --bottom-nav-height: 65px;
 }
 
-/* --- 0. പേജ് ലോഡർ --- */
-#preloader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--bg-color); 
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.5s ease-out;
-    opacity: 1;
-}
-.loader-logo-container {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-#preloader-logo {
-    width: 70px;
-    height: 70px;
-    object-fit: contain;
-    border-radius: 50%;
-}
-.loader-ring {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100px;
-    height: 100px;
-    border: 4px solid var(--border-color);
-    border-top-color: var(--primary-gold); 
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+/* --- 0. Performance & Reset --- */
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* --- 2. പൊതുവായ സ്റ്റൈലുകൾ --- */
 body {
     font-family: var(--font-main);
     background-color: var(--bg-color);
     color: var(--text-color);
     line-height: 1.6;
-    margin: 0;
-    padding: 0;
     padding-top: var(--header-height);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* --- Performance Optimization for Low-End Devices --- */
+@media (max-width: 768px) {
+    * {
+        /* മൊബൈലിൽ ഗ്ലാസ് എഫക്റ്റും ഹെവി ഷാഡോയും ഒഴിവാക്കുന്നു */
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        box-shadow: none !important;
+        text-shadow: none !important;
+    }
+    
+    /* സ്മൂത്ത് സ്ക്രോളിംഗ് അത്യാവശ്യമുള്ളിടത്ത് മാത്രം */
+    .swiper-wrapper, .category-grid-section {
+        will-change: transform;
+    }
+}
 
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+/* --- Typography --- */
 h1, h2, h3, h4, h5, h6, .section-title-new, .product-title, .page-header-bar h1, .cart-summary-card h2, .header-logo-text {
     font-family: var(--font-heading);
     font-weight: 600; 
     color: var(--primary-gold); 
 }
+
 .section-title-new {
     font-weight: 600;
     letter-spacing: 1px;
     text-align: center; 
     margin-bottom: 2rem; 
 }
-.page-header-bar h1, .product-title { font-weight: 700; }
-.header-logo-text { font-weight: 700; }
 
 .container {
     max-width: 1200px;
@@ -104,395 +83,152 @@ a {
     text-decoration: none;
     transition: color 0.3s ease;
 }
-a:hover { color: var(--secondary-gold); }
 
 img { max-width: 100%; height: auto; display: block; }
 
-/* --- 3. ഹെഡർ (Main Header) --- */
+/* --- Preloader --- */
+#preloader {
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--bg-color); 
+    z-index: 9999;
+    display: flex; justify-content: center; align-items: center;
+    transition: opacity 0.5s ease-out;
+}
+.loader-logo-container {
+    position: relative; width: 100px; height: 100px;
+    display: flex; justify-content: center; align-items: center;
+}
+#preloader-logo {
+    width: 70px; height: 70px; object-fit: contain; border-radius: 50%;
+}
+.loader-ring {
+    position: absolute; top: 0; left: 0;
+    width: 100px; height: 100px;
+    border: 4px solid var(--border-color);
+    border-top-color: var(--primary-gold); 
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* --- Header --- */
 .main-header {
-    background-color: var(--bg-color);
+    background-color: rgba(0, 0, 0, 0.95); /* Solid color for better perf */
     padding: 0 1.5rem;
     height: var(--header-height);
     display: grid;
     grid-template-columns: 1fr auto 1fr; 
     align-items: center;
     border-bottom: 1px solid var(--border-color);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
+    position: fixed; top: 0; left: 0; width: 100%;
     z-index: 1000;
 }
 
-/* ലോഗോ */
-.header-left-section {
-    justify-self: start;
-}
-.header-logo {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    gap: 10px;
-}
+.header-left-section { justify-self: start; }
+.header-logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
 .header-logo-img { height: 40px; width: auto; }
 .header-logo-content { display: flex; flex-direction: column; }
-.header-logo-subtitle {
-    font-family: var(--font-main);
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    letter-spacing: 1px;
-    margin-left: 2px;
-}
+.header-logo-subtitle { font-size: 0.8rem; color: var(--text-muted); }
 
-/* ഡെസ്ക്ടോപ്പ് നാവിഗേഷൻ */
-.header-nav-desktop {
-    justify-self: center;
+.header-nav-desktop { justify-self: center; }
+.header-nav-desktop ul { list-style: none; display: flex; gap: 2.5rem; padding: 0; margin: 0; }
+.header-nav-desktop a, .header-nav-desktop button {
+    color: var(--text-color); font-weight: 500; font-size: 1rem;
+    text-transform: uppercase; background: none; border: none; cursor: pointer;
+    font-family: var(--font-main); transition: color 0.2s;
 }
-.header-nav-desktop ul {
-    list-style: none;
-    display: flex;
-    gap: 2.5rem;
-    padding: 0;
-    margin: 0;
-}
-.header-nav-desktop a,
-.header-nav-desktop button { /* Button style added */
-    color: var(--text-color);
-    font-weight: 500;
-    font-size: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: color 0.3s ease;
-    position: relative;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: var(--font-main);
-    padding: 0;
-}
-.header-nav-desktop a:hover,
-.header-nav-desktop button:hover {
-    color: var(--primary-gold);
-}
-.header-nav-desktop a::after,
-.header-nav-desktop button::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: -4px;
-    left: 0;
-    background-color: var(--primary-gold);
-    transition: width 0.3s ease;
-}
-.header-nav-desktop a:hover::after,
-.header-nav-desktop button:hover::after {
-    width: 100%;
-}
+.header-nav-desktop a:hover, .header-nav-desktop button:hover { color: var(--primary-gold); }
 
-/* വലതുവശത്തെ ഐക്കണുകൾ */
-.header-right-section {
-    justify-self: end;
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-}
-.header-icon-btn {
-    background: none;
-    border: none;
-    color: var(--text-color) !important; 
-    cursor: pointer;
-    position: relative;
-    padding: 5px;
-}
-.header-icon-btn svg {
-    stroke: var(--text-color) !important; 
-    fill: none;
-    width: 24px;
-    height: 24px;
-    stroke-width: 2;
-}
+.header-right-section { justify-self: end; display: flex; align-items: center; gap: 1.5rem; }
+.header-icon-btn { background: none; border: none; color: var(--text-color); cursor: pointer; position: relative; padding: 5px; }
+.header-icon-btn svg { width: 24px; height: 24px; stroke: currentColor; fill: none; stroke-width: 2; }
 .cart-item-count {
-    position: absolute;
-    top: -5px;
-    right: -10px;
-    background-color: var(--primary-gold);
-    color: var(--bg-color);
-    font-size: 0.75rem;
-    font-weight: 700;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
+    position: absolute; top: -5px; right: -10px;
+    background-color: var(--primary-gold); color: #000;
+    font-size: 0.75rem; font-weight: 700; border-radius: 50%;
+    width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;
 }
 
-/* --- 4. ഫൂട്ടർ (Main Footer) --- */
+/* --- Footer --- */
 .main-footer-new {
-    background-color: var(--bg-color);
+    background-color: #050505;
     color: var(--text-muted);
     padding: 3rem 1.5rem;
     margin-top: 3rem;
     border-top: 1px solid var(--border-color);
 }
 .footer-container-new { max-width: 1200px; margin: 0 auto; }
-.footer-accordion-item { border-bottom: 1px solid var(--border-color); }
 .footer-accordion-toggle {
     display: flex; justify-content: space-between; align-items: center; width: 100%;
     background: none; border: none; color: var(--text-color);
-    padding: 1.5rem 0; font-family: var(--font-main); font-size: 1rem;
-    font-weight: 500; text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+    padding: 1rem 0; font-family: var(--font-main); font-size: 1rem;
+    font-weight: 500; text-transform: uppercase; cursor: pointer;
+    border-bottom: 1px solid var(--border-color);
 }
-.footer-accordion-toggle svg {
-    transition: transform 0.3s ease; width: 16px; height: 16px; fill: currentColor;
-}
-.footer-accordion-toggle.active svg { transform: rotate(180deg); }
+.footer-accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+.footer-accordion-content ul { list-style: none; padding: 1rem 0; }
+.footer-accordion-content li { margin-bottom: 0.5rem; }
+.footer-social-new { display: flex; justify-content: center; gap: 2rem; padding: 2rem 0; }
+.footer-bottom-new { text-align: center; font-size: 0.9rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem; }
 
-/* ഫൂട്ടർ അക്കോഡിയൻ കണ്ടന്റ് */
-.footer-accordion-content {
-    max-height: 0; 
-    overflow: hidden; 
-    transition: max-height 0.3s ease-out;
-}
-.footer-accordion-content ul { list-style: none; padding: 0 0 1.5rem 0; }
-.footer-accordion-content li { margin-bottom: 0.75rem; }
-.footer-accordion-content a { color: var(--text-muted); font-size: 0.95rem; }
+/* --- Mobile Bottom Nav --- */
+.bottom-nav { display: none; }
 
-.footer-social-new {
-    display: flex; justify-content: center; gap: 2rem; padding: 2rem 0; border-bottom: 1px solid var(--border-color);
-}
-.footer-social-new a { color: var(--text-color); }
-.footer-social-new a svg { width: 24px; height: 24px; fill: currentColor; }
-.footer-bottom-new { text-align: center; font-size: 0.9rem; padding-top: 1.5rem; }
-.footer-powered-by { font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; margin-top: 0.5rem; }
-
-/* --- 5. മൊബൈൽ ബോട്ടം നാവിഗേഷൻ & യൂസർ മെനു --- */
-.bottom-nav {
-    display: none; /* ഡെസ്ക്ടോപ്പിൽ മറയ്ക്കുന്നു */
-}
-
-/* യൂസർ മെനു ഓവർലേ (പൊതുവായ സ്റ്റൈലുകൾ) */
+/* --- User Menu Overlay --- */
 .user-menu-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.6); z-index: 2000;
-    opacity: 0; visibility: hidden; transition: opacity 0.3s ease;
-    display: flex;
+    background-color: rgba(0, 0, 0, 0.8); z-index: 2000;
+    opacity: 0; visibility: hidden; transition: opacity 0.3s;
+    display: flex; justify-content: flex-end; /* Desktop right align */
 }
 .user-menu-overlay.open { opacity: 1; visibility: visible; }
-
-/* മൊബൈൽ സ്റ്റൈൽ (Bottom Sheet) */
 .user-menu-content {
-    width: 100%; background-color: var(--card-bg);
-    border-top-left-radius: 20px; border-top-right-radius: 20px;
-    padding: 1.5rem; border-top: 1px solid var(--primary-gold);
-    transition: transform 0.3s ease;
-    max-height: 70vh; overflow-y: auto;
+    background-color: var(--card-bg); padding: 1.5rem;
+    border: 1px solid var(--border-color);
 }
 
-.user-menu-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;
+/* --- Buttons --- */
+.btn-primary-new, .btn-secondary-new {
+    display: inline-flex; align-items: center; justify-content: center;
+    padding: 0.75rem 1rem; border-radius: 5px; font-weight: 600;
+    text-decoration: none; cursor: pointer; transition: background 0.2s;
 }
-.user-menu-header h3 { margin: 0; color: var(--primary-gold); font-weight: 600; font-size: 1.2rem; }
-.user-menu-close-btn { background: none; border: none; color: var(--text-muted); cursor: pointer; }
-.user-menu-close-btn svg { width: 24px; height: 24px; stroke: currentColor; }
-.user-menu-list { list-style: none; padding: 0; margin: 0; }
-.user-menu-list li { margin-bottom: 0.8rem; }
-.user-menu-link {
-    display: flex; align-items: center; gap: 1rem; padding: 1rem;
-    color: var(--text-color); text-decoration: none; border-radius: 8px;
-    background-color: rgba(255, 255, 255, 0.03); transition: background-color 0.3s ease;
-    font-weight: 500;
+.btn-primary-new {
+    background-color: var(--primary-gold); color: #000; border: 1px solid var(--primary-gold);
 }
-.user-menu-link:hover { background-color: rgba(212, 175, 55, 0.1); color: var(--primary-gold); }
-.user-menu-link svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+.btn-secondary-new {
+    background-color: transparent; color: var(--primary-gold); border: 1px solid var(--primary-gold);
+}
 
-/* --- 6. റെസ്പോൺസീവ് (മൊബൈൽ) --- */
+/* --- Responsive --- */
 @media (max-width: 768px) {
     body { padding-bottom: var(--bottom-nav-height); }
-    
-    .main-header { 
-        padding: 0 1rem; 
-        height: 60px; 
-        grid-template-columns: 1fr auto;
-    }
+    .main-header { padding: 0 1rem; height: 60px; grid-template-columns: 1fr auto; }
     .header-nav-desktop { display: none; }
-    .header-left-section { justify-self: start; }
-    .header-right-section { justify-self: end; }
     
-    /* ബോട്ടം നാവിഗേഷൻ */
     .bottom-nav {
         display: flex; justify-content: space-around; align-items: center;
         position: fixed; bottom: 0; left: 0; width: 100%; height: var(--bottom-nav-height);
-        background-color: rgba(10, 10, 10, 0.98); border-top: 1px solid var(--border-color);
-        backdrop-filter: blur(10px); z-index: 1001; box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+        background-color: #111; border-top: 1px solid var(--border-color);
+        z-index: 1001;
     }
     .bottom-nav-item {
-        display: flex; flex-direction: column; align-items: center; justify-content: center;
-        text-decoration: none;
-        color: #FFFFFF; 
-        font-size: 0.7rem; font-weight: 500;
-        flex: 1; height: 100%; gap: 4px; transition: all 0.3s ease;
-        background: none; border: none; cursor: pointer; padding: 0;
+        display: flex; flex-direction: column; align-items: center;
+        color: #888; font-size: 0.7rem; background: none; border: none; padding: 5px;
     }
-    .bottom-nav-item svg {
-        width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2;
-        stroke-linecap: round; stroke-linejoin: round; transition: all 0.3s ease;
-    }
-    
-    /* ആക്ടീവ് പേജ് ഗോൾഡ് കളർ */
-    .bottom-nav-item.active { 
-        color: var(--primary-gold) !important; 
-    }
-    .bottom-nav-item.active svg { 
-        stroke: var(--primary-gold) !important; 
-        transform: translateY(-2px); 
-        fill: none; 
-    }
-    
-    /* കാറ്റലോഗ് ആനിമേഷൻ */
-    @keyframes bounce-subtle {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-4px); }
-    }
-    .bottom-nav-item:not(.active).catalog-anim svg {
-        animation: bounce-subtle 2s infinite;
-        stroke: var(--primary-gold);
-    }
+    .bottom-nav-item.active { color: var(--primary-gold); }
+    .bottom-nav-item svg { width: 22px; height: 22px; margin-bottom: 2px; }
 
-    /* മൊബൈലിൽ താഴെ നിന്നാണ് വരുന്നത് */
     .user-menu-overlay { align-items: flex-end; }
-    .user-menu-content { transform: translateY(100%); border-radius: 20px 20px 0 0; }
-    .user-menu-overlay.open .user-menu-content { transform: translateY(0); }
-
-    #floating-action-buttons { bottom: 80px; right: 15px; }
+    .user-menu-content { width: 100%; border-radius: 20px 20px 0 0; }
+    
     .container { padding: 2rem 1rem; }
 }
 
-/* --- 7. റെസ്പോൺസീവ് (ഡെസ്ക്ടോപ്പ്) --- */
 @media (min-width: 769px) {
-    .header-nav-desktop { display: block; }
-    .main-header { padding: 0 2rem; }
-
-    /* *** മാറ്റം: ഡെസ്ക്ടോപ്പിൽ ഫൂട്ടർ എപ്പോഴും തുറന്നു കിടക്കും *** */
-    .footer-accordion-toggle {
-        pointer-events: none; 
-        cursor: default;
-        justify-content: center; 
-        font-size: 1.1rem;
-    }
-    .footer-accordion-toggle svg {
-        display: none; 
-    }
-    .footer-accordion-content {
-        max-height: none !important; 
-        overflow: visible;
-        text-align: center; 
-    }
-    .footer-container-new {
-        display: grid;
-        grid-template-columns: 1fr 1fr; 
-        gap: 2rem;
-        align-items: start;
-        justify-items: center; 
-    }
-    .footer-accordion-item {
-        border-bottom: none;
-        width: 100%;
-        max-width: 300px; 
-    }
-    .footer-social-new {
-        grid-column: 1 / -1; 
-        width: 100%;
-        justify-content: center;
-        border-bottom: none;
-        padding-top: 3rem;
-        padding-bottom: 1rem;
-    }
-    .footer-bottom-new {
-        grid-column: 1 / -1;
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 1.5rem; 
-        padding-top: 0;
-    }
-    .footer-bottom-new p { margin: 0; }
-    .footer-powered-by { margin-top: 0; }
-
-    /* *** പുതിയത്: ഡെസ്ക്ടോപ്പ് അക്കൗണ്ട് മെനു (Dropdown Style) *** */
-    .user-menu-overlay {
-        background-color: transparent; /* പശ്ചാത്തലം വേണ്ട */
-        align-items: flex-start; /* മുകളിൽ നിന്ന് തുടങ്ങുന്നു */
-        justify-content: flex-end; /* വലതുവശത്തേക്ക് */
-        padding-top: calc(var(--header-height) + 10px); /* ഹെഡറിന് താഴെ */
-        padding-right: 2rem; /* വലതുവശത്ത് നിന്ന് അകലം */
-        pointer-events: none; /* ഓപ്പൺ ആകാത്തപ്പോൾ ക്ലിക്ക് തടയുന്നു */
-    }
-    .user-menu-overlay.open {
-        pointer-events: auto;
-    }
-    .user-menu-content {
-        width: 300px;
-        border-radius: 10px;
-        border: 1px solid var(--border-color);
-        transform: translateY(10px);
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-    }
-    .user-menu-overlay.open .user-menu-content {
-        transform: translateY(0);
-        opacity: 1;
-        visibility: visible;
-    }
-    /* ഡെസ്ക്ടോപ്പിൽ ക്ലോസ് ബട്ടൺ ആവശ്യമില്ല (പുറത്ത് ക്ലിക്ക് ചെയ്താൽ മതി) */
-    .user-menu-close-btn { display: none; }
+    .footer-accordion-toggle { border-bottom: none; pointer-events: none; }
+    .footer-accordion-toggle svg { display: none; }
+    .footer-accordion-content { max-height: none !important; }
+    .footer-container-new { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+    .user-menu-content { width: 300px; margin-top: 80px; margin-right: 20px; border-radius: 8px; }
 }
-
-/* പൊതുവായ പേജ് സ്റ്റൈലുകൾ */
-.price-container { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; min-height: 24px; }
-.price-main { font-size: 1.3rem; font-weight: 700; color: var(--primary-gold); }
-.price-mrp { font-size: 1rem; color: var(--text-muted); }
-.product-mrp-red del { color: var(--error-red); }
-.price-discount { font-size: 0.8rem; font-weight: 700; color: var(--success-green); background-color: rgba(46, 204, 113, 0.1); padding: 2px 6px; border-radius: 4px; }
-
-.btn-primary-new, .btn-primary-icon {
-    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-    padding: 0.75rem 1rem; font-weight: 700; border-radius: 5px; text-decoration: none;
-    cursor: pointer; font-size: 0.9rem; background-color: var(--primary-gold);
-    border: 2px solid var(--primary-gold); color: var(--bg-color); transition: all 0.3s ease;
-}
-.btn-primary-new:hover { background-color: var(--secondary-gold); border-color: var(--secondary-gold); }
-.btn-secondary-new {
-    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-    padding: 0.75rem 1rem; font-weight: 700; border-radius: 5px; text-decoration: none;
-    cursor: pointer; font-size: 0.9rem; background-color: transparent;
-    border: 2px solid var(--primary-gold); color: var(--primary-gold); transition: all 0.3s ease;
-}
-.btn-secondary-new:hover { background-color: var(--primary-gold); color: var(--bg-color); }
-.btn-primary-new { gap: 0; }
-.btn-primary-new svg.icon-btn, .btn-secondary-new svg.icon-btn {
-    width: 16px; height: 16px; fill: currentColor; stroke: currentColor; stroke-width: 2;
-}
-.btn-secondary-new svg.icon-btn { stroke: var(--text-color); fill: none; }
-.btn-secondary-new:hover svg.icon-btn { stroke: var(--bg-color); }
-
-/* ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ */
-#floating-action-buttons {
-    position: fixed; bottom: 20px; right: 20px; z-index: 900;
-    display: flex; justify-content: flex-end; pointer-events: none;
-}
-.float-btn {
-    width: 56px; height: 56px; border-radius: 50%; background-color: var(--card-bg);
-    border: 1px solid var(--border-color); display: flex; align-items: center;
-    justify-content: center; text-decoration: none; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-    transition: all 0.3s ease; pointer-events: auto;
-}
-.float-btn:hover { transform: scale(1.1); border-color: var(--primary-gold); }
-.float-btn.whatsapp { background-color: #25D366; border: 1px solid #25D366; }
-.float-btn.whatsapp svg { fill: #FFFFFF; width: 32px; height: 32px; }
