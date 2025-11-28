@@ -1,4 +1,4 @@
-/* public.css - Base Styles */
+/* public.css - Low Data / Smooth Performance */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -8,7 +8,7 @@
     --secondary-gold: #B8860B;
     --text-color: #FFFFFF;
     --text-muted: #aaa;
-    --card-bg: #111111;
+    --card-bg: #111111; /* Solid color instead of glass */
     --border-color: #333;
     --error-red: #e74c3c;
     --success-green: #2ecc71;
@@ -16,79 +16,49 @@
     --font-main: 'Inter', sans-serif;
     --font-heading: 'Inter', sans-serif; 
     
-    --header-height: 60px; /* മൊബൈലിന് വേണ്ടി കുറച്ചു */
+    --header-height: 60px;
     --bottom-nav-height: 60px;
 }
 
-/* --- Performance Optimization --- */
-* {
-    box-sizing: border-box;
-    /* മൊബൈലിലെ ടാപ്പ് ഹൈലൈറ്റ് ഒഴിവാക്കാൻ */
-    -webkit-tap-highlight-color: transparent;
-}
-
+/* --- Base Styles --- */
 body {
     font-family: var(--font-main);
     background-color: var(--bg-color);
     color: var(--text-color);
-    line-height: 1.5;
     margin: 0;
     padding: 0;
     padding-top: var(--header-height);
-    overflow-x: hidden; /* തിരശ്ചീന സ്ക്രോൾ ഒഴിവാക്കാൻ */
+    -webkit-font-smoothing: antialiased; /* Better text rendering */
 }
 
-img { 
-    max-width: 100%; 
-    height: auto; 
-    display: block; 
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
-/* --- Preloader --- */
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+
+/* --- 0. Preloader (Simple) --- */
 #preloader {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background-color: var(--bg-color); 
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--bg-color);
     z-index: 9999;
-    display: flex; justify-content: center; align-items: center;
-}
-.loader-logo-container {
-    width: 80px; height: 80px; position: relative;
-    display: flex; justify-content: center; align-items: center;
-}
-#preloader-logo {
-    width: 60px; height: 60px; object-fit: contain;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 .loader-ring {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    border: 3px solid var(--border-color);
-    border-top-color: var(--primary-gold); 
+    width: 50px;
+    height: 50px;
+    border: 3px solid #333;
+    border-top-color: var(--primary-gold);
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
 @keyframes spin { 100% { transform: rotate(360deg); } }
 
-/* --- Typography --- */
-h1, h2, h3, h4, h5, h6, .section-title-new {
-    font-family: var(--font-heading);
-    font-weight: 600; 
-    color: var(--primary-gold); 
-    margin: 0;
-}
-
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 1.5rem 1rem;
-}
-
-a {
-    color: var(--primary-gold);
-    text-decoration: none;
-}
-
-/* --- Header --- */
+/* --- Header (Solid Background for Performance) --- */
 .main-header {
-    background-color: var(--bg-color);
+    background-color: var(--bg-color); /* No blur */
     height: var(--header-height);
     display: flex;
     align-items: center;
@@ -100,73 +70,88 @@ a {
     z-index: 1000;
 }
 
-.header-logo {
-    display: flex; align-items: center; gap: 10px;
-}
+.header-logo { display: flex; align-items: center; gap: 8px; }
 .header-logo-img { height: 35px; width: auto; }
 .header-logo-content { display: flex; flex-direction: column; }
-.header-logo-text { font-size: 1rem; font-weight: 700; color: var(--primary-gold); }
+.header-logo-text { font-size: 1rem; font-weight: 700; color: var(--primary-gold); line-height: 1; }
 .header-logo-subtitle { font-size: 0.7rem; color: var(--text-muted); }
 
-/* Desktop Nav */
 .header-nav-desktop { display: none; }
-.header-nav-desktop ul { list-style: none; display: flex; gap: 1.5rem; margin: 0; padding: 0; }
-.header-nav-desktop a { color: var(--text-color); font-size: 0.9rem; text-transform: uppercase; }
+.header-nav-desktop ul { display: flex; gap: 2rem; list-style: none; }
+.header-nav-desktop a { font-size: 0.9rem; font-weight: 500; color: var(--text-color); }
 .header-nav-desktop a:hover { color: var(--primary-gold); }
 
-.header-right-section { display: flex; gap: 1rem; }
-.header-icon-btn { position: relative; background: none; border: none; color: #fff; cursor: pointer; padding: 5px; }
+.header-right-section { display: flex; align-items: center; gap: 1rem; }
+.header-icon-btn { position: relative; color: var(--text-color); }
 .cart-item-count {
-    position: absolute; top: -2px; right: -5px;
+    position: absolute; top: -5px; right: -8px;
     background-color: var(--primary-gold); color: #000;
-    font-size: 0.7rem; font-weight: bold;
-    width: 18px; height: 18px; border-radius: 50%;
+    font-size: 0.7rem; font-weight: 700;
+    width: 16px; height: 16px; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
 }
 
-/* --- Footer --- */
-.main-footer-new {
-    background-color: #0a0a0a;
-    padding: 2rem 1rem;
-    margin-top: 2rem;
-    border-top: 1px solid var(--border-color);
-    text-align: center;
-    color: var(--text-muted);
-    font-size: 0.9rem;
-}
-.footer-social-new {
-    display: flex; justify-content: center; gap: 1.5rem; margin: 1.5rem 0;
-}
-.footer-social-new a svg { width: 24px; height: 24px; fill: currentColor; }
-
-/* --- Mobile Bottom Nav --- */
+/* --- Mobile Bottom Nav (Solid BG) --- */
 .bottom-nav {
     display: flex; justify-content: space-around; align-items: center;
-    position: fixed; bottom: 0; left: 0; width: 100%; height: var(--bottom-nav-height);
-    background-color: rgba(10, 10, 10, 0.95); /* ബ്ലർ കുറച്ചു */
+    position: fixed; bottom: 0; left: 0; width: 100%;
+    height: var(--bottom-nav-height);
+    background-color: #111; /* Solid dark grey */
     border-top: 1px solid var(--border-color);
     z-index: 1001;
 }
 .bottom-nav-item {
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    text-decoration: none; color: #aaa; font-size: 0.7rem;
-    flex: 1; height: 100%; background: none; border: none;
+    display: flex; flex-direction: column; align-items: center;
+    color: #888; font-size: 0.7rem; flex: 1;
+    background: none; border: none;
 }
+.bottom-nav-item svg { width: 22px; height: 22px; margin-bottom: 2px; stroke: currentColor; fill: none; }
 .bottom-nav-item.active { color: var(--primary-gold); }
-.bottom-nav-item svg { width: 22px; height: 22px; margin-bottom: 2px; stroke: currentColor; fill: none; stroke-width: 2; }
 
-/* --- Floating Buttons --- */
-#floating-action-buttons {
-    position: fixed; bottom: 70px; right: 15px; z-index: 900;
+/* --- Common UI Elements --- */
+.container { max-width: 1200px; margin: 0 auto; padding: 1.5rem 1rem; }
+
+/* Buttons - Simple & Solid */
+.btn-primary-new {
+    background-color: var(--primary-gold);
+    color: #000;
+    padding: 0.7rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+}
+.btn-secondary-new {
+    background-color: transparent;
+    color: var(--primary-gold);
+    border: 1px solid var(--primary-gold);
+    padding: 0.7rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
 }
 
-/* --- Responsive --- */
+/* Floating Actions */
+#floating-action-buttons {
+    position: fixed; bottom: 80px; right: 15px; z-index: 900;
+    display: flex; flex-direction: column; gap: 10px;
+}
+
+/* Footer (Simplified) */
+.main-footer-new {
+    background-color: #0a0a0a;
+    padding: 2rem 1rem 5rem 1rem; /* Extra padding for bottom nav */
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    color: var(--text-muted);
+}
+.footer-social-new { display: flex; justify-content: center; gap: 1.5rem; margin: 1.5rem 0; }
+.footer-social-new svg { width: 24px; height: 24px; fill: currentColor; }
+
+/* Desktop Media Query */
 @media (min-width: 769px) {
     .header-nav-desktop { display: block; }
     .bottom-nav { display: none; }
-    body { padding-bottom: 0; }
-}
-@media (max-width: 768px) {
-    body { padding-bottom: var(--bottom-nav-height); }
-    .container { padding: 1rem 0.8rem; }
+    #floating-action-buttons { bottom: 20px; }
+    .main-footer-new { padding-bottom: 2rem; }
 }
