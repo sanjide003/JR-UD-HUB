@@ -1,4 +1,4 @@
-// categories.js 
+// categories.js - With Updated HTML Structure for New Design
 
 import {
     collection,
@@ -280,17 +280,7 @@ function applyFilters() {
 function renderDummyCard() {
     const card = document.createElement('div');
     card.className = 'category-product-card dummy-card';
-    card.style.opacity = '0.4'; 
-    card.style.pointerEvents = 'none'; 
-    card.style.borderColor = 'transparent';
-    card.style.background = 'transparent'; // Transparent bg for dummy
-
-    card.innerHTML = `
-        <div class="cat-product-image-link" style="background-color: #111; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
-            <span style="color: #333; font-size: 0.75rem; font-weight: 600;"></span>
-        </div>
-        <div class="cat-product-content"></div>
-    `;
+    card.style.opacity = '0'; // Completely invisible but takes space
     productGrid.appendChild(card);
 }
 
