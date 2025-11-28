@@ -1,4 +1,4 @@
-// categories.js 
+// categories.js - Standard Layout Logic
 
 import {
     collection,
@@ -68,22 +68,8 @@ function setupScrollAnimation() {
             stickyHeader.classList.add('compact');
         } else {
             stickyHeader.classList.remove('compact');
-            if (scrollTop <= 20) {
-                searchWrapper.classList.remove('expanded');
-            }
         }
     });
-
-    if (searchIconBtn) {
-        searchIconBtn.addEventListener('click', () => {
-            if (stickyHeader.classList.contains('compact')) {
-                searchWrapper.classList.toggle('expanded');
-                if (searchWrapper.classList.contains('expanded')) {
-                    searchInput.focus();
-                }
-            }
-        });
-    }
 }
 
 async function loadCategoryList() {
@@ -158,9 +144,9 @@ function setupEventListeners() {
         clearSearchBtn.style.display = 'none';
         applyFilters();
     });
-    priceFilter.addEventListener('change', applyFilters);
-    sortFilter.addEventListener('change', applyFilters);
-
+    // Removed dropdown listeners as they are hidden in UI based on screenshot, 
+    // but kept logic just in case user enables them.
+    
     discountChips.forEach(chip => {
         chip.addEventListener('click', () => {
             const val = parseInt(chip.dataset.value);
@@ -214,8 +200,6 @@ function updateActiveCategoryUI(categoryId) {
 function resetAllFilters() {
     searchInput.value = '';
     clearSearchBtn.style.display = 'none';
-    priceFilter.value = 'all';
-    sortFilter.value = 'default';
     activeDiscount = null;
     discountChips.forEach(c => c.classList.remove('active'));
     currentCategoryId = 'all';
@@ -241,24 +225,8 @@ function applyFilters() {
         });
     }
 
-    const priceRange = priceFilter.value;
-    if (priceRange !== 'all') {
-        if (priceRange === '0-500') filtered = filtered.filter(p => p.price < 500);
-        else if (priceRange === '500-1000') filtered = filtered.filter(p => p.price >= 500 && p.price <= 1000);
-        else if (priceRange === '1000-2000') filtered = filtered.filter(p => p.price >= 1000 && p.price <= 2000);
-        else if (priceRange === '2000-5000') filtered = filtered.filter(p => p.price >= 2000 && p.price <= 5000);
-        else if (priceRange === '5000+') filtered = filtered.filter(p => p.price > 5000);
-    }
-
     if (activeDiscount !== null) {
         filtered = filtered.filter(p => p.discountPercent >= activeDiscount);
-    }
-
-    const sortVal = sortFilter.value;
-    if (sortVal === 'low-high') {
-        filtered.sort((a, b) => a.price - b.price);
-    } else if (sortVal === 'high-low') {
-        filtered.sort((a, b) => b.price - a.price);
     }
 
     if (noResultsMsg) noResultsMsg.style.display = 'none';
@@ -280,17 +248,8 @@ function applyFilters() {
 function renderDummyCard() {
     const card = document.createElement('div');
     card.className = 'category-product-card dummy-card';
-    card.style.opacity = '0.4'; 
-    card.style.pointerEvents = 'none'; 
-    card.style.borderColor = 'transparent';
-    card.style.background = 'transparent'; // Transparent bg for dummy
-
-    card.innerHTML = `
-        <div class="cat-product-image-link" style="background-color: #111; display: flex; align-items: center; justify-content: center; border-radius: 8px;">
-            <span style="color: #333; font-size: 0.75rem; font-weight: 600;"></span>
-        </div>
-        <div class="cat-product-content"></div>
-    `;
+    // Invisible structure holder
+    card.innerHTML = `<div style="height: 250px;"></div>`;
     productGrid.appendChild(card);
 }
 
@@ -313,7 +272,9 @@ function renderProductCard(product, productId) {
     }
     const isInCart = isItemInCart(productId);
     const buttonText = isInCart ? "REMOVE" : "CART";
-    const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
+    
+    // Using simple classes for logic, style handled by CSS structure
+    const buttonClass = isInCart ? "added-to-cart" : "";
 
     card.innerHTML = `
         <a href="product.html?id=${productId}" class="cat-product-image-link">
@@ -325,38 +286,33 @@ function renderProductCard(product, productId) {
             <div class="price-container">${priceHTML}</div>
         </div>
         <div class="cat-product-buttons">
-            <button class="btn ${buttonClass} btn-add-to-cart"
-                data-id="${productId}"
-                data-name="${product.name}"
-                data-price="${price}"
-                data-mrp="${mrp}"
-                data-image="${imageUrl}"
-                data-size="${product.size || ''}">
-                <span>${buttonText}</span>
+            <button class="${buttonClass} btn-cart-action" data-id="${productId}" data-name="${product.name}" data-price="${price}" data-mrp="${mrp}" data-image="${imageUrl}" data-size="${product.size || ''}">
+                ${buttonText}
             </button>
-            <a href="product.html?id=${productId}" class="btn btn-primary-new"><span>VIEW</span></a>
+            <a href="product.html?id=${productId}">VIEW</a>
         </div>
     `;
     productGrid.appendChild(card);
 }
 
 document.addEventListener('click', (e) => {
-    const button = e.target.closest('.btn-add-to-cart');
+    // Handle cart button click based on new class
+    const button = e.target.closest('.btn-cart-action');
     if (button) {
         e.preventDefault();
         const id = button.dataset.id;
-        const buttonText = button.querySelector('span');
+        
         if (button.classList.contains('added-to-cart')) {
             removeFromCart(id);
             button.classList.remove('added-to-cart');
-            if (buttonText) buttonText.textContent = 'CART';
+            button.textContent = 'CART';
         } else {
             const product = allProductsCache.find(p => p.id === id); 
             if (product) {
                 const cartProduct = { id: product.id, name: product.name, price: product.price, mrp: product.mrp, image: product.images && product.images[0] ? product.images[0] : '', size: product.size || '' };
                 addToCart(id, cartProduct);
                 button.classList.add('added-to-cart');
-                if (buttonText) buttonText.textContent = 'REMOVE';
+                button.textContent = 'REMOVE';
             }
         }
     }
