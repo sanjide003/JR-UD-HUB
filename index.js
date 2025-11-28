@@ -1,4 +1,4 @@
-// index.js - Fixed Video Autoplay & Single Product View
+// index.js - Video Autoplay Fix & Single View for Mobile
 
 import { db } from './firebase-config.js';
 import { 
@@ -51,7 +51,7 @@ async function loadHomeBanner() {
 }
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ (വീഡിയോ ഫിക്സ് ചെയ്തു)
+ * 1. ഹീറോ സ്ലൈഡർ (All Video Types Supported + Scroll Pause)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -70,66 +70,157 @@ async function loadHeroSlider() {
                 const slideEl = document.createElement('div');
                 slideEl.className = 'swiper-slide';
 
-                let content = '';
+                let isVideo = slide.type === 'video';
+                let videoId = '';
+                let embedUrl = '';
+                let finalUrl = slide.url;
+
+                // --- URL Parsing Logic (from original code) ---
+                if (isVideo) {
+                    // Google Drive
+                    if (slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
+                        try {
+                            const id = slide.url.split('/d/')[1].split('/')[0];
+                            finalUrl = `https://drive.google.com/uc?export=download&id=${id}`;
+                        } catch(e) {}
+                    } 
+                    // YouTube Watch
+                    else if (slide.url.includes('youtube.com/watch?v=')) {
+                        videoId = new URL(slide.url).searchParams.get('v');
+                    }
+                    // YouTube Shorts
+                    else if (slide.url.includes('youtube.com/shorts/')) {
+                        videoId = new URL(slide.url).pathname.split('/shorts/')[1];
+                    }
+                    // YouTube Short Link (youtu.be)
+                    else if (slide.url.includes('youtu.be/')) {
+                        videoId = slide.url.split('youtu.be/')[1];
+                    }
+
+                    if (videoId) {
+                        // YouTube Embed URL (Muted, Autoplay, No Controls)
+                        embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1&autoplay=1`;
+                    }
+                }
+
+                // --- HTML Generation ---
                 if (slide.type === 'image') {
                     const optimizedHeroImg = optimizeImage(slide.url, 800, 85);
-                    content = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
-                } else if (slide.type === 'video') {
-                    // *** വീഡിയോ ഫിക്സ്: Playsinline, Muted നിർബന്ധമാണ് ***
-                    content = `
+                    slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
+                }
+                else if (isVideo && embedUrl) {
+                    // YouTube Iframe
+                    slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%; height:100%; pointer-events:none;"></iframe>`;
+                }
+                else if (isVideo) {
+                    // Direct Video (MP4/Drive)
+                    slideEl.innerHTML = `
                         <video class="hero-video-element" 
+                               src="${finalUrl}" 
                                autoplay 
                                muted 
                                loop 
                                playsinline 
-                               preload="metadata"
+                               preload="auto"
                                style="width: 100%; height: 100%; object-fit: cover;">
-                            <source src="${slide.url}" type="video/mp4">
-                            Your browser does not support the video tag.
                         </video>`;
                 }
-                slideEl.innerHTML = content;
+                
                 sliderWrapper.appendChild(slideEl);
             });
         }
 
         // Swiper Config
-        new Swiper('.hero-slider-new', {
+        const heroSwiper = new Swiper('.hero-slider-new', {
             loop: true, 
             allowTouchMove: true,
             speed: 600,
             autoplay: {
-                delay: 6000, // വീഡിയോ കാണാൻ കുറച്ചു സമയം കൂടുതൽ നൽകുന്നു
+                delay: 6000,
                 disableOnInteraction: false,
             },
             pagination: {
                 el: '.hero-pagination-dots',
                 clickable: true,
             },
-            // സ്ലൈഡ് മാറുമ്പോൾ വീഡിയോ പ്ലേ/പോസ് ചെയ്യുന്നു (പെർഫോമൻസിന് വേണ്ടി)
             on: {
-                slideChangeTransitionEnd: function () {
-                    const activeSlide = this.slides[this.activeIndex];
-                    const video = activeSlide.querySelector('video');
-                    if (video) {
-                        video.currentTime = 0;
-                        video.play().catch(e => console.log("Auto-play prevented"));
-                    }
+                slideChange: function() {
+                    handleSlideVideo(this);
                 }
             }
         });
 
+        // Initial Play
+        handleSlideVideo(heroSwiper);
+        
+        // *** Scroll Observer (Pause on Scroll) ***
+        setupScrollVideoObserver();
+
     } catch (error) { console.error("Error loading hero slider"); }
 }
 
+// Helper to play active slide video and pause others
+function handleSlideVideo(swiper) {
+    const slides = document.querySelectorAll('.hero-slider-new .swiper-slide');
+    
+    slides.forEach((slide) => {
+        // Direct Videos
+        const video = slide.querySelector('video');
+        if (video) {
+            if (slide.classList.contains('swiper-slide-active')) {
+                video.play().catch(e => {});
+            } else {
+                video.pause();
+            }
+        }
+        
+        // YouTube Iframes
+        const iframe = slide.querySelector('iframe');
+        if (iframe && iframe.contentWindow) {
+            if (slide.classList.contains('swiper-slide-active')) {
+                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            } else {
+                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+            }
+        }
+    });
+}
+
+// *** Scroll Observer Implementation ***
+function setupScrollVideoObserver() {
+    const sliderContainer = document.querySelector('.hero-section-new');
+    if (!sliderContainer) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const activeSlide = document.querySelector('.hero-slider-new .swiper-slide-active');
+            if (!activeSlide) return;
+
+            const video = activeSlide.querySelector('video');
+            const iframe = activeSlide.querySelector('iframe');
+
+            if (entry.isIntersecting) {
+                // Viewport-ൽ എത്തിയാൽ Play ചെയ്യുക
+                if (video) video.play().catch(e => {});
+                if (iframe) iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            } else {
+                // Viewport-ൽ നിന്ന് പോയാൽ Pause ചെയ്യുക
+                if (video) video.pause();
+                if (iframe) iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+            }
+        });
+    }, { threshold: 0.5 }); // 50% കാണുമ്പോഴേക്കും പ്രവർത്തിക്കും
+
+    observer.observe(sliderContainer);
+}
+
 /**
- * 2. "For You" (Top Sellers) - Single View Fix
+ * 2. "For You" (Top Sellers) - Single Card View
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
     
-    // Skeleton
     grid.innerHTML = '<div class="swiper-slide" style="height:250px; background:#111;"></div>';
     
     try {
@@ -182,13 +273,13 @@ async function loadTopSellers() {
 
         const autoplayDelay = 4000; 
 
-        // *** മാറ്റം: slidesPerView 1 ആക്കി ***
+        // *** For You Swiper Config ***
         new Swiper('.top-sellers-swiper-new', {
             loop: true,
             autoplay: { delay: autoplayDelay, disableOnInteraction: false },
             speed: 600,
             
-            // മൊബൈലിൽ ഒരെണ്ണം മാത്രം കാണിക്കുന്നു
+            // *** മാറ്റം: മൊബൈലിൽ കൃത്യം ഒരെണ്ണം മാത്രം കാണിക്കുന്നു ***
             slidesPerView: 1, 
             spaceBetween: 20, 
             centeredSlides: true,
@@ -210,7 +301,7 @@ async function loadTopSellers() {
                 }
             },
             breakpoints: { 
-                // വലിയ സ്ക്രീനുകളിൽ മാത്രം കൂടുതൽ എണ്ണം കാണിക്കുന്നു
+                // വലിയ സ്ക്രീനുകളിൽ മാത്രം കൂടുതൽ കാണിക്കും
                 640: { slidesPerView: 2, spaceBetween: 20 }, 
                 1024: { slidesPerView: 4, spaceBetween: 30 } 
             }
