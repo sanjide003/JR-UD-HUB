@@ -1,4 +1,4 @@
-// index.js - Optimized logic with Dot-to-Line Pagination
+// index.js - Fixed Video Autoplay & Single Product View
 
 import { db } from './firebase-config.js';
 import { 
@@ -15,7 +15,7 @@ import {
 import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
-setLogLevel('Silent'); // Reduce console noise
+setLogLevel('Silent');
 
 document.addEventListener("DOMContentLoaded", () => {
     loadSiteSettings();
@@ -38,7 +38,6 @@ async function loadHomeBanner() {
 
         if (docSnap.exists() && docSnap.data().homeBannerUrl) {
             const bannerUrl = docSnap.data().homeBannerUrl;
-            // Optimize image size to reduce data usage
             const optimizedUrl = optimizeImage(bannerUrl, 800, 80);
             bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Special Offer Banner" loading="lazy">`;
             bannerContainer.style.display = 'block';
@@ -52,7 +51,7 @@ async function loadHomeBanner() {
 }
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ (Performance Optimized)
+ * 1. ഹീറോ സ്ലൈഡർ (വീഡിയോ ഫിക്സ് ചെയ്തു)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -76,26 +75,47 @@ async function loadHeroSlider() {
                     const optimizedHeroImg = optimizeImage(slide.url, 800, 85);
                     content = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
                 } else if (slide.type === 'video') {
-                    // Video muted and playsinline for mobile performance
-                    content = `<video class="hero-video-element" src="${slide.url}" autoplay muted loop playsinline></video>`;
+                    // *** വീഡിയോ ഫിക്സ്: Playsinline, Muted നിർബന്ധമാണ് ***
+                    content = `
+                        <video class="hero-video-element" 
+                               autoplay 
+                               muted 
+                               loop 
+                               playsinline 
+                               preload="metadata"
+                               style="width: 100%; height: 100%; object-fit: cover;">
+                            <source src="${slide.url}" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>`;
                 }
                 slideEl.innerHTML = content;
                 sliderWrapper.appendChild(slideEl);
             });
         }
 
-        // Simple Swiper config (No Fade effect for performance)
+        // Swiper Config
         new Swiper('.hero-slider-new', {
             loop: true, 
             allowTouchMove: true,
-            speed: 600, // Faster transition
+            speed: 600,
             autoplay: {
-                delay: 5000,
+                delay: 6000, // വീഡിയോ കാണാൻ കുറച്ചു സമയം കൂടുതൽ നൽകുന്നു
                 disableOnInteraction: false,
             },
             pagination: {
                 el: '.hero-pagination-dots',
                 clickable: true,
+            },
+            // സ്ലൈഡ് മാറുമ്പോൾ വീഡിയോ പ്ലേ/പോസ് ചെയ്യുന്നു (പെർഫോമൻസിന് വേണ്ടി)
+            on: {
+                slideChangeTransitionEnd: function () {
+                    const activeSlide = this.slides[this.activeIndex];
+                    const video = activeSlide.querySelector('video');
+                    if (video) {
+                        video.currentTime = 0;
+                        video.play().catch(e => console.log("Auto-play prevented"));
+                    }
+                }
             }
         });
 
@@ -103,14 +123,14 @@ async function loadHeroSlider() {
 }
 
 /**
- * 2. "For You" (Top Sellers) - With Dot-to-Line Pagination
+ * 2. "For You" (Top Sellers) - Single View Fix
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
     
-    // Skeleton Loader (Simple)
-    grid.innerHTML = '<div class="swiper-slide" style="height:250px; background:#111;"></div><div class="swiper-slide" style="height:250px; background:#111;"></div>';
+    // Skeleton
+    grid.innerHTML = '<div class="swiper-slide" style="height:250px; background:#111;"></div>';
     
     try {
         const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
@@ -129,7 +149,6 @@ async function loadTopSellers() {
             const card = document.createElement('div');
             card.className = 'swiper-slide';
             
-            // Smaller image size for list view (400px width is enough)
             const imageUrl = optimizeImage(product.images?.[0] || '', 400, 75);
             
             const isInCart = isItemInCart(productId);
@@ -163,19 +182,21 @@ async function loadTopSellers() {
 
         const autoplayDelay = 4000; 
 
-        // Swiper with Custom Pagination Logic
+        // *** മാറ്റം: slidesPerView 1 ആക്കി ***
         new Swiper('.top-sellers-swiper-new', {
             loop: true,
             autoplay: { delay: autoplayDelay, disableOnInteraction: false },
             speed: 600,
-            slidesPerView: 2.2, // Show part of next slide
-            spaceBetween: 10,
-            centeredSlides: false,
+            
+            // മൊബൈലിൽ ഒരെണ്ണം മാത്രം കാണിക്കുന്നു
+            slidesPerView: 1, 
+            spaceBetween: 20, 
+            centeredSlides: true,
+            
             pagination: { 
                 el: '.top-sellers-pagination-new', 
                 clickable: true,
                 renderBullet: function (index, className) {
-                    // Bullet ഉള്ളിൽ progress bar ചേർക്കുന്നു
                     return `<span class="${className}"><span class="pagination-progress"></span></span>`;
                 }
             },
@@ -189,9 +210,9 @@ async function loadTopSellers() {
                 }
             },
             breakpoints: { 
-                320: { slidesPerView: 2.1, spaceBetween: 10 }, 
-                640: { slidesPerView: 3.2, spaceBetween: 15 }, 
-                1024: { slidesPerView: 5, spaceBetween: 20 } 
+                // വലിയ സ്ക്രീനുകളിൽ മാത്രം കൂടുതൽ എണ്ണം കാണിക്കുന്നു
+                640: { slidesPerView: 2, spaceBetween: 20 }, 
+                1024: { slidesPerView: 4, spaceBetween: 30 } 
             }
         });
         
@@ -203,16 +224,12 @@ async function loadTopSellers() {
 
 // *** Pagination Animation Logic ***
 function startProgressBar(swiper, delay) {
-    // ആക്ടീവ് ബുള്ളറ്റ് കണ്ടെത്തുന്നു
     const activeBullet = swiper.pagination.bullets[swiper.realIndex];
     if (activeBullet) {
         const progressEl = activeBullet.querySelector('.pagination-progress');
         if (progressEl) {
-            // ആനിമേഷൻ സെറ്റ് ചെയ്യുന്നു
             progressEl.style.transition = 'none';
             progressEl.style.width = '0%';
-            
-            // ചെറിയ ഡിലേയ്ക്ക് ശേഷം വീതി കൂട്ടുന്നു
             setTimeout(() => {
                 progressEl.style.transition = `width ${delay}ms linear`;
                 progressEl.style.width = '100%';
@@ -222,7 +239,6 @@ function startProgressBar(swiper, delay) {
 }
 
 function resetProgressBars(swiper) {
-    // എല്ലാ ബുള്ളറ്റുകളും റീസെറ്റ് ചെയ്യുന്നു
     if (!swiper.pagination.bullets) return;
     swiper.pagination.bullets.forEach(bullet => {
         const progressEl = bullet.querySelector('.pagination-progress');
@@ -234,7 +250,7 @@ function resetProgressBars(swiper) {
 }
 
 /**
- * 3. SHOP BY CATEGORY (Simple List)
+ * 3. SHOP BY CATEGORY
  */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
@@ -254,16 +270,12 @@ async function loadHomeCategories() {
             categories.push({ id: doc.id, ...doc.data() });
         });
 
-        // Random 3 categories
         categories = categories.sort(() => 0.5 - Math.random()).slice(0, 3);
-
         container.innerHTML = ''; 
 
         categories.forEach(category => {
             const item = document.createElement('div');
             item.className = 'category-card-portrait';
-            
-            // Image Optimization
             const imageUrl = optimizeImage(category.imageUrl || '', 600, 75);
             
             item.innerHTML = `
@@ -281,7 +293,7 @@ async function loadHomeCategories() {
     } catch (error) { console.error("Error loading home categories"); }
 }
 
-// Cart Click Handler (Delegate)
+// Cart Click Handler
 document.addEventListener('click', (e) => {
     const button = e.target.closest('.btn-add-to-cart');
     if (button) {
