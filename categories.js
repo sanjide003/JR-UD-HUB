@@ -1,4 +1,4 @@
-// categories.js - Fixed Flickering Issue
+// categories.js - Fix for Flickering & Compact Logic
 
 import {
     collection,
@@ -17,32 +17,26 @@ import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
 setLogLevel('Silent');
 
-// --- DOM Elements ---
 const productGrid = document.getElementById("category-product-grid");
 const categoryNavSection = document.getElementById("category-nav-section");
 const stickyHeader = document.getElementById("sticky-header-container");
 const productsScrollContainer = document.getElementById("products-scroll-container");
 const searchWrapper = document.getElementById("search-wrapper");
 const searchIconBtn = document.getElementById("search-icon-btn");
-
 const loader = document.getElementById("infinite-scroll-loader");
 const searchInput = document.getElementById("product-search-input"); 
 const clearSearchBtn = document.getElementById("clear-search-btn");
 const noResultsMsg = document.getElementById("no-results-message");
 const resetFiltersBtn = document.getElementById("reset-filters-btn");
-
-// Filter Elements
 const priceFilter = document.getElementById("price-range-filter");
 const sortFilter = document.getElementById("sort-by-filter");
 const discountChips = document.querySelectorAll(".discount-chip");
 
-// --- State ---
 let currentCategoryId = 'all'; 
 let allProductsCache = []; 
 let categoriesMap = new Map(); 
 let activeDiscount = null;
 
-// --- പേജ് ലോഡ് ആവുമ്പോൾ ---
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
     await loadCategoryList(); 
@@ -54,14 +48,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     await loadAllProductsCache();
-    
     setupEventListeners();
     setupScrollAnimation(); 
     updateActiveCategoryUI(currentCategoryId);
     applyFilters(); 
 });
 
-// --- SCROLL ANIMATION LOGIC (FLICKER FIX) ---
+// *** FLICKERING FIX LOGIC ***
 function setupScrollAnimation() {
     if (!productsScrollContainer) return;
 
@@ -70,26 +63,21 @@ function setupScrollAnimation() {
         const scrollHeight = productsScrollContainer.scrollHeight;
         const clientHeight = productsScrollContainer.clientHeight;
         
-        // *** FLICKER FIX ***
-        // സ്ക്രോൾ ചെയ്യാൻ ആവശ്യമായത്ര കണ്ടന്റ് ഉണ്ടെങ്കിൽ മാത്രമേ ഹെഡർ ചുരുങ്ങാവൂ.
-        // കണ്ടന്റ് കുറവാണെങ്കിൽ ഹെഡർ വലുതായി തന്നെ നിൽക്കും.
-        const scrollBuffer = 100; // മിനിമം സ്ക്രോൾ സ്പേസ്
+        // കണ്ടന്റ് കുറവാണെങ്കിൽ (സ്ക്രോൾ ചെയ്യാൻ സ്ഥലമില്ലെങ്കിൽ) ഹെഡർ ചുരുക്കരുത്
+        // 50px ബഫർ നൽകുന്നു
+        const isScrollable = (scrollHeight - clientHeight) > 50;
 
-        // സ്ക്രോൾ ചെയ്യാൻ സ്ഥലമുണ്ടോ എന്ന് പരിശോധിക്കുന്നു (scrollHeight - clientHeight)
-        const isScrollable = (scrollHeight - clientHeight) > scrollBuffer;
-
-        if (scrollTop > 30 && isScrollable) {
+        if (scrollTop > 20 && isScrollable) {
             stickyHeader.classList.add('compact');
         } else {
             stickyHeader.classList.remove('compact');
-            // സ്ക്രോൾ മുകളിലെത്തുമ്പോൾ സെർച്ച് ബാർ റീസെറ്റ് ചെയ്യുന്നു
-            if (scrollTop <= 30) {
+            // Reset Search if expanded
+            if (scrollTop <= 20) {
                 searchWrapper.classList.remove('expanded');
             }
         }
     });
 
-    // Compact Mode-ൽ സെർച്ച് ഐക്കണിൽ ക്ലിക്ക് ചെയ്താൽ വലുതാകാൻ
     if (searchIconBtn) {
         searchIconBtn.addEventListener('click', () => {
             if (stickyHeader.classList.contains('compact')) {
@@ -102,7 +90,6 @@ function setupScrollAnimation() {
     }
 }
 
-// --- Data Loading ---
 async function loadCategoryList() {
     if (!categoryNavSection) return;
     try {
@@ -154,7 +141,6 @@ async function loadAllProductsCache() {
             if (data.mrp && data.mrp > data.price) {
                 discountPercent = Math.round(((data.mrp - data.price) / data.mrp) * 100);
             }
-            
             allProductsCache.push({
                 id: doc.id,
                 ...data,
@@ -171,13 +157,11 @@ function setupEventListeners() {
         clearSearchBtn.style.display = e.target.value.length > 0 ? 'block' : 'none';
         applyFilters();
     });
-
     clearSearchBtn.addEventListener('click', () => {
         searchInput.value = '';
         clearSearchBtn.style.display = 'none';
         applyFilters();
     });
-
     priceFilter.addEventListener('change', applyFilters);
     sortFilter.addEventListener('change', applyFilters);
 
@@ -211,16 +195,11 @@ function addNavClickListeners(navElement) {
         if (categoryId !== currentCategoryId) {
             currentCategoryId = categoryId;
             updateActiveCategoryUI(categoryId);
-            
-            // URL Update
             const url = new URL(window.location);
             if (categoryId === 'all') url.searchParams.delete('filter');
             else url.searchParams.set('filter', categoryId);
             window.history.pushState({}, '', url);
-            
             applyFilters();
-            
-            // കാറ്റഗറി മാറ്റുമ്പോൾ സ്ക്രോൾ മുകളിലേക്ക്
             productsScrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
         }
     });
@@ -251,7 +230,6 @@ function resetAllFilters() {
 function applyFilters() {
     if (!productGrid) return;
     productGrid.innerHTML = '';
-    
     let filtered = [...allProductsCache];
 
     if (currentCategoryId !== 'all') {
@@ -300,20 +278,16 @@ function applyFilters() {
 function renderProductCard(product, productId) {
     const card = document.createElement('div');
     card.className = 'category-product-card';
-
     const price = product.price || 0;
     const mrp = product.mrp || 0;
-    
     const rawImage = product.images && product.images[0] ? product.images[0] : '';
     const imageUrl = optimizeImage(rawImage, 400, 80);
-
     let priceHTML = `<span class="price-main">₹${price}</span>`;
     if (mrp > price) {
         priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
     }
-
     const isInCart = isItemInCart(productId);
-    const buttonText = isInCart ? "REMOVE" : "CART";
+    const buttonText = isInCart ? "Remove" : "Cart";
     const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
     card.innerHTML = `
@@ -322,9 +296,7 @@ function renderProductCard(product, productId) {
         </a>
         <div class="cat-product-content">
             <h3 class="cat-product-title">${product.name}</h3>
-            <div class="price-container">
-                ${priceHTML}
-            </div>
+            <div class="price-container">${priceHTML}</div>
             <div class="cat-product-buttons">
                 <button class="btn ${buttonClass} btn-add-to-cart"
                     data-id="${productId}"
@@ -333,48 +305,34 @@ function renderProductCard(product, productId) {
                     data-mrp="${mrp}"
                     data-image="${imageUrl}"
                     data-size="${product.size || ''}">
-                    <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <path d="M16 10a4 4 0 0 1-8 0"></path>
-                    </svg>
+                    <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                     <span>${buttonText}</span>
                 </button>
-                <a href="product.html?id=${productId}" class="btn btn-primary-new">
-                    <span>VIEW</span>
-                </a>
+                <a href="product.html?id=${productId}" class="btn btn-primary-new"><span>View</span></a>
             </div>
         </div>
     `;
     productGrid.appendChild(card);
 }
 
-productGrid.addEventListener('click', (e) => {
-    const cartButton = e.target.closest('.btn-add-to-cart');
-    if (cartButton) {
+document.addEventListener('click', (e) => {
+    const button = e.target.closest('.btn-add-to-cart');
+    if (button) {
         e.preventDefault();
-        const id = cartButton.dataset.id;
-        const buttonText = cartButton.querySelector('span');
-        
-        if (cartButton.classList.contains('added-to-cart')) {
+        const id = button.dataset.id;
+        const buttonText = button.querySelector('span');
+        if (button.classList.contains('added-to-cart')) {
             removeFromCart(id);
-            cartButton.classList.remove('added-to-cart');
-            if (buttonText) buttonText.textContent = 'CART';
+            button.classList.remove('added-to-cart');
+            if (buttonText) buttonText.textContent = 'Cart';
         } else {
             const product = allProductsCache.find(p => p.id === id); 
             if (product) {
-                const cartProduct = {
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    mrp: product.mrp,
-                    image: product.images && product.images[0] ? product.images[0] : '',
-                    size: product.size || ''
-                };
+                const cartProduct = { id: product.id, name: product.name, price: product.price, mrp: product.mrp, image: product.images && product.images[0] ? product.images[0] : '', size: product.size || '' };
                 addToCart(id, cartProduct);
-                cartButton.classList.add('added-to-cart');
-                if (buttonText) buttonText.textContent = 'REMOVE';
+                button.classList.add('added-to-cart');
+                if (buttonText) buttonText.textContent = 'Remove';
             }
         }
-    } 
+    }
 });
