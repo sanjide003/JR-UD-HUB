@@ -1,4 +1,4 @@
-/* home.css - Performance Optimized & Simple Design */
+/* home.css - Compact Overlay Design for "For You" */
 
 /* === 1. ഹോം പേജ് ടോപ്പ് ബാനർ === */
 .home-top-banner {
@@ -8,10 +8,6 @@
     background-color: #000;
     overflow: hidden;
     margin-bottom: 0;
-}
-
-/* ഗോൾഡ് ബോർഡർ ആനിമേഷൻ ഒഴിവാക്കി, ലളിതമായ ബോർഡർ നൽകുന്നു */
-.home-top-banner {
     border-bottom: 2px solid var(--primary-gold);
 }
 
@@ -21,7 +17,6 @@
     display: block;
     max-height: 120px;
     object-fit: cover;
-    /* ഫേഡ് ആനിമേഷൻ ഒഴിവാക്കി */
 }
 
 /* === 2. ഹീറോ സ്ലൈഡർ === */
@@ -49,7 +44,6 @@
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* സൂം ആനിമേഷൻ ഒഴിവാക്കി */
 }
 
 .hero-slider-new .swiper-slide iframe {
@@ -59,24 +53,15 @@
     pointer-events: none;
 }
 
-/* ലളിതമായ ഗ്രേഡിയന്റ് ഓവർലേ (ആനിമേഷൻ ഇല്ലാതെ) */
+/* Gradient Overlay for Text readability */
 .hero-slider-new .swiper-slide::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-        180deg,
-        rgba(0, 0, 0, 0.3) 0%,
-        rgba(0, 0, 0, 0.1) 50%,
-        rgba(0, 0, 0, 0.6) 100%
-    );
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.6) 100%);
     z-index: 1;
 }
 
-/* Hero Pagination Dots */
 .hero-slider-new .hero-pagination-dots {
     bottom: 20px;
 }
@@ -95,7 +80,7 @@
     border-radius: 4px;
 }
 
-/* === 3. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ === */
+/* === 3. ഹീറോ ടെക്സ്റ്റ് === */
 .hero-text-section {
     text-align: center;
     padding: 2rem 1.5rem;
@@ -104,121 +89,114 @@
     line-height: 1.6;
     max-width: 900px;
     margin: 0 auto;
-    /* ആനിമേഷൻ ഒഴിവാക്കി */
 }
 
-/* === 4. For You (Top Sellers) === */
+/* === 4. For You (Top Sellers) - COMPACT OVERLAY STYLE === */
 .home-section {
     margin-bottom: 3rem;
     position: relative;
-    /* സ്ക്രോൾ റിവീൽ ലളിതമാക്കി */
-    opacity: 1; 
 }
 
-/* ടൈറ്റിൽ സ്റ്റൈൽ - ലൈൻ ഒഴിവാക്കി */
 .section-title-new {
     text-align: center;
     font-size: 1.8rem;
     font-weight: 700;
     color: var(--primary-gold);
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    position: relative;
-    display: block;
 }
 
-/* ആനിമേറ്റഡ് ലൈൻ ഒഴിവാക്കി */
-.section-title-new::before,
-.section-title-new::after {
-    display: none;
-}
-
-/* പ്രൊഡക്റ്റ് കാർഡ് - 3D എഫക്റ്റ് ഒഴിവാക്കി */
 .top-sellers-swiper-new {
-    padding: 0 10px;
+    padding: 0 15px; /* Side padding */
 }
 
+/* Card Container */
 .top-sellers-swiper-new .swiper-slide {
-    text-align: center;
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
+    position: relative; /* For absolute positioning of info */
+    border-radius: 16px;
     overflow: hidden;
-    background-color: var(--card-bg); /* സോളിഡ് കളർ */
-    transition: transform 0.3s ease; /* ലളിതമായ ഹോവർ */
+    aspect-ratio: 4 / 5; /* Fixed aspect ratio */
+    border: 1px solid var(--border-color);
+    background-color: #000;
 }
 
-.top-sellers-swiper-new .swiper-slide:hover {
-    border-color: var(--primary-gold);
-    transform: translateY(-5px); /* ചെറുതായി പൊങ്ങുന്നു */
-}
-
-/* ഷൈൻ എഫക്റ്റ് ഒഴിവാക്കി */
-.top-sellers-swiper-new .swiper-slide::before {
-    display: none;
-}
-
+/* Image takes full height */
 .top-sellers-product-image {
     width: 100%;
-    aspect-ratio: 4 / 5;
+    height: 100%;
     object-fit: cover;
-    margin-bottom: 0;
-    /* ഇമേജ് സൂം ഒഴിവാക്കി */
+    display: block;
+    transition: transform 0.5s ease;
 }
 
+/* Info Overlay (Name, Price, Buttons) on top of Image */
 .top-sellers-product-info {
-    padding: 1rem;
-    background-color: var(--card-bg);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 10px 10px 10px; /* Top padding for gradient fade */
+    background: linear-gradient(
+        to top,
+        rgba(0, 0, 0, 0.95) 0%,
+        rgba(0, 0, 0, 0.8) 50%,
+        rgba(0, 0, 0, 0.6) 80%,
+        transparent 100%
+    );
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    z-index: 2;
 }
 
 .top-sellers-product-name {
     font-size: 0.95rem;
-    color: var(--text-color);
+    color: #fff;
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    margin-bottom: 4px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
 
 .top-sellers-product-price {
     font-size: 1.1rem;
     color: var(--primary-gold);
-    margin-bottom: 0.8rem;
+    margin-bottom: 8px;
     font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
 
-/* ലളിതമായ ബട്ടണുകൾ */
+/* Buttons inside Overlay */
 .top-sellers-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
+    gap: 8px;
 }
 
 .top-sellers-buttons .btn {
-    padding: 0.6rem 0.4rem;
-    font-size: 0.85rem;
+    padding: 8px 4px;
+    font-size: 0.75rem;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 4px;
     border-radius: 6px;
     text-decoration: none;
-    font-weight: 600;
+    font-weight: 700;
     text-transform: uppercase;
+    height: 32px;
 }
 
-/* Cart Button */
+/* Cart Button (Transparent/Glassy) */
 .top-sellers-buttons .btn-add-to-cart {
-    background-color: #222;
+    background-color: rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(4px);
     color: #fff;
-    border: 1px solid #444;
+    border: 1px solid rgba(255, 255, 255, 0.4);
     cursor: pointer;
-}
-
-.top-sellers-buttons .btn-add-to-cart svg {
-    width: 16px;
-    height: 16px;
 }
 
 .top-sellers-buttons .btn-add-to-cart.added-to-cart {
@@ -227,14 +205,19 @@
     border-color: var(--primary-gold);
 }
 
-/* View Button */
+.top-sellers-buttons .btn-add-to-cart svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* View Button (Gold) */
 .top-sellers-buttons a.btn {
     background-color: var(--primary-gold);
     color: #000;
     border: 1px solid var(--primary-gold);
 }
 
-/* --- പുതിയ Pagination Design (Dot to Line) --- */
+/* Pagination (Dot to Line) */
 .top-sellers-pagination-new {
     position: relative;
     margin-top: 1.5rem;
@@ -248,22 +231,20 @@
 .top-sellers-pagination-new .swiper-pagination-bullet {
     width: 8px;
     height: 8px;
-    border-radius: 4px; /* റൗണ്ട് ഡോട്ട് */
+    border-radius: 4px;
     background-color: #444;
     opacity: 1;
     margin: 0 !important;
-    transition: width 0.3s ease; /* സ്മൂത്ത് മാറ്റം */
+    transition: width 0.3s ease;
     position: relative;
     overflow: hidden;
 }
 
-/* ആക്ടീവ് ആകുമ്പോൾ ലൈൻ ആകുന്നു */
 .top-sellers-pagination-new .swiper-pagination-bullet-active {
-    width: 30px; /* നീളം കൂടുന്നു */
-    background-color: #444; /* ബാക്ക്ഗ്രൗണ്ട് */
+    width: 30px;
+    background-color: #444;
 }
 
-/* ഉള്ളിലെ ഫില്ലിംഗ് ആനിമേഷൻ */
 .top-sellers-pagination-new .swiper-pagination-bullet-active .pagination-progress {
     display: block;
     height: 100%;
@@ -272,7 +253,6 @@
     border-radius: 4px;
 }
 
-/* ആനിമേഷൻ കീഫ്രെയിം - JS വഴി സെറ്റ് ചെയ്യും */
 @keyframes progress-fill {
     from { width: 0%; }
     to { width: 100%; }
@@ -290,31 +270,23 @@
 .category-card-portrait {
     position: relative;
     width: 100%;
-    aspect-ratio: 3 / 4; /* Portrait ratio */
+    aspect-ratio: 3 / 4;
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid var(--border-color);
     text-decoration: none;
-    /* 3D എഫക്റ്റ് ഒഴിവാക്കി */
 }
 
 .category-card-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    /* സൂം ആനിമേഷൻ ഒഴിവാക്കി */
 }
 
 .category-card-overlay {
     position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    background: linear-gradient(to top,
-        rgba(0, 0, 0, 0.9) 0%,
-        rgba(0, 0, 0, 0.6) 60%,
-        transparent 100%
-    );
+    bottom: 0; left: 0; width: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
     padding: 1.5rem 1rem;
     display: flex;
     flex-direction: column;
@@ -329,7 +301,6 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 10px;
-    text-align: center;
 }
 
 .category-card-btn {
@@ -349,19 +320,10 @@
         justify-content: center;
         flex-wrap: wrap;
     }
-    .category-card-portrait {
-        width: 300px; /* ഡെസ്ക്ടോപ്പിൽ ഫിക്സഡ് വിഡ്ത്ത് */
-    }
-    .hero-section-new {
-        height: 85vh;
-    }
+    .category-card-portrait { width: 300px; }
+    .hero-section-new { height: 85vh; }
 }
 @media (max-width: 768px) {
-    .hero-section-new {
-        height: 60vh;
-    }
-    .section-title-new {
-        font-size: 1.4rem;
-        margin-bottom: 1.5rem;
-    }
+    .hero-section-new { height: 60vh; }
+    .section-title-new { font-size: 1.4rem; margin-bottom: 1rem; }
 }
