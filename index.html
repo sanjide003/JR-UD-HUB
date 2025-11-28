@@ -6,75 +6,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JR-UD-HUB - by dsd</title>
+    <title>JR-UD-HUB</title> <!-- Title Corrected -->
     
     <link rel="stylesheet" href="public.css">
-    <link rel="stylesheet" href="home.css"> <!-- *** പുതിയ ഫയൽ ഇവിടെ ചേർത്തു *** -->
+    <link rel="stylesheet" href="home.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body>
 
     <!-- 0. പേജ് ലോഡർ -->
     <div id="preloader">
-        <div class="loader-logo-container">
-            <!-- ലോഗോയും സ്പിന്നറും common.js & public.css വഴി വരും -->
-            <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
-            <div class="loader-ring"></div>
-        </div>
+        <div class="loader-ring"></div>
     </div>
 
     <!-- 1. ഹെഡർ -->
     <header class="main-header" id="main-header"></header>
     
-    <!-- 2. സൈഡ് മെനു -->
-    <nav class="side-nav" id="side-nav"></nav>
-    <div class="nav-overlay" id="nav-overlay"></div>
-
     <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main>
         
-        <!-- *** പുതിയത്: ഹോം പേജ് ടോപ്പ് ബാനർ *** -->
-        <section id="home-top-banner" class="home-top-banner" style="display: none;">
-            <!-- 'index.js' വഴി ഇമേജ് ഇവിടെ വരും -->
-        </section>
-        <!-- *** മാറ്റം കഴിഞ്ഞു *** -->
+        <!-- ഹോം പേജ് ടോപ്പ് ബാനർ -->
+        <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
 
-        <!-- 3.1. ഹീറോ സ്ലൈഡർ (പോർട്രെയ്റ്റ്) -->
+        <!-- 3.1. ഹീറോ സ്ലൈഡർ -->
         <section class="hero-section-new">
             <div class="swiper hero-slider-new" id="hero-slider-container">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <!-- 'index.js' ഉപയോഗിച്ച് സ്ലൈഡുകൾ (വീഡിയോ/ഫോട്ടോ) ഇവിടെ വരും -->
+                    <!-- സ്ലൈഡുകൾ -->
                 </div>
-                <!-- ഡോട്ടുകൾ (Pagination) -->
+                <!-- ഡോട്ടുകൾ -->
                 <div class="swiper-pagination hero-pagination-dots"></div>
             </div>
-            
         </section>
 
         <!-- 3.2. ഹീറോ ടെക്സ്റ്റ് -->
         <section class="hero-text-section container">
-            <p>We believe that a perfumer is a poet or a storyteller who use intangible ingredients to create emotions. The main idea behind Oud Arabia is to Abstract memories that evoke our cores. We paint pictures without using paint. We are storytellers who do need words.</p>
+            <p>We believe that a perfumer is a poet or a storyteller who use intangible ingredients to create emotions. The main idea behind Oud Arabia is to Abstract memories that evoke our cores.</p>
         </section>
 
-        <!-- 3.3. For You (ടോപ്പ് സെല്ലേഴ്സ്) -->
+        <!-- 3.3. For You (Top Sellers) -->
         <section class="home-section container">
-            <!-- *** "TOP SELLERS" എന്നത് "For You" എന്നാക്കി മാറ്റി *** -->
+            <!-- ലൈൻ ഇല്ലാതെ വെറും ടെക്സ്റ്റ് -->
             <h2 class="section-title-new">For You</h2>
             <div class="swiper top-sellers-swiper-new">
                 <div class="swiper-wrapper" id="top-sellers-grid">
-                    <!-- 'index.js' ഉപയോഗിച്ച് ഉൽപ്പന്നങ്ങൾ ഇവിടെ വരും -->
+                    <!-- ഉൽപ്പന്നങ്ങൾ -->
                 </div>
             </div>
-            <!-- ആനിമേറ്റഡ് ഡോട്ടുകൾ -->
-            <div class="top-sellers-pagination-new swiper-pagination-custom"></div>
+            <!-- Dot-to-Line Pagination -->
+            <div class="top-sellers-pagination-new"></div>
         </section>
 
-        <!-- 3.4. ഷോപ്പ് ബൈ കാറ്റഗറി (വെർട്ടിക്കൽ ലിസ്റ്റ്) -->
+        <!-- 3.4. ഷോപ്പ് ബൈ കാറ്റഗറി -->
         <section class="home-section container">
             <h2 class="section-title-new">SHOP BY CATEGORY</h2>
-            <!-- *** സ്ലൈഡർ ക്ലാസ്സുകൾ നീക്കം ചെയ്തു, പുതിയ ക്ലാസ്സ് ചേർത്തു *** -->
             <div id="category-grid-home" class="category-grid-vertical">
-                <!-- 'index.js' ഉപയോഗിച്ച് കാറ്റഗറികൾ (ലിസ്റ്റ് ആയി) ഇവിടെ വരും -->
+                <!-- കാറ്റഗറികൾ -->
             </div>
         </section>
         
