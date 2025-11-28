@@ -1,4 +1,4 @@
-/* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും. - Reverted to Original */
+/* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും. */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ & ഫോണ്ടുകൾ --- */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -21,7 +21,7 @@
     --bottom-nav-height: 65px;
 }
 
-/* --- 0. പേജ് ലോഡർ (Logo Animation Included) --- */
+/* --- 0. പേജ് ലോഡർ --- */
 #preloader {
     position: fixed;
     top: 0;
