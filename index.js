@@ -1,4 +1,5 @@
-// index.js - Performance Optimized
+// index.js - Optimized logic with Dot-to-Line Pagination
+
 import { db } from './firebase-config.js';
 import { 
     collection, 
@@ -14,7 +15,7 @@ import {
 import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
-setLogLevel('Silent'); // ലോഗുകൾ കുറച്ചു
+setLogLevel('Silent'); // Reduce console noise
 
 document.addEventListener("DOMContentLoaded", () => {
     loadSiteSettings();
@@ -37,7 +38,8 @@ async function loadHomeBanner() {
 
         if (docSnap.exists() && docSnap.data().homeBannerUrl) {
             const bannerUrl = docSnap.data().homeBannerUrl;
-            const optimizedUrl = optimizeImage(bannerUrl, 1000, 80); // Quality 80
+            // Optimize image size to reduce data usage
+            const optimizedUrl = optimizeImage(bannerUrl, 800, 80);
             bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Special Offer Banner" loading="lazy">`;
             bannerContainer.style.display = 'block';
         } else {
@@ -50,7 +52,7 @@ async function loadHomeBanner() {
 }
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ
+ * 1. ഹീറോ സ്ലൈഡർ (Performance Optimized)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -69,22 +71,24 @@ async function loadHeroSlider() {
                 const slideEl = document.createElement('div');
                 slideEl.className = 'swiper-slide';
 
+                let content = '';
                 if (slide.type === 'image') {
-                    const optimizedHeroImg = optimizeImage(slide.url, 800, 80);
-                    slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
+                    const optimizedHeroImg = optimizeImage(slide.url, 800, 85);
+                    content = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
                 } else if (slide.type === 'video') {
-                    // വീഡിയോകൾക്ക് Poster ഇമേജ് നൽകുന്നത് നല്ലതാണ് (Optional Optimization)
-                    slideEl.innerHTML = `<video class="hero-video-element" src="${slide.url}" autoplay muted loop playsinline preload="metadata"></video>`;
+                    // Video muted and playsinline for mobile performance
+                    content = `<video class="hero-video-element" src="${slide.url}" autoplay muted loop playsinline></video>`;
                 }
-                
+                slideEl.innerHTML = content;
                 sliderWrapper.appendChild(slideEl);
             });
         }
 
+        // Simple Swiper config (No Fade effect for performance)
         new Swiper('.hero-slider-new', {
             loop: true, 
-            effect: 'slide', // Fade-ന് പകരം Slide ആക്കി (Performance Better)
-            speed: 600,
+            allowTouchMove: true,
+            speed: 600, // Faster transition
             autoplay: {
                 delay: 5000,
                 disableOnInteraction: false,
@@ -95,27 +99,25 @@ async function loadHeroSlider() {
             }
         });
 
-    } catch (error) { 
-        console.error("Error loading hero slider"); 
-    }
+    } catch (error) { console.error("Error loading hero slider"); }
 }
 
 /**
- * 2. "For You" (Top Sellers)
+ * 2. "For You" (Top Sellers) - With Dot-to-Line Pagination
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
     
-    // ലളിതമായ ലോഡിംഗ് ടെക്സ്റ്റ്
-    grid.innerHTML = '<div class="swiper-slide" style="width:100%; text-align:center;">Loading...</div>';
+    // Skeleton Loader (Simple)
+    grid.innerHTML = '<div class="swiper-slide" style="height:250px; background:#111;"></div><div class="swiper-slide" style="height:250px; background:#111;"></div>';
     
     try {
         const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
         const querySnapshot = await getDocs(q);
         
         if (querySnapshot.empty) {
-            grid.innerHTML = '<p>No featured products found.</p>'; 
+            grid.innerHTML = '<p style="text-align:center; padding:20px;">No featured products.</p>'; 
             return;
         }
         
@@ -127,56 +129,69 @@ async function loadTopSellers() {
             const card = document.createElement('div');
             card.className = 'swiper-slide';
             
-            const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
-            const imageUrl = optimizeImage(rawImage, 300, 75); // സൈസ് കുറച്ചു
+            // Smaller image size for list view (400px width is enough)
+            const imageUrl = optimizeImage(product.images?.[0] || '', 400, 75);
             
             const isInCart = isItemInCart(productId);
             const buttonText = isInCart ? "Remove" : "Cart";
-            const buttonClass = isInCart ? "btn added-to-cart" : "btn"; 
+            const buttonClass = isInCart ? "btn-add-to-cart added-to-cart" : "btn-add-to-cart"; 
             
             card.innerHTML = `
                 <a href="product.html?id=${productId}">
-                    <img src="${imageUrl}" 
-                         alt="${product.name}" 
-                         class="top-sellers-product-image"
-                         loading="lazy">
+                    <img src="${imageUrl}" alt="${product.name}" class="top-sellers-product-image" loading="lazy">
                 </a>
                 <div class="top-sellers-product-info">
                     <div class="top-sellers-product-name">${product.name}</div>
                     <div class="top-sellers-product-price">₹${product.price || 0}</div>
                     <div class="top-sellers-buttons">
-                        <button class="${buttonClass} btn-add-to-cart"
+                        <button class="btn ${buttonClass}"
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${product.price}"
                             data-mrp="${product.mrp}"
                             data-image="${imageUrl}"
                             data-size="${product.size || ''}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                             <span>${buttonText}</span>
                         </button>
-                        <a href="product.html?id=${productId}" class="btn">
-                            <span>View</span>
-                        </a>
+                        <a href="product.html?id=${productId}" class="btn">View</a>
                     </div>
                 </div>
             `;
             grid.appendChild(card);
         });
 
-        // Initialize Swiper without complex animations
+        const autoplayDelay = 4000; 
+
+        // Swiper with Custom Pagination Logic
         new Swiper('.top-sellers-swiper-new', {
-            loop: false,
-            speed: 500,
-            slidesPerView: 2, 
+            loop: true,
+            autoplay: { delay: autoplayDelay, disableOnInteraction: false },
+            speed: 600,
+            slidesPerView: 2.2, // Show part of next slide
             spaceBetween: 10,
+            centeredSlides: false,
             pagination: { 
                 el: '.top-sellers-pagination-new', 
                 clickable: true,
+                renderBullet: function (index, className) {
+                    // Bullet ഉള്ളിൽ progress bar ചേർക്കുന്നു
+                    return `<span class="${className}"><span class="pagination-progress"></span></span>`;
+                }
+            },
+            on: {
+                init: function (swiper) { 
+                    startProgressBar(swiper, autoplayDelay); 
+                },
+                slideChangeTransitionStart: function (swiper) {
+                    resetProgressBars(swiper);
+                    startProgressBar(swiper, autoplayDelay);
+                }
             },
             breakpoints: { 
-                640: { slidesPerView: 3, spaceBetween: 15 }, 
-                900: { slidesPerView: 4, spaceBetween: 20 }, 
-                1200: { slidesPerView: 5, spaceBetween: 20 } 
+                320: { slidesPerView: 2.1, spaceBetween: 10 }, 
+                640: { slidesPerView: 3.2, spaceBetween: 15 }, 
+                1024: { slidesPerView: 5, spaceBetween: 20 } 
             }
         });
         
@@ -186,8 +201,40 @@ async function loadTopSellers() {
     }
 }
 
+// *** Pagination Animation Logic ***
+function startProgressBar(swiper, delay) {
+    // ആക്ടീവ് ബുള്ളറ്റ് കണ്ടെത്തുന്നു
+    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+    if (activeBullet) {
+        const progressEl = activeBullet.querySelector('.pagination-progress');
+        if (progressEl) {
+            // ആനിമേഷൻ സെറ്റ് ചെയ്യുന്നു
+            progressEl.style.transition = 'none';
+            progressEl.style.width = '0%';
+            
+            // ചെറിയ ഡിലേയ്ക്ക് ശേഷം വീതി കൂട്ടുന്നു
+            setTimeout(() => {
+                progressEl.style.transition = `width ${delay}ms linear`;
+                progressEl.style.width = '100%';
+            }, 50);
+        }
+    }
+}
+
+function resetProgressBars(swiper) {
+    // എല്ലാ ബുള്ളറ്റുകളും റീസെറ്റ് ചെയ്യുന്നു
+    if (!swiper.pagination.bullets) return;
+    swiper.pagination.bullets.forEach(bullet => {
+        const progressEl = bullet.querySelector('.pagination-progress');
+        if (progressEl) {
+            progressEl.style.transition = 'none';
+            progressEl.style.width = '0%';
+        }
+    });
+}
+
 /**
- * 3. SHOP BY CATEGORY - Random 3 Categories
+ * 3. SHOP BY CATEGORY (Simple List)
  */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
@@ -198,26 +245,26 @@ async function loadHomeCategories() {
         const catSnapshot = await getDocs(catQuery); 
 
         if (catSnapshot.empty) {
-            container.innerHTML = '<p>No categories found.</p>'; 
+            container.innerHTML = ''; 
             return;
         }
 
         let categories = [];
         catSnapshot.forEach((doc) => {
-            categories.push({
-                id: doc.id,
-                ...doc.data()
-            });
+            categories.push({ id: doc.id, ...doc.data() });
         });
 
-        categories = shuffleArray(categories).slice(0, 3);
+        // Random 3 categories
+        categories = categories.sort(() => 0.5 - Math.random()).slice(0, 3);
+
         container.innerHTML = ''; 
 
         categories.forEach(category => {
             const item = document.createElement('div');
             item.className = 'category-card-portrait';
             
-            const imageUrl = optimizeImage(category.imageUrl || '', 400, 80);
+            // Image Optimization
+            const imageUrl = optimizeImage(category.imageUrl || '', 600, 75);
             
             item.innerHTML = `
                 <a href="categories.html?filter=${category.id}" style="display:block; width:100%; height:100%;">
@@ -231,28 +278,14 @@ async function loadHomeCategories() {
             container.appendChild(item);
         });
 
-    } catch (error) { 
-        console.error("Error loading home categories"); 
-        container.innerHTML = '<p>Error loading categories.</p>';
-    }
+    } catch (error) { console.error("Error loading home categories"); }
 }
 
-function shuffleArray(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-}
-
-// Cart Interaction Setup
-const topSellersGrid = document.getElementById("top-sellers-grid");
-if (topSellersGrid) {
-    topSellersGrid.addEventListener('click', (e) => {
-        const button = e.target.closest('.btn-add-to-cart');
-        if (!button) return;
-        e.preventDefault(); 
-        
+// Cart Click Handler (Delegate)
+document.addEventListener('click', (e) => {
+    const button = e.target.closest('.btn-add-to-cart');
+    if (button) {
+        e.preventDefault();
         const id = button.dataset.id;
         const buttonText = button.querySelector('span');
 
@@ -272,25 +305,6 @@ if (topSellersGrid) {
             addToCart(id, product);
             button.classList.add('added-to-cart');
             if (buttonText) buttonText.textContent = 'Remove';
-            showToast('Added to cart');
         }
-    });
-}
-
-function showToast(message) {
-    // ലളിതമായ ടോസ്റ്റ് നോട്ടിഫിക്കേഷൻ
-    let toast = document.getElementById('simple-toast');
-    if (!toast) {
-        toast = document.createElement('div');
-        toast.id = 'simple-toast';
-        toast.style.cssText = `
-            position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%);
-            background: #333; color: #fff; padding: 10px 20px;
-            border-radius: 5px; z-index: 2000; font-size: 0.9rem;
-        `;
-        document.body.appendChild(toast);
     }
-    toast.textContent = message;
-    toast.style.display = 'block';
-    setTimeout(() => { toast.style.display = 'none'; }, 2000);
-}
+});
