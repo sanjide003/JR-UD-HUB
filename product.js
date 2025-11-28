@@ -1,4 +1,5 @@
-// product.js
+// ഇതാണ് 'product.js' ഫയൽ.
+// മാറ്റം: 'Buy on WhatsApp' ക്ലിക്ക് ചെയ്യുമ്പോൾ കാർട്ട് പേജിലെ അതേ ഫോർമാറ്റിൽ മെസ്സേജ് അയക്കുന്നു.
 
 import { 
     collection, 
@@ -7,7 +8,7 @@ import {
     getDoc, 
     query, 
     where, 
-    limit, 
+    limit,
     setDoc,
     deleteDoc,
     onSnapshot,

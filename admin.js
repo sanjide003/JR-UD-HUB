@@ -1,4 +1,5 @@
-// admin.js - Google Drive Logic Removed
+// ഇതാണ് പുതിയ 'admin.js' ഫയൽ.
+// മാറ്റം: Dealer & ChatBot നമ്പറുകൾ സേവ് ചെയ്യുന്ന ലോജിക് ചേർത്തു.
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 

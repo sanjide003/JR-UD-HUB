@@ -1,5 +1,5 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
-// മാറ്റം: സ്ക്രോൾ ഇവന്റിന് പകരം IntersectionObserver ഉപയോഗിച്ചു.
+// മാറ്റം: സ്ക്രോൾ ആനിമേഷൻ കൂടുതൽ സ്മൂത്ത് ആക്കി.
 
 import {
     collection,
@@ -57,58 +57,37 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadAllProductsCache();
     
     setupEventListeners();
-    setupScrollAnimation(); // IntersectionObserver Setup
+    setupScrollAnimation(); 
     updateActiveCategoryUI(currentCategoryId);
     applyFilters(); 
 });
 
-// --- SCROLL ANIMATION (OPTIMIZED - IntersectionObserver) ---
+// --- SCROLL ANIMATION LOGIC (IMPROVED) ---
 function setupScrollAnimation() {
-    if (!productsScrollContainer || !stickyHeader) return;
+    if (!productsScrollContainer) return;
 
-    // 1. Create a sentinel element (a pixel line at the top)
-    const sentinel = document.createElement('div');
-    sentinel.id = 'scroll-sentinel';
-    sentinel.style.height = '1px';
-    sentinel.style.width = '100%';
-    sentinel.style.marginBottom = '-1px'; // Avoid adding height
-    sentinel.style.pointerEvents = 'none';
-    sentinel.style.opacity = '0';
-    
-    // Insert before the product grid inside the scrolling container
-    productsScrollContainer.prepend(sentinel);
-
-    // 2. Setup Observer
-    const observer = new IntersectionObserver((entries) => {
-        const entry = entries[0];
+    productsScrollContainer.addEventListener('scroll', () => {
+        const scrollTop = productsScrollContainer.scrollTop;
         
-        // If sentinel is NOT visible (scrolled down), enable compact mode
-        if (!entry.isIntersecting) {
+        // 30px താഴേക്ക് സ്ക്രോൾ ചെയ്താൽ ഉടൻ Compact Mode ആക്കുക
+        if (scrollTop > 30) {
             stickyHeader.classList.add('compact');
         } else {
-            // Sentinel is visible (at top), disable compact mode
             stickyHeader.classList.remove('compact');
+            // സ്ക്രോൾ തിരിച്ചു മുകളിലെത്തുമ്പോൾ സെർച്ച് ബാർ റീസെറ്റ് ചെയ്യുക
             searchWrapper.classList.remove('expanded');
         }
-    }, {
-        root: productsScrollContainer, // Observe relative to the scroll container
-        threshold: 0,
-        rootMargin: '40px 0px 0px 0px' // Adjust trigger point slightly
     });
 
-    observer.observe(sentinel);
-
-    // Search Icon Click (in Compact Mode)
-    if (searchIconBtn) {
-        searchIconBtn.addEventListener('click', () => {
-            if (stickyHeader.classList.contains('compact')) {
-                searchWrapper.classList.toggle('expanded');
-                if (searchWrapper.classList.contains('expanded')) {
-                    searchInput.focus();
-                }
+    // Compact Mode-ൽ സെർച്ച് ഐക്കണിൽ ക്ലിക്ക് ചെയ്താൽ വലുതാകാൻ
+    searchIconBtn.addEventListener('click', () => {
+        if (stickyHeader.classList.contains('compact')) {
+            searchWrapper.classList.toggle('expanded');
+            if (searchWrapper.classList.contains('expanded')) {
+                searchInput.focus();
             }
-        });
-    }
+        }
+    });
 }
 
 // --- Data Loading ---
