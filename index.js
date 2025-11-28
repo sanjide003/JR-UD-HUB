@@ -1,4 +1,4 @@
-// index.js - Video Autoplay Fix & Single View for Mobile
+// index.js - Compact Design Implementation
 
 import { db } from './firebase-config.js';
 import { 
@@ -25,17 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHomeCategories();
 });
 
-/**
- * ഹോം പേജ് ബാനർ
- */
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
     if (!bannerContainer) return;
-
     try {
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
-
         if (docSnap.exists() && docSnap.data().homeBannerUrl) {
             const bannerUrl = docSnap.data().homeBannerUrl;
             const optimizedUrl = optimizeImage(bannerUrl, 800, 80);
@@ -50,17 +45,12 @@ async function loadHomeBanner() {
     }
 }
 
-/**
- * 1. ഹീറോ സ്ലൈഡർ (All Video Types Supported + Scroll Pause)
- */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
     if (!sliderWrapper) return;
-    
     try {
         const q = query(collection(db, "heroSlides"), orderBy("order"));
         const querySnapshot = await getDocs(q);
-
         if (querySnapshot.empty) {
             sliderWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/600x800/000000/D4AF37?text=JR+UD+HUB" alt="Placeholder"></div>`;
         } else {
@@ -69,153 +59,64 @@ async function loadHeroSlider() {
                 const slide = doc.data();
                 const slideEl = document.createElement('div');
                 slideEl.className = 'swiper-slide';
-
-                let isVideo = slide.type === 'video';
-                let videoId = '';
-                let embedUrl = '';
-                let finalUrl = slide.url;
-
-                // --- URL Parsing Logic (from original code) ---
-                if (isVideo) {
-                    // Google Drive
-                    if (slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
-                        try {
-                            const id = slide.url.split('/d/')[1].split('/')[0];
-                            finalUrl = `https://drive.google.com/uc?export=download&id=${id}`;
-                        } catch(e) {}
-                    } 
-                    // YouTube Watch
-                    else if (slide.url.includes('youtube.com/watch?v=')) {
-                        videoId = new URL(slide.url).searchParams.get('v');
-                    }
-                    // YouTube Shorts
-                    else if (slide.url.includes('youtube.com/shorts/')) {
-                        videoId = new URL(slide.url).pathname.split('/shorts/')[1];
-                    }
-                    // YouTube Short Link (youtu.be)
-                    else if (slide.url.includes('youtu.be/')) {
-                        videoId = slide.url.split('youtu.be/')[1];
-                    }
-
-                    if (videoId) {
-                        // YouTube Embed URL (Muted, Autoplay, No Controls)
-                        embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1&autoplay=1`;
-                    }
-                }
-
-                // --- HTML Generation ---
+                let content = '';
                 if (slide.type === 'image') {
                     const optimizedHeroImg = optimizeImage(slide.url, 800, 85);
-                    slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
-                }
-                else if (isVideo && embedUrl) {
-                    // YouTube Iframe
-                    slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%; height:100%; pointer-events:none;"></iframe>`;
-                }
-                else if (isVideo) {
-                    // Direct Video (MP4/Drive)
-                    slideEl.innerHTML = `
+                    content = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
+                } else if (slide.type === 'video') {
+                    content = `
                         <video class="hero-video-element" 
-                               src="${finalUrl}" 
                                autoplay 
                                muted 
                                loop 
                                playsinline 
-                               preload="auto"
+                               preload="metadata"
                                style="width: 100%; height: 100%; object-fit: cover;">
+                            <source src="${slide.url}" type="video/mp4">
                         </video>`;
                 }
-                
+                slideEl.innerHTML = content;
                 sliderWrapper.appendChild(slideEl);
             });
         }
-
-        // Swiper Config
         const heroSwiper = new Swiper('.hero-slider-new', {
             loop: true, 
             allowTouchMove: true,
             speed: 600,
-            autoplay: {
-                delay: 6000,
-                disableOnInteraction: false,
-            },
-            pagination: {
-                el: '.hero-pagination-dots',
-                clickable: true,
-            },
+            autoplay: { delay: 6000, disableOnInteraction: false },
+            pagination: { el: '.hero-pagination-dots', clickable: true },
             on: {
-                slideChange: function() {
-                    handleSlideVideo(this);
+                slideChangeTransitionEnd: function () {
+                    const activeSlide = this.slides[this.activeIndex];
+                    const video = activeSlide.querySelector('video');
+                    if (video) {
+                        video.currentTime = 0;
+                        video.play().catch(e => {});
+                    }
                 }
             }
         });
-
-        // Initial Play
-        handleSlideVideo(heroSwiper);
-        
-        // *** Scroll Observer (Pause on Scroll) ***
         setupScrollVideoObserver();
-
     } catch (error) { console.error("Error loading hero slider"); }
 }
 
-// Helper to play active slide video and pause others
-function handleSlideVideo(swiper) {
-    const slides = document.querySelectorAll('.hero-slider-new .swiper-slide');
-    
-    slides.forEach((slide) => {
-        // Direct Videos
-        const video = slide.querySelector('video');
-        if (video) {
-            if (slide.classList.contains('swiper-slide-active')) {
-                video.play().catch(e => {});
-            } else {
-                video.pause();
-            }
-        }
-        
-        // YouTube Iframes
-        const iframe = slide.querySelector('iframe');
-        if (iframe && iframe.contentWindow) {
-            if (slide.classList.contains('swiper-slide-active')) {
-                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-            } else {
-                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-            }
-        }
-    });
-}
-
-// *** Scroll Observer Implementation ***
 function setupScrollVideoObserver() {
     const sliderContainer = document.querySelector('.hero-section-new');
     if (!sliderContainer) return;
-
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             const activeSlide = document.querySelector('.hero-slider-new .swiper-slide-active');
             if (!activeSlide) return;
-
             const video = activeSlide.querySelector('video');
-            const iframe = activeSlide.querySelector('iframe');
-
-            if (entry.isIntersecting) {
-                // Viewport-ൽ എത്തിയാൽ Play ചെയ്യുക
-                if (video) video.play().catch(e => {});
-                if (iframe) iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-            } else {
-                // Viewport-ൽ നിന്ന് പോയാൽ Pause ചെയ്യുക
-                if (video) video.pause();
-                if (iframe) iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-            }
+            if (entry.isIntersecting) { if (video) video.play().catch(e => {}); } 
+            else { if (video) video.pause(); }
         });
-    }, { threshold: 0.5 }); // 50% കാണുമ്പോഴേക്കും പ്രവർത്തിക്കും
-
+    }, { threshold: 0.5 });
     observer.observe(sliderContainer);
 }
 
 /**
- * 2. "For You" (Top Sellers) - Single Card View
+ * 2. "For You" (Top Sellers) - Compact Overlay Design
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
@@ -243,29 +144,34 @@ async function loadTopSellers() {
             const imageUrl = optimizeImage(product.images?.[0] || '', 400, 75);
             
             const isInCart = isItemInCart(productId);
-            const buttonText = isInCart ? "Remove" : "Cart";
+            const buttonText = isInCart ? "REMOVE" : "CART"; // Shortened Text
             const buttonClass = isInCart ? "btn-add-to-cart added-to-cart" : "btn-add-to-cart"; 
             
+            // *** Compact Layout ***
             card.innerHTML = `
-                <a href="product.html?id=${productId}">
-                    <img src="${imageUrl}" alt="${product.name}" class="top-sellers-product-image" loading="lazy">
-                </a>
-                <div class="top-sellers-product-info">
-                    <div class="top-sellers-product-name">${product.name}</div>
-                    <div class="top-sellers-product-price">₹${product.price || 0}</div>
-                    <div class="top-sellers-buttons">
-                        <button class="btn ${buttonClass}"
-                            data-id="${productId}"
-                            data-name="${product.name}"
-                            data-price="${product.price}"
-                            data-mrp="${product.mrp}"
-                            data-image="${imageUrl}"
-                            data-size="${product.size || ''}">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                            <span>${buttonText}</span>
-                        </button>
-                        <a href="product.html?id=${productId}" class="btn">View</a>
+                <div class="media-container">
+                    <a href="product.html?id=${productId}" style="display:block; height:100%;">
+                        <img src="${imageUrl}" alt="${product.name}" class="top-sellers-product-image" loading="lazy">
+                    </a>
+                    <div class="text-overlay">
+                        <div class="top-sellers-product-name">${product.name}</div>
+                        <div class="top-sellers-product-price">₹${product.price || 0}</div>
                     </div>
+                </div>
+                <div class="top-sellers-buttons">
+                    <button class="btn ${buttonClass}"
+                        data-id="${productId}"
+                        data-name="${product.name}"
+                        data-price="${product.price}"
+                        data-mrp="${product.mrp}"
+                        data-image="${imageUrl}"
+                        data-size="${product.size || ''}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        <span>${buttonText}</span>
+                    </button>
+                    <a href="product.html?id=${productId}" class="btn">
+                        <span>VIEW</span>
+                    </a>
                 </div>
             `;
             grid.appendChild(card);
@@ -273,17 +179,13 @@ async function loadTopSellers() {
 
         const autoplayDelay = 4000; 
 
-        // *** For You Swiper Config ***
         new Swiper('.top-sellers-swiper-new', {
             loop: true,
             autoplay: { delay: autoplayDelay, disableOnInteraction: false },
             speed: 600,
-            
-            // *** മാറ്റം: മൊബൈലിൽ കൃത്യം ഒരെണ്ണം മാത്രം കാണിക്കുന്നു ***
-            slidesPerView: 1, 
+            slidesPerView: 1, // മൊബൈലിൽ 1 മാത്രം
             spaceBetween: 20, 
             centeredSlides: true,
-            
             pagination: { 
                 el: '.top-sellers-pagination-new', 
                 clickable: true,
@@ -292,16 +194,13 @@ async function loadTopSellers() {
                 }
             },
             on: {
-                init: function (swiper) { 
-                    startProgressBar(swiper, autoplayDelay); 
-                },
+                init: function (swiper) { startProgressBar(swiper, autoplayDelay); },
                 slideChangeTransitionStart: function (swiper) {
                     resetProgressBars(swiper);
                     startProgressBar(swiper, autoplayDelay);
                 }
             },
             breakpoints: { 
-                // വലിയ സ്ക്രീനുകളിൽ മാത്രം കൂടുതൽ കാണിക്കും
                 640: { slidesPerView: 2, spaceBetween: 20 }, 
                 1024: { slidesPerView: 4, spaceBetween: 30 } 
             }
@@ -313,7 +212,6 @@ async function loadTopSellers() {
     }
 }
 
-// *** Pagination Animation Logic ***
 function startProgressBar(swiper, delay) {
     const activeBullet = swiper.pagination.bullets[swiper.realIndex];
     if (activeBullet) {
@@ -340,35 +238,21 @@ function resetProgressBars(swiper) {
     });
 }
 
-/**
- * 3. SHOP BY CATEGORY
- */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
-
     try {
         const catQuery = query(collection(db, "categories"));
         const catSnapshot = await getDocs(catQuery); 
-
-        if (catSnapshot.empty) {
-            container.innerHTML = ''; 
-            return;
-        }
-
+        if (catSnapshot.empty) { container.innerHTML = ''; return; }
         let categories = [];
-        catSnapshot.forEach((doc) => {
-            categories.push({ id: doc.id, ...doc.data() });
-        });
-
+        catSnapshot.forEach((doc) => { categories.push({ id: doc.id, ...doc.data() }); });
         categories = categories.sort(() => 0.5 - Math.random()).slice(0, 3);
         container.innerHTML = ''; 
-
         categories.forEach(category => {
             const item = document.createElement('div');
             item.className = 'category-card-portrait';
             const imageUrl = optimizeImage(category.imageUrl || '', 600, 75);
-            
             item.innerHTML = `
                 <a href="categories.html?filter=${category.id}" style="display:block; width:100%; height:100%;">
                     <img src="${imageUrl}" alt="${category.name}" class="category-card-img" loading="lazy">
@@ -380,22 +264,19 @@ async function loadHomeCategories() {
             `;
             container.appendChild(item);
         });
-
     } catch (error) { console.error("Error loading home categories"); }
 }
 
-// Cart Click Handler
 document.addEventListener('click', (e) => {
     const button = e.target.closest('.btn-add-to-cart');
     if (button) {
         e.preventDefault();
         const id = button.dataset.id;
         const buttonText = button.querySelector('span');
-
         if (button.classList.contains('added-to-cart')) {
             removeFromCart(id);
             button.classList.remove('added-to-cart');
-            if (buttonText) buttonText.textContent = 'Cart';
+            if (buttonText) buttonText.textContent = 'CART';
         } else {
             const product = {
                 id: id, 
@@ -407,7 +288,7 @@ document.addEventListener('click', (e) => {
             };
             addToCart(id, product);
             button.classList.add('added-to-cart');
-            if (buttonText) buttonText.textContent = 'Remove';
+            if (buttonText) buttonText.textContent = 'REMOVE';
         }
     }
 });
