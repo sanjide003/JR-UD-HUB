@@ -1,5 +1,5 @@
 // Apple Watch Style Category Grid - index.js
-// മാറ്റം: Shop By Category - Random 3 Categories (Portrait Cards)
+// മാറ്റം: ഗൂഗിൾ ഡ്രൈവ് ലോജിക് ഒഴിവാക്കി.
 
 import { db } from './firebase-config.js';
 import { 
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHomeBanner(); 
     loadHeroSlider();
     loadTopSellers();
-    loadHomeCategories(); // *** പുതിയ ഫംഗ്ഷൻ ***
+    loadHomeCategories(); 
     
     setupScrollReveal();
     document.documentElement.style.scrollBehavior = 'smooth';
@@ -103,15 +103,11 @@ async function loadHeroSlider() {
                 let isVideo = slide.type === 'video';
                 let videoId = '';
                 let embedUrl = '';
-                let finalUrl = slide.url;
-
-                if (isVideo && slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
-                    try {
-                        const id = slide.url.split('/d/')[1].split('/')[0];
-                        finalUrl = `https://drive.google.com/uc?export=download&id=${id}`;
-                    } catch(e) {}
-                } 
-                else if (slide.url.includes('youtube.com/watch?v=')) {
+                
+                // ഗൂഗിൾ ഡ്രൈവ് ലോജിക് നീക്കം ചെയ്തു.
+                
+                // YouTube Logic നിലനിർത്തി
+                if (slide.url.includes('youtube.com/watch?v=')) {
                     videoId = new URL(slide.url).searchParams.get('v');
                     isVideo = true;
                 }
@@ -132,7 +128,8 @@ async function loadHeroSlider() {
                     slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 }
                 else if (isVideo) {
-                    slideEl.innerHTML = `<video class="hero-video-element" src="${finalUrl}" autoplay muted loop playsinline preload="auto"></video>`;
+                    // Direct video link (e.g., Cloudinary, Firebase)
+                    slideEl.innerHTML = `<video class="hero-video-element" src="${slide.url}" autoplay muted loop playsinline preload="auto"></video>`;
                 }
                 
                 sliderWrapper.appendChild(slideEl);
