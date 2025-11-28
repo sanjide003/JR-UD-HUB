@@ -1,4 +1,4 @@
-/* home.css - Compact Overlay Design for "For You" */
+/* home.css - Compact Design Update */
 
 /* === 1. ഹോം പേജ് ടോപ്പ് ബാനർ === */
 .home-top-banner {
@@ -6,9 +6,8 @@
     height: auto;
     position: relative;
     background-color: #000;
-    overflow: hidden;
-    margin-bottom: 0;
     border-bottom: 2px solid var(--primary-gold);
+    margin-bottom: 0;
 }
 
 .home-top-banner img {
@@ -53,7 +52,6 @@
     pointer-events: none;
 }
 
-/* Gradient Overlay for Text readability */
 .hero-slider-new .swiper-slide::before {
     content: '';
     position: absolute;
@@ -80,7 +78,7 @@
     border-radius: 4px;
 }
 
-/* === 3. ഹീറോ ടെക്സ്റ്റ് === */
+/* === 3. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ === */
 .hero-text-section {
     text-align: center;
     padding: 2rem 1.5rem;
@@ -91,7 +89,7 @@
     margin: 0 auto;
 }
 
-/* === 4. For You (Top Sellers) - COMPACT OVERLAY STYLE === */
+/* === 4. For You (Top Sellers) - Compact Overlay Design === */
 .home-section {
     margin-bottom: 3rem;
     position: relative;
@@ -102,122 +100,131 @@
     font-size: 1.8rem;
     font-weight: 700;
     color: var(--primary-gold);
-    margin-bottom: 1.5rem;
+    margin-bottom: 2rem;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 .top-sellers-swiper-new {
-    padding: 0 15px; /* Side padding */
+    padding: 0 10px;
 }
 
-/* Card Container */
+/* കാർഡ് കണ്ടെയ്നർ */
 .top-sellers-swiper-new .swiper-slide {
-    position: relative; /* For absolute positioning of info */
-    border-radius: 16px;
-    overflow: hidden;
-    aspect-ratio: 4 / 5; /* Fixed aspect ratio */
+    position: relative;
     border: 1px solid var(--border-color);
-    background-color: #000;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    display: flex;
+    flex-direction: column;
 }
 
-/* Image takes full height */
+/* ഇമേജ് കണ്ടെയ്നർ (Relatve for Overlay) */
+.media-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5; /* നല്ല ഹൈറ്റ് കിട്ടാൻ */
+    overflow: hidden;
+}
+
 .top-sellers-product-image {
     width: 100%;
     height: 100%;
     object-fit: cover;
     display: block;
-    transition: transform 0.5s ease;
 }
 
-/* Info Overlay (Name, Price, Buttons) on top of Image */
-.top-sellers-product-info {
+/* Overlay Text (ഇമേജിന്റെ മുകളിൽ) */
+.text-overlay {
     position: absolute;
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 20px 10px 10px 10px; /* Top padding for gradient fade */
-    background: linear-gradient(
-        to top,
-        rgba(0, 0, 0, 0.95) 0%,
-        rgba(0, 0, 0, 0.8) 50%,
-        rgba(0, 0, 0, 0.6) 80%,
-        transparent 100%
-    );
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
+    padding: 1.5rem 0.5rem 0.5rem 0.5rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
+    text-align: center;
+    color: #fff;
     z-index: 2;
 }
 
 .top-sellers-product-name {
-    font-size: 0.95rem;
-    color: #fff;
-    font-weight: 600;
-    margin-bottom: 4px;
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 2px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
 .top-sellers-product-price {
     font-size: 1.1rem;
     color: var(--primary-gold);
-    margin-bottom: 8px;
     font-weight: 700;
-    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
-/* Buttons inside Overlay */
+/* Buttons Container (ഇമേജിന് തൊട്ടുതാഴെ) */
 .top-sellers-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    width: 100%;
+    border-top: 1px solid var(--border-color);
 }
 
+/* Buttons Style */
 .top-sellers-buttons .btn {
-    padding: 8px 4px;
-    font-size: 0.75rem;
+    padding: 0.8rem 0;
+    font-size: 0.85rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 4px;
-    border-radius: 6px;
+    gap: 5px;
     text-decoration: none;
-    font-weight: 700;
+    font-weight: 600;
     text-transform: uppercase;
-    height: 32px;
+    background-color: #1a1a1a;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+    transition: background 0.3s ease;
 }
 
-/* Cart Button (Transparent/Glassy) */
+.top-sellers-buttons .btn:first-child {
+    border-right: 1px solid var(--border-color); /* Cart ബട്ടണിന് വലതുവശത്ത് വര */
+}
+
+/* Cart Button */
 .top-sellers-buttons .btn-add-to-cart {
-    background-color: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(4px);
-    color: #fff;
-    border: 1px solid rgba(255, 255, 255, 0.4);
-    cursor: pointer;
+    background-color: #111;
+}
+
+.top-sellers-buttons .btn-add-to-cart:hover {
+    background-color: #222;
+    color: var(--primary-gold);
 }
 
 .top-sellers-buttons .btn-add-to-cart.added-to-cart {
-    background-color: var(--primary-gold);
-    color: #000;
-    border-color: var(--primary-gold);
+    background-color: #000;
+    color: var(--primary-gold);
 }
 
 .top-sellers-buttons .btn-add-to-cart svg {
-    width: 14px;
-    height: 14px;
+    width: 16px; height: 16px;
 }
 
-/* View Button (Gold) */
+/* View Button */
 .top-sellers-buttons a.btn {
-    background-color: var(--primary-gold);
-    color: #000;
-    border: 1px solid var(--primary-gold);
+    background-color: #111;
 }
 
-/* Pagination (Dot to Line) */
+.top-sellers-buttons a.btn:hover {
+    background-color: #222;
+    color: var(--primary-gold);
+}
+
+/* --- Pagination (Dot-to-Line) --- */
 .top-sellers-pagination-new {
     position: relative;
     margin-top: 1.5rem;
@@ -229,8 +236,7 @@
 }
 
 .top-sellers-pagination-new .swiper-pagination-bullet {
-    width: 8px;
-    height: 8px;
+    width: 8px; height: 8px;
     border-radius: 4px;
     background-color: #444;
     opacity: 1;
@@ -274,7 +280,6 @@
     border-radius: 12px;
     overflow: hidden;
     border: 1px solid var(--border-color);
-    text-decoration: none;
 }
 
 .category-card-img {
@@ -301,6 +306,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 10px;
+    text-align: center;
 }
 
 .category-card-btn {
@@ -313,7 +319,7 @@
     font-weight: 600;
 }
 
-/* === Responsive === */
+/* Responsive */
 @media (min-width: 768px) {
     .category-grid-vertical {
         flex-direction: row;
@@ -325,5 +331,5 @@
 }
 @media (max-width: 768px) {
     .hero-section-new { height: 60vh; }
-    .section-title-new { font-size: 1.4rem; margin-bottom: 1rem; }
+    .section-title-new { font-size: 1.4rem; margin-bottom: 1.5rem; }
 }
