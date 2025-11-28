@@ -1,70 +1,15 @@
-/* ഇത് contact.CSS
-*/
+/* contact.css */
 
-.contact-page-grid-single {
-    max-width: 700px; 
-    margin: 0 auto; 
-}
+.contact-page-grid-single { max-width: 600px; margin: 0 auto; }
 .contact-page-info {
-    background-color: var(--card-bg);
-    padding: 2rem;
-    border-radius: 8px;
-}
-
-.contact-page-subtitle {
-    color: var(--text-muted);
-    margin-bottom: 2.5rem;
+    background: #111; padding: 2rem; border-radius: 8px; border: 1px solid #333;
 }
 .contact-item-main {
-    display: flex;
-    align-items: flex-start;
-    gap: 1.5rem;
-    margin-bottom: 2rem;
+    display: flex; gap: 15px; margin-bottom: 1.5rem; color: #ddd;
 }
-.contact-icon {
-    width: 24px;
-    height: 24px;
-    flex-shrink: 0;
-    margin-top: 5px;
-    color: var(--primary-gold);
-}
-.contact-item-main div {
-    display: flex;
-    flex-direction: column;
-}
-.contact-item-main strong {
-    font-size: 1.1rem;
-    color: var(--text-color);
-    margin-bottom: 0.25rem;
-}
-.contact-item-main a, .contact-item-main span {
-    color: var(--text-muted);
-    font-size: 1rem;
-}
-.contact-social-section {
-    margin-top: 3rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
-}
-.contact-social-section h2 {
-    text-align: center;
-    margin-bottom: 1.5rem;
-    font-weight: 600;
-}
+.contact-icon { width: 24px; color: var(--primary-gold); flex-shrink: 0; }
 .contact-social-icons {
-    display: flex;
-    justify-content: center;
-    gap: 2rem;
+    display: flex; gap: 20px; justify-content: center; margin-top: 2rem;
 }
-.contact-social-icon {
-    color: var(--text-muted);
-    transition: color 0.3s ease;
-}
-.contact-social-icon:hover {
-    color: var(--primary-gold);
-}
-.contact-social-icon svg {
-    width: 30px;
-    height: 30px;
-    fill: currentColor;
-}
+.contact-social-icon { color: #aaa; }
+.contact-social-icon:hover { color: var(--primary-gold); }
