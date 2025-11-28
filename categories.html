@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് കാറ്റഗറി പേജ്. categories.html
-  മാറ്റം: ഫൂട്ടർ ഒഴിവാക്കി, കാറ്റഗറി ലിസ്റ്റ് പൂർണ്ണമായി സ്ക്രീനിൽ നിറഞ്ഞു നിൽക്കും.
+  മാറ്റം: ഫൂട്ടർ (Footer) തിരികെ കൊണ്ടുവന്നു (സ്ക്രോൾ ഏരിയയുടെ ഉള്ളിൽ).
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -58,7 +58,6 @@
 
                     <!-- ഫിൽറ്റർ സെക്ഷൻ -->
                     <div class="filter-section">
-                        <!-- Dropdowns (Hidden in Compact Mode) -->
                         <div class="filter-row-main">
                             <div class="custom-select-wrapper">
                                 <select id="price-range-filter" class="filter-select">
@@ -80,7 +79,6 @@
                             </div>
                         </div>
 
-                        <!-- ഡിസ്കൗണ്ട് ചിപ്പുകൾ (Visible Inline in Compact Mode) -->
                         <div class="filter-row-discount">
                             <span class="filter-label">Discount:</span>
                             <div class="discount-chips-container" id="discount-filters">
@@ -94,11 +92,11 @@
                         </div>
                     </div>
                 
-                </div> <!-- End Tools Layout -->
+                </div>
 
-            </div> <!-- End Sticky Header -->
+            </div>
 
-            <!-- പ്രൊഡക്റ്റ് ഗ്രിഡ് -->
+            <!-- പ്രൊഡക്റ്റ് ഗ്രിഡ് + ഫൂട്ടർ (Scroll Container) -->
             <div class="category-page-content" id="products-scroll-container">
                 <div class="category-product-grid" id="category-product-grid">
                     <div class="loading-placeholder-full">Loading products...</div>
@@ -112,12 +110,13 @@
                     <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No products found.</p>
                     <button id="reset-filters-btn" class="btn btn-secondary-new">Reset Filters</button>
                 </div>
+
+                <!-- Footer Here to scroll with content -->
+                <footer class="main-footer-new" id="main-footer" style="margin-top: 2rem;"></footer>
             </div>
 
         </div>
     </main>
-
-    <!-- Footer ഒഴിവാക്കി -->
 
     <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ -->
     <div id="floating-action-buttons"></div>
