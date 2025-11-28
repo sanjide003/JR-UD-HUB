@@ -1,4 +1,4 @@
-/* categories.css - Clean, Simple & Fast */
+/* categories.css - Clean & Uniform Design */
 
 /* === 1. പേജ് ലേഔട്ട് === */
 .category-page-layout {
@@ -7,43 +7,44 @@
     height: calc(100vh - var(--header-height)); 
     overflow: hidden; 
     position: relative;
-    background-color: var(--bg-color);
 }
 
 .container.page-container {
     padding: 0 !important;
 }
 
-/* === 2. STICKY HEADER (No Animations) === */
+/* === 2. FLOATING STICKY HEADER (Cleaned) === */
 .sticky-header-container {
-    background-color: #000; /* Solid Black for Performance */
+    background: #000; /* സോളിഡ് കളർ */
     z-index: 100;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--border-color); /* ലളിതമായ ബോർഡർ */
+    transition: all 0.3s ease;
     flex-shrink: 0;
     padding-bottom: 10px;
     width: 100%;
+    position: relative;
 }
 
-/* ആനിമേറ്റഡ് ലൈനുകൾ ഒഴിവാക്കി */
-.sticky-header-container::before,
-.sticky-header-container:hover::before {
+/* Scroll ചെയ്യുമ്പോൾ വരുന്ന ഗോൾഡ് ലൈൻ ആനിമേഷൻ ഒഴിവാക്കി */
+.sticky-header-container::before {
     display: none;
 }
 
-/* === 3. കാറ്റഗറി ഗ്രിഡ് (Simple) === */
+/* === 3. കാറ്റഗറി ഗ്രിഡ് (Category Selection) === */
 .category-grid-section {
     display: flex; 
     flex-wrap: nowrap; 
     overflow-x: auto; 
     gap: 15px; 
     padding: 15px; 
-    border-bottom: 1px solid var(--border-color);
-    background-color: #000;
+    scroll-snap-type: x mandatory; 
+    height: auto;
+    transition: all 0.3s ease;
+    /* മുകളിലെ ലൈൻ ഒഴിവാക്കി */
+    border-bottom: none; 
 }
 
-/* സ്ക്രോൾ ബാർ മറയ്ക്കുന്നു */
 .category-grid-section::-webkit-scrollbar { display: none; }
-.category-grid-section { -ms-overflow-style: none; scrollbar-width: none; }
 
 .category-grid-item {
     display: flex;
@@ -54,7 +55,8 @@
     color: var(--text-muted);
     min-width: 70px; 
     cursor: pointer;
-    position: relative;
+    scroll-snap-align: start;
+    transition: all 0.3s ease;
 }
 
 /* കാറ്റഗറിക്ക് മുകളിലുള്ള ലൈൻ ഒഴിവാക്കി */
@@ -63,75 +65,78 @@
 }
 
 .category-grid-image-box {
-    width: 60px; 
-    height: 60px; 
+    width: 55px; 
+    height: 55px; 
     border-radius: 12px; 
-    background-color: #111; /* Solid Color */
+    background-color: #1a1a1a;
     border: 1px solid var(--border-color);
     padding: 10px;
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: all 0.3s ease;
 }
 
 .category-grid-image {
     width: 100%;
     height: 100%;
     object-fit: contain;
-    filter: grayscale(100%); /* Inactive state grayscale */
-    transition: filter 0.3s ease;
+    filter: brightness(0.8);
 }
 
 .category-grid-name {
     font-size: 0.75rem; 
     text-align: center;
-    width: 100%;
     white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis; 
-    color: var(--text-muted);
+    width: 100%;
+    font-weight: 500;
 }
 
-/* Active State (Simple Highlight) */
-.category-grid-item.active .category-grid-image-box {
-    border-color: var(--primary-gold);
-    background-color: #1a1a1a;
+/* Active State */
+.category-grid-item.active .category-grid-name { 
+    color: var(--primary-gold); 
+    font-weight: 700;
+}
+
+.category-grid-item.active .category-grid-image-box { 
+    border-color: var(--primary-gold); 
+    background-color: #222;
 }
 
 .category-grid-item.active .category-grid-image {
-    filter: grayscale(0%); /* Full Color */
-}
-
-.category-grid-item.active .category-grid-name {
-    color: var(--primary-gold);
-    font-weight: 600;
+    filter: brightness(1);
 }
 
 /* === 4. TOOLS LAYOUT (Search & Filters) === */
 .tools-layout {
     display: flex;
     flex-direction: column;
-    padding: 10px 15px 0 15px;
-    gap: 10px;
+    transition: all 0.3s ease;
+    padding: 0 15px;
 }
 
-/* Search Bar (Simple) */
+/* Search Bar */
 .search-bar-container {
     width: 100%;
+    margin-bottom: 10px;
+    transition: all 0.3s ease;
 }
 
 .search-input-wrapper {
     display: flex;
     align-items: center;
-    background-color: #111;
+    background-color: #1a1a1a;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 0.6rem 1rem;
+    width: 100%;
 }
 
 .search-icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     color: var(--text-muted);
 }
 
@@ -145,17 +150,10 @@
     margin-left: 10px;
 }
 
-#clear-search-btn {
-    background: none;
-    border: none;
-    color: var(--text-muted);
-    font-size: 1.2rem;
-    cursor: pointer;
-}
-
 /* Filter Section */
 .filter-section {
     width: 100%;
+    transition: all 0.3s ease;
 }
 
 .filter-row-main {
@@ -163,38 +161,39 @@
     grid-template-columns: 1fr 1fr;
     gap: 10px;
     margin-bottom: 10px;
+    transition: all 0.3s ease;
+    opacity: 1;
+    max-height: 50px; /* For smooth hide */
 }
 
 .filter-select {
-    appearance: none;
-    -webkit-appearance: none;
-    background-color: #111;
+    background-color: #1a1a1a;
     color: #fff;
     border: 1px solid var(--border-color);
-    padding: 0.6rem 1rem;
+    padding: 0.6rem;
     border-radius: 6px;
     font-size: 0.85rem;
     width: 100%;
     outline: none;
 }
 
-/* Discount Chips (Clean) */
+/* Discount Chips (Cleaned) */
 .filter-row-discount {
     display: flex;
     align-items: center;
     gap: 8px;
     overflow-x: auto;
     padding-bottom: 5px;
+    scrollbar-width: none; /* Hide scrollbar */
+    /* ബോർഡർ ഒഴിവാക്കി */
+    border: none; 
 }
-
-/* സ്ക്രോൾ ബാർ */
-.filter-row-discount::-webkit-scrollbar { height: 2px; }
-.filter-row-discount::-webkit-scrollbar-thumb { background: #333; }
 
 .filter-label {
     font-size: 0.85rem;
     color: var(--text-muted);
     white-space: nowrap;
+    margin-right: 5px;
 }
 
 .discount-chips-container {
@@ -203,87 +202,154 @@
 }
 
 .discount-chip {
-    background-color: #111;
+    background-color: #1a1a1a;
     border: 1px solid var(--border-color);
     color: var(--text-muted);
-    padding: 6px 12px;
-    border-radius: 4px; /* Square/Rounded */
-    font-size: 0.8rem;
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
     cursor: pointer;
     white-space: nowrap;
-    /* ആനിമേഷൻ ഒഴിവാക്കി */
+    transition: background 0.3s ease;
 }
 
-/* Active Chip - Simple Green */
 .discount-chip.active {
-    background-color: var(--success-green);
-    border-color: var(--success-green);
-    color: #fff;
+    background-color: var(--primary-gold);
+    color: #000;
+    border-color: var(--primary-gold);
     font-weight: 600;
+    box-shadow: none; /* Glow ഒഴിവാക്കി */
+    animation: none; /* Animation ഒഴിവാക്കി */
 }
 
-/* === 5. COMPACT MODE (Scroll) === */
-/* സ്ക്രോൾ ചെയ്യുമ്പോൾ ലളിതമായ മാറ്റം */
+/* === 5. COMPACT MODE (Scroll Animation) === */
+/* സ്ക്രോൾ ചെയ്യുമ്പോൾ ചുരുങ്ങുന്ന സ്റ്റൈൽ (നിലനിർത്തി) */
 .sticky-header-container.compact {
-    border-bottom: 1px solid #333;
     padding-bottom: 5px;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+    background-color: #000;
+    border-bottom: 1px solid #222;
+}
+
+.sticky-header-container.compact .category-grid-section {
+    padding: 8px 15px;
+    gap: 8px;
 }
 
 .sticky-header-container.compact .category-grid-image-box {
-    display: none;
+    display: none; /* ചിത്രം മറയുന്നു */
 }
 
 .sticky-header-container.compact .category-grid-item {
     min-width: auto;
 }
 
+/* Text Pill Style in Compact Mode */
 .sticky-header-container.compact .category-grid-name {
-    font-size: 0.85rem;
-    padding: 5px 12px;
-    background-color: #111;
-    border: 1px solid var(--border-color);
+    font-size: 0.8rem;
+    background-color: #1a1a1a;
+    padding: 6px 14px;
     border-radius: 20px;
+    border: 1px solid var(--border-color);
+    color: var(--text-muted);
 }
 
 .sticky-header-container.compact .category-grid-item.active .category-grid-name {
     background-color: var(--primary-gold);
     color: #000;
     border-color: var(--primary-gold);
+    box-shadow: none;
+    animation: none;
 }
 
-/* === 6. PRODUCT GRID === */
+/* Tools Compact */
+.sticky-header-container.compact .tools-layout {
+    flex-direction: row;
+    align-items: center;
+    padding: 0 15px 8px 15px;
+    gap: 10px;
+}
+
+.sticky-header-container.compact .search-bar-container {
+    width: auto;
+    margin: 0;
+}
+
+.sticky-header-container.compact .search-input-wrapper {
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: #1a1a1a;
+}
+
+.sticky-header-container.compact #product-search-input {
+    width: 0; padding: 0; opacity: 0; margin: 0;
+}
+
+.sticky-header-container.compact .search-input-wrapper.expanded {
+    width: 200px;
+    border-radius: 20px;
+    padding: 0 1rem;
+    justify-content: flex-start;
+}
+
+.sticky-header-container.compact .search-input-wrapper.expanded #product-search-input {
+    width: 100%; opacity: 1; margin-left: 8px;
+}
+
+/* Hide Main Filters in Compact */
+.sticky-header-container.compact .filter-section {
+    padding: 0;
+    flex-grow: 1;
+    overflow: hidden;
+}
+
+.sticky-header-container.compact .filter-row-main {
+    display: none;
+}
+
+.sticky-header-container.compact .filter-label {
+    display: none;
+}
+
+.sticky-header-container.compact .filter-row-discount {
+    padding: 0;
+}
+
+/* === 6. PRODUCT GRID (Equal Height Fix) === */
 .category-page-content {
     flex-grow: 1;
     overflow-y: auto;
-    padding: 10px 15px 100px 15px;
-    background-color: var(--bg-color);
+    padding: 10px 15px 80px 15px;
+    scroll-behavior: smooth;
 }
 
 .category-product-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 12px;
+    grid-template-columns: repeat(2, 1fr); /* 2 Columns */
+    gap: 15px;
+    /* Cards will have equal height automatically in grid */
 }
 
-/* === 7. PRODUCT CARDS (Clean) === */
+/* === 7. PRODUCT CARDS (Uniform Size) === */
 .category-product-card {
-    background-color: #111; /* Solid BG */
+    background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
-}
-
-/* ഹോവർ ആനിമേഷൻ ഒഴിവാക്കി */
-.category-product-card:hover {
-    border-color: #444; 
+    height: 100%; /* Full height of grid cell */
+    justify-content: space-between; /* Space out content */
+    /* ആനിമേഷൻ ഒഴിവാക്കി */
+    box-shadow: none; 
 }
 
 .cat-product-image-link {
     width: 100%;
-    aspect-ratio: 1 / 1;
+    aspect-ratio: 1 / 1; /* Square Image */
+    overflow: hidden;
     background-color: #000;
 }
 
@@ -294,28 +360,33 @@
 }
 
 .cat-product-content {
-    padding: 0.8rem;
+    padding: 10px;
     display: flex;
     flex-direction: column;
-    flex-grow: 1;
+    flex-grow: 1; 
 }
 
 .cat-product-title {
     font-size: 0.9rem;
     color: var(--text-color);
-    font-weight: 500;
-    margin-bottom: 5px;
+    font-weight: 600;
+    margin-bottom: 6px;
     line-height: 1.3;
+    
+    /* Limit to 2 lines for uniformity */
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    height: 38px; /* Fixed height for alignment */
+    height: 2.6em; /* Fixed height for title area */
 }
 
 .cat-product-content .price-container {
-    margin-bottom: 0.8rem;
-    gap: 0.5rem;
+    margin-top: auto; /* Push to bottom */
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 .cat-product-content .price-main {
@@ -330,44 +401,29 @@
     color: var(--text-muted);
 }
 
-/* Buttons (Simple) */
+/* Buttons */
 .cat-product-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 0.5rem;
-    margin-top: auto;
+    gap: 8px;
 }
 
 .cat-product-buttons .btn-primary-new,
 .cat-product-buttons .btn-secondary-new {
     font-size: 0.75rem;
-    padding: 0.5rem 0;
-    border-radius: 4px;
+    padding: 6px 0;
+    height: 32px;
+    border-radius: 6px;
     font-weight: 600;
-    text-transform: uppercase;
-}
-
-.cat-product-buttons .btn-primary-new {
-    background-color: var(--primary-gold);
-    color: #000;
-    border: none;
-}
-
-.cat-product-buttons .btn-secondary-new {
-    background-color: transparent;
-    color: #fff;
-    border: 1px solid #444;
-}
-
-.cat-product-buttons .btn-secondary-new.added-to-cart {
-    border-color: var(--primary-gold);
-    color: var(--primary-gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* === Responsive === */
 @media (min-width: 769px) {
     .category-product-grid {
-        grid-template-columns: repeat(5, 1fr);
+        grid-template-columns: repeat(5, 1fr); /* 5 Columns on Desktop */
         gap: 20px;
     }
 }
