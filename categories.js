@@ -1,5 +1,4 @@
-// ഇതാണ് 'categories.js' ഫയൽ.
-// മാറ്റം: സ്ക്രോൾ ആനിമേഷൻ കൂടുതൽ സ്മൂത്ത് ആക്കി.
+// categories.js - Fixed Flickering Issue
 
 import {
     collection,
@@ -16,7 +15,7 @@ import { db } from './firebase-config.js';
 import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
-setLogLevel('Debug');
+setLogLevel('Silent');
 
 // --- DOM Elements ---
 const productGrid = document.getElementById("category-product-grid");
@@ -62,32 +61,45 @@ document.addEventListener("DOMContentLoaded", async () => {
     applyFilters(); 
 });
 
-// --- SCROLL ANIMATION LOGIC (IMPROVED) ---
+// --- SCROLL ANIMATION LOGIC (FLICKER FIX) ---
 function setupScrollAnimation() {
     if (!productsScrollContainer) return;
 
     productsScrollContainer.addEventListener('scroll', () => {
         const scrollTop = productsScrollContainer.scrollTop;
+        const scrollHeight = productsScrollContainer.scrollHeight;
+        const clientHeight = productsScrollContainer.clientHeight;
         
-        // 30px താഴേക്ക് സ്ക്രോൾ ചെയ്താൽ ഉടൻ Compact Mode ആക്കുക
-        if (scrollTop > 30) {
+        // *** FLICKER FIX ***
+        // സ്ക്രോൾ ചെയ്യാൻ ആവശ്യമായത്ര കണ്ടന്റ് ഉണ്ടെങ്കിൽ മാത്രമേ ഹെഡർ ചുരുങ്ങാവൂ.
+        // കണ്ടന്റ് കുറവാണെങ്കിൽ ഹെഡർ വലുതായി തന്നെ നിൽക്കും.
+        const scrollBuffer = 100; // മിനിമം സ്ക്രോൾ സ്പേസ്
+
+        // സ്ക്രോൾ ചെയ്യാൻ സ്ഥലമുണ്ടോ എന്ന് പരിശോധിക്കുന്നു (scrollHeight - clientHeight)
+        const isScrollable = (scrollHeight - clientHeight) > scrollBuffer;
+
+        if (scrollTop > 30 && isScrollable) {
             stickyHeader.classList.add('compact');
         } else {
             stickyHeader.classList.remove('compact');
-            // സ്ക്രോൾ തിരിച്ചു മുകളിലെത്തുമ്പോൾ സെർച്ച് ബാർ റീസെറ്റ് ചെയ്യുക
-            searchWrapper.classList.remove('expanded');
+            // സ്ക്രോൾ മുകളിലെത്തുമ്പോൾ സെർച്ച് ബാർ റീസെറ്റ് ചെയ്യുന്നു
+            if (scrollTop <= 30) {
+                searchWrapper.classList.remove('expanded');
+            }
         }
     });
 
     // Compact Mode-ൽ സെർച്ച് ഐക്കണിൽ ക്ലിക്ക് ചെയ്താൽ വലുതാകാൻ
-    searchIconBtn.addEventListener('click', () => {
-        if (stickyHeader.classList.contains('compact')) {
-            searchWrapper.classList.toggle('expanded');
-            if (searchWrapper.classList.contains('expanded')) {
-                searchInput.focus();
+    if (searchIconBtn) {
+        searchIconBtn.addEventListener('click', () => {
+            if (stickyHeader.classList.contains('compact')) {
+                searchWrapper.classList.toggle('expanded');
+                if (searchWrapper.classList.contains('expanded')) {
+                    searchInput.focus();
+                }
             }
-        }
-    });
+        });
+    }
 }
 
 // --- Data Loading ---
@@ -127,9 +139,7 @@ async function loadCategoryList() {
         categoryNavSection.innerHTML = navHtml;
         addNavClickListeners(categoryNavSection);
 
-    } catch (error) {
-        console.error("Error loading categories: ", error);
-    }
+    } catch (error) { console.error("Error loading categories"); }
 }
 
 async function loadAllProductsCache() {
@@ -152,11 +162,8 @@ async function loadAllProductsCache() {
                 categoryName: categoriesMap.get(data.categoryId) || ''
             });
         });
-    } catch (error) {
-        console.error("Error loading products cache:", error);
-    } finally {
-        if (loader) loader.style.display = 'none';
-    }
+    } catch (error) { console.error("Error loading products cache"); } 
+    finally { if (loader) loader.style.display = 'none'; }
 }
 
 function setupEventListeners() {
@@ -204,6 +211,8 @@ function addNavClickListeners(navElement) {
         if (categoryId !== currentCategoryId) {
             currentCategoryId = categoryId;
             updateActiveCategoryUI(categoryId);
+            
+            // URL Update
             const url = new URL(window.location);
             if (categoryId === 'all') url.searchParams.delete('filter');
             else url.searchParams.set('filter', categoryId);
@@ -234,6 +243,8 @@ function resetAllFilters() {
     sortFilter.value = 'default';
     activeDiscount = null;
     discountChips.forEach(c => c.classList.remove('active'));
+    currentCategoryId = 'all';
+    updateActiveCategoryUI('all');
     applyFilters();
 }
 
@@ -293,7 +304,7 @@ function renderProductCard(product, productId) {
     const price = product.price || 0;
     const mrp = product.mrp || 0;
     
-    const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
+    const rawImage = product.images && product.images[0] ? product.images[0] : '';
     const imageUrl = optimizeImage(rawImage, 400, 80);
 
     let priceHTML = `<span class="price-main">₹${price}</span>`;
@@ -302,12 +313,12 @@ function renderProductCard(product, productId) {
     }
 
     const isInCart = isItemInCart(productId);
-    const buttonText = isInCart ? "Remove" : "Cart";
+    const buttonText = isInCart ? "REMOVE" : "CART";
     const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
     card.innerHTML = `
         <a href="product.html?id=${productId}" class="cat-product-image-link">
-            <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" loading="lazy" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
+            <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" loading="lazy">
         </a>
         <div class="cat-product-content">
             <h3 class="cat-product-title">${product.name}</h3>
@@ -322,7 +333,7 @@ function renderProductCard(product, productId) {
                     data-mrp="${mrp}"
                     data-image="${imageUrl}"
                     data-size="${product.size || ''}">
-                    <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                         <line x1="3" y1="6" x2="21" y2="6"></line>
                         <path d="M16 10a4 4 0 0 1-8 0"></path>
@@ -330,38 +341,12 @@ function renderProductCard(product, productId) {
                     <span>${buttonText}</span>
                 </button>
                 <a href="product.html?id=${productId}" class="btn btn-primary-new">
-                    <span>View</span>
+                    <span>VIEW</span>
                 </a>
             </div>
         </div>
     `;
     productGrid.appendChild(card);
-}
-
-// Ripple Effect (Reused)
-function createRipple(event, button) {
-    const ripple = document.createElement('span');
-    const rect = button.getBoundingClientRect();
-    const size = Math.max(rect.width, rect.height);
-    const x = event.clientX - rect.left - size / 2;
-    const y = event.clientY - rect.top - size / 2;
-
-    ripple.style.cssText = `
-        position: absolute; width: ${size}px; height: ${size}px;
-        left: ${x}px; top: ${y}px; border-radius: 50%;
-        background: rgba(255, 255, 255, 0.3); transform: scale(0);
-        animation: ripple-animation 0.6s ease-out; pointer-events: none;
-    `;
-
-    button.appendChild(ripple);
-    setTimeout(() => ripple.remove(), 600);
-}
-
-if (!document.getElementById('ripple-style')) {
-    const style = document.createElement('style');
-    style.id = 'ripple-style';
-    style.textContent = `@keyframes ripple-animation { to { transform: scale(2); opacity: 0; } }`;
-    document.head.appendChild(style);
 }
 
 productGrid.addEventListener('click', (e) => {
@@ -371,12 +356,10 @@ productGrid.addEventListener('click', (e) => {
         const id = cartButton.dataset.id;
         const buttonText = cartButton.querySelector('span');
         
-        createRipple(e, cartButton);
-
         if (cartButton.classList.contains('added-to-cart')) {
             removeFromCart(id);
             cartButton.classList.remove('added-to-cart');
-            if (buttonText) buttonText.textContent = 'Cart';
+            if (buttonText) buttonText.textContent = 'CART';
         } else {
             const product = allProductsCache.find(p => p.id === id); 
             if (product) {
@@ -390,7 +373,7 @@ productGrid.addEventListener('click', (e) => {
                 };
                 addToCart(id, cartProduct);
                 cartButton.classList.add('added-to-cart');
-                if (buttonText) buttonText.textContent = 'Remove';
+                if (buttonText) buttonText.textContent = 'REMOVE';
             }
         }
     } 
