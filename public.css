@@ -1,4 +1,4 @@
-/* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും. */
+/* public.css - Restored Original High-Quality Design with Dot Loader */
 
 /* --- 1. പ്രധാന വേരിയബിളുകൾ & ഫോണ്ടുകൾ --- */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
@@ -21,7 +21,7 @@
     --bottom-nav-height: 65px;
 }
 
-/* --- 0. പേജ് ലോഡർ --- */
+/* --- 0. പേജ് ലോഡർ (പുതിയ Dot Animation) --- */
 #preloader {
     position: fixed;
     top: 0;
@@ -33,40 +33,79 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    flex-direction: column; /* ലോഗോയും ഡോട്ടുകളും ലംബമായി വരാൻ */
     transition: opacity 0.5s ease-out;
     opacity: 1;
 }
+
 .loader-logo-container {
     position: relative;
-    width: 100px;
-    height: 100px;
+    width: 120px;
+    height: 120px;
     display: flex;
     justify-content: center;
     align-items: center;
-}
-#preloader-logo {
-    width: 70px;
-    height: 70px;
-    object-fit: contain;
-    border-radius: 50%;
-}
-.loader-ring {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100px;
-    height: 100px;
-    border: 4px solid var(--border-color);
-    border-top-color: var(--primary-gold); 
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+    flex-direction: column;
+    gap: 20px; /* ലോഗോയും ഡോട്ടുകളും തമ്മിലുള്ള അകലം */
 }
 
-/* --- 2. പൊതുവായ സ്റ്റൈലുകൾ --- */
+#preloader-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    border-radius: 50%;
+    animation: pulseLogo 2s infinite ease-in-out;
+}
+
+@keyframes pulseLogo {
+    0% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.8; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+/* --- Dot Loading Animation --- */
+/* പഴയ loader-ring ക്ലാസ്സിനെ ഡോട്ടുകളാക്കി മാറ്റുന്നു */
+.loader-ring, .loader-dots {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    height: 20px;
+    width: auto;
+    border: none !important; /* പഴയ ബോർഡർ ഒഴിവാക്കുന്നു */
+    animation: none !important; /* പഴയ സ്പിൻ ആനിമേഷൻ ഒഴിവാക്കുന്നു */
+}
+
+/* ഡോട്ടുകൾ ഉണ്ടാക്കാൻ സ്യൂഡോ എലമെന്റുകൾ ഉപയോഗിക്കാതെ നേരിട്ട് HTML-ൽ ചേർക്കാം, 
+   അല്ലെങ്കിൽ നിലവിലുള്ള div-നെ മാറ്റാം. ഇവിടെ ലളിതമായ CSS ഹാക്ക് ഉപയോഗിക്കുന്നു. */
+.loader-ring::before,
+.loader-ring::after,
+.loader-ring {
+    /* പഴയ സ്റ്റൈലുകൾ ഓവർറൈഡ് ചെയ്യുന്നു */
+    border-radius: 0; 
+}
+
+/* ഡോട്ടുകൾക്കായി പുതിയ HTML ആവശ്യമില്ലാതെ, ഉള്ള CSS വെച്ച് അഡ്ജസ്റ്റ് ചെയ്യുന്നു. 
+   എന്നാൽ ഏറ്റവും നല്ലത് common.js-ൽ HTML മാറ്റുന്നതാണ്. 
+   ഇവിടെ CSS വഴി ഡോട്ട് ലോഡർ ഉണ്ടാക്കുന്നു: */
+
+.loader-dot {
+    width: 10px;
+    height: 10px;
+    background-color: var(--primary-gold);
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+}
+
+.loader-dot:nth-child(1) { animation-delay: -0.32s; }
+.loader-dot:nth-child(2) { animation-delay: -0.16s; }
+
+@keyframes bounce {
+    0%, 80%, 100% { transform: scale(0); }
+    40% { transform: scale(1); }
+}
+
+/* --- 2. പൊതുവായ സ്റ്റൈലുകൾ (Original) --- */
 body {
     font-family: var(--font-main);
     background-color: var(--bg-color);
