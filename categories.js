@@ -1,4 +1,4 @@
-// categories.js - Fixed Sizes & Dummy Cards Logic
+// categories.js - Fixed Layout with Dummy Cards
 
 import {
     collection,
@@ -59,13 +59,9 @@ function setupScrollAnimation() {
 
     productsScrollContainer.addEventListener('scroll', () => {
         const scrollTop = productsScrollContainer.scrollTop;
-        const scrollHeight = productsScrollContainer.scrollHeight;
-        const clientHeight = productsScrollContainer.clientHeight;
         
-        // Ensure scrolling is possible (Dummy cards ensure height)
-        const isScrollable = (scrollHeight - clientHeight) > 20;
-
-        if (scrollTop > 20 && isScrollable) {
+        // Always allow compact mode because min-height ensures scrolling
+        if (scrollTop > 20) {
             stickyHeader.classList.add('compact');
         } else {
             stickyHeader.classList.remove('compact');
@@ -262,15 +258,17 @@ function applyFilters() {
         filtered.sort((a, b) => b.price - a.price);
     }
 
+    // Hide default "No Results" text, we use Dummy Cards instead
     if (noResultsMsg) noResultsMsg.style.display = 'none';
 
+    // Render Real Products
     filtered.forEach(product => {
         renderProductCard(product, product.id);
     });
 
-    // *** DUMMY CARDS LOGIC (Scroll Fix) ***
-    // Ensure always enough cards (e.g. 10) to make the page scrollable
-    const MIN_CARDS = 10;
+    // *** ADD DUMMY CARDS TO FILL SPACE ***
+    // Ensure at least 8 cards (4 rows) to maintain scroll & layout
+    const MIN_CARDS = 8;
     const remainingSlots = MIN_CARDS - filtered.length;
 
     if (remainingSlots > 0) {
@@ -280,11 +278,30 @@ function applyFilters() {
     }
 }
 
+// Function to render "No Product" Dummy Card
 function renderDummyCard() {
     const card = document.createElement('div');
     card.className = 'category-product-card dummy-card';
-    // Transparent dummy card that takes up space but isn't visible
-    card.style.opacity = '0'; 
+    card.style.opacity = '0.4'; 
+    card.style.pointerEvents = 'none'; // Not clickable
+    card.style.borderColor = 'transparent';
+
+    card.innerHTML = `
+        <div class="cat-product-image-link" style="background-color: #111; display: flex; align-items: center; justify-content: center;">
+            <span style="color: #333; font-size: 0.75rem; font-weight: 600;">No Product</span>
+        </div>
+        <div class="cat-product-content">
+            <div style="background-color: #1a1a1a; height: 1em; width: 80%; margin-bottom: 5px; border-radius: 4px;"></div>
+            <div style="background-color: #1a1a1a; height: 1em; width: 50%; border-radius: 4px;"></div>
+            <div class="price-container" style="margin-top: auto;">
+                <div style="background-color: #1a1a1a; height: 1em; width: 40%; border-radius: 4px;"></div>
+            </div>
+            <div class="cat-product-buttons">
+                <div style="background-color: #1a1a1a; height: 30px; border-radius: 4px;"></div>
+                <div style="background-color: #1a1a1a; height: 30px; border-radius: 4px;"></div>
+            </div>
+        </div>
+    `;
     productGrid.appendChild(card);
 }
 
@@ -296,40 +313,33 @@ function renderProductCard(product, productId) {
     const rawImage = product.images && product.images[0] ? product.images[0] : '';
     const imageUrl = optimizeImage(rawImage, 400, 80);
     let priceHTML = `<span class="price-main">₹${price}</span>`;
-    let discountBadge = '';
-
     if (mrp > price) {
-        const discount = Math.round(((mrp - price) / mrp) * 100);
-        priceHTML += `<span class="price-mrp">₹${mrp}</span>`;
-        if (discount > 0) {
-            discountBadge = `<span class="discount-badge">${discount}% OFF</span>`;
-        }
+        priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
     }
     const isInCart = isItemInCart(productId);
-    const buttonText = isInCart ? "REMOVE" : "CART";
+    const buttonText = isInCart ? "Remove" : "Cart";
     const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
     card.innerHTML = `
         <a href="product.html?id=${productId}" class="cat-product-image-link">
             <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" loading="lazy">
-            ${discountBadge}
         </a>
         <div class="cat-product-content">
             <h3 class="cat-product-title">${product.name}</h3>
             <div class="price-container">${priceHTML}</div>
-        </div>
-        <div class="cat-product-buttons">
-            <button class="btn ${buttonClass} btn-add-to-cart"
-                data-id="${productId}"
-                data-name="${product.name}"
-                data-price="${price}"
-                data-mrp="${mrp}"
-                data-image="${imageUrl}"
-                data-size="${product.size || ''}">
-                <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                <span>${buttonText}</span>
-            </button>
-            <a href="product.html?id=${productId}" class="btn btn-primary-new"><span>VIEW</span></a>
+            <div class="cat-product-buttons">
+                <button class="btn ${buttonClass} btn-add-to-cart"
+                    data-id="${productId}"
+                    data-name="${product.name}"
+                    data-price="${price}"
+                    data-mrp="${mrp}"
+                    data-image="${imageUrl}"
+                    data-size="${product.size || ''}">
+                    <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    <span>${buttonText}</span>
+                </button>
+                <a href="product.html?id=${productId}" class="btn btn-primary-new"><span>View</span></a>
+            </div>
         </div>
     `;
     productGrid.appendChild(card);
@@ -344,14 +354,14 @@ document.addEventListener('click', (e) => {
         if (button.classList.contains('added-to-cart')) {
             removeFromCart(id);
             button.classList.remove('added-to-cart');
-            if (buttonText) buttonText.textContent = 'CART';
+            if (buttonText) buttonText.textContent = 'Cart';
         } else {
             const product = allProductsCache.find(p => p.id === id); 
             if (product) {
                 const cartProduct = { id: product.id, name: product.name, price: product.price, mrp: product.mrp, image: product.images && product.images[0] ? product.images[0] : '', size: product.size || '' };
                 addToCart(id, cartProduct);
                 button.classList.add('added-to-cart');
-                if (buttonText) buttonText.textContent = 'REMOVE';
+                if (buttonText) buttonText.textContent = 'Remove';
             }
         }
     }
