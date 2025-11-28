@@ -1,5 +1,4 @@
-// ഇതാണ് പുതിയ 'explore.js' ഫയൽ.
-// മാറ്റം: "Explore All Products" ടൈറ്റിലിന് പകരം ഹോം പേജ് ബാനർ ലോഡ് ചെയ്യുന്നു.
+// explore.js
 
 import {
     collection,
@@ -42,7 +41,6 @@ onAuthStateChanged(auth, (user) => {
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
     
-    // *** പുതിയത്: ബാനർ ലോഡ് ചെയ്യുന്നു ***
     const settings = await fetchSiteSettings();
     if (settings && settings.homeBannerUrl) {
         loadExploreBanner(settings.homeBannerUrl);
@@ -52,7 +50,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadProducts();     
 });
 
-// *** ബാനർ കാണിക്കാനുള്ള ഫംഗ്ഷൻ ***
 function loadExploreBanner(bannerUrl) {
     const bannerContainer = document.getElementById('explore-top-banner');
     if (!bannerContainer || !bannerUrl) return;
