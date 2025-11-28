@@ -1,12 +1,13 @@
 <!-- 
   ഇതാണ് ഹോം പേജ്. index.html
+  മാറ്റം: Preloader ഘടന പഴയതുപോലെയാക്കി (Logo Container തിരികെ കൊണ്ടുവന്നു).
 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JR-UD-HUB</title> <!-- Title Corrected -->
+    <title>JR-UD-HUB</title>
     
     <link rel="stylesheet" href="public.css">
     <link rel="stylesheet" href="home.css">
@@ -14,14 +15,21 @@
 </head>
 <body>
 
-    <!-- 0. പേജ് ലോഡർ -->
+    <!-- 0. പേജ് ലോഡർ (OLD STRUCTURE RESTORED) -->
     <div id="preloader">
-        <div class="loader-ring"></div>
+        <div class="loader-logo-container">
+            <!-- ലോഗോയും സ്പിന്നറും common.js & public.css വഴി വരും -->
+            <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
+            <div class="loader-ring"></div>
+        </div>
     </div>
 
     <!-- 1. ഹെഡർ -->
     <header class="main-header" id="main-header"></header>
     
+    <!-- 2. സൈഡ് മെനു (common.js വഴി) -->
+    <div class="nav-overlay" id="nav-overlay"></div>
+
     <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main>
         
@@ -32,9 +40,8 @@
         <section class="hero-section-new">
             <div class="swiper hero-slider-new" id="hero-slider-container">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <!-- സ്ലൈഡുകൾ -->
+                    <!-- സ്ലൈഡുകൾ index.js വഴി വരും -->
                 </div>
-                <!-- ഡോട്ടുകൾ -->
                 <div class="swiper-pagination hero-pagination-dots"></div>
             </div>
         </section>
@@ -46,14 +53,13 @@
 
         <!-- 3.3. For You (Top Sellers) -->
         <section class="home-section container">
-            <!-- ലൈൻ ഇല്ലാതെ വെറും ടെക്സ്റ്റ് -->
             <h2 class="section-title-new">For You</h2>
             <div class="swiper top-sellers-swiper-new">
                 <div class="swiper-wrapper" id="top-sellers-grid">
-                    <!-- ഉൽപ്പന്നങ്ങൾ -->
+                    <!-- ഉൽപ്പന്നങ്ങൾ index.js വഴി വരും -->
                 </div>
             </div>
-            <!-- Dot-to-Line Pagination -->
+            <!-- Pagination -->
             <div class="top-sellers-pagination-new"></div>
         </section>
 
@@ -61,7 +67,7 @@
         <section class="home-section container">
             <h2 class="section-title-new">SHOP BY CATEGORY</h2>
             <div id="category-grid-home" class="category-grid-vertical">
-                <!-- കാറ്റഗറികൾ -->
+                <!-- കാറ്റഗറികൾ index.js വഴി വരും -->
             </div>
         </section>
         
