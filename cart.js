@@ -1,112 +1,274 @@
-// ഇതാണ് ഷോപ്പിംഗ് കാർട്ടിന്റെ "തലച്ചോർ" (cart.js)
-// മാറ്റം: കാർട്ട് സേവ് ചെയ്യുന്ന കീ 'jrUdHubCart' എന്നാക്കി.
+// ഇതാണ് 'cart-page.js' ഫയൽ.
+// മാറ്റം: പുതിയ CSS ക്ലാസുകൾക്ക് അനുസരിച്ചുള്ള റെൻഡറിംഗ്.
 
-// കാർട്ട് ഡാറ്റ 'localStorage'-ൽ നിന്ന് എടുക്കുന്നു
-function getCart() {
-    // *** മാറ്റം: പേര് മാറ്റി ***
-    const cartData = localStorage.getItem('jrUdHubCart');
-    return cartData ? JSON.parse(cartData) : {};
-}
+import { db } from './firebase-config.js';
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { loadSiteSettings, optimizeImage } from './common.js'; 
+import { getCartItems, updateQuantity, removeFromCart, getCartTotal, getCartItemCount, getCartTotalMRP } from './cart.js';
 
-// കാർട്ട് ഡാറ്റ 'localStorage'-ലേക്ക് സേവ് ചെയ്യുന്നു
-function saveCart(cart) {
-    // *** മാറ്റം: പേര് മാറ്റി ***
-    localStorage.setItem('jrUdHubCart', JSON.stringify(cart));
-    // കാർട്ടിൽ മാറ്റം വരുമ്പോൾ, ഹെഡറിലെ ഐക്കൺ അപ്ഡേറ്റ് ചെയ്യാൻ ഒരു ഇവന്റ് അയക്കുന്നു
-    window.dispatchEvent(new CustomEvent('cartUpdated'));
-}
+const itemsContainer = document.getElementById('cart-items-container');
+const summaryContainer = document.getElementById('cart-summary-container');
+const cartErrorMessage = document.getElementById('cart-error-message');
+const priceLabelEl = document.getElementById('cart-price-label');
+const mrpTotalEl = document.getElementById('cart-mrp-total');
+const discountEl = document.getElementById('cart-discount');
+const savingsMessageEl = document.getElementById('cart-savings-message');
+const totalEl = document.getElementById('cart-total');
+const fullCheckoutButton = document.getElementById('full-checkout-button');
+const checkoutLoader = document.getElementById('checkout-loader');
 
-/**
- * ഒരു പ്രൊഡക്റ്റ് കാർട്ടിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു
- * @param {string} productId - പരിശോധിക്കേണ്ട പ്രൊഡക്റ്റ് ID
- * @returns {boolean} - കാർട്ടിൽ ഉണ്ടെങ്കിൽ true, അല്ലെങ്കിൽ false
- */
-export function isItemInCart(productId) {
-    const cart = getCart();
-    return cart.hasOwnProperty(productId);
-}
+let whatsappNumber = ''; 
 
-// ഒരു ഉൽപ്പന്നം കാർട്ടിലേക്ക് ചേർക്കുന്നു
-export function addToCart(productId, productDetails) {
-    const cart = getCart();
-    
-    const key = productId; 
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadSiteSettings(); 
+    await loadWhatsappNumber(); 
+    renderCartPage();   
+});
 
-    if (cart[key]) {
-        cart[key].quantity += 1;
-    } else {
-        cart[key] = {
-            ...productDetails,
-            quantity: 1
-        };
-    }
-    
-    saveCart(cart);
-}
-
-// കാർട്ടിലെ ഒരു ഉൽപ്പന്നത്തിന്റെ എണ്ണം മാറ്റുന്നു
-export function updateQuantity(productId, newQuantity) {
-    const cart = getCart();
-    
-    if (cart[productId]) {
-        if (newQuantity <= 0) {
-            delete cart[productId];
+async function loadWhatsappNumber() {
+    try {
+        const docRef = doc(db, "settings", "global");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists() && docSnap.data().whatsapp) {
+            whatsappNumber = docSnap.data().whatsapp;
         } else {
-            cart[productId].quantity = newQuantity;
+            console.log("WhatsApp number not found.");
         }
-        saveCart(cart);
+    } catch (error) {
+        console.error("Error fetching WhatsApp number: ", error);
     }
 }
 
-// ഉൽപ്പന്നം കാർട്ടിൽ നിന്ന് പൂർണ്ണമായും നീക്കം ചെയ്യുന്നു
-export function removeFromCart(productId) {
-    const cart = getCart();
+function renderCartPage() {
+    if (!itemsContainer || !summaryContainer) return;
+
+    const cart = getCartItems();
+    const cartKeys = Object.keys(cart);
+
+    if (cartKeys.length === 0) {
+        itemsContainer.innerHTML = `
+            <div class="empty-cart-message">
+                <h2>Your Cart is Empty</h2>
+                <p>Looks like you haven't added anything to your cart yet.</p>
+                <a href="categories.html" class="btn btn-primary-new">Continue Shopping</a>
+            </div>
+        `;
+        summaryContainer.style.display = 'none'; 
+        return;
+    }
+
+    summaryContainer.style.display = 'block';
+    itemsContainer.innerHTML = ''; 
+
+    cartKeys.forEach(key => {
+        const item = cart[key];
+        const itemId = item.id || key; 
+        
+        const itemElement = document.createElement('div');
+        itemElement.className = 'cart-item-card'; // New Class
+        
+        const sizeHTML = item.size ? `<span class="cart-item-size">Size: ${item.size}</span>` : '';
+        const productLink = `product.html?id=${itemId}`;
+        
+        const rawImage = item.image || 'https://placehold.co/150x150/1e1e1e/D4AF37?text=No+Image';
+        const optimizedImage = optimizeImage(rawImage, 150);
+
+        itemElement.innerHTML = `
+            <div class="cart-item-main">
+                <a href="${productLink}" class="cart-item-image-link">
+                    <img src="${optimizedImage}" alt="${item.name}" class="cart-item-image" loading="lazy">
+                </a>
+                <div class="cart-item-info">
+                    <a href="${productLink}" class="cart-item-title-link">
+                        <h3 class="cart-item-title">${item.name}</h3>
+                    </a>
+                    
+                    <div class="cart-item-meta">
+                        <span class="cart-item-price">₹${item.price.toFixed(2)}</span>
+                        ${sizeHTML}
+                    </div>
+
+                    <div class="quantity-control-wrapper">
+                        <div class="quantity-control">
+                            <button class="quantity-btn" data-id="${key}" data-change="-1">-</button>
+                            <input type="number" class="quantity-input" value="${item.quantity}" readonly>
+                            <button class="quantity-btn" data-id="${key}" data-change="1">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cart-item-actions">
+                <button class="action-btn remove-btn" data-id="${key}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    Remove
+                </button>
+                <button class="action-btn buy-now-btn" data-id="${key}">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg>
+                    Buy This Now
+                </button>
+            </div>
+        `;
+        itemsContainer.appendChild(itemElement);
+    });
+
+    updateCartSummary();
+}
+
+function updateCartSummary() {
+    const totalItems = getCartItemCount();
+    const subtotal = getCartTotal(); 
+    const totalMRP = getCartTotalMRP(); 
+    const discount = totalMRP - subtotal;
     
-    if (cart[productId]) {
-        delete cart[productId];
-        saveCart(cart);
+    if (priceLabelEl) priceLabelEl.textContent = `Price (${totalItems} items)`;
+    if (mrpTotalEl) mrpTotalEl.textContent = `₹${totalMRP.toFixed(2)}`;
+    if (totalEl) totalEl.textContent = `₹${subtotal.toFixed(2)}`;
+    
+    if (discount > 0) {
+        if (discountEl) {
+            discountEl.textContent = `- ₹${discount.toFixed(2)}`;
+            discountEl.parentElement.style.display = 'flex';
+        }
+        if (savingsMessageEl) {
+            savingsMessageEl.textContent = `You'll save ₹${discount.toFixed(2)} on this order!`;
+            savingsMessageEl.style.display = 'block';
+        }
+    } else {
+        if (discountEl) discountEl.parentElement.style.display = 'none';
+        if (savingsMessageEl) savingsMessageEl.style.display = 'none';
     }
 }
 
-// കാർട്ടിലെ ഉൽപ്പന്നങ്ങളുടെ ആകെ എണ്ണം കണക്കാക്കുന്നു (ഹെഡറിലെ ഐക്കണിന് വേണ്ടി)
-export function getCartItemCount() {
-    const cart = getCart();
-    let totalCount = 0;
-    for (const id in cart) {
-        totalCount += cart[id].quantity;
+itemsContainer.addEventListener('click', (e) => {
+    const target = e.target;
+    
+    // Quantity Buttons (closest ഉപയോഗിച്ച് കൃത്യമായി പിടിക്കുന്നു)
+    const qtyBtn = target.closest('.quantity-btn');
+    if (qtyBtn) {
+        const id = qtyBtn.dataset.id;
+        const change = parseInt(qtyBtn.dataset.change);
+        const cart = getCartItems();
+        if (cart[id]) { 
+            const newQuantity = cart[id].quantity + change;
+            updateQuantity(id, newQuantity);
+            renderCartPage();
+        }
+        return;
     }
-    return totalCount;
-}
 
-// കാർട്ടിലെ ആകെ തുക കണക്കാക്കുന്നു
-export function getCartTotal() {
-    const cart = getCart();
-    let total = 0;
-    for (const id in cart) {
-        total += cart[id].price * cart[id].quantity;
+    // Remove Button
+    const removeBtn = target.closest('.remove-btn');
+    if (removeBtn) {
+        const id = removeBtn.dataset.id;
+        removeFromCart(id);
+        renderCartPage();
+        return;
     }
-    return total;
-}
 
-// ആകെ MRP കണക്കാക്കുന്നു
-export function getCartTotalMRP() {
-    const cart = getCart();
-    let totalMRP = 0;
-    for (const id in cart) {
-        const item = cart[id];
-        const mrp = (item.mrp && item.mrp > item.price) ? item.mrp : item.price;
-        totalMRP += mrp * item.quantity;
+    // Buy Now Button
+    const buyBtn = target.closest('.buy-now-btn');
+    if (buyBtn) {
+        const id = buyBtn.dataset.id;
+        handleSingleOrder(id);
+        return;
     }
-    return totalMRP;
+});
+
+if (fullCheckoutButton) {
+    fullCheckoutButton.addEventListener('click', () => {
+        handleFullOrder();
+    });
 }
 
+function handleSingleOrder(itemId) {
+    if (!whatsappNumber) return showError("WhatsApp number not found.");
+    
+    const cart = getCartItems();
+    const item = cart[itemId];
+    
+    if (item) {
+        showLoader(true);
+        const itemMRP = ((item.mrp && item.mrp > item.price) ? item.mrp : item.price) * item.quantity;
+        const itemTotal = item.price * item.quantity;
+        const itemDiscount = itemMRP - itemTotal;
 
-// കാർട്ട് പൂർണ്ണമായും ക്ലിയർ ചെയ്യുന്നു (ഓർഡർ ചെയ്ത ശേഷം)
-export function clearCart() {
-    saveCart({});
+        const message = generateWhatsAppMessage([item], itemTotal, itemMRP, itemDiscount);
+        const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+        window.open(whatsappUrl, '_blank');
+        showLoader(false);
+    }
 }
 
-// നിലവിലെ കാർട്ട് വിവരങ്ങൾ നൽകുന്നു
-export function getCartItems() {
-    return getCart();
+function handleFullOrder() {
+    if (!whatsappNumber) return showError("WhatsApp number not found.");
+    
+    const cart = getCartItems();
+    const cartItems = Object.values(cart);
+    
+    if (cartItems.length === 0) {
+        return showError("Your cart is empty.");
+    }
+    
+    showLoader(true);
+    const total = getCartTotal();
+    const totalMRP = getCartTotalMRP();
+    const discount = totalMRP - total;
+    
+    const message = generateWhatsAppMessage(cartItems, total, totalMRP, discount);
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
+    
+    window.open(whatsappUrl, '_blank');
+    showLoader(false);
+}
+
+function generateWhatsAppMessage(items, totalAmount, totalMRP, discount) {
+    let message = "ഹായ് 👋\n";
+    message += "ഞാൻ താഴെയുള്ള പ്രോഡക്റ്റ് ഓർഡർ ചെയ്യാൻ ആഗ്രഹിക്കുന്നു.\n";
+    message += "____________________\n\n";
+
+    items.forEach(item => {
+        const itemId = item.id || Object.keys(getCartItems()).find(key => getCartItems()[key] === item);
+        const productLink = `${window.location.origin}/product.html?id=${itemId}`;
+        
+        message += `🛍️ ${item.name}\n`;
+        
+        if (item.size) {
+            message += `Size : ${item.size}\n`; 
+        }
+        
+        message += `Qty : ${item.quantity}\n`;
+        message += `Price : ₹${item.price.toFixed(2)}\n\n`;
+        message += `🔗 Product link :  ${productLink}\n\n`; 
+    });
+
+    message += `💰 *Total : ₹${totalMRP.toFixed(2)}*\n`;
+    
+    if (discount > 0) {
+        message += `🎁 Discount : ₹${discount.toFixed(2)}\n\n`;
+    } else {
+        message += `\n`;
+    }
+
+    message += `✅ \`Payable amount : ₹${totalAmount.toFixed(2)}\`\n`;
+    message += "\n____________________\n\n";
+    message += "ദയവായി എത്രയും പെട്ടെന്ന് പ്രോസസ് ചെയ്യുക.\n\n";
+    
+    if (discount > 0) {
+        message += `\`You saved ₹${discount.toFixed(2)} on this order!\``;
+    }
+
+    return message;
+}
+
+function showError(message) {
+    if (cartErrorMessage) {
+        cartErrorMessage.textContent = message;
+        cartErrorMessage.style.display = 'block';
+    }
+}
+
+function showLoader(show) {
+    if (checkoutLoader) checkoutLoader.style.display = show ? 'block' : 'none';
+    if (fullCheckoutButton) fullCheckoutButton.disabled = show;
 }
