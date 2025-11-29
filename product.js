@@ -1,5 +1,7 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// മാറ്റങ്ങൾ: "Description", "Specification" ഹെഡിംഗുകൾ ചേർത്തു.
+// മാറ്റങ്ങൾ: 
+// 1. Rating Summary Top, Star Input Bottom.
+// 2. വില പച്ച നിറത്തിൽ (CSS വഴി).
 
 import { 
     collection, 
@@ -150,7 +152,6 @@ async function loadProductDetails() {
         let descriptionHTML = '';
         if (product.description) {
             let linkifiedText = linkify(product.description);
-            // *** മാറ്റം: Description ഹെഡിംഗും ബോക്സും ***
             descriptionHTML = `
                 <h3 class="product-section-heading">Description</h3>
                 <div class="product-description">
@@ -170,7 +171,6 @@ async function loadProductDetails() {
                 });
                 listHTML += '</ul>';
                 
-                // *** മാറ്റം: Specification ഹെഡിംഗും ബോക്സും ***
                 specificationHTML = `
                     <h3 class="product-section-heading">Specification</h3>
                     <div class="product-specification-section">${listHTML}</div>
@@ -182,6 +182,7 @@ async function loadProductDetails() {
         const cartButtonText = isInCart ? "Remove" : "Add to Cart";
         const cartButtonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
+        // *** മാറ്റം: റേറ്റിംഗ് ഓർഡർ (Summary Top, Input Bottom) ***
         const actionBarHTML = `
             <div class="product-action-bar">
                 <div class="action-group">
@@ -204,6 +205,7 @@ async function loadProductDetails() {
             </div>
             
             <div class="rating-box" id="rating-box-main" style="display: none;">
+                <!-- 1. Rating Summary (Top) -->
                 <div class="rating-summary">
                     <div class="rating-bar-row"><span>5 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
                     <div class="rating-bar-row"><span>4 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
@@ -211,7 +213,10 @@ async function loadProductDetails() {
                     <div class="rating-bar-row"><span>2 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
                     <div class="rating-bar-row"><span>1 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
                 </div>
+                
                 <hr class="rating-divider">
+                
+                <!-- 2. Rate Input (Bottom) -->
                 <p class="rating-title">Rate this product</p>
                 <div class="star-rating" data-id="${productIdStr}">
                     ${[1, 2, 3, 4, 5].map(i => `<span class="star" data-value="${i}">&#9733;</span>`).join('')}
@@ -275,7 +280,6 @@ async function loadProductDetails() {
     }
 }
 
-// ... (Other functions remain same) ...
 function setupRealtimeListeners(productId) {
     const likesRef = collection(db, "products", productId, "likes");
     onSnapshot(likesRef, (snapshot) => {
@@ -329,6 +333,8 @@ function updateRatingSummary(counts, total) {
         const countSpan = row.querySelector('.bar-count');
         if (fill) fill.style.width = `${percentage}%`;
         if (countSpan) countSpan.textContent = count;
+        
+        // Colors: Green to Red
         if (starVal >= 4) fill.style.backgroundColor = 'var(--success-green)';
         else if (starVal === 3) fill.style.backgroundColor = '#f1c40f';
         else fill.style.backgroundColor = 'var(--error-red)';
