@@ -1,16 +1,21 @@
 /* ഇതാണ് 'explore.css' 
+   മാറ്റങ്ങൾ:
+   1. പ്ലെയിൻ ലേഔട്ട് (ബോർഡറുകൾ ഒഴിവാക്കി).
+   2. കാറ്റഗറി ഐക്കണിന് പച്ച ബോർഡർ.
+   3. സേവ് ഐക്കൺ വെള്ള നിറം.
+   4. ബാനർ ബോർഡർ ഡിസൈൻ.
 */
 
 /* --- 1. ഫീഡ് കണ്ടെയ്നർ --- */
 .explore-feed-container {
-    max-width: 700px; 
+    max-width: 600px; /* മൊബൈൽ വ്യൂവിന് അനുയോജ്യമായ വീതി */
     margin: 0 auto; 
     display: flex;
     flex-direction: column;
-    gap: 2rem; 
+    gap: 0; /* കാർഡുകൾക്കിടയിൽ ഗ്യാപ്പ് വേണ്ട */
 }
 
-/* --- പുതിയത്: എക്സ്പ്ലോർ പേജ് ബാനർ --- */
+/* --- എക്സ്പ്ലോർ പേജ് ബാനർ --- */
 .explore-top-banner {
     width: 100%;
     height: auto;
@@ -18,63 +23,78 @@
     position: relative;
     background-color: #000;
     overflow: hidden;
-    margin-bottom: 2rem; /* കാർഡുകളുമായി അകലം */
-    border-radius: 8px;  /* അല്പം വളവ് */
-    display: none; /* ജാവാസ്ക്രിപ്റ്റ് വഴി ഇമേജ് വന്നാൽ മാത്രം കാണിക്കും */
+    margin-bottom: 1rem;
+    border-radius: 0; 
+    display: none;
+    
+    /* *** മാറ്റം: ബാനർ ബോർഡർ ഡിസൈൻ *** */
+    border: 2px solid var(--primary-gold);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
 }
 
 .explore-top-banner img {
     width: 100%;
     height: auto;
     display: block;
-    max-height: 200px; /* മൊബൈലിൽ അധികം സ്ഥലം എടുക്കാതിരിക്കാൻ */
+    max-height: 200px;
     object-fit: cover;
     animation: fadeIn 0.8s ease-out;
 }
 
 @media (min-width: 768px) {
     .explore-top-banner img {
-        max-height: 300px; /* ഡെസ്ക്ടോപ്പിൽ വലിപ്പം കൂട്ടാം */
+        max-height: 300px;
     }
 }
 
-/* --- 2. പ്രൊഡക്റ്റ് കാർഡ് (പ്രധാനപ്പെട്ടത്) --- */
+/* --- 2. പ്രൊഡക്റ്റ് കാർഡ് (Plain Layout) --- */
 .explore-card {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
+    background-color: transparent; /* പ്ലെയിൻ ആക്കി */
+    border: none; /* ബോർഡർ ഒഴിവാക്കി */
+    border-radius: 0;
     overflow: hidden;
+    margin-bottom: 2rem; /* അടുത്ത പ്രൊഡക്റ്റുമായി അകലം */
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* വേർതിരിക്കാൻ ചെറിയ വര */
 }
 
-/* 2.1 കാറ്റഗറി ഹെഡർ (കാർഡിന് മുകളിൽ) */
+.explore-card:last-child {
+    border-bottom: none;
+}
+
+/* 2.1 കാറ്റഗറി ഹെഡർ */
 .explore-card-header {
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.75rem 1rem;
+    padding: 0.75rem 0; /* ഇടവും വലവും പാഡിംഗ് കുറച്ചു */
     text-decoration: none;
-    border-bottom: 1px solid var(--border-color);
-}
-.explore-card-header:hover {
-    background-color: #222;
-}
-.explore-category-img {
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid var(--border-color);
-}
-.explore-category-name {
-    font-weight: 500;
-    color: var(--text-color);
+    border-bottom: none; /* ഹെഡർ ലൈൻ ഒഴിവാക്കി */
 }
 
-/* 2.2 പ്രൊഡക്റ്റ് ഇമേജ് (സ്ലൈഡർ) */
+.explore-category-img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    object-fit: cover;
+    /* *** മാറ്റം: പച്ച ബോർഡർ *** */
+    border: 2px solid #00FF00; 
+    padding: 2px; /* ചിത്രവും ബോർഡറും തമ്മിൽ വിടവ് */
+}
+
+.explore-category-name {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 0.95rem;
+}
+
+/* 2.2 പ്രൊഡക്റ്റ് ഇമേജ് */
 .explore-image-swiper {
     width: 100%;
     aspect-ratio: 1 / 1; 
     background-color: #000;
+    border-radius: 8px; /* ചിത്രത്തിന് അല്പം വളവ് */
+    overflow: hidden;
 }
 .explore-image-swiper .swiper-slide img {
     width: 100%;
@@ -82,20 +102,19 @@
     object-fit: cover;
 }
 
-/* 2.3 പ്രൊഡക്റ്റ് വിവരങ്ങൾ (കാർഡിന് താഴെ) */
+/* 2.3 പ്രൊഡക്റ്റ് വിവരങ്ങൾ */
 .explore-card-content {
-    padding: 1rem;
+    padding: 1rem 0; /* സൈഡ് പാഡിംഗ് ഒഴിവാക്കി */
 }
 
-/* 2.4 ഐക്കൺ ബട്ടണുകൾ (ലൈക്ക്, കമന്റ്...) */
+/* 2.4 ഐക്കൺ ബട്ടണുകൾ */
 .explore-action-icons {
     display: flex;
     align-items: center;
-    gap: 1.5rem; 
-    margin-bottom: 1rem;
+    gap: 1.2rem; 
+    margin-bottom: 0.5rem;
 }
 
-/* Action Group (Icon + Count) */
 .action-group {
     display: flex;
     align-items: center;
@@ -113,169 +132,77 @@
     cursor: pointer;
     padding: 0;
     color: var(--text-color); 
-    transition: color 0.2s ease, transform 0.2s ease; 
+    transition: transform 0.2s ease; 
 }
 .explore-action-icons button svg {
-    width: 24px;
-    height: 24px;
+    width: 26px; /* ഐക്കൺ അല്പം വലുതാക്കി */
+    height: 26px;
     fill: none;
     stroke: currentColor;
-    stroke-width: 2;
+    stroke-width: 2; /* കട്ടി കൂട്ടി */
     stroke-linecap: round;
     stroke-linejoin: round;
 }
 .explore-action-icons button.bookmark-btn {
     margin-left: auto; 
 }
-.explore-action-icons button:hover {
-    color: var(--text-muted);
-}
 
+/* *** മാറ്റം: സേവ് ഐക്കൺ ഫിൽ കളർ വെള്ള *** */
 .explore-action-icons button.bookmark-btn.added-to-cart {
-    color: var(--primary-gold); 
-    transform: scale(1.2); 
+    color: #ffffff; /* White */
+    transform: scale(1.1); 
 }
-
-/* *** റേറ്റിംഗ് ബോക്സ് സ്റ്റൈലുകൾ *** */
-.rating-box {
-    background-color: #1a1a1a;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
+.explore-action-icons button.bookmark-btn.added-to-cart svg {
+    fill: #ffffff;
+    stroke: #ffffff;
 }
-
-/* *** പുതിയത്: റേറ്റിംഗ് സമ്മറി (Bars) *** */
-.rating-summary {
-    margin-bottom: 1rem;
-}
-.rating-bar-row {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin-bottom: 4px;
-}
-.rating-bar-row span:first-child {
-    width: 30px; /* സ്റ്റാർ നമ്പർ */
-    display: flex;
-    align-items: center;
-    gap: 2px;
-}
-.star-icon {
-    font-size: 0.7rem;
-}
-.bar-bg {
-    flex-grow: 1;
-    height: 6px;
-    background-color: #333;
-    border-radius: 3px;
-    overflow: hidden;
-}
-.bar-fill {
-    height: 100%;
-    background-color: var(--primary-gold);
-    width: 0%; /* JS വഴി മാറും */
-    transition: width 0.3s ease;
-    border-radius: 3px;
-}
-.bar-count {
-    width: 20px;
-    text-align: right;
-}
-.rating-divider {
-    border: 0;
-    height: 1px;
-    background-color: #333;
-    margin: 1rem 0;
-}
-
-.rating-title {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin-bottom: 0.5rem;
-}
-.star-rating {
-    font-size: 1.5rem;
-    color: #555; /* ഡിഫോൾട്ട് ഗ്രേ കളർ */
-    cursor: pointer;
-    margin-bottom: 0.5rem;
-}
-.star {
-    transition: color 0.2s;
-}
-
-/* *** സ്റ്റാർ കളറുകൾ (Red -> Yellow -> Green) *** */
-.star.filled.red-star {
-    color: #e74c3c; /* Red */
-}
-.star.filled.yellow-star {
-    color: #f1c40f; /* Yellow */
-}
-.star.filled.green-star {
-    color: #2ecc71; /* Green */
-}
-/* ഡിഫോൾട്ട് ഫിൽ കളർ */
-.star.filled {
-    color: var(--primary-gold); 
-}
-
-.star:hover {
-    color: var(--secondary-gold);
-}
-.rating-feedback {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-.comment-input-disabled input {
-    width: 100%;
-    padding: 0.75rem;
-    background-color: #2a2a2a;
-    border: 1px solid #333;
-    border-radius: 5px;
-    color: var(--text-muted);
-    font-style: italic;
-    cursor: not-allowed;
-}
-
 
 /* 2.5 പ്രൊഡക്റ്റ് പേരും വിലയും */
 .explore-product-title {
-    font-size: 1.2rem;
+    font-size: 1rem;
     font-weight: 600;
     color: var(--text-color);
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 .explore-card-content .price-container {
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 .explore-card-content .price-main {
-    font-size: 1.2rem;
+    font-size: 1rem;
+    color: var(--text-color);
 }
 
-/* 2.6 വിവരണം (Description) */
+/* *** മാറ്റം: വിവരണം (Description) - One Line Logic *** */
 .explore-product-description {
     color: var(--text-muted);
-    font-size: 0.95rem;
-    line-height: 1.5;
+    font-size: 0.9rem;
+    line-height: 1.4;
 }
-.explore-product-description .read-more-btn {
+
+.description-text {
+    display: inline;
+}
+
+/* വരി ചുരുക്കാനുള്ള ക്ലാസ് */
+.description-text.truncated {
+    display: -webkit-box;
+    -webkit-line-clamp: 1; /* ഒരു വരി മാത്രം */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+}
+
+.read-more-btn {
     background: none;
     border: none;
-    color: var(--primary-gold);
+    color: var(--text-muted); /* ഗ്രേ കളർ */
     cursor: pointer;
-    font-weight: 600;
+    font-size: 0.9rem;
     padding: 0;
     margin-left: 5px;
+    opacity: 0.8;
 }
-
-.explore-product-buttons {
-    display: none; 
-}
-
 
 /* --- 3. ലോഡിംഗ് --- */
 .loading-placeholder-full {
@@ -289,19 +216,19 @@
     padding: 2rem;
 }
 
-/* --- 4. ഷെയർ ബട്ടൺ ഫീഡ്ബാക്ക് --- */
-.explore-action-icons button.share-btn.shared-success {
-    color: var(--success-green);
-    transform: scale(1.2);
+/* --- റേറ്റിംഗ് ബോക്സ് --- */
+.rating-box {
+    background-color: #111;
+    border: 1px solid #333;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
 }
-.explore-action-icons button.share-btn.shared-success svg {
-    stroke: var(--success-green);
+.rating-summary { margin-bottom: 1rem; }
+.rating-bar-row {
+    display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px;
 }
-
-.explore-action-icons button.share-btn.shared-fail {
-    color: var(--error-red);
-    transform: scale(1.2);
-}
-.explore-action-icons button.share-btn.shared-fail svg {
-    stroke: var(--error-red);
-}
+.bar-bg { flex-grow: 1; height: 4px; background-color: #333; border-radius: 2px; }
+.bar-fill { height: 100%; background-color: var(--primary-gold); width: 0%; border-radius: 2px; }
+.star-rating { font-size: 1.5rem; color: #555; cursor: pointer; }
+.star.filled { color: var(--primary-gold); }
