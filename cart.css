@@ -1,8 +1,7 @@
 /* ഇത് cart.css
    മാറ്റങ്ങൾ:
-   1. കാർട്ട് ഇനങ്ങൾക്ക് വൃത്തിയുള്ള കാർഡ് ഡിസൈൻ.
-   2. ക്വാണ്ടിറ്റി ബട്ടണുകൾക്ക് പുതിയ സ്റ്റൈൽ.
-   3. "Place Order" ബട്ടൺ ഹൈലൈറ്റ് ചെയ്തു.
+   1. "Place All Order" ബട്ടൺ ഫ്ലോട്ടിംഗ് ആക്കി (Fixed at Bottom).
+   2. പേജിന്റെ താഴെ ബട്ടണിനായി സ്ഥലം വിട്ടു.
 */
 
 /* --- 1. കാർട്ട് പേജ് ലേഔട്ട് --- */
@@ -10,7 +9,8 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    padding-bottom: 2rem;
+    /* *** മാറ്റം: ഫ്ലോട്ടിംഗ് ബട്ടൺ വരുമ്പോൾ കണ്ടെന്റ് മറയാതിരിക്കാൻ പാഡിംഗ് കൂട്ടി *** */
+    padding-bottom: 100px; 
 }
 
 /* --- 2. ഉൽപ്പന്നങ്ങളുടെ ലിസ്റ്റ് (ഇടതുവശം) --- */
@@ -21,7 +21,7 @@
 }
 
 .cart-item-card {
-    background-color: var(--card-bg); /* കാർഡ് ബാക്ക്ഗ്രൗണ്ട് */
+    background-color: var(--card-bg); 
     border: 1px solid var(--border-color);
     border-radius: 12px;
     overflow: hidden;
@@ -34,7 +34,7 @@
     border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* കാർഡിന്റെ മുകൾ ഭാഗം (ചിത്രവും വിവരങ്ങളും) */
+/* കാർഡിന്റെ മുകൾ ഭാഗം */
 .cart-item-main {
     display: flex;
     padding: 1rem;
@@ -148,7 +148,7 @@
     margin: 0;
 }
 
-/* ആക്ഷൻ ബട്ടണുകൾ (താഴെ) */
+/* ആക്ഷൻ ബട്ടണുകൾ */
 .cart-item-actions {
     display: flex;
 }
@@ -172,7 +172,6 @@
     border-right: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-/* Remove Button Style */
 .btn-remove {
     color: var(--text-muted);
 }
@@ -181,9 +180,8 @@
     background-color: rgba(231, 76, 60, 0.05);
 }
 
-/* Buy Now Button Style */
 .btn-buy-single {
-    color: #24a66e; /* Green */
+    color: #24a66e; 
 }
 .btn-buy-single:hover {
     background-color: rgba(36, 166, 110, 0.05);
@@ -208,7 +206,7 @@
     border-radius: 12px;
     padding: 1.5rem;
     position: sticky;
-    top: calc(var(--header-height) + 20px); /* ഹെഡറിന് താഴെ നിൽക്കാൻ */
+    top: calc(var(--header-height) + 20px); 
 }
 
 .cart-summary-card h2 {
@@ -265,29 +263,38 @@
     display: none;
 }
 
-/* Place Order Button */
+/* *** മാറ്റം: Floating Button Style (Place All Order) *** */
 .btn-checkout-full {
-    width: 100%;
+    position: fixed; /* സ്ക്രീനിൽ ഫിക്സ് ചെയ്യുന്നു */
+    bottom: 20px; /* താഴെ നിന്ന് 20px മുകളിൽ */
+    left: 50%;
+    transform: translateX(-50%); /* നടുവിൽ കൊണ്ടുവരാൻ */
+    width: 90%; /* മൊബൈലിൽ 90% വീതി */
+    max-width: 500px; /* ഡെസ്ക്ടോപ്പിൽ വലിപ്പം കൂടാതിരിക്കാൻ */
     padding: 1rem;
     font-size: 1.1rem;
-    margin-top: 1.5rem;
     background-color: #24a66e !important;
     border: none !important;
     color: #fff !important;
-    border-radius: 8px;
+    border-radius: 50px; /* Pill Shape */
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    box-shadow: 0 4px 15px rgba(36, 166, 110, 0.3);
-    transition: transform 0.2s, box-shadow 0.2s;
+    z-index: 1000; /* എല്ലാത്തിനും മുകളിൽ */
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); /* നിഴൽ */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .btn-checkout-full:hover {
     background-color: #1e8c5b !important;
-    box-shadow: 0 6px 20px rgba(36, 166, 110, 0.4);
-    transform: translateY(-2px);
+    transform: translateX(-50%) translateY(-3px); /* ഹോവർ ചെയ്യുമ്പോൾ അല്പം പൊങ്ങും */
+    box-shadow: 0 8px 25px rgba(36, 166, 110, 0.4);
+}
+
+.btn-checkout-full:active {
+    transform: translateX(-50%) scale(0.98);
 }
 
 /* Empty Cart */
@@ -323,7 +330,7 @@
 @media (min-width: 900px) {
     .cart-page-layout-new {
         display: grid;
-        grid-template-columns: 2fr 1.2fr; /* ഗ്രിഡ് ലേഔട്ട് */
+        grid-template-columns: 2fr 1.2fr; 
         align-items: flex-start;
         gap: 2rem;
     }
@@ -339,5 +346,9 @@
     }
     .cart-item-price {
         font-size: 1rem;
+    }
+    /* മൊബൈലിൽ ഫ്ലോട്ടിംഗ് ബട്ടൺ നാവിഗേഷന് മുകളിൽ വരാൻ */
+    .btn-checkout-full {
+        bottom: 80px; /* ബോട്ടം നാവിഗേഷൻ ഉണ്ടെങ്കിൽ അതിന് മുകളിൽ */
     }
 }
