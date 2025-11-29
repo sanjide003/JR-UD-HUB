@@ -1,8 +1,7 @@
 /* ഇത് product.CSS
    മാറ്റങ്ങൾ:
-   1. ഡിസ്ക്രിപ്ഷൻ & സ്പെസിഫിക്കേഷൻ സെക്ഷന് ഗ്രേ ബാക്ക്ഗ്രൗണ്ട്.
-   2. ടെക്സ്റ്റ് വെള്ള നിറം.
-   3. ഇടതുവശത്ത് പാഡിംഗ് (1.5rem ~ 1cm).
+   1. ഹെഡിംഗ് കളർ ചാരനിറം (Gray).
+   2. ഹൈറ്റ് ഓട്ടോമാറ്റിക് (കൂടാനും കുറയാനും).
 */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
@@ -211,26 +210,29 @@
 
 /* --- സെക്ഷൻ ഹെഡിംഗ് സ്റ്റൈൽ (Description & Specification) --- */
 .product-section-heading {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
-    color: #ffffff; /* White Text */
-    margin-bottom: 0.8rem;
+    
+    /* *** മാറ്റം: ഹെഡിംഗ് കളർ ചാരനിറം (Gray/Light Black) *** */
+    color: #a0a0a0; 
+    
+    margin-bottom: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    padding-left: 1.5rem; /* ടെക്സ്റ്റിന് നേരെ വരാൻ */
 }
 
-/* --- ഡിസ്ക്രിപ്ഷൻ ബോക്സ് സ്റ്റൈലിംഗ് --- */
+/* --- ഡിസ്ക്രിപ്ഷൻ ബോക്സ് സ്റ്റൈലിംഗ് (Plain & Auto Height) --- */
 .product-description {
     margin-bottom: 1.5rem;
-    color: #ffffff; /* White Text */
+    color: #ffffff; /* ടെക്സ്റ്റ് വെള്ള */
     
-    /* *** മാറ്റം: ഗ്രേ ബാക്ക്ഗ്രൗണ്ട് *** */
-    background-color: #1e1e1e; 
+    background-color: transparent; 
     border: none;
     
-    /* *** മാറ്റം: പാഡിംഗ് (ഇടതുവശം 1.5rem ~ 1cm) *** */
-    padding: 1.5rem; 
-    border-radius: 8px;
+    /* പാഡിംഗ് (ഇടതുവശം 1.5rem) */
+    padding: 0 0 0 1.5rem; 
+    
     font-size: 0.95rem;
     line-height: 1.7;
     
@@ -242,7 +244,10 @@
     word-wrap: break-word;     
     word-break: break-word;    
     white-space: pre-wrap;     
-    height: auto;
+    
+    /* *** മാറ്റം: ടെക്സ്റ്റിനനുസരിച്ച് ഉയരം മാറും *** */
+    height: auto; 
+    min-height: 0;
 }
 
 .product-description a { 
@@ -255,30 +260,32 @@
     display: block;
 }
 
-/* --- സ്പെസിഫിക്കേഷൻ ബോക്സ് സ്റ്റൈലിംഗ് --- */
+/* --- സ്പെസിഫിക്കേഷൻ ബോക്സ് സ്റ്റൈലിംഗ് (Plain & Auto Height) --- */
 .product-specification-section {
     margin-bottom: 1.5rem;
     
-    /* *** മാറ്റം: ഗ്രേ ബാക്ക്ഗ്രൗണ്ട് *** */
-    background-color: #1e1e1e;
+    background-color: transparent;
     border: none;
     
-    /* *** മാറ്റം: പാഡിംഗ് (ഇടതുവശം 1.5rem ~ 1cm) *** */
-    padding: 1.5rem;
-    border-radius: 8px;
+    /* പാഡിംഗ് (ഇടതുവശം 1.5rem) */
+    padding: 0 0 0 1.5rem;
     
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
     overflow-wrap: break-word;
+    
+    /* *** മാറ്റം: ടെക്സ്റ്റിനനുസരിച്ച് ഉയരം മാറും *** */
     height: auto; 
+    min-height: 0;
 }
 
 .product-specs-list { list-style-type: none; padding: 0; margin: 0; }
 .product-specs-list li {
     margin-bottom: 0.5rem; 
-    color: #ffffff; /* White Text */
+    color: #ffffff; 
     position: relative; 
+    /* ബുള്ളറ്റ് പോയിന്റിന് സ്ഥലം */
     padding-left: 1rem; 
     font-size: 0.95rem;
     line-height: 1.6;
@@ -475,6 +482,7 @@
     .product-detail-grid { grid-template-columns: 1fr 1fr; }
     .product-actions-grid { max-width: 400px; }
     
+    /* Desktop Fixed Height */
     .product-gallery-swiper {
         height: 550px; 
     }
