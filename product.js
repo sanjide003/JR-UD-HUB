@@ -1,5 +1,9 @@
-// ഇതാണ് 'product.js' ഫയൽ.
-// മാറ്റം: 'Buy on WhatsApp' ക്ലിക്ക് ചെയ്യുമ്പോൾ കാർട്ട് പേജിലെ അതേ ഫോർമാറ്റിൽ മെസ്സേജ് അയക്കുന്നു.
+// product.js - Final Version
+// Includes:
+// 1. Rating Summary moved to TOP.
+// 2. Star Input moved to BOTTOM.
+// 3. Multi-color Star Rating (Red-to-Green).
+// 4. Linkify function for description.
 
 import { 
     collection, 
@@ -28,7 +32,6 @@ let currentProduct = null;
 let whatsappNumber = ''; 
 let currentUser = null;
 
-// ഓതന്റിക്കേഷൻ ലിസണർ
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
@@ -148,22 +151,32 @@ async function loadProductDetails() {
             `;
         }
 
-        let descriptionHTML = 'No description available.';
+        let descriptionHTML = '';
         if (product.description) {
             let linkifiedText = linkify(product.description);
-            descriptionHTML = linkifiedText.replace(/\n/g, '<br>');
+            descriptionHTML = `
+                <h3 class="product-section-heading">Description</h3>
+                <div class="product-description">
+                    <div class="description-content" id="desc-content">${linkifiedText.replace(/\n/g, '<br>')}</div>
+                </div>
+            `;
         }
 
         let specificationHTML = '';
         if (product.specification) {
             const points = product.specification.split('\n').filter(line => line.trim() !== '');
             if (points.length > 0) {
-                specificationHTML = '<ul class="product-specs-list">';
+                let listHTML = '<ul class="product-specs-list">';
                 points.forEach(point => {
                     const cleanPoint = point.replace(/^-\s*/, '').trim();
-                    specificationHTML += `<li>${cleanPoint}</li>`;
+                    listHTML += `<li>${cleanPoint}</li>`;
                 });
-                specificationHTML += '</ul>';
+                listHTML += '</ul>';
+                
+                specificationHTML = `
+                    <h3 class="product-section-heading">Specification</h3>
+                    <div class="product-specification-section">${listHTML}</div>
+                `;
             }
         }
 
@@ -171,7 +184,7 @@ async function loadProductDetails() {
         const cartButtonText = isInCart ? "Remove" : "Add to Cart";
         const cartButtonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
-        // ആക്ഷൻ ബാർ HTML
+        // *** Rating Box: Summary Top, Input Bottom ***
         const actionBarHTML = `
             <div class="product-action-bar">
                 <div class="action-group">
@@ -193,17 +206,15 @@ async function loadProductDetails() {
                 </div>
             </div>
             
-            <!-- റേറ്റിംഗ് ബോക്സ് -->
             <div class="rating-box" id="rating-box-main" style="display: none;">
-                <!-- റേറ്റിംഗ് സമ്മറി -->
+                <!-- Summary First -->
                 <div class="rating-summary">
-                    <div class="rating-bar-row"><span>5 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>4 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>3 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>2 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>1 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <!-- JS will fill this -->
                 </div>
+                
                 <hr class="rating-divider">
+                
+                <!-- Input Last -->
                 <p class="rating-title">Rate this product</p>
                 <div class="star-rating" data-id="${productIdStr}">
                     ${[1, 2, 3, 4, 5].map(i => `<span class="star" data-value="${i}">&#9733;</span>`).join('')}
@@ -214,27 +225,18 @@ async function loadProductDetails() {
 
         const infoHTML = `
             <div class="product-info">
-                <!-- 1. ലൈക്ക്, കമന്റ്, ഷെയർ ബട്ടണുകൾ -->
                 ${actionBarHTML}
-
-                <!-- 2. പ്രൊഡക്റ്റ് പേര് -->
                 <h1 class="product-title">${product.name}</h1>
                 
-                <!-- 3. വില -->
                 <div class="price-container large">
                     ${priceHTML}
                 </div>
 
-                <!-- 4. സ്പെസിഫിക്കേഷൻ -->
-                ${specificationHTML ? `<div class="product-specification-section">${specificationHTML}</div>` : ''}
+                ${specificationHTML ? specificationHTML : ''}
 
-                <!-- 5. ഡിസ്ക്രിപ്ഷൻ -->
-                <div class="product-description">
-                    ${descriptionHTML}
-                </div>
+                ${descriptionHTML ? descriptionHTML : ''}
                 
                 <div class="product-actions-grid">
-                    <!-- Add to Cart Button -->
                     <button class="btn ${cartButtonClass}" id="add-to-cart-btn">
                         <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
@@ -244,7 +246,6 @@ async function loadProductDetails() {
                         <span>${cartButtonText}</span>
                     </button>
                     
-                    <!-- WhatsApp Button -->
                     <a class="btn btn-whatsapp" id="buy-on-whatsapp-btn" href="#">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg>
                         Buy on WhatsApp
@@ -277,20 +278,16 @@ async function loadProductDetails() {
     }
 }
 
-// *** റിയൽ ടൈം അപ്ഡേറ്റ്സ് ***
 function setupRealtimeListeners(productId) {
-    // Likes
     const likesRef = collection(db, "products", productId, "likes");
     onSnapshot(likesRef, (snapshot) => {
         const count = snapshot.size;
         const likeCountSpan = document.querySelector('.like-count');
         if (likeCountSpan) likeCountSpan.textContent = count;
-
         if (currentUser) {
             const isLiked = snapshot.docs.some(doc => doc.id === currentUser.uid);
             const likeBtn = document.querySelector('.like-btn');
             const svg = likeBtn.querySelector('svg');
-            
             if (isLiked) {
                 likeBtn.classList.add('liked');
                 svg.style.fill = 'var(--error-red)';
@@ -303,22 +300,17 @@ function setupRealtimeListeners(productId) {
         }
     });
 
-    // Ratings
     const ratingsRef = collection(db, "products", productId, "ratings");
     onSnapshot(ratingsRef, (snapshot) => {
         const count = snapshot.size;
         const ratingCountSpan = document.querySelector('.rating-count');
         if (ratingCountSpan) ratingCountSpan.textContent = count;
-
-        // Calculate Summary
         const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
         snapshot.forEach(doc => {
             const val = doc.data().rating;
             if (counts[val] !== undefined) counts[val]++;
         });
         updateRatingSummary(counts, count);
-
-        // User Rating
         if (currentUser) {
             const userRatingDoc = snapshot.docs.find(doc => doc.id === currentUser.uid);
             if (userRatingDoc) {
@@ -329,43 +321,48 @@ function setupRealtimeListeners(productId) {
 }
 
 function updateRatingSummary(counts, total) {
-    const summaryRows = document.querySelectorAll('.rating-bar-row');
+    const summaryContainer = document.querySelector('.rating-summary');
+    if (!summaryContainer) return;
+    
+    let html = '';
     const keys = [5, 4, 3, 2, 1];
     
-    keys.forEach((starVal, index) => {
-        const row = summaryRows[index];
+    keys.forEach((starVal) => {
         const count = counts[starVal];
         const percentage = total > 0 ? (count / total) * 100 : 0;
         
-        const fill = row.querySelector('.bar-fill');
-        const countSpan = row.querySelector('.bar-count');
-        
-        if (fill) fill.style.width = `${percentage}%`;
-        if (countSpan) countSpan.textContent = count;
-        
-        if (starVal >= 4) fill.style.backgroundColor = 'var(--success-green)';
-        else if (starVal === 3) fill.style.backgroundColor = '#f1c40f';
-        else fill.style.backgroundColor = 'var(--error-red)';
+        let color = '#ff4d4d'; // Red (1)
+        if (starVal === 2) color = '#ff9f43'; // Orange
+        if (starVal === 3) color = '#feca57'; // Yellow
+        if (starVal === 4) color = '#1dd1a1'; // Light Green
+        if (starVal === 5) color = '#10ac84'; // Dark Green
+
+        html += `
+            <div class="rating-bar-row">
+                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
+                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
+                <span class="bar-count">${count}</span>
+            </div>
+        `;
     });
+    summaryContainer.innerHTML = html;
 }
 
 function updateStarUI(value) {
     const stars = document.querySelectorAll('.star');
     const feedback = document.querySelector('.rating-feedback');
     
-    let colorClass = '';
-    if (value <= 2) colorClass = 'red-star';
-    else if (value === 3) colorClass = 'yellow-star';
-    else colorClass = 'green-star';
+    const colorClass = `filled-${value}`; 
 
     stars.forEach(s => {
         s.className = 'star'; 
         if (parseInt(s.dataset.value) <= value) {
-            s.classList.add('filled', colorClass);
+            s.classList.add(colorClass);
         }
     });
     
-    if (feedback) feedback.textContent = `You rated: ${value} stars`;
+    const messages = ["Poor", "Fair", "Good", "Very Good", "Excellent"];
+    if (feedback) feedback.textContent = value > 0 ? messages[value - 1] : "Tap a star to rate";
 }
 
 function createRipple(event, button) {
@@ -374,35 +371,26 @@ function createRipple(event, button) {
     const size = Math.max(rect.width, rect.height);
     const x = event.clientX - rect.left - size / 2;
     const y = event.clientY - rect.top - size / 2;
-
     ripple.style.cssText = `
         position: absolute; width: ${size}px; height: ${size}px;
         left: ${x}px; top: ${y}px; border-radius: 50%;
         background: rgba(212, 175, 55, 0.4); transform: scale(0);
         animation: ripple-animation 0.6s ease-out; pointer-events: none;
     `;
-
     button.appendChild(ripple);
     setTimeout(() => ripple.remove(), 600);
 }
 
-// Ripple Animation Style Injection
 const style = document.createElement('style');
-style.textContent = `
-    @keyframes ripple-animation {
-        to { transform: scale(2); opacity: 0; }
-    }
-`;
+style.textContent = `@keyframes ripple-animation { to { transform: scale(2); opacity: 0; } }`;
 document.head.appendChild(style);
 
 function setupProductActionButtons() {
     const container = document.querySelector('.product-info');
     if(!container) return;
-
     container.addEventListener('click', async (e) => {
         const target = e.target;
         
-        // Like
         const likeBtn = target.closest('.like-btn');
         if(likeBtn && currentUser) {
             e.preventDefault();
@@ -419,7 +407,6 @@ function setupProductActionButtons() {
             } catch(err) { console.error(err); }
         }
 
-        // Rating Toggle
         const commentBtn = target.closest('.comment-btn');
         if(commentBtn) {
             e.preventDefault();
@@ -427,7 +414,6 @@ function setupProductActionButtons() {
             ratingBox.style.display = ratingBox.style.display === 'none' ? 'block' : 'none';
         }
 
-        // Star Click
         if(target.classList.contains('star') && currentUser) {
             const star = target;
             const productId = star.parentElement.dataset.id;
@@ -438,7 +424,6 @@ function setupProductActionButtons() {
             } catch(err) { console.error(err); }
         }
 
-        // Share
         const shareBtn = target.closest('.share-btn');
         if(shareBtn) {
             e.preventDefault();
@@ -451,15 +436,12 @@ function setupProductActionButtons() {
             } catch(err) { console.error(err); }
         }
         
-        // Cart Logic
         const cartButton = target.closest('#add-to-cart-btn');
         if (cartButton) {
             if (!currentProduct) return;
             const buttonText = cartButton.querySelector('span');
             const id = currentProduct.id;
-
             createRipple(e, cartButton);
-
             if (cartButton.classList.contains('added-to-cart')) {
                 removeFromCart(id);
                 cartButton.classList.remove('added-to-cart');
@@ -471,26 +453,18 @@ function setupProductActionButtons() {
             }
         }
         
-        // WhatsApp Logic (പുതിയ ഫോർമാറ്റ്)
         const whatsappButton = target.closest('#buy-on-whatsapp-btn');
         if (whatsappButton) {
             e.preventDefault();
             if (whatsappNumber && currentProduct) {
-                // *** മാറ്റം: പുതിയ ഫോർമാറ്റ് ജനറേഷൻ ***
                 const itemTotal = currentProduct.price;
                 const itemMRP = (currentProduct.mrp > currentProduct.price) ? currentProduct.mrp : currentProduct.price;
                 const itemDiscount = itemMRP - itemTotal;
-                
-                // ക്വാണ്ടിറ്റി 1 എന്ന് കണക്കാക്കുന്നു (സിംഗിൾ പ്രോഡക്റ്റ് ബൈ ആയതിനാൽ)
-                // വേണമെങ്കിൽ കാർട്ടിലെ ക്വാണ്ടിറ്റി ചെക്ക് ചെയ്യാം, പക്ഷെ ഇത് 'Buy Now' ആണ്.
                 const qty = 1; 
                 const finalTotal = itemTotal * qty;
                 const finalMRP = itemMRP * qty;
                 const finalDiscount = itemDiscount * qty;
-
-                // currentProduct-ൽ quantity ഫീൽഡ് ഇല്ല, അതിനാൽ താൽക്കാലികമായി ചേർക്കുന്നു
                 const productForMsg = { ...currentProduct, quantity: qty };
-
                 const message = generateWhatsAppMessage([productForMsg], finalTotal, finalMRP, finalDiscount);
                 window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
             }
@@ -498,47 +472,25 @@ function setupProductActionButtons() {
     });
 }
 
-// *** WhatsApp Message Generator Function (Reused from Cart Page Logic) ***
 function generateWhatsAppMessage(items, totalAmount, totalMRP, discount) {
     let message = "ഹായ് 👋\n";
     message += "ഞാൻ താഴെയുള്ള പ്രോഡക്റ്റ് ഓർഡർ ചെയ്യാൻ ആഗ്രഹിക്കുന്നു.\n";
     message += "____________________\n\n";
-
     items.forEach(item => {
         const itemId = item.id; 
         const productLink = `${window.location.origin}/product.html?id=${itemId}`;
-        
         message += `🛍️ ${item.name}\n`;
-        
-        if (item.size) {
-            message += `Size : ${item.size}\n`; 
-        }
-        
+        if (item.size) { message += `Size : ${item.size}\n`; }
         message += `Qty : ${item.quantity}\n`;
         message += `Price : ₹${item.price.toFixed(2)}\n\n`;
         message += `🔗 Product link :  ${productLink}\n\n`; 
     });
-
-    // Summary Section
     message += `💰 *Total : ₹${totalMRP.toFixed(2)}*\n`;
-    
-    if (discount > 0) {
-        message += `🎁 Discount : ₹${discount.toFixed(2)}\n\n`;
-    } else {
-        message += `\n`;
-    }
-
+    if (discount > 0) { message += `🎁 Discount : ₹${discount.toFixed(2)}\n\n`; } else { message += `\n`; }
     message += `✅ \`Payable amount : ₹${totalAmount.toFixed(2)}\`\n`;
-    
     message += "\n____________________\n\n";
-    
-    // Footer
     message += "ദയവായി എത്രയും പെട്ടെന്ന് പ്രോസസ് ചെയ്യുക.\n\n";
-    
-    if (discount > 0) {
-        message += `\`You saved ₹${discount.toFixed(2)} on this order!\``;
-    }
-
+    if (discount > 0) { message += `\`You saved ₹${discount.toFixed(2)} on this order!\``; }
     return message;
 }
 
@@ -571,8 +523,12 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
             const imageUrl = optimizeImage(rawImage, 400);
 
             let priceHTML = `<span class="price-main">₹${price}</span>`;
+            let discountBadge = '';
+
             if (mrp > price) {
                 priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
+                const discount = Math.round(((mrp - price) / mrp) * 100);
+                discountBadge = `<span class="product-discount-badge">${discount}% OFF</span>`;
             }
 
             const isInCart = isItemInCart(productId);
@@ -580,7 +536,8 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
             const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
             card.innerHTML = `
-                <a href="product.html?id=${productId}" class="cat-product-image-link">
+                <a href="product.html?id=${productId}" class="cat-product-image-link" style="position: relative;">
+                    ${discountBadge}
                     <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" loading="lazy" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
                 </a>
                 <div class="cat-product-content">
@@ -591,7 +548,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${price}"
-                            data-mrp="${mrp}"
+                            data-mrp="${product.mrp}"
                             data-image="${imageUrl}"
                             data-size="${product.size || ''}">
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
