@@ -1,7 +1,7 @@
 // ഇതാണ് 'explore.js' ഫയൽ.
 // മാറ്റങ്ങൾ: 
-// 1. Pagination 10 എണ്ണം.
-// 2. Star Rating Logic (Red to Green Colors).
+// 1. റേറ്റിംഗ് ബോക്സ് ക്രമം മാറ്റി (Summary Top, Rating Bottom).
+// 2. ബാക്കി ലോജിക് (Pagination, Sort) നിലനിർത്തി.
 
 import {
     collection,
@@ -212,6 +212,7 @@ function buildCardContent(productId, product) {
     const svgFill = isInCart ? 'style="fill: #ffffff; stroke: #ffffff;"' : '';
     const buttonTitle = isInCart ? 'Remove from Cart' : 'Add to Cart';
 
+    // *** മാറ്റം: Rating Box Order (Summary Top, Rating Bottom) ***
     return `
         <div class="explore-card-content">
             <div class="explore-action-icons">
@@ -235,15 +236,19 @@ function buildCardContent(productId, product) {
             </div>
             
             <div class="rating-box" id="rating-box-${productId}" style="display: none;">
+                <!-- Summary First -->
+                <div class="rating-summary" id="rating-summary-${productId}">
+                    <!-- Rating Bars Here -->
+                </div>
+                
+                <hr class="rating-divider">
+                
+                <!-- Rating Input Last -->
                 <p class="rating-title">Rate this product</p>
                 <div class="star-rating" data-id="${productId}">
                     ${[1, 2, 3, 4, 5].map(i => `<span class="star" data-value="${i}">&#9733;</span>`).join('')}
                 </div>
                 <div class="rating-feedback">Tap a star to rate</div>
-                <hr class="rating-divider">
-                <div class="rating-summary" id="rating-summary-${productId}">
-                    <!-- Rating Bars Here -->
-                </div>
             </div>
 
             <div class="explore-product-title">${product.name}</div>
@@ -318,7 +323,6 @@ function updateRatingSummary(card, counts, total) {
         const count = counts[starVal];
         const percentage = total > 0 ? (count / total) * 100 : 0;
         
-        // ബാർ കളറുകൾ (Red to Green)
         let color = '#ff4d4d'; // Red (1)
         if (starVal === 2) color = '#ff9f43'; // Orange
         if (starVal === 3) color = '#feca57'; // Yellow
@@ -336,18 +340,16 @@ function updateRatingSummary(card, counts, total) {
     summaryContainer.innerHTML = html;
 }
 
-// *** പുതിയ സ്റ്റാർ കളർ ലോജിക് (1-5 Different Colors) ***
 function updateStarUI(card, value) {
     const stars = card.querySelectorAll('.star');
     const feedback = card.querySelector('.rating-feedback');
     
-    // ഓരോ റേറ്റിംഗിനും വ്യത്യസ്ത നിറം
     const colorClass = `filled-${value}`; 
 
     stars.forEach(s => {
-        s.className = 'star'; // Reset all classes
+        s.className = 'star'; 
         if (parseInt(s.dataset.value) <= value) {
-            s.classList.add(colorClass); // Apply specific color class
+            s.classList.add(colorClass); 
         }
     });
     
@@ -355,7 +357,6 @@ function updateStarUI(card, value) {
     if (feedback) feedback.textContent = value > 0 ? messages[value - 1] : "Tap a star to rate";
 }
 
-// *** Scroll Observer (Infinite Scroll) ***
 const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !isLoading && lastVisible) { 
         loadProducts();
