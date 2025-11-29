@@ -165,63 +165,30 @@
     text-shadow: 0 1px 3px rgba(0,0,0,0.8);
 }
 
-/* Buttons Container (ഇമേജിന് തൊട്ടുതാഴെ) */
+/* *** മാറ്റം: ബട്ടൺ കണ്ടെയ്നർ (പുതിയ ഡിസൈൻ പ്രകാരം) *** */
 .top-sellers-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
+    gap: 10px;
     width: 100%;
-    border-top: 1px solid var(--border-color);
+    padding: 10px; /* സ്പേസിംഗ് */
+    background-color: var(--card-bg);
+    border-top: none; 
 }
 
-/* Buttons Style */
-.top-sellers-buttons .btn {
-    padding: 0.8rem 0;
-    font-size: 0.85rem;
+/* ബട്ടൺ സ്റ്റൈൽ ഓവർറൈഡ് */
+.top-sellers-buttons .btn-primary-new,
+.top-sellers-buttons .btn-secondary-new {
+    font-size: 0.75rem; 
+    height: 36px;
+    padding: 0;
+    border-radius: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 5px;
     text-decoration: none;
-    font-weight: 600;
-    text-transform: uppercase;
-    background-color: #1a1a1a;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.top-sellers-buttons .btn:first-child {
-    border-right: 1px solid var(--border-color); /* Cart ബട്ടണിന് വലതുവശത്ത് വര */
-}
-
-/* Cart Button */
-.top-sellers-buttons .btn-add-to-cart {
-    background-color: #111;
-}
-
-.top-sellers-buttons .btn-add-to-cart:hover {
-    background-color: #222;
-    color: var(--primary-gold);
-}
-
-.top-sellers-buttons .btn-add-to-cart.added-to-cart {
-    background-color: #000;
-    color: var(--primary-gold);
-}
-
-.top-sellers-buttons .btn-add-to-cart svg {
-    width: 16px; height: 16px;
-}
-
-/* View Button */
-.top-sellers-buttons a.btn {
-    background-color: #111;
-}
-
-.top-sellers-buttons a.btn:hover {
-    background-color: #222;
-    color: var(--primary-gold);
 }
 
 /* --- Pagination (Dot-to-Line) --- */
