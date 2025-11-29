@@ -1,9 +1,7 @@
-/* product.css - Final Version
-   Includes:
-   1. Description heading gap removed.
-   2. Green Price Color.
-   3. Advanced Rating UI (Thick bars, Red-to-Green stars).
-   4. Fixed Gallery Height & Responsive Layout.
+/* ഇത് product.CSS
+   മാറ്റങ്ങൾ:
+   1. ഹെഡിംഗ് കളർ ചാരനിറം (Gray).
+   2. ഹൈറ്റ് ഓട്ടോമാറ്റിക് (കൂടാനും കുറയാനും).
 */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
@@ -16,7 +14,7 @@
     box-sizing: border-box;
 }
 
-/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Fixed Height) --- */
+/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Fixed Size) --- */
 .product-gallery-swiper {
     width: 100%;
     height: 400px; 
@@ -168,83 +166,22 @@
     color: var(--primary-gold);
 }
 
-/* --- റേറ്റിംഗ് ബോക്സ് (Updated Design) --- */
+/* റേറ്റിംഗ് ബോക്സ് */
 .rating-box {
     background-color: #1a1a1a;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 1.5rem;
+    padding: 1rem;
     margin-bottom: 1.5rem;
 }
+.rating-summary { margin-bottom: 1rem; }
+.rating-bar-row { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
+.bar-bg { flex-grow: 1; height: 6px; background-color: #333; border-radius: 3px; }
+.bar-fill { height: 100%; background-color: var(--primary-gold); width: 0%; border-radius: 3px; }
+.rating-divider { border: 0; height: 1px; background-color: #333; margin: 1rem 0; }
+.star-rating { font-size: 1.5rem; color: #555; cursor: pointer; margin-bottom: 0.5rem; }
+.star.filled { color: var(--primary-gold); }
 
-.rating-title {
-    font-size: 0.95rem;
-    color: var(--text-muted);
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.rating-summary { margin-bottom: 15px; }
-
-.rating-bar-row { 
-    display: flex; 
-    align-items: center; 
-    gap: 12px; 
-    font-size: 0.85rem; 
-    color: var(--text-muted); 
-    margin-bottom: 6px; 
-}
-
-/* ബാർ കട്ടി (8px) */
-.bar-bg { 
-    flex-grow: 1; 
-    height: 8px; 
-    background-color: #333; 
-    border-radius: 4px; 
-    overflow: hidden;
-}
-
-.bar-fill { 
-    height: 100%; 
-    width: 0%; 
-    border-radius: 4px; 
-}
-
-.rating-divider { 
-    border: 0; 
-    height: 1px; 
-    background-color: #333; 
-    margin: 1.2rem 0; 
-}
-
-/* Star Rating */
-.star-rating { 
-    font-size: 2rem; 
-    color: #444; 
-    cursor: pointer; 
-    margin-bottom: 0.5rem; 
-    display: flex; 
-    justify-content: center; 
-    gap: 8px;
-}
-
-.star {
-    transition: color 0.2s ease;
-}
-
-/* Star Colors (Red -> Green) */
-.star.filled-1 { color: #ff4d4d; }
-.star.filled-2 { color: #ff9f43; }
-.star.filled-3 { color: #feca57; }
-.star.filled-4 { color: #1dd1a1; }
-.star.filled-5 { color: #10ac84; }
-
-.rating-feedback {
-    text-align: center;
-    font-size: 0.9rem;
-    color: var(--primary-gold);
-    min-height: 1.2em;
-}
 
 /* പ്രൊഡക്റ്റ് ടൈറ്റിൽ */
 .product-title {
@@ -259,7 +196,7 @@
     margin-bottom: 1.5rem; 
 }
 
-/* Price Color (Green) */
+/* Price Color */
 .product-info .price-container.large .price-main { 
     font-size: 1.8rem;
     color: #2ecc71; 
@@ -271,39 +208,44 @@
     text-decoration: line-through;
 }
 
-/* --- സെക്ഷൻ ഹെഡിംഗ് സ്റ്റൈൽ (വിടവ് ഒഴിവാക്കി) --- */
+/* --- സെക്ഷൻ ഹെഡിംഗ് സ്റ്റൈൽ (Description & Specification) --- */
 .product-section-heading {
     font-size: 1rem;
     font-weight: 600;
-    color: #a0a0a0; /* Gray Color */
     
-    /* *** മാറ്റം: താഴെയുള്ള മാർജിൻ 0 ആക്കി *** */
-    margin-bottom: 0; 
+    /* *** മാറ്റം: ഹെഡിംഗ് കളർ ചാരനിറം (Gray/Light Black) *** */
+    color: #a0a0a0; 
     
+    margin-bottom: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding-left: 1.5rem; 
+    padding-left: 1.5rem; /* ടെക്സ്റ്റിന് നേരെ വരാൻ */
 }
 
-/* --- ഡിസ്ക്രിപ്ഷൻ ബോക്സ് സ്റ്റൈലിംഗ് --- */
+/* --- ഡിസ്ക്രിപ്ഷൻ ബോക്സ് സ്റ്റൈലിംഗ് (Plain & Auto Height) --- */
 .product-description {
     margin-bottom: 1.5rem;
-    color: #ffffff; 
+    color: #ffffff; /* ടെക്സ്റ്റ് വെള്ള */
+    
     background-color: transparent; 
     border: none;
     
-    /* പാഡിംഗ്: ഹെഡിംഗിന് തൊട്ടുതാഴെ വരാൻ Top Padding കുറച്ചു */
-    padding: 5px 0 0 1.5rem; 
+    /* പാഡിംഗ് (ഇടതുവശം 1.5rem) */
+    padding: 0 0 0 1.5rem; 
     
     font-size: 0.95rem;
     line-height: 1.7;
+    
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
+    
     overflow-wrap: break-word; 
     word-wrap: break-word;     
     word-break: break-word;    
     white-space: pre-wrap;     
+    
+    /* *** മാറ്റം: ടെക്സ്റ്റിനനുസരിച്ച് ഉയരം മാറും *** */
     height: auto; 
     min-height: 0;
 }
@@ -318,16 +260,22 @@
     display: block;
 }
 
-/* --- സ്പെസിഫിക്കേഷൻ ബോക്സ് സ്റ്റൈലിംഗ് --- */
+/* --- സ്പെസിഫിക്കേഷൻ ബോക്സ് സ്റ്റൈലിംഗ് (Plain & Auto Height) --- */
 .product-specification-section {
     margin-bottom: 1.5rem;
+    
     background-color: transparent;
     border: none;
-    padding: 5px 0 0 1.5rem; /* Gap Reduced */
+    
+    /* പാഡിംഗ് (ഇടതുവശം 1.5rem) */
+    padding: 0 0 0 1.5rem;
+    
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
     overflow-wrap: break-word;
+    
+    /* *** മാറ്റം: ടെക്സ്റ്റിനനുസരിച്ച് ഉയരം മാറും *** */
     height: auto; 
     min-height: 0;
 }
@@ -337,6 +285,7 @@
     margin-bottom: 0.5rem; 
     color: #ffffff; 
     position: relative; 
+    /* ബുള്ളറ്റ് പോയിന്റിന് സ്ഥലം */
     padding-left: 1rem; 
     font-size: 0.95rem;
     line-height: 1.6;

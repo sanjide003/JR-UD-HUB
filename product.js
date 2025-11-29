@@ -1,9 +1,5 @@
-// product.js - Final Version
-// Includes:
-// 1. Rating Summary moved to TOP.
-// 2. Star Input moved to BOTTOM.
-// 3. Multi-color Star Rating (Red-to-Green).
-// 4. Linkify function for description.
+// ഇതാണ് 'product.js' ഫയൽ.
+// മാറ്റങ്ങൾ: "Description", "Specification" ഹെഡിംഗുകൾ ചേർത്തു.
 
 import { 
     collection, 
@@ -154,6 +150,7 @@ async function loadProductDetails() {
         let descriptionHTML = '';
         if (product.description) {
             let linkifiedText = linkify(product.description);
+            // *** മാറ്റം: Description ഹെഡിംഗും ബോക്സും ***
             descriptionHTML = `
                 <h3 class="product-section-heading">Description</h3>
                 <div class="product-description">
@@ -173,6 +170,7 @@ async function loadProductDetails() {
                 });
                 listHTML += '</ul>';
                 
+                // *** മാറ്റം: Specification ഹെഡിംഗും ബോക്സും ***
                 specificationHTML = `
                     <h3 class="product-section-heading">Specification</h3>
                     <div class="product-specification-section">${listHTML}</div>
@@ -184,7 +182,6 @@ async function loadProductDetails() {
         const cartButtonText = isInCart ? "Remove" : "Add to Cart";
         const cartButtonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
-        // *** Rating Box: Summary Top, Input Bottom ***
         const actionBarHTML = `
             <div class="product-action-bar">
                 <div class="action-group">
@@ -207,14 +204,14 @@ async function loadProductDetails() {
             </div>
             
             <div class="rating-box" id="rating-box-main" style="display: none;">
-                <!-- Summary First -->
                 <div class="rating-summary">
-                    <!-- JS will fill this -->
+                    <div class="rating-bar-row"><span>5 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>4 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>3 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>2 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <div class="rating-bar-row"><span>1 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
                 </div>
-                
                 <hr class="rating-divider">
-                
-                <!-- Input Last -->
                 <p class="rating-title">Rate this product</p>
                 <div class="star-rating" data-id="${productIdStr}">
                     ${[1, 2, 3, 4, 5].map(i => `<span class="star" data-value="${i}">&#9733;</span>`).join('')}
@@ -278,6 +275,7 @@ async function loadProductDetails() {
     }
 }
 
+// ... (Other functions remain same) ...
 function setupRealtimeListeners(productId) {
     const likesRef = collection(db, "products", productId, "likes");
     onSnapshot(likesRef, (snapshot) => {
@@ -321,48 +319,36 @@ function setupRealtimeListeners(productId) {
 }
 
 function updateRatingSummary(counts, total) {
-    const summaryContainer = document.querySelector('.rating-summary');
-    if (!summaryContainer) return;
-    
-    let html = '';
+    const summaryRows = document.querySelectorAll('.rating-bar-row');
     const keys = [5, 4, 3, 2, 1];
-    
-    keys.forEach((starVal) => {
+    keys.forEach((starVal, index) => {
+        const row = summaryRows[index];
         const count = counts[starVal];
         const percentage = total > 0 ? (count / total) * 100 : 0;
-        
-        let color = '#ff4d4d'; // Red (1)
-        if (starVal === 2) color = '#ff9f43'; // Orange
-        if (starVal === 3) color = '#feca57'; // Yellow
-        if (starVal === 4) color = '#1dd1a1'; // Light Green
-        if (starVal === 5) color = '#10ac84'; // Dark Green
-
-        html += `
-            <div class="rating-bar-row">
-                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
-                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
-                <span class="bar-count">${count}</span>
-            </div>
-        `;
+        const fill = row.querySelector('.bar-fill');
+        const countSpan = row.querySelector('.bar-count');
+        if (fill) fill.style.width = `${percentage}%`;
+        if (countSpan) countSpan.textContent = count;
+        if (starVal >= 4) fill.style.backgroundColor = 'var(--success-green)';
+        else if (starVal === 3) fill.style.backgroundColor = '#f1c40f';
+        else fill.style.backgroundColor = 'var(--error-red)';
     });
-    summaryContainer.innerHTML = html;
 }
 
 function updateStarUI(value) {
     const stars = document.querySelectorAll('.star');
     const feedback = document.querySelector('.rating-feedback');
-    
-    const colorClass = `filled-${value}`; 
-
+    let colorClass = '';
+    if (value <= 2) colorClass = 'red-star';
+    else if (value === 3) colorClass = 'yellow-star';
+    else colorClass = 'green-star';
     stars.forEach(s => {
         s.className = 'star'; 
         if (parseInt(s.dataset.value) <= value) {
-            s.classList.add(colorClass);
+            s.classList.add('filled', colorClass);
         }
     });
-    
-    const messages = ["Poor", "Fair", "Good", "Very Good", "Excellent"];
-    if (feedback) feedback.textContent = value > 0 ? messages[value - 1] : "Tap a star to rate";
+    if (feedback) feedback.textContent = `You rated: ${value} stars`;
 }
 
 function createRipple(event, button) {
@@ -548,7 +534,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${price}"
-                            data-mrp="${product.mrp}"
+                            data-mrp="${mrp}"
                             data-image="${imageUrl}"
                             data-size="${product.size || ''}">
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
