@@ -1,258 +1,352 @@
-// ഇതാണ് categories.js - Modern Category Page with 10 Skeleton Cards
+// ഇതാണ് 'categories.js' ഫയൽ.
+// മാറ്റങ്ങൾ:
+// 1. കുറഞ്ഞത് 8 കാർഡുകൾ എങ്കിലും ഗ്രിഡിൽ കാണിക്കുന്നു (ഡമ്മി കാർഡുകൾ ചേർക്കുന്നു).
+// 2. ഡിസ്കൗണ്ട് ബാഡ്ജ് ചിത്രത്തിന് മുകളിൽ കാണിക്കുന്നു.
 
-import { db } from './firebase-config.js';
-import { 
-    collection, 
-    getDocs, 
-    query, 
+import {
+    collection,
+    getDocs,
+    doc,
+    getDoc,
+    query,
     where,
-    orderBy 
+    limit,
+    orderBy,
+    setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { loadSiteSettings, optimizeImage } from './common.js';
+import { db } from './firebase-config.js';
+import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
-const productsGrid = document.getElementById('products-grid');
-const categoryFilterScroll = document.getElementById('category-filter-scroll');
+setLogLevel('Debug');
 
-let allProducts = [];
-let allCategories = [];
-let currentFilter = 'all';
+// --- DOM Elements ---
+const productGrid = document.getElementById("category-product-grid");
+const categoryNavSection = document.getElementById("category-nav-section");
+const stickyHeader = document.getElementById("sticky-header-container");
+const productsScrollContainer = document.getElementById("products-scroll-container");
+const searchWrapper = document.getElementById("search-wrapper");
+const searchIconBtn = document.getElementById("search-icon-btn");
 
+const loader = document.getElementById("infinite-scroll-loader");
+const searchInput = document.getElementById("product-search-input"); 
+const clearSearchBtn = document.getElementById("clear-search-btn");
+const noResultsMsg = document.getElementById("no-results-message");
+const resetFiltersBtn = document.getElementById("reset-filters-btn");
+
+// Filter Elements
+const priceFilter = document.getElementById("price-range-filter");
+const sortFilter = document.getElementById("sort-by-filter");
+const discountChips = document.querySelectorAll(".discount-chip");
+
+// --- State ---
+let currentCategoryId = 'all'; 
+let allProductsCache = []; 
+let categoriesMap = new Map(); 
+let activeDiscount = null;
+
+// --- പേജ് ലോഡ് ആവുമ്പോൾ ---
 document.addEventListener("DOMContentLoaded", async () => {
-    await loadSiteSettings();
+    await loadSiteSettings(); 
+    await loadCategoryList(); 
     
-    // URL ൽ നിന്ന് ഫിൽട്ടർ എടുക്കുക
     const urlParams = new URLSearchParams(window.location.search);
-    const filterParam = urlParams.get('filter');
-    if (filterParam) {
-        currentFilter = filterParam;
+    const categoryIdFromUrl = urlParams.get('filter');
+    if (categoryIdFromUrl) {
+        currentCategoryId = categoryIdFromUrl;
     }
     
-    showSkeletonCards(); // ആദ്യം 10 സ്കെലിറ്റണുകൾ കാണിക്കുക
-    await loadCategories();
-    await loadProducts();
+    await loadAllProductsCache();
+    
+    setupEventListeners();
+    setupScrollAnimation(); 
+    updateActiveCategoryUI(currentCategoryId);
+    applyFilters(); 
 });
 
-/**
- * 10 Skeleton Cards കാണിക്കുക
- */
-function showSkeletonCards() {
-    if (!productsGrid) return;
-    
-    productsGrid.innerHTML = '';
-    for (let i = 0; i < 10; i++) {
-        const skeletonCard = document.createElement('div');
-        skeletonCard.className = 'product-card skeleton-card';
-        skeletonCard.innerHTML = `
-            <div class="skeleton-image skeleton-shimmer"></div>
-            <div class="product-card-content">
-                <div class="skeleton-title skeleton-shimmer"></div>
-                <div class="skeleton-price skeleton-shimmer"></div>
-                <div class="skeleton-buttons">
-                    <div class="skeleton-button skeleton-shimmer"></div>
-                    <div class="skeleton-button skeleton-shimmer"></div>
-                </div>
-            </div>
-        `;
-        productsGrid.appendChild(skeletonCard);
-    }
+// --- SCROLL ANIMATION LOGIC ---
+function setupScrollAnimation() {
+    if (!productsScrollContainer) return;
+
+    productsScrollContainer.addEventListener('scroll', () => {
+        const scrollTop = productsScrollContainer.scrollTop;
+        
+        if (scrollTop > 30) {
+            stickyHeader.classList.add('compact');
+        } else {
+            stickyHeader.classList.remove('compact');
+            searchWrapper.classList.remove('expanded');
+        }
+    });
+
+    searchIconBtn.addEventListener('click', () => {
+        if (stickyHeader.classList.contains('compact')) {
+            searchWrapper.classList.toggle('expanded');
+            if (searchWrapper.classList.contains('expanded')) {
+                searchInput.focus();
+            }
+        }
+    });
 }
 
-/**
- * കാറ്റഗറികൾ ലോഡ് ചെയ്യുക
- */
-async function loadCategories() {
-    if (!categoryFilterScroll) return;
-    
+// --- Data Loading ---
+async function loadCategoryList() {
+    if (!categoryNavSection) return;
     try {
-        const categoriesQuery = query(collection(db, "categories"), orderBy("name"));
-        const categoriesSnapshot = await getDocs(categoriesQuery);
+        const q = query(collection(db, "categories"), orderBy("name"));
+        const catSnapshot = await getDocs(q);
+
+        let navHtml = `
+            <a href="#" class="category-grid-item" data-id="all">
+                <div class="category-grid-image-box">
+                    <svg class="category-grid-image" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zM13 3h8v8h-8V3zm0 10h8v8h-8v-8z"/>
+                    </svg>
+                </div>
+                <span class="category-grid-name">All</span>
+            </a>
+        `;
         
-        allCategories = [];
-        categoriesSnapshot.forEach((doc) => {
-            allCategories.push({
-                id: doc.id,
-                name: doc.data().name
-            });
+        catSnapshot.forEach((doc) => {
+            const category = doc.data();
+            categoriesMap.set(doc.id, category.name);
+            const rawImage = category.imageUrl || 'https://placehold.co/80x80/333/D4AF37?text=C';
+            const optimizedIcon = optimizeImage(rawImage, 150);
+
+            navHtml += `
+                <a href="#" class="category-grid-item" data-id="${doc.id}">
+                    <div class="category-grid-image-box">
+                        <img src="${optimizedIcon}" alt="${category.name}" class="category-grid-image" loading="lazy">
+                    </div>
+                    <span class="category-grid-name">${category.name}</span>
+                </a>
+            `;
         });
-        
-        renderCategoryFilters();
-        
+
+        categoryNavSection.innerHTML = navHtml;
+        addNavClickListeners(categoryNavSection);
+
     } catch (error) {
         console.error("Error loading categories: ", error);
     }
 }
 
-/**
- * കാറ്റഗറി ഫിൽട്ടർ ബട്ടണുകൾ റെണ്ടർ ചെയ്യുക
- */
-function renderCategoryFilters() {
-    if (!categoryFilterScroll) return;
-    
-    categoryFilterScroll.innerHTML = '';
-    
-    // "All Products" ബട്ടൺ
-    const allBtn = document.createElement('button');
-    allBtn.className = `category-filter-btn ${currentFilter === 'all' ? 'active' : ''}`;
-    allBtn.textContent = 'All Products';
-    allBtn.dataset.filter = 'all';
-    categoryFilterScroll.appendChild(allBtn);
-    
-    // മറ്റ് കാറ്റഗറികൾ
-    allCategories.forEach(category => {
-        const btn = document.createElement('button');
-        btn.className = `category-filter-btn ${currentFilter === category.id ? 'active' : ''}`;
-        btn.textContent = category.name;
-        btn.dataset.filter = category.id;
-        categoryFilterScroll.appendChild(btn);
-    });
-    
-    // Click Event
-    categoryFilterScroll.addEventListener('click', (e) => {
-        if (e.target.classList.contains('category-filter-btn')) {
-            const filter = e.target.dataset.filter;
-            currentFilter = filter;
-            
-            // URL അപ്ഡേറ്റ് ചെയ്യുക
-            const newUrl = filter === 'all' 
-                ? 'categories.html' 
-                : `categories.html?filter=${filter}`;
-            window.history.pushState({}, '', newUrl);
-            
-            // Active ക്ലാസ് മാറ്റുക
-            document.querySelectorAll('.category-filter-btn').forEach(btn => {
-                btn.classList.remove('active');
-            });
-            e.target.classList.add('active');
-            
-            // Products ഫിൽട്ടർ ചെയ്യുക
-            renderProducts();
-        }
-    });
-}
-
-/**
- * പ്രൊഡക്ടുകൾ ലോഡ് ചെയ്യുക
- */
-async function loadProducts() {
-    if (!productsGrid) return;
-    
+async function loadAllProductsCache() {
+    if (loader) loader.style.display = 'flex';
     try {
-        const productsQuery = query(collection(db, "products"), orderBy("name"));
-        const productsSnapshot = await getDocs(productsQuery);
-        
-        allProducts = [];
-        productsSnapshot.forEach((doc) => {
-            allProducts.push({
+        const q = query(collection(db, "products"));
+        const snapshot = await getDocs(q);
+        allProductsCache = [];
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            let discountPercent = 0;
+            if (data.mrp && data.mrp > data.price) {
+                discountPercent = Math.round(((data.mrp - data.price) / data.mrp) * 100);
+            }
+            
+            allProductsCache.push({
                 id: doc.id,
-                ...doc.data()
+                ...data,
+                discountPercent: discountPercent,
+                categoryName: categoriesMap.get(data.categoryId) || ''
             });
         });
-        
-        renderProducts();
-        
     } catch (error) {
-        console.error("Error loading products: ", error);
-        productsGrid.innerHTML = '<p class="error-message">Error loading products.</p>';
+        console.error("Error loading products cache:", error);
+    } finally {
+        if (loader) loader.style.display = 'none';
     }
 }
 
-/**
- * പ്രൊഡക്ടുകൾ റെണ്ടർ ചെയ്യുക
- */
-function renderProducts() {
-    if (!productsGrid) return;
-    
-    // ഫിൽട്ടർ ചെയ്ത പ്രൊഡക്ടുകൾ
-    let filteredProducts = allProducts;
-    if (currentFilter !== 'all') {
-        filteredProducts = allProducts.filter(p => p.categoryId === currentFilter);
-    }
-    
-    // എംപ്റ്റി സ്റ്റേറ്റ്
-    if (filteredProducts.length === 0) {
-        productsGrid.innerHTML = `
-            <div class="empty-state" style="grid-column: 1 / -1;">
-                <h2>No Products Found</h2>
-                <p>There are no products in this category yet.</p>
-                <a href="categories.html" class="btn btn-primary-new">View All Products</a>
-            </div>
-        `;
-        return;
-    }
-    
-    productsGrid.innerHTML = '';
-    
-    filteredProducts.forEach(product => {
-        const card = createProductCard(product);
-        productsGrid.appendChild(card);
+function setupEventListeners() {
+    searchInput.addEventListener('input', (e) => {
+        clearSearchBtn.style.display = e.target.value.length > 0 ? 'block' : 'none';
+        applyFilters();
     });
+
+    clearSearchBtn.addEventListener('click', () => {
+        searchInput.value = '';
+        clearSearchBtn.style.display = 'none';
+        applyFilters();
+    });
+
+    priceFilter.addEventListener('change', applyFilters);
+    sortFilter.addEventListener('change', applyFilters);
+
+    discountChips.forEach(chip => {
+        chip.addEventListener('click', () => {
+            const val = parseInt(chip.dataset.value);
+            if (activeDiscount === val) {
+                activeDiscount = null;
+                chip.classList.remove('active');
+            } else {
+                activeDiscount = val;
+                discountChips.forEach(c => c.classList.remove('active'));
+                chip.classList.add('active');
+            }
+            applyFilters();
+        });
+    });
+
+    if (resetFiltersBtn) {
+        resetFiltersBtn.addEventListener('click', resetAllFilters);
+    }
+}
+
+function addNavClickListeners(navElement) {
+    navElement.addEventListener('click', (e) => {
+        const link = e.target.closest('.category-grid-item');
+        if (!link) return;
+        e.preventDefault();
+        const categoryId = link.dataset.id;
+        
+        if (categoryId !== currentCategoryId) {
+            currentCategoryId = categoryId;
+            updateActiveCategoryUI(categoryId);
+            const url = new URL(window.location);
+            if (categoryId === 'all') url.searchParams.delete('filter');
+            else url.searchParams.set('filter', categoryId);
+            window.history.pushState({}, '', url);
+            
+            applyFilters();
+            productsScrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    });
+}
+
+function updateActiveCategoryUI(categoryId) {
+    const allLinks = document.querySelectorAll('.category-grid-item'); 
+    allLinks.forEach(link => {
+        link.classList.remove('active');
+        if (link.dataset.id === categoryId) {
+            link.classList.add('active');
+        }
+    });
+}
+
+function resetAllFilters() {
+    searchInput.value = '';
+    clearSearchBtn.style.display = 'none';
+    priceFilter.value = 'all';
+    sortFilter.value = 'default';
+    activeDiscount = null;
+    discountChips.forEach(c => c.classList.remove('active'));
+    applyFilters();
+}
+
+function applyFilters() {
+    if (!productGrid) return;
+    productGrid.innerHTML = '';
     
-    // *** 10-ൽ കുറവാണെങ്കിൽ ബാക്കി Skeleton Cards ചേർക്കുക ***
-    const currentCount = filteredProducts.length;
-    if (currentCount < 10) {
-        const skeletonsNeeded = 10 - currentCount;
-        for (let i = 0; i < skeletonsNeeded; i++) {
-            const skeletonCard = document.createElement('div');
-            skeletonCard.className = 'product-card skeleton-card';
-            skeletonCard.innerHTML = `
-                <div class="skeleton-image skeleton-shimmer"></div>
-                <div class="product-card-content">
-                    <div class="skeleton-title skeleton-shimmer"></div>
-                    <div class="skeleton-price skeleton-shimmer"></div>
-                    <div class="skeleton-buttons">
-                        <div class="skeleton-button skeleton-shimmer"></div>
-                        <div class="skeleton-button skeleton-shimmer"></div>
-                    </div>
-                </div>
-            `;
-            productsGrid.appendChild(skeletonCard);
+    let filtered = [...allProductsCache];
+
+    if (currentCategoryId !== 'all') {
+        filtered = filtered.filter(p => p.categoryId === currentCategoryId);
+    }
+
+    const term = searchInput.value.toLowerCase().trim();
+    if (term.length > 0) {
+        const searchTerms = term.split(/\s+/);
+        filtered = filtered.filter(p => {
+            const text = `${p.name} ${p.price} ${p.description || ''} ${p.specification || ''} ${p.categoryName}`.toLowerCase();
+            return searchTerms.every(t => text.includes(t));
+        });
+    }
+
+    const priceRange = priceFilter.value;
+    if (priceRange !== 'all') {
+        if (priceRange === '0-500') filtered = filtered.filter(p => p.price < 500);
+        else if (priceRange === '500-1000') filtered = filtered.filter(p => p.price >= 500 && p.price <= 1000);
+        else if (priceRange === '1000-2000') filtered = filtered.filter(p => p.price >= 1000 && p.price <= 2000);
+        else if (priceRange === '2000-5000') filtered = filtered.filter(p => p.price >= 2000 && p.price <= 5000);
+        else if (priceRange === '5000+') filtered = filtered.filter(p => p.price > 5000);
+    }
+
+    if (activeDiscount !== null) {
+        filtered = filtered.filter(p => p.discountPercent >= activeDiscount);
+    }
+
+    const sortVal = sortFilter.value;
+    if (sortVal === 'low-high') {
+        filtered.sort((a, b) => a.price - b.price);
+    } else if (sortVal === 'high-low') {
+        filtered.sort((a, b) => b.price - a.price);
+    }
+
+    if (filtered.length === 0) {
+        noResultsMsg.style.display = 'block';
+    } else {
+        noResultsMsg.style.display = 'none';
+        
+        // യഥാർത്ഥ പ്രൊഡക്റ്റുകൾ റെൻഡർ ചെയ്യുന്നു
+        filtered.forEach(product => {
+            renderProductCard(product, product.id);
+        });
+
+        // *** മാറ്റം: മിനിമം 8 കാർഡുകൾ ഉറപ്പാക്കുന്നു (Dummy Cards) ***
+        const minItems = 8;
+        const currentCount = filtered.length;
+        if (currentCount < minItems) {
+            const dummiesNeeded = minItems - currentCount;
+            for (let i = 0; i < dummiesNeeded; i++) {
+                renderDummyCard();
+            }
         }
     }
 }
 
-/**
- * പ്രൊഡക്ട് കാർഡ് സൃഷ്ടിക്കുക
- */
-function createProductCard(product) {
+// *** പുതിയത്: ഡമ്മി കാർഡ് റെൻഡർ ചെയ്യുന്ന ഫംഗ്ഷൻ ***
+function renderDummyCard() {
     const card = document.createElement('div');
-    card.className = 'product-card';
-    
+    card.className = 'category-product-card dummy-card';
+    // ഉള്ളടക്കം ആവശ്യമില്ല, CSS വഴി സ്റ്റൈൽ ചെയ്യാം
+    card.innerHTML = `
+        <div class="dummy-image-box"></div>
+        <div class="dummy-content-box">
+            <div class="dummy-line" style="width: 80%;"></div>
+            <div class="dummy-line" style="width: 50%;"></div>
+        </div>
+    `;
+    productGrid.appendChild(card);
+}
+
+function renderProductCard(product, productId) {
+    const card = document.createElement('div');
+    card.className = 'category-product-card';
+
     const price = product.price || 0;
     const mrp = product.mrp || 0;
     
-    const rawImage = product.images && product.images[0] 
-        ? product.images[0] 
-        : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
+    const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
     const imageUrl = optimizeImage(rawImage, 400, 80);
-    
+
     let priceHTML = `<span class="price-main">₹${price}</span>`;
+    let discountBadge = ''; // *** മാറ്റം: ബാഡ്ജ് വേരിയബിൾ ***
+
     if (mrp > price) {
-        const discount = Math.round(((mrp - price) / mrp) * 100);
         priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
-        priceHTML += `<span class="price-discount">${discount}% OFF</span>`;
+        // *** മാറ്റം: ഡിസ്കൗണ്ട് ബാഡ്ജ് HTML ***
+        const discount = Math.round(((mrp - price) / mrp) * 100);
+        discountBadge = `<span class="product-discount-badge">${discount}% OFF</span>`;
     }
-    
-    const isInCart = isItemInCart(product.id);
+
+    const isInCart = isItemInCart(productId);
     const buttonText = isInCart ? "Remove" : "Cart";
     const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
-    
+
     card.innerHTML = `
-        <a href="product.html?id=${product.id}" class="product-card-image-link">
-            <img src="${imageUrl}" 
-                 alt="${product.name}" 
-                 class="product-card-image" 
-                 loading="lazy"
-                 onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
+        <a href="product.html?id=${productId}" class="cat-product-image-link" style="position: relative;">
+            ${discountBadge} <!-- ബാഡ്ജ് ചിത്രത്തിന് മുകളിൽ -->
+            <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" loading="lazy" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
         </a>
-        <div class="product-card-content">
-            <h3 class="product-card-title">${product.name}</h3>
+        <div class="cat-product-content">
+            <h3 class="cat-product-title">${product.name}</h3>
             <div class="price-container">
                 ${priceHTML}
             </div>
-            <div class="product-card-buttons">
+            <div class="cat-product-buttons">
                 <button class="btn ${buttonClass} btn-add-to-cart"
-                    data-id="${product.id}"
+                    data-id="${productId}"
                     data-name="${product.name}"
                     data-price="${price}"
                     data-mrp="${mrp}"
@@ -265,53 +359,16 @@ function createProductCard(product) {
                     </svg>
                     <span>${buttonText}</span>
                 </button>
-                <a href="product.html?id=${product.id}" class="btn btn-primary-new">
+                <a href="product.html?id=${productId}" class="btn btn-primary-new">
                     <span>View</span>
                 </a>
             </div>
         </div>
     `;
-    
-    return card;
+    productGrid.appendChild(card);
 }
 
-/**
- * കാർട്ട് ബട്ടൺ ക്ലിക്ക് ഹാൻഡ്ലർ
- */
-productsGrid.addEventListener('click', (e) => {
-    const button = e.target.closest('.btn-add-to-cart');
-    if (!button) return;
-    
-    e.preventDefault();
-    
-    const id = button.dataset.id;
-    const buttonText = button.querySelector('span');
-    
-    createRipple(e, button);
-    
-    if (button.classList.contains('added-to-cart')) {
-        removeFromCart(id);
-        button.classList.remove('added-to-cart');
-        if (buttonText) buttonText.textContent = 'Cart';
-    } else {
-        const product = {
-            id: id,
-            name: button.dataset.name,
-            price: parseFloat(button.dataset.price),
-            mrp: parseFloat(button.dataset.mrp),
-            image: button.dataset.image,
-            size: button.dataset.size
-        };
-        addToCart(id, product);
-        button.classList.add('added-to-cart');
-        if (buttonText) buttonText.textContent = 'Remove';
-        showToast('Added to cart!');
-    }
-});
-
-/**
- * റിപ്പിൾ ഇഫക്റ്റ്
- */
+// Ripple Effect
 function createRipple(event, button) {
     const ripple = document.createElement('span');
     const rect = button.getBoundingClientRect();
@@ -322,7 +379,7 @@ function createRipple(event, button) {
     ripple.style.cssText = `
         position: absolute; width: ${size}px; height: ${size}px;
         left: ${x}px; top: ${y}px; border-radius: 50%;
-        background: rgba(212, 175, 55, 0.4); transform: scale(0);
+        background: rgba(255, 255, 255, 0.3); transform: scale(0);
         animation: ripple-animation 0.6s ease-out; pointer-events: none;
     `;
 
@@ -330,40 +387,41 @@ function createRipple(event, button) {
     setTimeout(() => ripple.remove(), 600);
 }
 
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes ripple-animation {
-        to { transform: scale(2); opacity: 0; }
-    }
-`;
-document.head.appendChild(style);
-
-/**
- * ടോസ്റ്റ് നോട്ടിഫിക്കേഷൻ
- */
-function showToast(message) {
-    const toast = document.createElement('div');
-    toast.textContent = message;
-    toast.style.cssText = `
-        position: fixed; bottom: 100px; left: 50%; 
-        transform: translateX(-50%) translateY(100px);
-        background: var(--primary-gold); color: var(--bg-color);
-        padding: 12px 24px; border-radius: 8px; font-weight: 600;
-        z-index: 10000; opacity: 0;
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        box-shadow: 0 4px 12px rgba(212, 175, 55, 0.4);
-    `;
-    
-    document.body.appendChild(toast);
-    
-    setTimeout(() => {
-        toast.style.opacity = '1';
-        toast.style.transform = 'translateX(-50%) translateY(0)';
-    }, 10);
-    
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        toast.style.transform = 'translateX(-50%) translateY(100px)';
-        setTimeout(() => toast.remove(), 300);
-    }, 2000);
+if (!document.getElementById('ripple-style')) {
+    const style = document.createElement('style');
+    style.id = 'ripple-style';
+    style.textContent = `@keyframes ripple-animation { to { transform: scale(2); opacity: 0; } }`;
+    document.head.appendChild(style);
 }
+
+productGrid.addEventListener('click', (e) => {
+    const cartButton = e.target.closest('.btn-add-to-cart');
+    if (cartButton) {
+        e.preventDefault();
+        const id = cartButton.dataset.id;
+        const buttonText = cartButton.querySelector('span');
+        
+        createRipple(e, cartButton);
+
+        if (cartButton.classList.contains('added-to-cart')) {
+            removeFromCart(id);
+            cartButton.classList.remove('added-to-cart');
+            if (buttonText) buttonText.textContent = 'Cart';
+        } else {
+            const product = allProductsCache.find(p => p.id === id); 
+            if (product) {
+                const cartProduct = {
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    mrp: product.mrp,
+                    image: product.images && product.images[0] ? product.images[0] : '',
+                    size: product.size || ''
+                };
+                addToCart(id, cartProduct);
+                cartButton.classList.add('added-to-cart');
+                if (buttonText) buttonText.textContent = 'Remove';
+            }
+        }
+    } 
+});
