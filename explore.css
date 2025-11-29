@@ -1,7 +1,6 @@
 /* ഇതാണ് 'explore.css' 
    മാറ്റങ്ങൾ:
-   1. വില പച്ച നിറത്തിൽ.
-   2. റേറ്റിംഗ് ബാറുകൾക്ക് കട്ടി കൂട്ടി.
+   1. ഡിസ്ക്രിപ്ഷനിലെ ലിങ്കുകൾ ബ്രേക്ക് ആവാനുള്ള സ്റ്റൈൽ (word-break).
 */
 
 /* --- 1. ഫീഡ് കണ്ടെയ്നർ --- */
@@ -166,7 +165,6 @@
     display: inline-block;
 }
 
-/* *** മാറ്റം: വിലയുടെ നിറം പച്ച *** */
 .explore-card-content .price-main {
     font-size: 0.95rem;
     color: #2ecc71; /* Green */
@@ -180,12 +178,24 @@
     margin-left: 6px;
 }
 
-/* 2.6 വിവരണം (Description) */
+/* 2.6 വിവരണം (Description) & Link Styling */
 .explore-product-description {
     color: var(--text-color);
     font-size: 0.9rem;
     line-height: 1.4;
     margin-top: 4px;
+    
+    /* *** മാറ്റം: ടെക്സ്റ്റ് റാപ്പിംഗ് *** */
+    overflow-wrap: break-word; 
+    word-wrap: break-word;
+}
+
+/* *** മാറ്റം: ലിങ്കിന്റെ സ്റ്റൈൽ *** */
+.explore-desc-link {
+    color: #3498db !important; /* നീല നിറം */
+    text-decoration: none;
+    /* നീളമുള്ള ലിങ്കുകൾ മുറിയാൻ */
+    word-break: break-all; 
 }
 
 .description-text {
@@ -224,7 +234,7 @@
     padding: 1.5rem;
 }
 
-/* --- റേറ്റിംഗ് ബോക്സ് (Updated Design) --- */
+/* --- റേറ്റിംഗ് ബോക്സ് --- */
 .rating-box {
     background-color: #1a1a1a;
     border: 1px solid #333;
@@ -239,10 +249,9 @@
     color: var(--text-muted);
     margin-bottom: 10px;
     text-align: center;
-    margin-top: 5px; /* മുകളിൽ സ്പേസ് */
+    margin-top: 5px;
 }
 
-/* സമ്മറി മുകളിൽ വരും, മാർജിൻ താഴെ നൽകുന്നു */
 .rating-summary { margin-bottom: 15px; }
 
 .rating-bar-row {
@@ -254,10 +263,9 @@
     margin-bottom: 6px;
 }
 
-/* *** മാറ്റം: ബാർ കട്ടി കൂട്ടി *** */
 .bar-bg { 
     flex-grow: 1; 
-    height: 8px; /* കട്ടി കൂട്ടി */
+    height: 8px; 
     background-color: #333; 
     border-radius: 4px; 
     overflow: hidden;
