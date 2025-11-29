@@ -1,7 +1,9 @@
 /* ഇത് product.CSS
    മാറ്റങ്ങൾ:
-   1. വിലയുടെ നിറം പച്ചയാക്കി (#2ecc71).
-   2. 'Buy on WhatsApp' ബട്ടൺ ബോർഡർ കട്ടി കൂട്ടി.
+   1. "Description" ഹെഡിംഗിന് താഴെയുള്ള ഗ്യാപ്പ് ഒഴിവാക്കി (margin-bottom: 0).
+   2. Rating Box Styles Updated.
+   3. Bar Thickness Increased (8px).
+   4. Star Colors (Red to Green).
 */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
@@ -166,22 +168,83 @@
     color: var(--primary-gold);
 }
 
-/* റേറ്റിംഗ് ബോക്സ് */
+/* --- റേറ്റിംഗ് ബോക്സ് (പുതിയ ഡിസൈൻ) --- */
 .rating-box {
     background-color: #1a1a1a;
     border: 1px solid var(--border-color);
     border-radius: 8px;
-    padding: 1rem;
+    padding: 1.5rem;
     margin-bottom: 1.5rem;
 }
-.rating-summary { margin-bottom: 1rem; }
-.rating-bar-row { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: var(--text-muted); margin-bottom: 4px; }
-.bar-bg { flex-grow: 1; height: 6px; background-color: #333; border-radius: 3px; }
-.bar-fill { height: 100%; background-color: var(--primary-gold); width: 0%; border-radius: 3px; }
-.rating-divider { border: 0; height: 1px; background-color: #333; margin: 1rem 0; }
-.star-rating { font-size: 1.5rem; color: #555; cursor: pointer; margin-bottom: 0.5rem; }
-.star.filled { color: var(--primary-gold); }
 
+.rating-title {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+.rating-summary { margin-bottom: 15px; }
+
+.rating-bar-row { 
+    display: flex; 
+    align-items: center; 
+    gap: 12px; 
+    font-size: 0.85rem; 
+    color: var(--text-muted); 
+    margin-bottom: 6px; 
+}
+
+/* ബാർ കട്ടി (8px) */
+.bar-bg { 
+    flex-grow: 1; 
+    height: 8px; 
+    background-color: #333; 
+    border-radius: 4px; 
+    overflow: hidden;
+}
+
+.bar-fill { 
+    height: 100%; 
+    width: 0%; 
+    border-radius: 4px; 
+}
+
+.rating-divider { 
+    border: 0; 
+    height: 1px; 
+    background-color: #333; 
+    margin: 1.2rem 0; 
+}
+
+/* Star Rating */
+.star-rating { 
+    font-size: 2rem; 
+    color: #444; 
+    cursor: pointer; 
+    margin-bottom: 0.5rem; 
+    display: flex; 
+    justify-content: center; 
+    gap: 8px;
+}
+
+.star {
+    transition: color 0.2s ease;
+}
+
+/* Star Colors */
+.star.filled-1 { color: #ff4d4d; }
+.star.filled-2 { color: #ff9f43; }
+.star.filled-3 { color: #feca57; }
+.star.filled-4 { color: #1dd1a1; }
+.star.filled-5 { color: #10ac84; }
+
+.rating-feedback {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--primary-gold);
+    min-height: 1.2em;
+}
 
 /* പ്രൊഡക്റ്റ് ടൈറ്റിൽ */
 .product-title {
@@ -196,10 +259,10 @@
     margin-bottom: 1.5rem; 
 }
 
-/* Price Color - Green Updated */
+/* Price Color */
 .product-info .price-container.large .price-main { 
     font-size: 1.8rem;
-    color: #2ecc71; /* *** പച്ച നിറം *** */
+    color: #2ecc71; 
     font-weight: 700;
 }
 .product-info .price-container.large .price-mrp { 
@@ -208,12 +271,15 @@
     text-decoration: line-through;
 }
 
-/* --- സെക്ഷൻ ഹെഡിംഗ് സ്റ്റൈൽ (Description & Specification) --- */
+/* --- സെക്ഷൻ ഹെഡിംഗ് സ്റ്റൈൽ (വിടവ് ഒഴിവാക്കി) --- */
 .product-section-heading {
     font-size: 1rem;
     font-weight: 600;
     color: #a0a0a0; 
-    margin-bottom: 0.5rem;
+    
+    /* *** മാറ്റം: താഴെയുള്ള മാർജിൻ 0 ആക്കി *** */
+    margin-bottom: 0; 
+    
     text-transform: uppercase;
     letter-spacing: 0.5px;
     padding-left: 1.5rem; 
@@ -287,10 +353,9 @@
     margin-bottom: 1rem;
 }
 
-/* *** മാറ്റം: WhatsApp ബട്ടൺ ബോർഡർ കട്ടി കൂട്ടി *** */
 .btn-whatsapp {
     background-color: #24a66e !important;
-    border: 3px solid #24a66e !important; /* *** 3px Solid Border *** */
+    border: 1px solid #24a66e !important;
     color: #fff !important;
     font-weight: 600;
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
