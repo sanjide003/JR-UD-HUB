@@ -1,6 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// മാറ്റങ്ങൾ:
-// 1. You May Also Like സെക്ഷനിൽ കാറ്റഗറി പേജിലെ അതേ ഡിസൈൻ (Badge, Green Price) നൽകി.
+// മാറ്റം: ഡിസ്ക്രിപ്ഷൻ 3 വരിയിൽ കാണിക്കുന്നു, More/Less ലോജിക്.
 
 import { 
     collection, 
@@ -148,10 +147,21 @@ async function loadProductDetails() {
             `;
         }
 
+        // *** മാറ്റം: ഡിസ്ക്രിപ്ഷൻ ലോജിക് (3 വരിയിൽ ചുരുക്കുന്നു) ***
         let descriptionHTML = 'No description available.';
+        let hasLongDescription = false;
+        
         if (product.description) {
             let linkifiedText = linkify(product.description);
-            descriptionHTML = linkifiedText.replace(/\n/g, '<br>');
+            // വരികൾ എണ്ണിനോക്കുന്നു (ലളിതമായ കണക്കുകൂട്ടൽ)
+            hasLongDescription = product.description.length > 150; 
+            
+            descriptionHTML = `
+                <div class="description-content ${hasLongDescription ? 'truncated' : ''}" id="desc-content">
+                    ${linkifiedText.replace(/\n/g, '<br>')}
+                </div>
+                ${hasLongDescription ? '<button class="read-more-btn" id="desc-read-more">Show more</button>' : ''}
+            `;
         }
 
         let specificationHTML = '';
@@ -194,7 +204,6 @@ async function loadProductDetails() {
             
             <div class="rating-box" id="rating-box-main" style="display: none;">
                 <div class="rating-summary">
-                    <!-- Bars will be injected via JS -->
                     <div class="rating-bar-row"><span>5 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
                     <div class="rating-bar-row"><span>4 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
                     <div class="rating-bar-row"><span>3 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
@@ -261,13 +270,28 @@ async function loadProductDetails() {
             loadRelatedProducts(product.categoryId, productIdStr);
         }
 
+        // *** Event Listener for Read More ***
+        const readMoreBtn = document.getElementById('desc-read-more');
+        if (readMoreBtn) {
+            readMoreBtn.addEventListener('click', () => {
+                const content = document.getElementById('desc-content');
+                if (content.classList.contains('truncated')) {
+                    content.classList.remove('truncated');
+                    readMoreBtn.textContent = 'Show less';
+                } else {
+                    content.classList.add('truncated');
+                    readMoreBtn.textContent = 'Show more';
+                }
+            });
+        }
+
     } catch (error) {
         console.error("Error loading product details: ", error);
         productDetailContent.innerHTML = '<p class="error-message">Error loading product details.</p>';
     }
 }
 
-// ... Realtime Listeners & Action Button Functions (No Changes Here) ...
+// ... (Realtime Listeners, Ripple, Action Buttons, Related Products Load, Cart Logic Same as Before) ...
 function setupRealtimeListeners(productId) {
     const likesRef = collection(db, "products", productId, "likes");
     onSnapshot(likesRef, (snapshot) => {
@@ -472,7 +496,6 @@ function generateWhatsAppMessage(items, totalAmount, totalMRP, discount) {
     return message;
 }
 
-// *** മാറ്റം: You May Also Like - Plain Design ***
 async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
     try {
@@ -493,7 +516,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
             const product = doc.data();
             const productId = doc.id;
             const card = document.createElement('div');
-            card.className = 'swiper-slide category-product-card'; // Plain Design
+            card.className = 'swiper-slide category-product-card'; 
             
             const price = product.price || 0;
             const mrp = product.mrp || 0;
@@ -506,7 +529,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
 
             if (mrp > price) {
                 priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
-                // *** Badge Added ***
                 const discount = Math.round(((mrp - price) / mrp) * 100);
                 discountBadge = `<span class="product-discount-badge">${discount}% OFF</span>`;
             }
