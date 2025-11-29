@@ -1,24 +1,27 @@
-/* explore.css - Grid Layout (No Gaps) */
+/* ഇതാണ് 'explore.css' 
+   മാറ്റങ്ങൾ:
+   1. Instagram Home Feed Style (No Gaps, Full Width).
+   2. Compact & Seamless Design.
+*/
 
-/* --- 1. ഫീഡ് കണ്ടെയ്നർ (Grid Layout) --- */
+/* --- 1. ഫീഡ് കണ്ടെയ്നർ --- */
 .explore-feed-container {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* മൊബൈലിൽ 3 കോളം */
-    gap: 1px; /* 1px ഗ്യാപ്പ് (മെലിഞ്ഞ വര പോലെ കാണാൻ) */
+    max-width: 600px; 
+    margin: 0 auto; 
+    display: flex;
+    flex-direction: column;
+    gap: 0; /* ഗ്യാപ്പ് ഒഴിവാക്കി */
     background-color: #000;
-    width: 100%;
-    max-width: 100%; /* കണ്ടെയ്നർ വീതി 100% */
-    margin: 0;
-    padding-bottom: 2rem;
 }
 
 /* --- എക്സ്പ്ലോർ പേജ് ബാനർ --- */
 .explore-top-banner {
     width: 100%;
     height: auto;
+    position: relative;
     background-color: #000;
     overflow: hidden;
-    margin-bottom: 2px; /* ഗ്രിഡിന് തൊട്ടു മുകളിൽ ചെറിയ വിടവ് */
+    margin-bottom: 0; /* ബാനറിന് താഴെയുള്ള ഗ്യാപ്പും ഒഴിവാക്കി */
     border: none;
 }
 
@@ -26,63 +29,216 @@
     width: 100%;
     height: auto;
     display: block;
-    max-height: 250px;
+    max-height: 150px; /* ഉയരം കുറച്ചു */
     object-fit: cover;
 }
 
-/* --- 2. പ്രൊഡക്റ്റ് കാർഡ് (Small Grid Item) --- */
+/* --- 2. പ്രൊഡക്റ്റ് കാർഡ് (Compact Feed Style) --- */
 .explore-card {
-    background-color: #111; 
+    background-color: #000; 
     border: none; 
-    border-radius: 0; /* ചതുരം (No radius) */
-    margin: 0; 
+    border-radius: 0; /* റൗണ്ട് ഷേപ്പ് ഒഴിവാക്കി */
+    margin: 0; /* കാർഡുകൾ തമ്മിലുള്ള അകലം ഒഴിവാക്കി */
     padding: 0;
-    position: relative;
-    aspect-ratio: 1 / 1; /* കൃത്യം ചതുരശ്രം */
-    overflow: hidden;
-    display: block; /* ലിങ്ക് ആയതുകൊണ്ട് */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.15); /* നേരിയ സെപ്പറേറ്റർ */
+    display: flex;
+    flex-direction: column;
 }
 
-/* ഇമേജ് */
-.explore-card img {
+.explore-card:last-child {
+    border-bottom: none;
+}
+
+/* 2.1 കാറ്റഗറി ഹെഡർ */
+.explore-card-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px; /* പാഡിംഗ് കുറച്ചു */
+    text-decoration: none;
+    background-color: #000;
+}
+
+.explore-category-img {
+    width: 30px; /* വലിപ്പം കുറച്ചു */
+    height: 30px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--primary-gold); 
+    padding: 1px; 
+}
+
+.explore-category-name {
+    font-weight: 600;
+    color: var(--text-color);
+    font-size: 0.9rem;
+}
+
+/* 2.2 പ്രൊഡക്റ്റ് ഇമേജ് (Edge-to-Edge) */
+.explore-image-swiper {
+    width: 100%; /* പൂർണ്ണ വീതി */
+    aspect-ratio: 1 / 1; /* Square shape like Instagram */
+    background-color: #111;
+    border-radius: 0; /* ബോർഡർ റേഡിയസ് ഒഴിവാക്കി */
+    overflow: hidden;
+    margin: 0;
+}
+
+.explore-image-swiper .swiper-slide img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
     display: block;
 }
 
-/* ഹോവർ എഫക്റ്റ് */
-.explore-card:hover img {
-    transform: scale(1.05); /* സൂം */
-    opacity: 0.8;
+/* 2.3 പ്രൊഡക്റ്റ് വിവരങ്ങൾ */
+.explore-card-content {
+    padding: 10px 12px 15px 12px; /* കണ്ടന്റിന് പാഡിംഗ് */
 }
 
-/* ലോഡിംഗ് */
-.loading-placeholder-full {
-    grid-column: 1 / -1; /* മുഴുവൻ വീതിയിലും */
-    text-align: center;
-    padding: 3rem;
+/* 2.4 ഐക്കൺ ബട്ടണുകൾ */
+.explore-action-icons {
+    display: flex;
+    align-items: center;
+    gap: 15px; 
+    margin-bottom: 8px;
+    margin-top: 4px;
+}
+
+.action-group {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.action-count {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-color);
+}
+
+.explore-action-icons button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    color: var(--text-color); 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.2s ease; 
+}
+
+.explore-action-icons button svg {
+    width: 24px; 
+    height: 24px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8; 
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.explore-action-icons button.bookmark-btn {
+    margin-left: auto; 
+}
+
+/* Save Icon Active State */
+.explore-action-icons button.bookmark-btn.added-to-cart {
+    color: var(--text-color); 
+}
+.explore-action-icons button.bookmark-btn.added-to-cart svg {
+    fill: var(--text-color); /* White fill like Instagram save */
+    stroke: var(--text-color);
+}
+
+/* 2.5 പ്രൊഡക്റ്റ് പേരും വിലയും */
+.explore-product-title {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-color);
+    margin-bottom: 2px;
+    display: inline;
+    margin-right: 8px;
+}
+
+.explore-card-content .price-container {
+    margin-bottom: 4px;
+    display: inline-block;
+}
+
+.explore-card-content .price-main {
+    font-size: 0.95rem;
+    color: var(--primary-gold);
+    font-weight: 600;
+}
+
+.explore-card-content .price-mrp {
+    font-size: 0.8rem;
     color: var(--text-muted);
+    text-decoration: line-through;
+    margin-left: 6px;
 }
 
+/* 2.6 വിവരണം (Description) */
+.explore-product-description {
+    color: var(--text-color);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    margin-top: 4px;
+}
+
+.description-text {
+    display: inline;
+}
+
+/* വരി ചുരുക്കാനുള്ള ക്ലാസ് */
+.description-text.truncated {
+    display: -webkit-box;
+    -webkit-line-clamp: 2; /* 2 വരി മാത്രം കാണിക്കുന്നു */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    word-break: break-word;
+}
+
+.read-more-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted) !important;
+    cursor: pointer;
+    font-size: 0.85rem;
+    padding: 0;
+    font-weight: 400;
+}
+
+/* --- 3. ലോഡിംഗ് --- */
+.loading-placeholder-full {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
 .loader-container {
     display: none;
     justify-content: center;
-    padding: 2rem;
-    width: 100%;
+    padding: 1.5rem;
 }
 
-/* --- Responsive Layout --- */
-@media (min-width: 600px) {
-    .explore-feed-container {
-        grid-template-columns: repeat(4, 1fr); /* ടാബിൽ 4 കോളം */
-    }
+/* --- റേറ്റിംഗ് ബോക്സ് --- */
+.rating-box {
+    background-color: #111;
+    border: 1px solid #222;
+    border-radius: 4px;
+    padding: 10px;
+    margin-bottom: 10px;
+    margin-top: 5px;
 }
-
-@media (min-width: 900px) {
-    .explore-feed-container {
-        grid-template-columns: repeat(5, 1fr); /* ഡെസ്ക്ടോപ്പിൽ 5 കോളം */
-        gap: 2px; /* വലിയ സ്ക്രീനിൽ അല്പം ഗ്യാപ്പ് */
-    }
+.rating-summary { margin-bottom: 8px; }
+.rating-bar-row {
+    display: flex; align-items: center; gap: 8px; font-size: 0.75rem; color: var(--text-muted); margin-bottom: 3px;
 }
+.bar-bg { flex-grow: 1; height: 3px; background-color: #333; border-radius: 2px; }
+.bar-fill { height: 100%; background-color: var(--primary-gold); width: 0%; border-radius: 2px; }
+.star-rating { font-size: 1.2rem; color: #555; cursor: pointer; }
+.star.filled { color: var(--primary-gold); }
