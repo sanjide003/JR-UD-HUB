@@ -1,223 +1,322 @@
-/* ഇത് കാർട്ട് cart.CSS ഫയലാണ്.
-   മാറ്റം: ബട്ടണുകൾക്ക് #24a66e (WhatsApp Green) നിറം നൽകി.
+/* ഇത് cart.CSS 
+   മാറ്റം: ക്ലീൻ & മോഡേൺ ഡിസൈൻ.
 */
 
-/* --- 1. കാർട്ട് പേജ് ലേഔട്ട് --- */
+/* --- 1. പേജ് ലേഔട്ട് --- */
 .cart-page-layout-new {
     display: flex;
     flex-direction: column;
     gap: 2rem;
+    min-height: 60vh;
 }
 
-/* --- 2. ഉൽപ്പന്നങ്ങളുടെ ലിസ്റ്റ് (ഇടതുവശം) --- */
+/* --- 2. കാർട്ട് ഐറ്റംസ് (ഇടതുവശം) --- */
 .cart-items-container {
     display: flex;
     flex-direction: column;
-    gap: 1.5rem;
+    gap: 1rem;
+    flex-grow: 1;
 }
+
 .cart-item-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 12px;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.2s ease, border-color 0.2s ease;
 }
+
+.cart-item-card:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* കാർഡിന്റെ മുകൾ ഭാഗം (ചിത്രം + വിവരങ്ങൾ) */
 .cart-item-main {
     display: flex;
-    gap: 1rem;
     padding: 1rem;
+    gap: 1rem;
 }
-.cart-item-link {
-    text-decoration: none;
-    color: var(--text-color);
-    display: block; 
-}
-.cart-item-link:hover {
-    color: var(--primary-gold);
-}
-.cart-item-image {
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-    border-radius: 4px;
+
+.cart-item-image-link {
     flex-shrink: 0;
 }
+
+.cart-item-image {
+    width: 90px;
+    height: 90px;
+    object-fit: cover;
+    border-radius: 8px;
+    background-color: #222;
+    border: 1px solid var(--border-color);
+}
+
 .cart-item-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     flex-grow: 1;
 }
-.cart-item-info h3 {
-    font-size: 1.1rem;
-    font-weight: 500;
-    margin-bottom: 0.25rem;
-    color: var(--text-color); 
+
+.cart-item-title-link {
+    text-decoration: none;
+    color: var(--text-color);
 }
-.cart-item-info .cart-item-price {
+
+.cart-item-title {
     font-size: 1rem;
-    color: var(--primary-gold);
-    margin-bottom: 0.25rem;
+    font-weight: 600;
+    margin: 0 0 0.25rem 0;
+    line-height: 1.4;
+    /* 2 വരിയിൽ ഒതുക്കുന്നു */
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
 }
-.cart-item-info .cart-item-size {
-    font-size: 0.9rem;
-    color: var(--text-muted);
+
+.cart-item-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
     margin-bottom: 0.5rem;
 }
 
-/* എണ്ണം നിയന്ത്രിക്കാൻ (Quantity Control) */
+.cart-item-price {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary-gold);
+}
+
+.cart-item-size {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    background-color: rgba(255, 255, 255, 0.05);
+    padding: 2px 6px;
+    border-radius: 4px;
+}
+
+/* ക്വാണ്ടിറ്റി കൺട്രോൾ */
+.quantity-control-wrapper {
+    display: flex;
+    align-items: center;
+    margin-top: auto;
+}
+
 .quantity-control {
     display: flex;
     align-items: center;
+    background-color: #000;
     border: 1px solid var(--border-color);
-    border-radius: 4px;
-    max-width: 120px;
+    border-radius: 6px;
+    overflow: hidden;
 }
+
 .quantity-btn {
     background: none;
     border: none;
     color: var(--text-color);
+    width: 32px;
+    height: 32px;
     font-size: 1.2rem;
     cursor: pointer;
-    padding: 0.25rem 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s;
 }
+
+.quantity-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
 .quantity-input {
     width: 40px;
+    height: 32px;
     text-align: center;
-    background: none;
+    background: transparent;
     border: none;
-    color: var(--text-color);
     border-left: 1px solid var(--border-color);
     border-right: 1px solid var(--border-color);
-    padding: 0.5rem 0;
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 0.9rem;
     -moz-appearance: textfield;
 }
 .quantity-input::-webkit-outer-spin-button,
 .quantity-input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
+    -webkit-appearance: none; margin: 0;
 }
 
-/* കാർഡിലെ ബട്ടണുകൾ (Remove, Buy) */
+/* കാർഡിന്റെ താഴത്തെ ഭാഗം (Actions) */
 .cart-item-actions {
-    display: flex;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
     border-top: 1px solid var(--border-color);
 }
-.cart-item-actions button {
-    flex: 1;
+
+.action-btn {
     background: none;
     border: none;
-    padding: 0.85rem 1rem;
-    cursor: pointer;
+    padding: 0.8rem;
     font-size: 0.9rem;
-    font-weight: 500;
-    color: var(--text-muted);
-    transition: all 0.3s ease;
-}
-.cart-item-actions button:hover {
-    color: var(--text-color);
-    background-color: #222;
-}
-.cart-item-actions .remove-btn {
-    border-right: 1px solid var(--border-color);
-    color: var(--error-red);
-}
-
-/* *** മാറ്റം: Buy Now ബട്ടൺ #24a66e നിറത്തിൽ *** */
-.cart-item-actions .buy-now-btn {
-    color: #24a66e; /* WhatsApp Green */
+    font-weight: 600;
+    cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 600;
-}
-.cart-item-actions .buy-now-btn:hover {
-    background-color: rgba(36, 166, 110, 0.1); /* Light Green Background on Hover */
+    gap: 6px;
+    transition: background-color 0.2s;
 }
 
-/* --- 3. വിലവിവരപ്പട്ടിക (വലതുവശം) --- */
-.cart-summary-container {
-    position: sticky;
-    top: calc(var(--header-height) + 1.5rem);
+/* Remove Button */
+.remove-btn {
+    color: var(--error-red);
+    border-right: 1px solid var(--border-color);
 }
+.remove-btn:hover {
+    background-color: rgba(231, 76, 60, 0.1);
+}
+
+/* Buy Now Button */
+.buy-now-btn {
+    color: #24a66e; /* WhatsApp Green */
+}
+.buy-now-btn:hover {
+    background-color: rgba(36, 166, 110, 0.1);
+}
+
+.action-btn svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+
+/* --- 3. വലതുവശം (Price Summary) --- */
+.cart-summary-container {
+    flex-shrink: 0;
+}
+
 .cart-summary-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 12px;
     padding: 1.5rem;
+    position: sticky;
+    top: calc(var(--header-height) + 1rem); /* Sticky Effect */
 }
+
+.cart-summary-card h2 {
+    font-size: 1.2rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
+    color: var(--text-color);
+}
+
 .summary-row {
     display: flex;
     justify-content: space-between;
     margin-bottom: 1rem;
-    font-size: 1.1rem;
+    color: var(--text-muted);
+    font-size: 0.95rem;
 }
+
+.summary-row.total {
+    border-top: 1px dashed var(--border-color);
+    padding-top: 1rem;
+    margin-top: 1rem;
+    margin-bottom: 0;
+    color: var(--text-color);
+    font-weight: 700;
+    font-size: 1.2rem;
+    align-items: center;
+}
+
 .summary-row.discount span:last-child {
     color: var(--success-green);
 }
-.summary-row.total {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text-color);
-    border-top: 1px solid var(--border-color);
-    padding-top: 1rem;
-}
+
 .summary-savings {
-    font-weight: 700;
+    background-color: rgba(46, 204, 113, 0.1);
     color: var(--success-green);
     text-align: center;
-    margin-top: 1.5rem;
-    font-size: 1.1rem;
-    display: none; /* JS വഴി കാണിക്കും */
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 1rem;
+    border: 1px dashed rgba(46, 204, 113, 0.3);
 }
 
-/* *** മാറ്റം: Place All Order ബട്ടൺ #24a66e നിറത്തിൽ *** */
+/* Checkout Button */
 .btn-checkout-full {
     width: 100%;
-    padding: 1rem;
-    font-size: 1.1rem;
-    margin-top: 1rem;
-    background-color: #24a66e !important; /* WhatsApp Green */
+    margin-top: 1.5rem;
+    background-color: #24a66e !important;
     border-color: #24a66e !important;
-    color: white !important;
+    color: #fff !important;
+    font-size: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 8px;
-}
-.btn-checkout-full:hover {
-    background-color: #1e8c5b !important; /* Darker Green for Hover */
-    border-color: #1e8c5b !important;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
-/* --- 4. മറ്റ് സ്റ്റൈലുകൾ --- */
+.btn-checkout-full:hover {
+    background-color: #1e8c5b !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+}
+
+/* Empty Cart */
 .empty-cart-message {
     text-align: center;
-    padding: 3rem 1rem;
+    padding: 4rem 1rem;
     background-color: var(--card-bg);
-    border-radius: 8px;
     border: 1px solid var(--border-color);
+    border-radius: 12px;
 }
-.cart-error {
-    color: var(--error-red);
-    background-color: rgba(231, 76, 60, 0.1);
-    border: 1px solid var(--error-red);
-    padding: 0.75rem;
-    border-radius: 5px;
-    text-align: center;
-    font-size: 0.95rem;
-    margin-top: 1rem;
-    display: none; /* JS വഴി കാണിക്കും */
+.empty-cart-message h2 {
+    color: var(--text-color);
+    margin-bottom: 0.5rem;
+}
+.empty-cart-message p {
+    color: var(--text-muted);
+    margin-bottom: 1.5rem;
 }
 
-/* --- 5. റെസ്പോൺസീവ് (Responsive) --- */
-@media (max-width: 768px) {
-    .cart-summary-container {
-        position: relative; 
-        top: 0;
+/* --- 4. റെസ്പോൺസീവ് --- */
+@media (min-width: 900px) {
+    .cart-page-layout-new {
+        display: grid;
+        grid-template-columns: 1.8fr 1fr; /* ഗ്രിഡ് ലേഔട്ട് */
+        align-items: start;
+        gap: 2rem;
     }
 }
 
-@media (min-width: 769px) {
-    .cart-page-layout-new {
-        display: grid; /* ഗ്രിഡ് ആക്കുന്നു */
-        grid-template-columns: 2fr 1fr;
-        align-items: flex-start;
+@media (max-width: 480px) {
+    .cart-item-main {
+        gap: 0.75rem;
+        padding: 0.75rem;
+    }
+    .cart-item-image {
+        width: 80px;
+        height: 80px;
+    }
+    .cart-item-title {
+        font-size: 0.95rem;
+    }
+    .action-btn {
+        padding: 0.7rem;
+        font-size: 0.85rem;
     }
 }
