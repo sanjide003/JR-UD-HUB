@@ -1,112 +1,56 @@
-// ഇതാണ് ഷോപ്പിംഗ് കാർട്ടിന്റെ "തലച്ചോർ" (cart.js)
-// മാറ്റം: കാർട്ട് സേവ് ചെയ്യുന്ന കീ 'jrUdHubCart' എന്നാക്കി.
-
-// കാർട്ട് ഡാറ്റ 'localStorage'-ൽ നിന്ന് എടുക്കുന്നു
+// cart.js - Pure Logic
 function getCart() {
-    // *** മാറ്റം: പേര് മാറ്റി ***
-    const cartData = localStorage.getItem('jrUdHubCart');
-    return cartData ? JSON.parse(cartData) : {};
+    return JSON.parse(localStorage.getItem('jrUdHubCart')) || {};
 }
 
-// കാർട്ട് ഡാറ്റ 'localStorage'-ലേക്ക് സേവ് ചെയ്യുന്നു
 function saveCart(cart) {
-    // *** മാറ്റം: പേര് മാറ്റി ***
     localStorage.setItem('jrUdHubCart', JSON.stringify(cart));
-    // കാർട്ടിൽ മാറ്റം വരുമ്പോൾ, ഹെഡറിലെ ഐക്കൺ അപ്ഡേറ്റ് ചെയ്യാൻ ഒരു ഇവന്റ് അയക്കുന്നു
     window.dispatchEvent(new CustomEvent('cartUpdated'));
 }
 
-/**
- * ഒരു പ്രൊഡക്റ്റ് കാർട്ടിൽ ഉണ്ടോ എന്ന് പരിശോധിക്കുന്നു
- * @param {string} productId - പരിശോധിക്കേണ്ട പ്രൊഡക്റ്റ് ID
- * @returns {boolean} - കാർട്ടിൽ ഉണ്ടെങ്കിൽ true, അല്ലെങ്കിൽ false
- */
-export function isItemInCart(productId) {
-    const cart = getCart();
-    return cart.hasOwnProperty(productId);
+export function isItemInCart(id) {
+    return getCart().hasOwnProperty(id);
 }
 
-// ഒരു ഉൽപ്പന്നം കാർട്ടിലേക്ക് ചേർക്കുന്നു
-export function addToCart(productId, productDetails) {
+export function addToCart(id, details) {
     const cart = getCart();
-    
-    const key = productId; 
-
-    if (cart[key]) {
-        cart[key].quantity += 1;
-    } else {
-        cart[key] = {
-            ...productDetails,
-            quantity: 1
-        };
-    }
-    
+    if (cart[id]) cart[id].quantity += 1;
+    else cart[id] = { ...details, quantity: 1 };
     saveCart(cart);
 }
 
-// കാർട്ടിലെ ഒരു ഉൽപ്പന്നത്തിന്റെ എണ്ണം മാറ്റുന്നു
-export function updateQuantity(productId, newQuantity) {
+export function updateQuantity(id, qty) {
     const cart = getCart();
-    
-    if (cart[productId]) {
-        if (newQuantity <= 0) {
-            delete cart[productId];
-        } else {
-            cart[productId].quantity = newQuantity;
-        }
+    if (cart[id]) {
+        if (qty <= 0) delete cart[id];
+        else cart[id].quantity = qty;
         saveCart(cart);
     }
 }
 
-// ഉൽപ്പന്നം കാർട്ടിൽ നിന്ന് പൂർണ്ണമായും നീക്കം ചെയ്യുന്നു
-export function removeFromCart(productId) {
+export function removeFromCart(id) {
     const cart = getCart();
-    
-    if (cart[productId]) {
-        delete cart[productId];
-        saveCart(cart);
-    }
+    delete cart[id];
+    saveCart(cart);
 }
 
-// കാർട്ടിലെ ഉൽപ്പന്നങ്ങളുടെ ആകെ എണ്ണം കണക്കാക്കുന്നു (ഹെഡറിലെ ഐക്കണിന് വേണ്ടി)
 export function getCartItemCount() {
     const cart = getCart();
-    let totalCount = 0;
-    for (const id in cart) {
-        totalCount += cart[id].quantity;
-    }
-    return totalCount;
+    return Object.values(cart).reduce((acc, item) => acc + item.quantity, 0);
 }
 
-// കാർട്ടിലെ ആകെ തുക കണക്കാക്കുന്നു
 export function getCartTotal() {
     const cart = getCart();
-    let total = 0;
-    for (const id in cart) {
-        total += cart[id].price * cart[id].quantity;
-    }
-    return total;
+    return Object.values(cart).reduce((acc, item) => acc + (item.price * item.quantity), 0);
 }
 
-// ആകെ MRP കണക്കാക്കുന്നു
 export function getCartTotalMRP() {
     const cart = getCart();
-    let totalMRP = 0;
-    for (const id in cart) {
-        const item = cart[id];
+    return Object.values(cart).reduce((acc, item) => {
         const mrp = (item.mrp && item.mrp > item.price) ? item.mrp : item.price;
-        totalMRP += mrp * item.quantity;
-    }
-    return totalMRP;
+        return acc + (mrp * item.quantity);
+    }, 0);
 }
 
-
-// കാർട്ട് പൂർണ്ണമായും ക്ലിയർ ചെയ്യുന്നു (ഓർഡർ ചെയ്ത ശേഷം)
-export function clearCart() {
-    saveCart({});
-}
-
-// നിലവിലെ കാർട്ട് വിവരങ്ങൾ നൽകുന്നു
-export function getCartItems() {
-    return getCart();
-}
+export function getCartItems() { return getCart(); }
+export function clearCart() { saveCart({}); }
