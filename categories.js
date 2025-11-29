@@ -1,7 +1,7 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
 // മാറ്റങ്ങൾ:
-// 1. കുറഞ്ഞത് 8 കാർഡുകൾ എങ്കിലും ഗ്രിഡിൽ കാണിക്കുന്നു (ഡമ്മി കാർഡുകൾ ചേർക്കുന്നു).
-// 2. ഡിസ്കൗണ്ട് ബാഡ്ജ് ചിത്രത്തിന് മുകളിൽ കാണിക്കുന്നു.
+// 1. Data Saving: കുറഞ്ഞ ക്വാളിറ്റി ഇമേജുകൾ ലോഡ് ചെയ്യുന്നു.
+// 2. Minimum 8 Cards (Dummy Cards).
 
 import {
     collection,
@@ -111,7 +111,8 @@ async function loadCategoryList() {
             const category = doc.data();
             categoriesMap.set(doc.id, category.name);
             const rawImage = category.imageUrl || 'https://placehold.co/80x80/333/D4AF37?text=C';
-            const optimizedIcon = optimizeImage(rawImage, 150);
+            // *** മാറ്റം: ലോ ക്വാളിറ്റി ഐക്കൺ (50px, 60% quality) ***
+            const optimizedIcon = optimizeImage(rawImage, 80, 60);
 
             navHtml += `
                 <a href="#" class="category-grid-item" data-id="${doc.id}">
@@ -278,12 +279,11 @@ function applyFilters() {
     } else {
         noResultsMsg.style.display = 'none';
         
-        // യഥാർത്ഥ പ്രൊഡക്റ്റുകൾ റെൻഡർ ചെയ്യുന്നു
         filtered.forEach(product => {
             renderProductCard(product, product.id);
         });
 
-        // *** മാറ്റം: മിനിമം 8 കാർഡുകൾ ഉറപ്പാക്കുന്നു (Dummy Cards) ***
+        // Minimum 8 cards check
         const minItems = 8;
         const currentCount = filtered.length;
         if (currentCount < minItems) {
@@ -295,11 +295,9 @@ function applyFilters() {
     }
 }
 
-// *** പുതിയത്: ഡമ്മി കാർഡ് റെൻഡർ ചെയ്യുന്ന ഫംഗ്ഷൻ ***
 function renderDummyCard() {
     const card = document.createElement('div');
     card.className = 'category-product-card dummy-card';
-    // ഉള്ളടക്കം ആവശ്യമില്ല, CSS വഴി സ്റ്റൈൽ ചെയ്യാം
     card.innerHTML = `
         <div class="dummy-image-box"></div>
         <div class="dummy-content-box">
@@ -318,14 +316,14 @@ function renderProductCard(product, productId) {
     const mrp = product.mrp || 0;
     
     const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
-    const imageUrl = optimizeImage(rawImage, 400, 80);
+    // *** മാറ്റം: ലോ ക്വാളിറ്റി ഇമേജ് (250px, 60% quality) ***
+    const imageUrl = optimizeImage(rawImage, 250, 60);
 
     let priceHTML = `<span class="price-main">₹${price}</span>`;
-    let discountBadge = ''; // *** മാറ്റം: ബാഡ്ജ് വേരിയബിൾ ***
+    let discountBadge = ''; 
 
     if (mrp > price) {
         priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
-        // *** മാറ്റം: ഡിസ്കൗണ്ട് ബാഡ്ജ് HTML ***
         const discount = Math.round(((mrp - price) / mrp) * 100);
         discountBadge = `<span class="product-discount-badge">${discount}% OFF</span>`;
     }
@@ -336,7 +334,7 @@ function renderProductCard(product, productId) {
 
     card.innerHTML = `
         <a href="product.html?id=${productId}" class="cat-product-image-link" style="position: relative;">
-            ${discountBadge} <!-- ബാഡ്ജ് ചിത്രത്തിന് മുകളിൽ -->
+            ${discountBadge}
             <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" loading="lazy" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
         </a>
         <div class="cat-product-content">
@@ -368,7 +366,6 @@ function renderProductCard(product, productId) {
     productGrid.appendChild(card);
 }
 
-// Ripple Effect
 function createRipple(event, button) {
     const ripple = document.createElement('span');
     const rect = button.getBoundingClientRect();
