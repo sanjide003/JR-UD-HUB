@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// മാറ്റം: ഡിസ്ക്രിപ്ഷൻ 3 വരിയിൽ കാണിക്കുന്നു, More/Less ലോജിക്.
+// മാറ്റം: "More" ബട്ടൺ ഒഴിവാക്കി, എല്ലാ ഡിസ്ക്രിപ്ഷനും കാണിക്കുന്നു.
 
 import { 
     collection, 
@@ -41,6 +41,7 @@ function linkify(text) {
     const urlRegex = /(\b(https|http|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])|(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
     return text.replace(urlRegex, function(url, p1, p2, p3) {
         const href = p3 ? 'http://' + p3 : p1;
+        // ലിങ്ക് നീല നിറത്തിൽ കാണിക്കാൻ ക്ലാസ്സ് ആവശ്യമില്ല, CSS-ൽ !important നൽകിയിട്ടുണ്ട്.
         return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
 }
@@ -147,21 +148,12 @@ async function loadProductDetails() {
             `;
         }
 
-        // *** മാറ്റം: ഡിസ്ക്രിപ്ഷൻ ലോജിക് (3 വരിയിൽ ചുരുക്കുന്നു) ***
+        // *** മാറ്റം: ഡിസ്ക്രിപ്ഷൻ മുഴുവൻ കാണിക്കുന്നു (No Truncation) ***
         let descriptionHTML = 'No description available.';
-        let hasLongDescription = false;
-        
         if (product.description) {
             let linkifiedText = linkify(product.description);
-            // വരികൾ എണ്ണിനോക്കുന്നു (ലളിതമായ കണക്കുകൂട്ടൽ)
-            hasLongDescription = product.description.length > 150; 
-            
-            descriptionHTML = `
-                <div class="description-content ${hasLongDescription ? 'truncated' : ''}" id="desc-content">
-                    ${linkifiedText.replace(/\n/g, '<br>')}
-                </div>
-                ${hasLongDescription ? '<button class="read-more-btn" id="desc-read-more">Show more</button>' : ''}
-            `;
+            // മുഴുവൻ ടെക്സ്റ്റും കാണിക്കുന്നു
+            descriptionHTML = `<div class="description-content" id="desc-content">${linkifiedText.replace(/\n/g, '<br>')}</div>`;
         }
 
         let specificationHTML = '';
@@ -270,28 +262,13 @@ async function loadProductDetails() {
             loadRelatedProducts(product.categoryId, productIdStr);
         }
 
-        // *** Event Listener for Read More ***
-        const readMoreBtn = document.getElementById('desc-read-more');
-        if (readMoreBtn) {
-            readMoreBtn.addEventListener('click', () => {
-                const content = document.getElementById('desc-content');
-                if (content.classList.contains('truncated')) {
-                    content.classList.remove('truncated');
-                    readMoreBtn.textContent = 'Show less';
-                } else {
-                    content.classList.add('truncated');
-                    readMoreBtn.textContent = 'Show more';
-                }
-            });
-        }
-
     } catch (error) {
         console.error("Error loading product details: ", error);
         productDetailContent.innerHTML = '<p class="error-message">Error loading product details.</p>';
     }
 }
 
-// ... (Realtime Listeners, Ripple, Action Buttons, Related Products Load, Cart Logic Same as Before) ...
+// ... Realtime Listeners, Ripple, Action Buttons, Related Products Load, Cart Logic (No Changes) ...
 function setupRealtimeListeners(productId) {
     const likesRef = collection(db, "products", productId, "likes");
     onSnapshot(likesRef, (snapshot) => {
