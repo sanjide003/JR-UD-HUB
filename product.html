@@ -1,66 +1,27 @@
-<!-- 
-  ഇതാണ് product.html 
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Details - JR-UD-HUB</title>
-    <!-- പൊതുവായ ഡിസൈൻ ഫയൽ -->
+    <title>Product - JR-UD-HUB</title>
     <link rel="stylesheet" href="public.css">
-    <link rel="stylesheet" href="product.css"> <!-- *** പുതിയ ഫയൽ ഇവിടെ ചേർത്തു *** -->
-    
-    <!-- *** പുതിയതായി ചേർത്തത്: Swiper CSS *** -->
+    <link rel="stylesheet" href="product.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body>
-
-    <!-- 0. പേജ് ലോഡർ -->
-    <div id="preloader">
-        <div class="loader-logo-container">
-            <!-- ലോഗോയും സ്പിന്നറും common.js & public.css വഴി വരും -->
-            <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
-            <div class="loader-ring"></div>
-        </div>
-    </div>
-
-    <!-- 1. ഹെഡർ -->
+    <div id="preloader"><div class="loader-ring"></div></div>
     <header class="main-header" id="main-header"></header>
-    
-    <!-- 2. സൈഡ് മെനു -->
-    <nav class="side-nav" id="side-nav"></nav>
-    <div class="nav-overlay" id="nav-overlay"></div>
-
-    <!-- 3. പ്രധാന ഉള്ളടക്കം -->
-    <main class="container product-detail-container">
-        <!-- ഉൽപ്പന്നത്തിന്റെ വിവരങ്ങൾ 'product.js' വഴി ഇവിടെ വരും -->
-        <div id="product-detail-content" class="product-detail-grid">
-            <div class="loading-placeholder-full">Loading product...</div>
+    <main class="container">
+        <div id="product-detail-content" class="product-layout">
+            <div style="text-align:center; padding: 2rem;">Loading...</div>
         </div>
-
-        <!-- 4. ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ -->
-        <section class="related-products-section">
-            <h2 class="section-title-new">You May Also Like</h2>
-            <!-- *** ഗ്രിഡ് ക്ലാസ് മാറ്റി (സ്റ്റൈൽ ശരിയാക്കാൻ) *** -->
-            <div class="product-grid-new" id="related-products-grid">
-                <!-- ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ 'product.js' വഴി ഇവിടെ വരും -->
-            </div>
-        </section>
+        <div class="related-section">
+            <h3 class="section-title-new">Related Products</h3>
+            <div id="related-products-grid" class="related-grid"></div>
+        </div>
     </main>
-
-    <!-- 5. ഫൂട്ടർ -->
     <footer class="main-footer-new" id="main-footer"></footer>
-
-    <!-- 6. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ -->
-    <div id="floating-action-buttons"></div>
-
-    <!-- JS ഫയലുകൾ -->
-    <!-- *** പുതിയതായി ചേർത്തത്: Swiper JS *** -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="cart.js"></script>
-    <script type="module" src="common.js"></script>
     <script type="module" src="product.js"></script>
 </body>
 </html>
