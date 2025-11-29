@@ -1,8 +1,8 @@
 /* ഇത് product.CSS
    മാറ്റങ്ങൾ:
-   1. ഇമേജ് ബോക്സ് ഫിക്സഡ് ഹൈറ്റ് (400px Mobile / 550px Desktop).
-   2. ഡിസ്ക്രിപ്ഷൻ 3 വരിയിൽ ഒതുക്കി (Line Clamp).
-   3. ലേഔട്ട് സ്റ്റെബിലിറ്റി ഉറപ്പാക്കി.
+   1. ഡിസ്ക്രിപ്ഷനിലെ ലിങ്കുകൾക്ക് നീല നിറം.
+   2. ഡിസ്ക്രിപ്ഷൻ & സ്പെസിഫിക്കേഷൻ ബോക്സുകൾക്ക് ബോർഡറും കൃത്യമായ വീതിയും.
+   3. ടെക്സ്റ്റ് റാപ്പിംഗ് (Text Wrap) നിർബന്ധമാക്കി.
 */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
@@ -10,21 +10,20 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
-    align-items: start; /* ഉള്ളടക്കം മുകളിൽ നിന്ന് അലൈൻ ചെയ്യാൻ */
+    align-items: start;
 }
 
-/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (FIXED SIZE CONTAINER) --- */
+/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Swiper) --- */
 .product-gallery-swiper {
     width: 100%;
-    /* മൊബൈലിൽ ഫിക്സഡ് ഉയരം */
-    height: 400px; 
+    height: 400px; /* Mobile Height */
     border: 1px solid var(--border-color);
     border-radius: 12px;
     overflow: hidden;
     margin-bottom: 1rem;
     position: relative;
     background-color: #000;
-    flex-shrink: 0; /* വലിപ്പം ചുരുങ്ങരുത് */
+    flex-shrink: 0;
 }
 
 .product-gallery-swiper .swiper-slide {
@@ -35,7 +34,7 @@
 .product-gallery-swiper .swiper-slide img {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* ബോക്സിൽ നിറഞ്ഞു നിൽക്കാൻ */
+    object-fit: cover;
 }
 
 /* Pagination Dots */
@@ -66,7 +65,7 @@
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
 }
 
-/* --- 3. "More Links" (Right Side Round) --- */
+/* --- 3. More Links --- */
 .product-more-links {
     position: absolute;
     bottom: 40px; 
@@ -117,7 +116,10 @@
 .product-info { 
     padding-top: 0;
     display: flex;
-    flex-direction: column; /* കണ്ടന്റ് താഴേക്ക് വരാൻ */
+    flex-direction: column;
+    /* *** മാറ്റം: കണ്ടെയ്നറിൽ ഒതുങ്ങാൻ *** */
+    width: 100%;
+    box-sizing: border-box;
 }
 
 /* ആക്ഷൻ ബാർ */
@@ -193,7 +195,7 @@
     margin-bottom: 1.5rem; 
 }
 
-/* Price Color: Normal Green (#2ecc71) */
+/* Price Color: Green (#2ecc71) */
 .product-info .price-container.large .price-main { 
     font-size: 1.8rem;
     color: #2ecc71; 
@@ -205,26 +207,41 @@
     text-decoration: line-through;
 }
 
-/* ഡിസ്ക്രിപ്ഷൻ ബോക്സ് */
+/* *** മാറ്റം: ഡിസ്ക്രിപ്ഷൻ ബോക്സ് സ്റ്റൈലിംഗ് *** */
 .product-description {
     margin-bottom: 1.5rem;
     color: var(--text-muted);
-    border: 1px solid var(--border-color);
+    /* ബോർഡർ നൽകി */
+    border: 1px solid var(--border-color); 
     background-color: var(--card-bg);
     padding: 1rem;
     border-radius: 8px;
     font-size: 0.95rem;
     line-height: 1.6;
+    
+    /* *** വീതിയും ടെക്സ്റ്റ് റാപ്പിംഗും *** */
+    width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: break-word; /* വാക്ക് മുറിഞ്ഞുപോകാതിരിക്കാൻ */
+    word-wrap: break-word;     /* പഴയ ബ്രൗസറുകൾക്കായി */
+    word-break: break-word;    /* നീളമുള്ള ലിങ്കുകൾ ബ്രേക്ക് ചെയ്യാൻ */
+    white-space: pre-wrap;     /* ലൈൻ ബ്രേക്കുകൾ നിലനിർത്താൻ */
+}
+
+/* *** മാറ്റം: ലിങ്ക് കളർ നീല *** */
+.product-description a { 
+    color: #3498db !important; /* Blue Color */
+    text-decoration: underline; 
+    word-break: break-all; /* ലിങ്കുകൾ ബോക്സിന് പുറത്തുപോകാതിരിക്കാൻ */
 }
 
 .description-content {
     display: block;
 }
 
-/* *** മാറ്റം: 3 വരിയിൽ ഒതുക്കുന്നു *** */
 .description-content.truncated {
     display: -webkit-box;
-    -webkit-line-clamp: 3; /* 3 വരികൾ */
+    -webkit-line-clamp: 3; 
     -webkit-box-orient: vertical;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -237,26 +254,40 @@
     font-weight: 600;
     cursor: pointer;
     padding: 0;
-    margin-top: 5px;
+    margin-top: 10px; /* അകലം നൽകി */
     font-size: 0.85rem;
+    display: block;
 }
 
+/* *** മാറ്റം: സ്പെസിഫിക്കേഷൻ ബോക്സ് സ്റ്റൈലിംഗ് *** */
 .product-specification-section {
     margin-bottom: 1.5rem;
     background-color: var(--card-bg);
+    /* ബോർഡർ നൽകി */
+    border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1rem;
-    border: 1px solid var(--border-color);
+    
+    /* വീതിയും റാപ്പിംഗും */
+    width: 100%;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
 }
+
 .product-specs-list { list-style-type: none; padding: 0; margin: 0; }
 .product-specs-list li {
-    margin-bottom: 0.5rem; color: var(--text-color); position: relative; padding-left: 1.5rem; font-size: 0.95rem;
+    margin-bottom: 0.5rem; 
+    color: var(--text-color); 
+    position: relative; 
+    padding-left: 1.5rem; 
+    font-size: 0.95rem;
+    line-height: 1.5;
 }
 .product-specs-list li::before {
     content: "•"; color: var(--primary-gold); font-weight: bold; font-size: 1.2rem; position: absolute; left: 0; top: -2px;
 }
 
-/* ബട്ടൺ ഗ്രിഡ് */
+/* Buttons */
 .product-actions-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -265,7 +296,6 @@
     margin-bottom: 1rem;
 }
 
-/* WhatsApp Button */
 .btn-whatsapp {
     background-color: #24a66e !important;
     border: 1px solid #24a66e !important;
@@ -283,7 +313,6 @@
     fill: currentColor;
 }
 
-/* Add to Cart Button */
 .product-actions-grid .btn-secondary-new {
     background-color: #000 !important;
     color: #ffffff !important;
@@ -332,7 +361,6 @@
     height: auto;
 }
 
-/* Image Link */
 .related-products-section .cat-product-image-link {
     display: block;
     width: 100%;
