@@ -1,7 +1,9 @@
-// ഇതാണ് 'product.js' ഫയൽ.
-// മാറ്റങ്ങൾ: 
-// 1. റേറ്റിംഗ് ബോക്സ് ക്രമം മാറ്റി (Summary Top).
-// 2. സ്റ്റാർ കളർ ലോജിക് (Red to Green) ചേർത്തു.
+// product.js - Final Version
+// Includes:
+// 1. Rating Summary moved to TOP.
+// 2. Star Input moved to BOTTOM.
+// 3. Multi-color Star Rating (Red-to-Green).
+// 4. Linkify function for description.
 
 import { 
     collection, 
@@ -182,7 +184,7 @@ async function loadProductDetails() {
         const cartButtonText = isInCart ? "Remove" : "Add to Cart";
         const cartButtonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
-        // *** മാറ്റം: Rating Box HTML Structure (Summary Top, Input Bottom) ***
+        // *** Rating Box: Summary Top, Input Bottom ***
         const actionBarHTML = `
             <div class="product-action-bar">
                 <div class="action-group">
@@ -318,7 +320,6 @@ function setupRealtimeListeners(productId) {
     });
 }
 
-// *** മാറ്റം: Rating Summary Generation (With specific colors) ***
 function updateRatingSummary(counts, total) {
     const summaryContainer = document.querySelector('.rating-summary');
     if (!summaryContainer) return;
@@ -347,7 +348,6 @@ function updateRatingSummary(counts, total) {
     summaryContainer.innerHTML = html;
 }
 
-// *** മാറ്റം: Star UI with Multi-color Classes ***
 function updateStarUI(value) {
     const stars = document.querySelectorAll('.star');
     const feedback = document.querySelector('.rating-feedback');
