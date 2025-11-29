@@ -1,4 +1,4 @@
-/* home.css - Compact Design Update with Premium Buttons */
+/* home.css - Updated with specific button styles (No Gold Fill, White View) */
 
 /* === 1. ഹോം പേജ് ടോപ്പ് ബാനർ === */
 .home-top-banner {
@@ -89,7 +89,7 @@
     margin: 0 auto;
 }
 
-/* === 4. For You (Top Sellers) - Premium Overlay Design === */
+/* === 4. For You (Top Sellers) === */
 .home-section {
     margin-bottom: 3rem;
     position: relative;
@@ -113,12 +113,12 @@
 .top-sellers-swiper-new .swiper-slide {
     position: relative;
     border: 1px solid var(--border-color);
-    border-radius: 16px; /* അല്പം കൂടി വളച്ചു */
+    border-radius: 16px;
     overflow: hidden;
     background-color: var(--card-bg);
     display: flex;
     flex-direction: column;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3); /* കാർഡിന് ഷാഡോ */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
 }
 
 /* ഇമേജ് കണ്ടെയ്നർ */
@@ -138,7 +138,7 @@
 }
 
 .top-sellers-swiper-new .swiper-slide:hover .top-sellers-product-image {
-    transform: scale(1.05); /* ഹോവർ ചെയ്യുമ്പോൾ സൂം */
+    transform: scale(1.05); 
 }
 
 /* Overlay Text */
@@ -172,7 +172,7 @@
     text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
 
-/* *** PREMIUM BUTTONS CONTAINER *** */
+/* *** BUTTONS CONTAINER (UPDATED) *** */
 .top-sellers-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -183,11 +183,11 @@
     border-top: none; 
 }
 
-/* ബട്ടണുകൾക്ക് പൊതുവായ സ്റ്റൈൽ (Rounded Pill Shape) */
+/* പൊതുവായ ബട്ടൺ സ്റ്റൈൽ */
 .top-sellers-buttons .btn-primary-new,
 .top-sellers-buttons .btn-secondary-new {
     font-size: 0.8rem; 
-    height: 40px; /* ഉയരം കൂട്ടി */
+    height: 40px; 
     padding: 0;
     border-radius: 50px; /* Pill Shape */
     text-transform: uppercase;
@@ -201,51 +201,44 @@
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
-/* Cart Button (Gold Filled) */
+/* 1. Cart Button (Updated: No Fill, Gold Border & Text) */
 .top-sellers-buttons .btn-primary-new {
-    background-color: var(--primary-gold);
-    color: #000;
-    border: 1px solid var(--primary-gold);
+    background-color: transparent !important; /* ഫിൽ കളർ മാറ്റി */
+    color: var(--primary-gold) !important;    /* ഗോൾഡ് ടെക്സ്റ്റ് */
+    border: 1px solid var(--primary-gold) !important; /* ഗോൾഡ് ബോർഡർ */
     gap: 6px;
 }
 
+/* ഹോവർ ചെയ്യുമ്പോൾ */
 .top-sellers-buttons .btn-primary-new:hover {
-    background-color: #fff;
-    color: #000;
-    border-color: #fff;
-    transform: translateY(-3px); /* Hover Lift */
-    box-shadow: 0 6px 12px rgba(212, 175, 55, 0.3);
+    background-color: rgba(212, 175, 55, 0.1) !important; /* ചെറിയൊരു ഗോൾഡ് ഷേഡ് */
+    transform: translateY(-3px);
 }
 
+/* ആഡ് ചെയ്യുമ്പോൾ (Added state) - മാറ്റമില്ല, സെയിം സ്റ്റൈൽ */
+.top-sellers-buttons .btn-primary-new.added-to-cart {
+    background-color: rgba(212, 175, 55, 0.1) !important;
+}
+
+/* കാർട്ട് ഐക്കൺ കളർ */
 .top-sellers-buttons .btn-primary-new svg.icon-btn {
-    stroke: #000;
+    stroke: var(--primary-gold);
     fill: none;
     width: 18px;
     height: 18px;
 }
 
-/* Cart added state */
-.top-sellers-buttons .btn-primary-new.added-to-cart {
-    background-color: #000;
-    color: var(--primary-gold);
-    border-color: var(--primary-gold);
-}
-.top-sellers-buttons .btn-primary-new.added-to-cart svg.icon-btn {
-    stroke: var(--primary-gold);
-}
-
-/* View Button (Outline) */
+/* 2. View Button (Updated: White Border & Text) */
 .top-sellers-buttons .btn-secondary-new {
-    background-color: transparent;
-    color: var(--text-muted);
-    border: 1px solid var(--border-color);
+    background-color: transparent !important;
+    color: #ffffff !important;       /* വെള്ള ടെക്സ്റ്റ് */
+    border: 1px solid #ffffff !important; /* വെള്ള ബോർഡർ */
 }
 
+/* ഹോവർ ചെയ്യുമ്പോൾ */
 .top-sellers-buttons .btn-secondary-new:hover {
-    border-color: var(--primary-gold);
-    color: var(--primary-gold);
-    background-color: rgba(212, 175, 55, 0.05);
-    transform: translateY(-3px); /* Hover Lift */
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    transform: translateY(-3px);
 }
 
 /* --- Pagination (Dot-to-Line) --- */
@@ -378,7 +371,7 @@
     .hero-section-new { height: 60vh; }
     .section-title-new { font-size: 1.5rem; margin-bottom: 1.5rem; }
     
-    /* മൊബൈലിൽ കാർഡിന്റെ പാഡിംഗ് അല്പം കുറയ്ക്കുന്നു */
+    /* മൊബൈലിൽ ബട്ടൺ സൈസ് അഡ്ജസ്റ്റ്മെന്റ് */
     .top-sellers-buttons { padding: 10px 12px 12px 12px; gap: 8px; }
     .top-sellers-buttons .btn-primary-new, 
     .top-sellers-buttons .btn-secondary-new { height: 36px; font-size: 0.75rem; }
