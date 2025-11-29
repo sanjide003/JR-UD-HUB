@@ -1,6 +1,7 @@
 /* ഇത് product.CSS
    മാറ്റങ്ങൾ:
-   1. വിലയുടെ നിറം സാധാരണ പച്ച (#2ecc71) ആക്കി.
+   1. ഇമേജ് കണ്ടെയ്നറിന് ഫിക്സഡ് ഹൈറ്റ് നൽകി (Fixed Size).
+   2. ആസ്പെക്ട് റേഷ്യോ ഒഴിവാക്കി, വലിപ്പം മാറുന്നത് തടഞ്ഞു.
 */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
@@ -8,26 +9,35 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
+    align-items: start; /* ഉള്ളടക്കം മുകളിൽ നിന്ന് തുടങ്ങാൻ */
 }
 
-/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Swiper) --- */
+/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Swiper - FIXED SIZE) --- */
 .product-gallery-swiper {
     width: 100%;
-    aspect-ratio: 1 / 1;
+    /* *** മാറ്റം: Aspect Ratio ഒഴിവാക്കി ഫിക്സഡ് ഹൈറ്റ് നൽകി *** */
+    height: 380px; /* മൊബൈലിൽ ഫിക്സഡ് ഉയരം */
     border: 1px solid var(--border-color);
     border-radius: 12px;
     overflow: hidden;
     margin-bottom: 1rem;
     position: relative;
     background-color: #000;
+    flex-shrink: 0; /* വലിപ്പം ചുരുങ്ങാതിരിക്കാൻ */
 }
+
+.product-gallery-swiper .swiper-slide {
+    width: 100%;
+    height: 100%;
+}
+
 .product-gallery-swiper .swiper-slide img {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: cover; /* ഇമേജ് ബോക്സിൽ നിറഞ്ഞു നിൽക്കാൻ */
 }
 
-/* Pagination Dots (For You Style) */
+/* Pagination Dots */
 .product-gallery-swiper .swiper-pagination {
     position: absolute;
     bottom: 15px;
@@ -171,7 +181,7 @@
 .product-title {
     font-size: 1.5rem; 
     margin-bottom: 0.5rem;
-    color: #ffffff; /* White */
+    color: #ffffff; 
     font-weight: 700;
     line-height: 1.3;
 }
@@ -180,10 +190,10 @@
     margin-bottom: 1.5rem; 
 }
 
-/* *** മാറ്റം: പ്രൈസ് കളർ സാധാരണ പച്ച (#2ecc71) *** */
+/* പ്രൈസ് കളർ: പച്ച (#2ecc71) - കണ്ണിന് ഇമ്പമുള്ളത് */
 .product-info .price-container.large .price-main { 
     font-size: 1.8rem;
-    color: #2ecc71; /* Normal Green */
+    color: #2ecc71; 
     font-weight: 700;
 }
 .product-info .price-container.large .price-mrp { 
@@ -219,7 +229,7 @@
     content: "•"; color: var(--primary-gold); font-weight: bold; font-size: 1.2rem; position: absolute; left: 0; top: -2px;
 }
 
-/* ബട്ടൺ ഗ്രിഡ് & സൈസ് */
+/* ബട്ടൺ ഗ്രിഡ് & സൈസ് (ചെറുതാക്കിയത്) */
 .product-actions-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -353,11 +363,11 @@
     gap: 5px;
 }
 
-/* *** മാറ്റം: പ്രൈസ് കളർ സാധാരണ പച്ച (#2ecc71) *** */
+/* Price Green (#2ecc71) */
 .related-products-section .cat-product-content .price-main {
     font-size: 1rem;
     font-weight: 700;
-    color: #2ecc71; /* Normal Green */
+    color: #2ecc71; 
 }
 
 .related-products-section .cat-product-content .price-mrp {
@@ -408,4 +418,9 @@
 @media (min-width: 769px) {
     .product-detail-grid { grid-template-columns: 1fr 1fr; }
     .product-actions-grid { max-width: 400px; }
+    
+    /* *** മാറ്റം: ഡെസ്ക്ടോപ്പിൽ ഇമേജ് ബോക്സ് വലുത് (Fixed) *** */
+    .product-gallery-swiper {
+        height: 550px; 
+    }
 }
