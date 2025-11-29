@@ -1,335 +1,52 @@
-/* home.css - Compact Design Update */
+/* home.css - Clean & Fast */
 
-/* === 1. ഹോം പേജ് ടോപ്പ് ബാനർ === */
-.home-top-banner {
-    width: 100%;
-    height: auto;
-    position: relative;
-    background-color: #000;
-    border-bottom: 2px solid var(--primary-gold);
-    margin-bottom: 0;
+.home-top-banner img { width: 100%; height: auto; display: block; }
+
+.hero-section {
+    width: 100%; aspect-ratio: 16/9;
+    max-height: 80vh; overflow: hidden;
+}
+@media (max-width: 768px) { .hero-section { aspect-ratio: 9/16; max-height: 70vh; } }
+
+.hero-slider, .hero-slider .swiper-slide { width: 100%; height: 100%; }
+.hero-slider img, .hero-slider video {
+    width: 100%; height: 100%; object-fit: cover;
 }
 
-.home-top-banner img {
-    width: 100%;
-    height: auto;
-    display: block;
-    max-height: 120px;
-    object-fit: cover;
-}
-
-/* === 2. ഹീറോ സ്ലൈഡർ === */
-.hero-section-new {
-    width: 100%;
-    height: 75vh;
-    position: relative;
-    background-color: #000;
-}
-
-.hero-slider-new {
-    width: 100%;
-    height: 100%;
-}
-
-.hero-slider-new .swiper-slide {
-    width: 100%;
-    height: 100%;
-    position: relative;
-    overflow: hidden;
-}
-
-.hero-slider-new .swiper-slide img,
-.hero-slider-new .swiper-slide video {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-}
-
-.hero-slider-new .swiper-slide iframe {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    pointer-events: none;
-}
-
-.hero-slider-new .swiper-slide::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.6) 100%);
-    z-index: 1;
-}
-
-.hero-slider-new .hero-pagination-dots {
-    bottom: 20px;
-}
-
-.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet {
-    background: rgba(255, 255, 255, 0.5);
-    opacity: 1;
-    width: 8px;
-    height: 8px;
-    transition: all 0.3s ease;
-}
-
-.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active {
-    background: var(--primary-gold);
-    width: 20px;
-    border-radius: 4px;
-}
-
-/* === 3. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ === */
-.hero-text-section {
-    text-align: center;
-    padding: 2rem 1.5rem;
-    color: var(--text-muted);
-    font-size: 1rem;
-    line-height: 1.6;
-    max-width: 900px;
-    margin: 0 auto;
-}
-
-/* === 4. For You (Top Sellers) - Compact Overlay Design === */
-.home-section {
-    margin-bottom: 3rem;
-    position: relative;
-}
-
-.section-title-new {
-    text-align: center;
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--primary-gold);
-    margin-bottom: 2rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-.top-sellers-swiper-new {
-    padding: 0 10px;
-}
-
-/* കാർഡ് കണ്ടെയ്നർ */
-.top-sellers-swiper-new .swiper-slide {
-    position: relative;
+/* Top Sellers */
+.top-sellers-swiper { padding: 10px 5px; }
+.product-card {
     border: 1px solid var(--border-color);
-    border-radius: 12px;
-    overflow: hidden;
-    background-color: var(--card-bg);
-    display: flex;
-    flex-direction: column;
+    background: var(--card-bg);
+    border-radius: 8px; overflow: hidden;
 }
-
-/* ഇമേജ് കണ്ടെയ്നർ (Relatve for Overlay) */
-.media-container {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 4 / 5; /* നല്ല ഹൈറ്റ് കിട്ടാൻ */
-    overflow: hidden;
+.product-card img {
+    width: 100%; aspect-ratio: 4/5; object-fit: cover;
 }
-
-.top-sellers-product-image {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
+.product-info { padding: 10px; text-align: center; }
+.product-name {
+    font-size: 0.9rem; font-weight: 600;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
+.product-price { color: var(--primary-gold); font-weight: 700; margin: 5px 0; }
 
-/* Overlay Text (ഇമേജിന്റെ മുകളിൽ) */
-.text-overlay {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    padding: 1.5rem 0.5rem 0.5rem 0.5rem;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.9) 0%, rgba(0, 0, 0, 0) 100%);
-    text-align: center;
-    color: #fff;
-    z-index: 2;
-}
-
-.top-sellers-product-name {
-    font-size: 1rem;
-    font-weight: 700;
-    margin-bottom: 2px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-}
-
-.top-sellers-product-price {
-    font-size: 1.1rem;
-    color: var(--primary-gold);
-    font-weight: 700;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-}
-
-/* Buttons Container (ഇമേജിന് തൊട്ടുതാഴെ) */
-.top-sellers-buttons {
+/* Category Grid */
+.category-grid-simple {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    width: 100%;
-    border-top: 1px solid var(--border-color);
-}
-
-/* Buttons Style */
-.top-sellers-buttons .btn {
-    padding: 0.8rem 0;
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    text-decoration: none;
-    font-weight: 600;
-    text-transform: uppercase;
-    background-color: #1a1a1a;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    transition: background 0.3s ease;
-}
-
-.top-sellers-buttons .btn:first-child {
-    border-right: 1px solid var(--border-color); /* Cart ബട്ടണിന് വലതുവശത്ത് വര */
-}
-
-/* Cart Button */
-.top-sellers-buttons .btn-add-to-cart {
-    background-color: #111;
-}
-
-.top-sellers-buttons .btn-add-to-cart:hover {
-    background-color: #222;
-    color: var(--primary-gold);
-}
-
-.top-sellers-buttons .btn-add-to-cart.added-to-cart {
-    background-color: #000;
-    color: var(--primary-gold);
-}
-
-.top-sellers-buttons .btn-add-to-cart svg {
-    width: 16px; height: 16px;
-}
-
-/* View Button */
-.top-sellers-buttons a.btn {
-    background-color: #111;
-}
-
-.top-sellers-buttons a.btn:hover {
-    background-color: #222;
-    color: var(--primary-gold);
-}
-
-/* --- Pagination (Dot-to-Line) --- */
-.top-sellers-pagination-new {
-    position: relative;
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    gap: 6px;
-}
-
-.top-sellers-pagination-new .swiper-pagination-bullet {
-    width: 8px; height: 8px;
-    border-radius: 4px;
-    background-color: #444;
-    opacity: 1;
-    margin: 0 !important;
-    transition: width 0.3s ease;
-    position: relative;
-    overflow: hidden;
-}
-
-.top-sellers-pagination-new .swiper-pagination-bullet-active {
-    width: 30px;
-    background-color: #444;
-}
-
-.top-sellers-pagination-new .swiper-pagination-bullet-active .pagination-progress {
-    display: block;
-    height: 100%;
-    width: 0%;
-    background-color: var(--primary-gold);
-    border-radius: 4px;
-}
-
-@keyframes progress-fill {
-    from { width: 0%; }
-    to { width: 100%; }
-}
-
-/* === 5. SHOP BY CATEGORY (Portrait Cards) === */
-.category-grid-vertical {
-    display: flex;
-    flex-direction: column;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 15px;
-    width: 100%;
-    padding: 0 15px;
 }
-
-.category-card-portrait {
-    position: relative;
-    width: 100%;
-    aspect-ratio: 3 / 4;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 1px solid var(--border-color);
+.cat-card-simple {
+    position: relative; border-radius: 8px; overflow: hidden;
+    aspect-ratio: 3/4; display: block;
 }
-
-.category-card-img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+.cat-card-simple img {
+    width: 100%; height: 100%; object-fit: cover;
+    transition: transform 0.3s;
 }
-
-.category-card-overlay {
-    position: absolute;
-    bottom: 0; left: 0; width: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
-    padding: 1.5rem 1rem;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: flex-end;
-}
-
-.category-card-title {
-    color: #fff;
-    font-size: 1.3rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 10px;
-    text-align: center;
-}
-
-.category-card-btn {
-    font-size: 0.85rem;
-    color: var(--primary-gold);
-    border: 1px solid var(--primary-gold);
-    padding: 6px 18px;
-    border-radius: 20px;
-    background-color: rgba(0, 0, 0, 0.7);
-    font-weight: 600;
-}
-
-/* Responsive */
-@media (min-width: 768px) {
-    .category-grid-vertical {
-        flex-direction: row;
-        justify-content: center;
-        flex-wrap: wrap;
-    }
-    .category-card-portrait { width: 300px; }
-    .hero-section-new { height: 85vh; }
-}
-@media (max-width: 768px) {
-    .hero-section-new { height: 60vh; }
-    .section-title-new { font-size: 1.4rem; margin-bottom: 1.5rem; }
+.cat-card-simple:hover img { transform: scale(1.05); }
+.cat-overlay {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    background: rgba(0,0,0,0.7); color: #fff;
+    padding: 10px; text-align: center; font-weight: 600;
 }
