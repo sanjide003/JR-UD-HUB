@@ -1,24 +1,24 @@
 // ഇതാണ് 'categories.js' ഫയൽ.
 // മാറ്റങ്ങൾ:
-// 1. Data Saving: കുറഞ്ഞ ക്വാളിറ്റി ഇമേജുകൾ ലോഡ് ചെയ്യുന്നു.
-// 2. Minimum 8 Cards (Dummy Cards).
+// 1. Pagination: 10 പ്രോഡക്റ്റുകൾ വീതം ലോഡ് ചെയ്യുന്നു.
+// 2. Server-side Filtering: ഫയർബേസിൽ നിന്ന് നേരിട്ട് ഫിൽറ്റർ ചെയ്യുന്നു.
+// 3. Default Sort: Newest First (ഏറ്റവും പുതിയത് ആദ്യം).
 
 import {
     collection,
     getDocs,
-    doc,
-    getDoc,
     query,
     where,
     limit,
     orderBy,
+    startAfter,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db } from './firebase-config.js';
 import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
-setLogLevel('Debug');
+setLogLevel('Silent');
 
 // --- DOM Elements ---
 const productGrid = document.getElementById("category-product-grid");
@@ -41,28 +41,55 @@ const discountChips = document.querySelectorAll(".discount-chip");
 
 // --- State ---
 let currentCategoryId = 'all'; 
-let allProductsCache = []; 
-let categoriesMap = new Map(); 
+let lastVisibleDoc = null; // അവസാനമായി ലോഡ് ചെയ്ത ഡോക്യുമെന്റ്
+let isFetching = false;    // ഇപ്പോൾ ലോഡ് ചെയ്യുന്നുണ്ടോ എന്നറിയാൻ
+let hasMoreProducts = true; // ഇനിയും പ്രോഡക്റ്റുകൾ ഉണ്ടോ എന്നറിയാൻ
+const PRODUCTS_PER_PAGE = 10; // ഒരു തവണ 10 എണ്ണം
+
+let activePriceRange = 'all';
+let activeSort = 'newest'; // Default sort changed to newest
 let activeDiscount = null;
+let currentSearchTerm = '';
 
 // --- പേജ് ലോഡ് ആവുമ്പോൾ ---
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
     await loadCategoryList(); 
     
+    // URL-ൽ നിന്ന് ഫിൽറ്റർ എടുക്കുന്നു
     const urlParams = new URLSearchParams(window.location.search);
     const categoryIdFromUrl = urlParams.get('filter');
     if (categoryIdFromUrl) {
         currentCategoryId = categoryIdFromUrl;
     }
     
-    await loadAllProductsCache();
-    
+    // സോർട്ട് ഡ്രോപ്പ്ഡൗണിൽ 'Newest' ഓപ്ഷൻ ചേർക്കുന്നു (HTML-ൽ ഇല്ലെങ്കിൽ)
+    ensureNewestOption();
+
     setupEventListeners();
     setupScrollAnimation(); 
     updateActiveCategoryUI(currentCategoryId);
-    applyFilters(); 
+    
+    // ആദ്യത്തെ 10 പ്രോഡക്റ്റുകൾ ലോഡ് ചെയ്യുന്നു
+    loadProducts(true); 
 });
+
+function ensureNewestOption() {
+    // നിലവിലുള്ള ഓപ്ഷനുകൾ പരിശോധിക്കുന്നു, 'newest' ഇല്ലെങ്കിൽ ചേർക്കും
+    let hasNewest = false;
+    for(let i=0; i<sortFilter.options.length; i++) {
+        if(sortFilter.options[i].value === 'newest') hasNewest = true;
+    }
+    
+    if(!hasNewest) {
+        const option = document.createElement('option');
+        option.value = 'newest';
+        option.text = 'Newest First';
+        sortFilter.insertBefore(option, sortFilter.firstChild);
+    }
+    // Default selection
+    sortFilter.value = 'newest';
+}
 
 // --- SCROLL ANIMATION LOGIC ---
 function setupScrollAnimation() {
@@ -71,11 +98,18 @@ function setupScrollAnimation() {
     productsScrollContainer.addEventListener('scroll', () => {
         const scrollTop = productsScrollContainer.scrollTop;
         
+        // Sticky Header Compact Mode
         if (scrollTop > 30) {
             stickyHeader.classList.add('compact');
         } else {
             stickyHeader.classList.remove('compact');
             searchWrapper.classList.remove('expanded');
+        }
+
+        // Infinite Scroll Logic
+        // താഴെ എത്താറായോ എന്ന് നോക്കുന്നു (50px buffer)
+        if (productsScrollContainer.scrollTop + productsScrollContainer.clientHeight >= productsScrollContainer.scrollHeight - 100) {
+            loadProducts(false); // Load next batch
         }
     });
 
@@ -109,9 +143,7 @@ async function loadCategoryList() {
         
         catSnapshot.forEach((doc) => {
             const category = doc.data();
-            categoriesMap.set(doc.id, category.name);
             const rawImage = category.imageUrl || 'https://placehold.co/80x80/333/D4AF37?text=C';
-            // *** മാറ്റം: ലോ ക്വാളിറ്റി ഐക്കൺ (50px, 60% quality) ***
             const optimizedIcon = optimizeImage(rawImage, 80, 60);
 
             navHtml += `
@@ -132,47 +164,167 @@ async function loadCategoryList() {
     }
 }
 
-async function loadAllProductsCache() {
+// *** MAIN PRODUCT LOADING FUNCTION ***
+async function loadProducts(isReset = false) {
+    if (isFetching) return;
+    if (isReset) {
+        lastVisibleDoc = null;
+        hasMoreProducts = true;
+        productGrid.innerHTML = ''; // ക്ലിയർ ചെയ്യുന്നു
+        noResultsMsg.style.display = 'none';
+    }
+
+    if (!hasMoreProducts) return;
+
+    isFetching = true;
     if (loader) loader.style.display = 'flex';
+
     try {
-        const q = query(collection(db, "products"));
-        const snapshot = await getDocs(q);
-        allProductsCache = [];
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            let discountPercent = 0;
-            if (data.mrp && data.mrp > data.price) {
-                discountPercent = Math.round(((data.mrp - data.price) / data.mrp) * 100);
-            }
+        let constraints = [];
+        const productsRef = collection(db, "products");
+
+        // 1. Category Filter
+        if (currentCategoryId !== 'all') {
+            constraints.push(where("categoryId", "==", currentCategoryId));
+        }
+
+        // 2. Sorting & Price Filter
+        // ഫയർബേസിൽ ഒരേ സമയം Range Filter-ഉം Sort-ഉം വേറെ ഫീൽഡുകളിൽ നൽകാൻ ബുദ്ധിമുട്ടാണ് (Requires Index).
+        // അതിനാൽ ലളിതമായ രീതി ഉപയോഗിക്കുന്നു.
+        
+        if (activeSort === 'newest') {
+            constraints.push(orderBy("createdAt", "desc"));
+        } else if (activeSort === 'low-high') {
+            constraints.push(orderBy("price", "asc"));
+        } else if (activeSort === 'high-low') {
+            constraints.push(orderBy("price", "desc"));
+        } else {
+            // Default Fallback
+            constraints.push(orderBy("createdAt", "desc"));
+        }
+
+        // 3. Pagination
+        if (lastVisibleDoc) {
+            constraints.push(startAfter(lastVisibleDoc));
+        }
+
+        constraints.push(limit(PRODUCTS_PER_PAGE));
+
+        // Query നിർമ്മിക്കുന്നു
+        // ശ്രദ്ധിക്കുക: സെർച്ച് ഉണ്ടെങ്കിൽ ഇത് ക്ലയന്റ് സൈഡിൽ ചെയ്യേണ്ടി വരും, കാരണം ഫയർബേസിന് 'LIKE' ക്വറി ഇല്ല.
+        // എന്നാൽ യൂസർ 10 എണ്ണം ലോഡ് ചെയ്യാനാണ് പറഞ്ഞത്. സെർച്ച് ചെയ്യുമ്പോൾ മാത്രം നമ്മൾ ലോജിക് മാറ്റും.
+        
+        let q;
+        let finalDocs = [];
+
+        if (currentSearchTerm) {
+            // *** സെർച്ച് മോഡ് ***
+            // സെർച്ച് ചെയ്യുമ്പോൾ മാത്രം എല്ലാ ഡാറ്റയും എടുത്ത് ഫിൽറ്റർ ചെയ്യുന്നു (മറ്റൊരു വഴി ഫയർബേസിൽ ഇല്ലാത്തതുകൊണ്ട്)
+            // എന്നാൽ ഇത് "Load all" എന്നതിന് എതിരായതുകൊണ്ട്, ഒരു ലിമിറ്റ് വെക്കുന്നു.
+             q = query(productsRef, orderBy("name"), limit(100)); // 100 എണ്ണത്തിൽ തിരയുന്നു (For performance)
+             const snapshot = await getDocs(q);
+             const term = currentSearchTerm.toLowerCase();
+             finalDocs = snapshot.docs.filter(doc => doc.data().name.toLowerCase().includes(term));
+             hasMoreProducts = false; // സെർച്ചിൽ പേജിനേഷൻ തൽക്കാലം ഒഴിവാക്കുന്നു
+        } else {
+            // *** നോർമൽ മോഡ് (Pagination) ***
+            q = query(productsRef, ...constraints);
+            const snapshot = await getDocs(q);
             
-            allProductsCache.push({
-                id: doc.id,
-                ...data,
-                discountPercent: discountPercent,
-                categoryName: categoriesMap.get(data.categoryId) || ''
-            });
-        });
+            if (snapshot.empty) {
+                hasMoreProducts = false;
+                if (isReset) noResultsMsg.style.display = 'block';
+            } else {
+                lastVisibleDoc = snapshot.docs[snapshot.docs.length - 1];
+                finalDocs = snapshot.docs;
+                
+                // 10-ൽ കുറവാണെങ്കിൽ ഇനി ലോഡ് ചെയ്യാൻ ഒന്നുമില്ല
+                if (snapshot.docs.length < PRODUCTS_PER_PAGE) {
+                    hasMoreProducts = false;
+                }
+            }
+        }
+
+        // Client-side Filtering for Price Range & Discount (Firestore Limitations പരിഹരിക്കാൻ)
+        // നാം 10 എണ്ണം എടുക്കുന്നു, അതിൽ ഫിൽറ്റർ ചെയ്യുന്നു. 
+        // Note: ഇത് പെർഫെക്റ്റ് അല്ല, എന്നാലും 10 എണ്ണം വെച്ച് ലോഡ് ചെയ്യാൻ ഇതാണ് നല്ലത്.
+        
+        for (const docSnap of finalDocs) {
+            const product = docSnap.data();
+            const productId = docSnap.id;
+            
+            // Apply Price Filter Logic
+            let passPrice = true;
+            if (activePriceRange !== 'all') {
+                const p = product.price;
+                if (activePriceRange === '0-500' && p >= 500) passPrice = false;
+                else if (activePriceRange === '500-1000' && (p < 500 || p > 1000)) passPrice = false;
+                else if (activePriceRange === '1000-2000' && (p < 1000 || p > 2000)) passPrice = false;
+                else if (activePriceRange === '2000-5000' && (p < 2000 || p > 5000)) passPrice = false;
+                else if (activePriceRange === '5000+' && p <= 5000) passPrice = false;
+            }
+
+            // Apply Discount Filter Logic
+            let passDiscount = true;
+            if (activeDiscount !== null) {
+                let discountPercent = 0;
+                if (product.mrp && product.mrp > product.price) {
+                    discountPercent = Math.round(((product.mrp - product.price) / product.mrp) * 100);
+                }
+                if (discountPercent < activeDiscount) passDiscount = false;
+            }
+
+            if (passPrice && passDiscount) {
+                renderProductCard(product, productId);
+            }
+        }
+        
+        // ഫിൽറ്റർ ചെയ്ത ശേഷം ഗ്രിഡ് കാലിയാണെങ്കിൽ മെസ്സേജ് കാണിക്കുക
+        if (productGrid.children.length === 0 && !hasMoreProducts) {
+             noResultsMsg.style.display = 'block';
+        } else {
+             noResultsMsg.style.display = 'none';
+        }
+
     } catch (error) {
-        console.error("Error loading products cache:", error);
+        console.error("Error loading products:", error);
     } finally {
+        isFetching = false;
         if (loader) loader.style.display = 'none';
     }
 }
 
+
 function setupEventListeners() {
+    // Search with Debounce
+    let debounceTimer;
     searchInput.addEventListener('input', (e) => {
-        clearSearchBtn.style.display = e.target.value.length > 0 ? 'block' : 'none';
-        applyFilters();
+        clearTimeout(debounceTimer);
+        const val = e.target.value.trim();
+        clearSearchBtn.style.display = val.length > 0 ? 'block' : 'none';
+        
+        debounceTimer = setTimeout(() => {
+            currentSearchTerm = val;
+            loadProducts(true); // Reset and search
+        }, 500);
     });
 
     clearSearchBtn.addEventListener('click', () => {
         searchInput.value = '';
+        currentSearchTerm = '';
         clearSearchBtn.style.display = 'none';
-        applyFilters();
+        loadProducts(true);
     });
 
-    priceFilter.addEventListener('change', applyFilters);
-    sortFilter.addEventListener('change', applyFilters);
+    priceFilter.addEventListener('change', (e) => {
+        activePriceRange = e.target.value;
+        loadProducts(true);
+    });
+
+    sortFilter.addEventListener('change', (e) => {
+        activeSort = e.target.value;
+        loadProducts(true);
+    });
 
     discountChips.forEach(chip => {
         chip.addEventListener('click', () => {
@@ -185,7 +337,7 @@ function setupEventListeners() {
                 discountChips.forEach(c => c.classList.remove('active'));
                 chip.classList.add('active');
             }
-            applyFilters();
+            loadProducts(true);
         });
     });
 
@@ -204,12 +356,14 @@ function addNavClickListeners(navElement) {
         if (categoryId !== currentCategoryId) {
             currentCategoryId = categoryId;
             updateActiveCategoryUI(categoryId);
+            
+            // URL Update
             const url = new URL(window.location);
             if (categoryId === 'all') url.searchParams.delete('filter');
             else url.searchParams.set('filter', categoryId);
             window.history.pushState({}, '', url);
             
-            applyFilters();
+            loadProducts(true); // Reset list for new category
             productsScrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
         }
     });
@@ -227,85 +381,19 @@ function updateActiveCategoryUI(categoryId) {
 
 function resetAllFilters() {
     searchInput.value = '';
+    currentSearchTerm = '';
     clearSearchBtn.style.display = 'none';
+    
     priceFilter.value = 'all';
-    sortFilter.value = 'default';
+    activePriceRange = 'all';
+    
+    sortFilter.value = 'newest';
+    activeSort = 'newest';
+    
     activeDiscount = null;
     discountChips.forEach(c => c.classList.remove('active'));
-    applyFilters();
-}
-
-function applyFilters() {
-    if (!productGrid) return;
-    productGrid.innerHTML = '';
     
-    let filtered = [...allProductsCache];
-
-    if (currentCategoryId !== 'all') {
-        filtered = filtered.filter(p => p.categoryId === currentCategoryId);
-    }
-
-    const term = searchInput.value.toLowerCase().trim();
-    if (term.length > 0) {
-        const searchTerms = term.split(/\s+/);
-        filtered = filtered.filter(p => {
-            const text = `${p.name} ${p.price} ${p.description || ''} ${p.specification || ''} ${p.categoryName}`.toLowerCase();
-            return searchTerms.every(t => text.includes(t));
-        });
-    }
-
-    const priceRange = priceFilter.value;
-    if (priceRange !== 'all') {
-        if (priceRange === '0-500') filtered = filtered.filter(p => p.price < 500);
-        else if (priceRange === '500-1000') filtered = filtered.filter(p => p.price >= 500 && p.price <= 1000);
-        else if (priceRange === '1000-2000') filtered = filtered.filter(p => p.price >= 1000 && p.price <= 2000);
-        else if (priceRange === '2000-5000') filtered = filtered.filter(p => p.price >= 2000 && p.price <= 5000);
-        else if (priceRange === '5000+') filtered = filtered.filter(p => p.price > 5000);
-    }
-
-    if (activeDiscount !== null) {
-        filtered = filtered.filter(p => p.discountPercent >= activeDiscount);
-    }
-
-    const sortVal = sortFilter.value;
-    if (sortVal === 'low-high') {
-        filtered.sort((a, b) => a.price - b.price);
-    } else if (sortVal === 'high-low') {
-        filtered.sort((a, b) => b.price - a.price);
-    }
-
-    if (filtered.length === 0) {
-        noResultsMsg.style.display = 'block';
-    } else {
-        noResultsMsg.style.display = 'none';
-        
-        filtered.forEach(product => {
-            renderProductCard(product, product.id);
-        });
-
-        // Minimum 8 cards check
-        const minItems = 8;
-        const currentCount = filtered.length;
-        if (currentCount < minItems) {
-            const dummiesNeeded = minItems - currentCount;
-            for (let i = 0; i < dummiesNeeded; i++) {
-                renderDummyCard();
-            }
-        }
-    }
-}
-
-function renderDummyCard() {
-    const card = document.createElement('div');
-    card.className = 'category-product-card dummy-card';
-    card.innerHTML = `
-        <div class="dummy-image-box"></div>
-        <div class="dummy-content-box">
-            <div class="dummy-line" style="width: 80%;"></div>
-            <div class="dummy-line" style="width: 50%;"></div>
-        </div>
-    `;
-    productGrid.appendChild(card);
+    loadProducts(true);
 }
 
 function renderProductCard(product, productId) {
@@ -316,7 +404,6 @@ function renderProductCard(product, productId) {
     const mrp = product.mrp || 0;
     
     const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
-    // *** മാറ്റം: ലോ ക്വാളിറ്റി ഇമേജ് (250px, 60% quality) ***
     const imageUrl = optimizeImage(rawImage, 250, 60);
 
     let priceHTML = `<span class="price-main">₹${price}</span>`;
@@ -405,20 +492,18 @@ productGrid.addEventListener('click', (e) => {
             cartButton.classList.remove('added-to-cart');
             if (buttonText) buttonText.textContent = 'Cart';
         } else {
-            const product = allProductsCache.find(p => p.id === id); 
-            if (product) {
-                const cartProduct = {
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    mrp: product.mrp,
-                    image: product.images && product.images[0] ? product.images[0] : '',
-                    size: product.size || ''
-                };
-                addToCart(id, cartProduct);
-                cartButton.classList.add('added-to-cart');
-                if (buttonText) buttonText.textContent = 'Remove';
-            }
+            // Cart-ലേക്ക് ചേർക്കുമ്പോൾ ഫുൾ ഡാറ്റ ആവശ്യമില്ല, ബട്ടണിലെ ഡാറ്റ മതി
+            const cartProduct = {
+                id: id,
+                name: cartButton.dataset.name,
+                price: parseFloat(cartButton.dataset.price),
+                mrp: parseFloat(cartButton.dataset.mrp),
+                image: cartButton.dataset.image,
+                size: cartButton.dataset.size 
+            };
+            addToCart(id, cartProduct);
+            cartButton.classList.add('added-to-cart');
+            if (buttonText) buttonText.textContent = 'Remove';
         }
     } 
 });
