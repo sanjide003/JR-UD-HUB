@@ -1,8 +1,8 @@
 /* ഇത് product.CSS
    മാറ്റങ്ങൾ:
-   1. ഡിസ്ക്രിപ്ഷനിലെ ലിങ്കുകൾക്ക് നീല നിറം.
-   2. ഡിസ്ക്രിപ്ഷൻ & സ്പെസിഫിക്കേഷൻ ബോക്സുകൾക്ക് ബോർഡറും കൃത്യമായ വീതിയും.
-   3. ടെക്സ്റ്റ് റാപ്പിംഗ് (Text Wrap) നിർബന്ധമാക്കി.
+   1. ഡിസ്ക്രിപ്ഷൻ ഓട്ടോ ഹൈറ്റ് (എല്ലാം കാണിക്കുന്നു).
+   2. കണ്ടെയ്നർ വിഡ്ത് കൃത്യമാക്കി (പുറത്തുപോകില്ല).
+   3. "Read More" ഒഴിവാക്കി.
 */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
@@ -11,9 +11,11 @@
     grid-template-columns: 1fr;
     gap: 2rem;
     align-items: start;
+    width: 100%; /* ഗ്രിഡിനും ഫുൾ വിഡ്ത് */
+    box-sizing: border-box;
 }
 
-/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Swiper) --- */
+/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Fixed Size) --- */
 .product-gallery-swiper {
     width: 100%;
     height: 400px; /* Mobile Height */
@@ -117,8 +119,8 @@
     padding-top: 0;
     display: flex;
     flex-direction: column;
-    /* *** മാറ്റം: കണ്ടെയ്നറിൽ ഒതുങ്ങാൻ *** */
     width: 100%;
+    max-width: 100%; /* ഓവർഫ്ലോ തടയാൻ */
     box-sizing: border-box;
 }
 
@@ -207,81 +209,61 @@
     text-decoration: line-through;
 }
 
-/* *** മാറ്റം: ഡിസ്ക്രിപ്ഷൻ ബോക്സ് സ്റ്റൈലിംഗ് *** */
+/* *** മാറ്റം: ഡിസ്ക്രിപ്ഷൻ ബോക്സ് (Auto Height) *** */
 .product-description {
     margin-bottom: 1.5rem;
     color: var(--text-muted);
-    /* ബോർഡർ നൽകി */
-    border: 1px solid var(--border-color); 
+    border: 1px solid var(--border-color);
     background-color: var(--card-bg);
     padding: 1rem;
     border-radius: 8px;
     font-size: 0.95rem;
     line-height: 1.6;
     
-    /* *** വീതിയും ടെക്സ്റ്റ് റാപ്പിംഗും *** */
+    /* വീതി ക്രമീകരണം */
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
-    overflow-wrap: break-word; /* വാക്ക് മുറിഞ്ഞുപോകാതിരിക്കാൻ */
-    word-wrap: break-word;     /* പഴയ ബ്രൗസറുകൾക്കായി */
-    word-break: break-word;    /* നീളമുള്ള ലിങ്കുകൾ ബ്രേക്ക് ചെയ്യാൻ */
-    white-space: pre-wrap;     /* ലൈൻ ബ്രേക്കുകൾ നിലനിർത്താൻ */
+    
+    /* ടെക്സ്റ്റ് ബ്രേക്കിംഗ് */
+    overflow-wrap: break-word; 
+    word-wrap: break-word;     
+    word-break: break-word;    
+    white-space: pre-wrap;     
+    
+    /* ഉയരം ഓട്ടോമാറ്റിക് */
+    height: auto;
 }
 
-/* *** മാറ്റം: ലിങ്ക് കളർ നീല *** */
+/* ലിങ്ക് കളർ നീല */
 .product-description a { 
-    color: #3498db !important; /* Blue Color */
+    color: #3498db !important; 
     text-decoration: underline; 
-    word-break: break-all; /* ലിങ്കുകൾ ബോക്സിന് പുറത്തുപോകാതിരിക്കാൻ */
 }
 
 .description-content {
     display: block;
+    /* Truncate ലോജിക് നീക്കം ചെയ്തു */
 }
 
-.description-content.truncated {
-    display: -webkit-box;
-    -webkit-line-clamp: 3; 
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-.read-more-btn {
-    background: none;
-    border: none;
-    color: #fff;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 0;
-    margin-top: 10px; /* അകലം നൽകി */
-    font-size: 0.85rem;
-    display: block;
-}
-
-/* *** മാറ്റം: സ്പെസിഫിക്കേഷൻ ബോക്സ് സ്റ്റൈലിംഗ് *** */
+/* *** മാറ്റം: സ്പെസിഫിക്കേഷൻ ബോക്സ് (Auto Height) *** */
 .product-specification-section {
     margin-bottom: 1.5rem;
     background-color: var(--card-bg);
-    /* ബോർഡർ നൽകി */
     border: 1px solid var(--border-color);
     border-radius: 8px;
     padding: 1rem;
     
-    /* വീതിയും റാപ്പിംഗും */
     width: 100%;
+    max-width: 100%;
     box-sizing: border-box;
     overflow-wrap: break-word;
+    height: auto; /* ഓട്ടോ ഹൈറ്റ് */
 }
 
 .product-specs-list { list-style-type: none; padding: 0; margin: 0; }
 .product-specs-list li {
-    margin-bottom: 0.5rem; 
-    color: var(--text-color); 
-    position: relative; 
-    padding-left: 1.5rem; 
-    font-size: 0.95rem;
-    line-height: 1.5;
+    margin-bottom: 0.5rem; color: var(--text-color); position: relative; padding-left: 1.5rem; font-size: 0.95rem; line-height: 1.5;
 }
 .product-specs-list li::before {
     content: "•"; color: var(--primary-gold); font-weight: bold; font-size: 1.2rem; position: absolute; left: 0; top: -2px;
