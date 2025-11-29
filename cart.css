@@ -1,7 +1,7 @@
 /* ഇത് cart.css
-   മാറ്റങ്ങൾ:
-   1. "Place All Order" ബട്ടൺ ഫ്ലോട്ടിംഗ് ആക്കി (Fixed at Bottom).
-   2. പേജിന്റെ താഴെ ബട്ടണിനായി സ്ഥലം വിട്ടു.
+   മാറ്റങ്ങൾ: 
+   1. Floating Button Logic (വലതുവശത്ത് വാട്സാപ്പ് ഐക്കൺ).
+   2. Docked Mode (സാധാരണ ബട്ടൺ).
 */
 
 /* --- 1. കാർട്ട് പേജ് ലേഔട്ട് --- */
@@ -9,8 +9,7 @@
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    /* *** മാറ്റം: ഫ്ലോട്ടിംഗ് ബട്ടൺ വരുമ്പോൾ കണ്ടെന്റ് മറയാതിരിക്കാൻ പാഡിംഗ് കൂട്ടി *** */
-    padding-bottom: 100px; 
+    padding-bottom: 2rem; 
 }
 
 /* --- 2. ഉൽപ്പന്നങ്ങളുടെ ലിസ്റ്റ് (ഇടതുവശം) --- */
@@ -205,8 +204,7 @@
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 1.5rem;
-    position: sticky;
-    top: calc(var(--header-height) + 20px); 
+    /* Sticky Position Removed for better mobile flow */
 }
 
 .cart-summary-card h2 {
@@ -263,38 +261,79 @@
     display: none;
 }
 
-/* *** മാറ്റം: Floating Button Style (Place All Order) *** */
+/* *** CHECKOUT BUTTON STYLES (Floating & Docked) *** */
+
+/* 1. Normal (Docked) State - പേജിൽ കാണുന്നത് */
 .btn-checkout-full {
-    position: fixed; /* സ്ക്രീനിൽ ഫിക്സ് ചെയ്യുന്നു */
-    bottom: 20px; /* താഴെ നിന്ന് 20px മുകളിൽ */
-    left: 50%;
-    transform: translateX(-50%); /* നടുവിൽ കൊണ്ടുവരാൻ */
-    width: 90%; /* മൊബൈലിൽ 90% വീതി */
-    max-width: 500px; /* ഡെസ്ക്ടോപ്പിൽ വലിപ്പം കൂടാതിരിക്കാൻ */
+    width: 100%; /* Full width in docked mode */
     padding: 1rem;
     font-size: 1.1rem;
     background-color: #24a66e !important;
     border: none !important;
     color: #fff !important;
-    border-radius: 50px; /* Pill Shape */
+    border-radius: 12px;
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    z-index: 1000; /* എല്ലാത്തിനും മുകളിൽ */
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5); /* നിഴൽ */
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 1rem;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(36, 166, 110, 0.3);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    
+    /* Position Reset */
+    position: relative; 
+    bottom: auto;
+    right: auto;
+    z-index: 10;
 }
 
 .btn-checkout-full:hover {
     background-color: #1e8c5b !important;
-    transform: translateX(-50%) translateY(-3px); /* ഹോവർ ചെയ്യുമ്പോൾ അല്പം പൊങ്ങും */
-    box-shadow: 0 8px 25px rgba(36, 166, 110, 0.4);
 }
 
-.btn-checkout-full:active {
-    transform: translateX(-50%) scale(0.98);
+/* 2. Floating State - സ്ക്രോൾ ചെയ്ത് താഴെ എത്തുന്നതിന് മുൻപ് */
+.btn-checkout-full.floating {
+    position: fixed;
+    bottom: 85px; /* നാവിഗേഷന് മുകളിൽ */
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    padding: 0;
+    border-radius: 50%;
+    z-index: 1000;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+    font-size: 0; /* ടെക്സ്റ്റ് മറയ്ക്കുന്നു */
+    margin-top: 0;
+}
+
+/* ഐക്കൺ വലിപ്പം */
+.btn-checkout-full .btn-icon svg {
+    width: 24px;
+    height: 24px;
+    fill: currentColor;
+    transition: all 0.3s ease;
+}
+
+/* ഫ്ലോട്ടിംഗ് ആകുമ്പോൾ ഐക്കൺ വലുതാക്കുന്നു */
+.btn-checkout-full.floating .btn-icon svg {
+    width: 32px;
+    height: 32px;
+}
+
+/* ടെക്സ്റ്റ് കൺട്രോൾ */
+.btn-checkout-full .btn-text {
+    display: inline-block;
+    opacity: 1;
+    width: auto;
+    transition: opacity 0.2s ease;
+}
+
+.btn-checkout-full.floating .btn-text {
+    display: none;
+    opacity: 0;
+    width: 0;
 }
 
 /* Empty Cart */
@@ -346,9 +385,5 @@
     }
     .cart-item-price {
         font-size: 1rem;
-    }
-    /* മൊബൈലിൽ ഫ്ലോട്ടിംഗ് ബട്ടൺ നാവിഗേഷന് മുകളിൽ വരാൻ */
-    .btn-checkout-full {
-        bottom: 80px; /* ബോട്ടം നാവിഗേഷൻ ഉണ്ടെങ്കിൽ അതിന് മുകളിൽ */
     }
 }
