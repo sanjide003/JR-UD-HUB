@@ -1,9 +1,9 @@
-/* ഇത് product.CSS
-   മാറ്റങ്ങൾ:
-   1. "Description" ഹെഡിംഗിന് താഴെയുള്ള ഗ്യാപ്പ് ഒഴിവാക്കി (margin-bottom: 0).
-   2. Rating Box Styles Updated.
-   3. Bar Thickness Increased (8px).
-   4. Star Colors (Red to Green).
+/* product.css - Final Version
+   Includes:
+   1. Description heading gap removed.
+   2. Green Price Color.
+   3. Advanced Rating UI (Thick bars, Red-to-Green stars).
+   4. Fixed Gallery Height & Responsive Layout.
 */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
@@ -16,7 +16,7 @@
     box-sizing: border-box;
 }
 
-/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Fixed Size) --- */
+/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Fixed Height) --- */
 .product-gallery-swiper {
     width: 100%;
     height: 400px; 
@@ -168,7 +168,7 @@
     color: var(--primary-gold);
 }
 
-/* --- റേറ്റിംഗ് ബോക്സ് (പുതിയ ഡിസൈൻ) --- */
+/* --- റേറ്റിംഗ് ബോക്സ് (Updated Design) --- */
 .rating-box {
     background-color: #1a1a1a;
     border: 1px solid var(--border-color);
@@ -232,7 +232,7 @@
     transition: color 0.2s ease;
 }
 
-/* Star Colors */
+/* Star Colors (Red -> Green) */
 .star.filled-1 { color: #ff4d4d; }
 .star.filled-2 { color: #ff9f43; }
 .star.filled-3 { color: #feca57; }
@@ -259,7 +259,7 @@
     margin-bottom: 1.5rem; 
 }
 
-/* Price Color */
+/* Price Color (Green) */
 .product-info .price-container.large .price-main { 
     font-size: 1.8rem;
     color: #2ecc71; 
@@ -275,7 +275,7 @@
 .product-section-heading {
     font-size: 1rem;
     font-weight: 600;
-    color: #a0a0a0; 
+    color: #a0a0a0; /* Gray Color */
     
     /* *** മാറ്റം: താഴെയുള്ള മാർജിൻ 0 ആക്കി *** */
     margin-bottom: 0; 
@@ -291,7 +291,10 @@
     color: #ffffff; 
     background-color: transparent; 
     border: none;
-    padding: 0 0 0 1.5rem; 
+    
+    /* പാഡിംഗ്: ഹെഡിംഗിന് തൊട്ടുതാഴെ വരാൻ Top Padding കുറച്ചു */
+    padding: 5px 0 0 1.5rem; 
+    
     font-size: 0.95rem;
     line-height: 1.7;
     width: 100%;
@@ -320,7 +323,7 @@
     margin-bottom: 1.5rem;
     background-color: transparent;
     border: none;
-    padding: 0 0 0 1.5rem;
+    padding: 5px 0 0 1.5rem; /* Gap Reduced */
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
