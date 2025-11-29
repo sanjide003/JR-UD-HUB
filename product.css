@@ -1,7 +1,7 @@
 /* ഇത് product.CSS
    മാറ്റങ്ങൾ:
-   1. ഹെഡിംഗ് കളർ ചാരനിറം (Gray).
-   2. ഹൈറ്റ് ഓട്ടോമാറ്റിക് (കൂടാനും കുറയാനും).
+   1. വിലയുടെ നിറം പച്ചയാക്കി (#2ecc71).
+   2. 'Buy on WhatsApp' ബട്ടൺ ബോർഡർ കട്ടി കൂട്ടി.
 */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
@@ -196,10 +196,10 @@
     margin-bottom: 1.5rem; 
 }
 
-/* Price Color */
+/* Price Color - Green Updated */
 .product-info .price-container.large .price-main { 
     font-size: 1.8rem;
-    color: #2ecc71; 
+    color: #2ecc71; /* *** പച്ച നിറം *** */
     font-weight: 700;
 }
 .product-info .price-container.large .price-mrp { 
@@ -212,40 +212,29 @@
 .product-section-heading {
     font-size: 1rem;
     font-weight: 600;
-    
-    /* *** മാറ്റം: ഹെഡിംഗ് കളർ ചാരനിറം (Gray/Light Black) *** */
     color: #a0a0a0; 
-    
     margin-bottom: 0.5rem;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    padding-left: 1.5rem; /* ടെക്സ്റ്റിന് നേരെ വരാൻ */
+    padding-left: 1.5rem; 
 }
 
-/* --- ഡിസ്ക്രിപ്ഷൻ ബോക്സ് സ്റ്റൈലിംഗ് (Plain & Auto Height) --- */
+/* --- ഡിസ്ക്രിപ്ഷൻ ബോക്സ് സ്റ്റൈലിംഗ് --- */
 .product-description {
     margin-bottom: 1.5rem;
-    color: #ffffff; /* ടെക്സ്റ്റ് വെള്ള */
-    
+    color: #ffffff; 
     background-color: transparent; 
     border: none;
-    
-    /* പാഡിംഗ് (ഇടതുവശം 1.5rem) */
     padding: 0 0 0 1.5rem; 
-    
     font-size: 0.95rem;
     line-height: 1.7;
-    
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    
     overflow-wrap: break-word; 
     word-wrap: break-word;     
     word-break: break-word;    
     white-space: pre-wrap;     
-    
-    /* *** മാറ്റം: ടെക്സ്റ്റിനനുസരിച്ച് ഉയരം മാറും *** */
     height: auto; 
     min-height: 0;
 }
@@ -260,22 +249,16 @@
     display: block;
 }
 
-/* --- സ്പെസിഫിക്കേഷൻ ബോക്സ് സ്റ്റൈലിംഗ് (Plain & Auto Height) --- */
+/* --- സ്പെസിഫിക്കേഷൻ ബോക്സ് സ്റ്റൈലിംഗ് --- */
 .product-specification-section {
     margin-bottom: 1.5rem;
-    
     background-color: transparent;
     border: none;
-    
-    /* പാഡിംഗ് (ഇടതുവശം 1.5rem) */
     padding: 0 0 0 1.5rem;
-    
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
     overflow-wrap: break-word;
-    
-    /* *** മാറ്റം: ടെക്സ്റ്റിനനുസരിച്ച് ഉയരം മാറും *** */
     height: auto; 
     min-height: 0;
 }
@@ -285,7 +268,6 @@
     margin-bottom: 0.5rem; 
     color: #ffffff; 
     position: relative; 
-    /* ബുള്ളറ്റ് പോയിന്റിന് സ്ഥലം */
     padding-left: 1rem; 
     font-size: 0.95rem;
     line-height: 1.6;
@@ -305,9 +287,10 @@
     margin-bottom: 1rem;
 }
 
+/* *** മാറ്റം: WhatsApp ബട്ടൺ ബോർഡർ കട്ടി കൂട്ടി *** */
 .btn-whatsapp {
     background-color: #24a66e !important;
-    border: 1px solid #24a66e !important;
+    border: 3px solid #24a66e !important; /* *** 3px Solid Border *** */
     color: #fff !important;
     font-weight: 600;
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
