@@ -1,7 +1,8 @@
 /* ഇത് product.CSS
    മാറ്റങ്ങൾ:
-   1. ഇമേജ് കണ്ടെയ്നറിന് ഫിക്സഡ് ഹൈറ്റ് നൽകി (Fixed Size).
-   2. 'object-fit: contain' നൽകി ചിത്രം മുറിഞ്ഞുപോകാതെ കൃത്യമായി ഒതുക്കി.
+   1. ഇമേജ് ബോക്സ് ഫിക്സഡ് ഹൈറ്റ് (400px Mobile / 550px Desktop).
+   2. ഡിസ്ക്രിപ്ഷൻ 3 വരിയിൽ ഒതുക്കി (Line Clamp).
+   3. ലേഔട്ട് സ്റ്റെബിലിറ്റി ഉറപ്പാക്കി.
 */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
@@ -9,38 +10,32 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
-    align-items: start; /* ഉള്ളടക്കം മുകളിൽ നിന്ന് തുടങ്ങാൻ */
+    align-items: start; /* ഉള്ളടക്കം മുകളിൽ നിന്ന് അലൈൻ ചെയ്യാൻ */
 }
 
-/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Swiper - FIXED SIZE & CONTAIN) --- */
+/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (FIXED SIZE CONTAINER) --- */
 .product-gallery-swiper {
     width: 100%;
-    /* *** മാറ്റം: Aspect Ratio ഒഴിവാക്കി ഫിക്സഡ് ഹൈറ്റ് നൽകി *** */
-    height: 380px; /* മൊബൈലിൽ ഫിക്സഡ് ഉയരം */
+    /* മൊബൈലിൽ ഫിക്സഡ് ഉയരം */
+    height: 400px; 
     border: 1px solid var(--border-color);
     border-radius: 12px;
     overflow: hidden;
     margin-bottom: 1rem;
     position: relative;
-    background-color: #000; /* കറുപ്പ് ബാക്ക്ഗ്രൗണ്ട് */
-    flex-shrink: 0; 
+    background-color: #000;
+    flex-shrink: 0; /* വലിപ്പം ചുരുങ്ങരുത് */
 }
 
 .product-gallery-swiper .swiper-slide {
     width: 100%;
     height: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
 }
 
 .product-gallery-swiper .swiper-slide img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    /* *** മാറ്റം: Contain നൽകി ചിത്രം മുറിഞ്ഞുപോകാതെ കാണിക്കുന്നു *** */
-    object-fit: contain; 
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* ബോക്സിൽ നിറഞ്ഞു നിൽക്കാൻ */
 }
 
 /* Pagination Dots */
@@ -121,6 +116,8 @@
 /* --- 4. പ്രൊഡക്റ്റ് വിവരങ്ങൾ --- */
 .product-info { 
     padding-top: 0;
+    display: flex;
+    flex-direction: column; /* കണ്ടന്റ് താഴേക്ക് വരാൻ */
 }
 
 /* ആക്ഷൻ ബാർ */
@@ -196,7 +193,7 @@
     margin-bottom: 1.5rem; 
 }
 
-/* പ്രൈസ് കളർ: പച്ച (#2ecc71) */
+/* Price Color: Normal Green (#2ecc71) */
 .product-info .price-container.large .price-main { 
     font-size: 1.8rem;
     color: #2ecc71; 
@@ -208,6 +205,7 @@
     text-decoration: line-through;
 }
 
+/* ഡിസ്ക്രിപ്ഷൻ ബോക്സ് */
 .product-description {
     margin-bottom: 1.5rem;
     color: var(--text-muted);
@@ -215,10 +213,33 @@
     background-color: var(--card-bg);
     padding: 1rem;
     border-radius: 8px;
-    overflow-wrap: break-word;
-    word-wrap: break-word; 
+    font-size: 0.95rem;
+    line-height: 1.6;
 }
-.product-description a { color: #3498db; text-decoration: underline; }
+
+.description-content {
+    display: block;
+}
+
+/* *** മാറ്റം: 3 വരിയിൽ ഒതുക്കുന്നു *** */
+.description-content.truncated {
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* 3 വരികൾ */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.read-more-btn {
+    background: none;
+    border: none;
+    color: #fff;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 0;
+    margin-top: 5px;
+    font-size: 0.85rem;
+}
 
 .product-specification-section {
     margin-bottom: 1.5rem;
@@ -235,7 +256,7 @@
     content: "•"; color: var(--primary-gold); font-weight: bold; font-size: 1.2rem; position: absolute; left: 0; top: -2px;
 }
 
-/* ബട്ടൺ ഗ്രിഡ് & സൈസ് */
+/* ബട്ടൺ ഗ്രിഡ് */
 .product-actions-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -244,7 +265,7 @@
     margin-bottom: 1rem;
 }
 
-/* WhatsApp Button Style */
+/* WhatsApp Button */
 .btn-whatsapp {
     background-color: #24a66e !important;
     border: 1px solid #24a66e !important;
@@ -262,7 +283,7 @@
     fill: currentColor;
 }
 
-/* Add to Cart Button Style */
+/* Add to Cart Button */
 .product-actions-grid .btn-secondary-new {
     background-color: #000 !important;
     color: #ffffff !important;
@@ -369,7 +390,6 @@
     gap: 5px;
 }
 
-/* Price Green (#2ecc71) */
 .related-products-section .cat-product-content .price-main {
     font-size: 1rem;
     font-weight: 700;
@@ -425,7 +445,7 @@
     .product-detail-grid { grid-template-columns: 1fr 1fr; }
     .product-actions-grid { max-width: 400px; }
     
-    /* *** മാറ്റം: ഡെസ്ക്ടോപ്പിൽ ഇമേജ് ബോക്സ് വലുത് (Fixed) *** */
+    /* Desktop Fixed Height */
     .product-gallery-swiper {
         height: 550px; 
     }
