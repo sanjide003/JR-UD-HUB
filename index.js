@@ -1,4 +1,4 @@
-// index.js - Fixed Video Support & Scroll Resume Logic
+// index.js - Updated Button Classes for 'For You' section
 
 import { db } from './firebase-config.js';
 import { 
@@ -51,7 +51,7 @@ async function loadHomeBanner() {
 }
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ (All Video Types + Scroll Logic)
+ * 1. ഹീറോ സ്ലൈഡർ
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -75,45 +75,36 @@ async function loadHeroSlider() {
                 let embedUrl = '';
                 let finalUrl = slide.url;
 
-                // --- Video URL Parsing (പഴയ കോഡിൽ നിന്ന്) ---
                 if (isVideo) {
-                    // Google Drive Link
                     if (slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
                         try {
                             const id = slide.url.split('/d/')[1].split('/')[0];
                             finalUrl = `https://drive.google.com/uc?export=download&id=${id}`;
                         } catch(e) {}
                     } 
-                    // YouTube Watch URL
                     else if (slide.url.includes('youtube.com/watch?v=')) {
                         videoId = new URL(slide.url).searchParams.get('v');
                     }
-                    // YouTube Shorts URL
                     else if (slide.url.includes('youtube.com/shorts/')) {
                         videoId = new URL(slide.url).pathname.split('/shorts/')[1];
                     }
-                    // YouTube Short Link (youtu.be)
                     else if (slide.url.includes('youtu.be/')) {
                         videoId = slide.url.split('youtu.be/')[1];
                     }
 
                     if (videoId) {
-                        // YouTube Embed with JS API enabled
                         embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1&autoplay=1`;
                     }
                 }
 
-                // --- HTML Content ---
                 if (slide.type === 'image') {
                     const optimizedHeroImg = optimizeImage(slide.url, 800, 85);
                     slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
                 }
                 else if (isVideo && embedUrl) {
-                    // YouTube Iframe
                     slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%; height:100%; pointer-events:none;"></iframe>`;
                 }
                 else if (isVideo) {
-                    // Direct Video (MP4/Drive)
                     slideEl.innerHTML = `
                         <video class="hero-video-element" 
                                src="${finalUrl}" 
@@ -130,7 +121,6 @@ async function loadHeroSlider() {
             });
         }
 
-        // Swiper Configuration
         const heroSwiper = new Swiper('.hero-slider-new', {
             loop: true, 
             allowTouchMove: true,
@@ -150,21 +140,15 @@ async function loadHeroSlider() {
             }
         });
 
-        // ആദ്യത്തെ സ്ലൈഡിലെ വീഡിയോ പ്ലേ ചെയ്യുന്നു
         playActiveSlideVideo(heroSwiper);
-        
-        // സ്ക്രോൾ ചെയ്യുമ്പോൾ പോസ്/റീസ്യൂം ചെയ്യാനുള്ള ഫംഗ്ഷൻ വിളിക്കുന്നു
         setupScrollVideoObserver();
 
     } catch (error) { console.error("Error loading hero slider"); }
 }
 
-// ആക്ടീവ് സ്ലൈഡിലെ വീഡിയോ പ്ലേ ചെയ്യാനും മറ്റുള്ളവ പോസ് ചെയ്യാനും
 function playActiveSlideVideo(swiper) {
     const slides = document.querySelectorAll('.hero-slider-new .swiper-slide');
-    
     slides.forEach((slide) => {
-        // Direct Videos
         const video = slide.querySelector('video');
         if (video) {
             if (slide.classList.contains('swiper-slide-active')) {
@@ -174,8 +158,6 @@ function playActiveSlideVideo(swiper) {
                 video.pause();
             }
         }
-        
-        // YouTube Iframes
         const iframe = slide.querySelector('iframe');
         if (iframe && iframe.contentWindow) {
             if (slide.classList.contains('swiper-slide-active')) {
@@ -187,14 +169,12 @@ function playActiveSlideVideo(swiper) {
     });
 }
 
-// *** Scroll Observer (സ്ക്രോൾ ചെയ്യുമ്പോൾ Pause/Resume ആവാൻ) ***
 function setupScrollVideoObserver() {
     const sliderContainer = document.querySelector('.hero-section-new');
     if (!sliderContainer) return;
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            // നിലവിൽ ആക്ടീവ് ആയിട്ടുള്ള സ്ലൈഡ് കണ്ടെത്തുന്നു
             const activeSlide = document.querySelector('.hero-slider-new .swiper-slide-active');
             if (!activeSlide) return;
 
@@ -202,22 +182,21 @@ function setupScrollVideoObserver() {
             const iframe = activeSlide.querySelector('iframe');
 
             if (entry.isIntersecting) {
-                // സ്ക്രീനിൽ സ്ലൈഡർ വന്നാൽ Play ചെയ്യുക
                 if (video) video.play().catch(e => {});
                 if (iframe) iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
             } else {
-                // സ്ക്രീനിൽ നിന്ന് പോയാൽ Pause ചെയ്യുക
                 if (video) video.pause();
                 if (iframe) iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
             }
         });
-    }, { threshold: 0.5 }); // 50% ഭാഗം കാണുമ്പോഴേക്കും പ്രവർത്തിക്കും
+    }, { threshold: 0.5 });
 
     observer.observe(sliderContainer);
 }
 
 /**
- * 2. "For You" (Top Sellers) - Single Card View
+ * 2. "For You" (Top Sellers)
+ * മാറ്റം: ബട്ടണുകളുടെ ക്ലാസുകൾ മാറ്റി (btn-secondary-new, btn-primary-new).
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
@@ -244,10 +223,14 @@ async function loadTopSellers() {
             
             const imageUrl = optimizeImage(product.images?.[0] || '', 400, 75);
             const isInCart = isItemInCart(productId);
-            const buttonText = isInCart ? "REMOVE" : "CART";
-            const buttonClass = isInCart ? "btn-add-to-cart added-to-cart" : "btn-add-to-cart"; 
             
-            // Compact Overlay Design
+            // *** മാറ്റം: പുതിയ ബട്ടൺ ക്ലാസുകൾ ***
+            const buttonText = isInCart ? "Remove" : "Cart";
+            const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new"; 
+            
+            // ഐക്കൺ കളർ മാറ്റാൻ (Optional inline fix, but class styles handle it mostly)
+            // Note: home.css will handle layout now.
+            
             card.innerHTML = `
                 <div class="media-container">
                     <a href="product.html?id=${productId}" style="display:block; height:100%;">
@@ -259,18 +242,22 @@ async function loadTopSellers() {
                     </div>
                 </div>
                 <div class="top-sellers-buttons">
-                    <button class="btn ${buttonClass}"
+                    <button class="btn ${buttonClass} btn-add-to-cart"
                         data-id="${productId}"
                         data-name="${product.name}"
                         data-price="${product.price}"
                         data-mrp="${product.mrp}"
                         data-image="${imageUrl}"
                         data-size="${product.size || ''}">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
                         <span>${buttonText}</span>
                     </button>
-                    <a href="product.html?id=${productId}" class="btn">
-                        <span>VIEW</span>
+                    <a href="product.html?id=${productId}" class="btn btn-primary-new">
+                        <span>View</span>
                     </a>
                 </div>
             `;
@@ -283,7 +270,7 @@ async function loadTopSellers() {
             loop: true,
             autoplay: { delay: autoplayDelay, disableOnInteraction: false },
             speed: 600,
-            slidesPerView: 1, // മൊബൈലിൽ 1 മാത്രം
+            slidesPerView: 1, 
             spaceBetween: 20, 
             centeredSlides: true,
             pagination: { 
@@ -379,7 +366,7 @@ document.addEventListener('click', (e) => {
         if (button.classList.contains('added-to-cart')) {
             removeFromCart(id);
             button.classList.remove('added-to-cart');
-            if (buttonText) buttonText.textContent = 'CART';
+            if (buttonText) buttonText.textContent = 'Cart'; // Changed to 'Cart' to match style
         } else {
             const product = {
                 id: id, 
@@ -391,7 +378,7 @@ document.addEventListener('click', (e) => {
             };
             addToCart(id, product);
             button.classList.add('added-to-cart');
-            if (buttonText) buttonText.textContent = 'REMOVE';
+            if (buttonText) buttonText.textContent = 'Remove'; // Changed to 'Remove'
         }
     }
 });
