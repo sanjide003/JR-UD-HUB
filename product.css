@@ -1,9 +1,7 @@
 /* ഇത് product.CSS
    മാറ്റങ്ങൾ:
-   1. ബട്ടൺ വലിപ്പം കുറച്ചു.
-   2. വിലയുടെ നിറം #00FF00.
-   3. താഴെയുള്ള ഡോട്ടുകൾ സ്റ്റൈൽ ചെയ്തു.
-   4. Related Products-ന് ബോർഡർ നൽകി.
+   1. ഇമേജ് കണ്ടെയ്നറിന് ഫിക്സഡ് ഹൈറ്റ് നൽകി (Fixed Size).
+   2. 'object-fit: contain' നൽകി ചിത്രം മുറിഞ്ഞുപോകാതെ കൃത്യമായി ഒതുക്കി.
 */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
@@ -11,26 +9,41 @@
     display: grid;
     grid-template-columns: 1fr;
     gap: 2rem;
+    align-items: start; /* ഉള്ളടക്കം മുകളിൽ നിന്ന് തുടങ്ങാൻ */
 }
 
-/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Swiper) --- */
+/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Swiper - FIXED SIZE & CONTAIN) --- */
 .product-gallery-swiper {
     width: 100%;
-    aspect-ratio: 1 / 1;
+    /* *** മാറ്റം: Aspect Ratio ഒഴിവാക്കി ഫിക്സഡ് ഹൈറ്റ് നൽകി *** */
+    height: 380px; /* മൊബൈലിൽ ഫിക്സഡ് ഉയരം */
     border: 1px solid var(--border-color);
     border-radius: 12px;
     overflow: hidden;
     margin-bottom: 1rem;
     position: relative;
-    background-color: #000;
-}
-.product-gallery-swiper .swiper-slide img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
+    background-color: #000; /* കറുപ്പ് ബാക്ക്ഗ്രൗണ്ട് */
+    flex-shrink: 0; 
 }
 
-/* *** മാറ്റം: Pagination Dots (For You Style) *** */
+.product-gallery-swiper .swiper-slide {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.product-gallery-swiper .swiper-slide img {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    /* *** മാറ്റം: Contain നൽകി ചിത്രം മുറിഞ്ഞുപോകാതെ കാണിക്കുന്നു *** */
+    object-fit: contain; 
+}
+
+/* Pagination Dots */
 .product-gallery-swiper .swiper-pagination {
     position: absolute;
     bottom: 15px;
@@ -51,7 +64,6 @@
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Active Dot - Expands like a Pill */
 .product-gallery-swiper .swiper-pagination-bullet-active {
     width: 24px; 
     border-radius: 4px;
@@ -62,7 +74,7 @@
 /* --- 3. "More Links" (Right Side Round) --- */
 .product-more-links {
     position: absolute;
-    bottom: 40px; /* ഡോട്ടുകൾക്ക് മുകളിൽ വരാൻ */
+    bottom: 40px; 
     left: 0; 
     z-index: 10;
     display: flex;
@@ -175,7 +187,7 @@
 .product-title {
     font-size: 1.5rem; 
     margin-bottom: 0.5rem;
-    color: #ffffff; /* White */
+    color: #ffffff; 
     font-weight: 700;
     line-height: 1.3;
 }
@@ -184,10 +196,10 @@
     margin-bottom: 1.5rem; 
 }
 
-/* *** മാറ്റം: പ്രൈസ് കളർ #00FF00 *** */
+/* പ്രൈസ് കളർ: പച്ച (#2ecc71) */
 .product-info .price-container.large .price-main { 
     font-size: 1.8rem;
-    color: #00FF00; /* Bright Green */
+    color: #2ecc71; 
     font-weight: 700;
 }
 .product-info .price-container.large .price-mrp { 
@@ -223,26 +235,26 @@
     content: "•"; color: var(--primary-gold); font-weight: bold; font-size: 1.2rem; position: absolute; left: 0; top: -2px;
 }
 
-/* *** മാറ്റം: ബട്ടൺ ഗ്രിഡ് & സൈസ് *** */
+/* ബട്ടൺ ഗ്രിഡ് & സൈസ് */
 .product-actions-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px; /* ഗ്യാപ്പ് കുറച്ചു */
-    max-width: 100%; /* മൊബൈലിൽ ഫുൾ വിഡ്ത് */
+    gap: 10px; 
+    max-width: 100%; 
     margin-bottom: 1rem;
 }
 
-/* WhatsApp Button Style - Compact */
+/* WhatsApp Button Style */
 .btn-whatsapp {
     background-color: #24a66e !important;
     border: 1px solid #24a66e !important;
     color: #fff !important;
     font-weight: 600;
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 0.6rem 0.5rem; /* പാഡിംഗ് കുറച്ചു */
+    padding: 0.6rem 0.5rem; 
     border-radius: 6px;
     text-decoration: none; cursor: pointer; font-size: 0.85rem;
-    height: 40px; /* ഉയരം കുറച്ചു */
+    height: 40px; 
 }
 .btn-whatsapp svg {
     width: 18px;
@@ -250,7 +262,7 @@
     fill: currentColor;
 }
 
-/* Add to Cart Button Style - Compact */
+/* Add to Cart Button Style */
 .product-actions-grid .btn-secondary-new {
     background-color: #000 !important;
     color: #ffffff !important;
@@ -282,7 +294,7 @@
     margin-top: 1rem; color: var(--success-green); font-weight: 500; display: none; 
 }
 
-/* --- 5. 'You May Also Like' (Border Added Back) --- */
+/* --- 5. 'You May Also Like' --- */
 .related-products-section {
     margin-top: 3rem;
     padding-top: 2rem;
@@ -290,7 +302,6 @@
 }
 
 .related-products-section .swiper-slide {
-    /* *** മാറ്റം: ബോർഡർ തിരികെ കൊണ്ടുവന്നു *** */
     background-color: var(--card-bg) !important;
     border: 1px solid var(--border-color) !important;
     border-radius: 8px;
@@ -308,7 +319,7 @@
     height: auto;
     overflow: hidden;
     position: relative;
-    border-radius: 0; /* കാർഡിന്റെ ബോർഡർ ഉള്ളതുകൊണ്ട് ഇമേജിന് പ്രത്യേകം വേണ്ട */
+    border-radius: 0; 
     background-color: #222;
     border-bottom: 1px solid var(--border-color);
 }
@@ -334,7 +345,7 @@
 }
 
 .related-products-section .cat-product-content {
-    padding: 0.75rem; /* പാഡിംഗ് തിരികെ നൽകി */
+    padding: 0.75rem; 
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -358,10 +369,11 @@
     gap: 5px;
 }
 
+/* Price Green (#2ecc71) */
 .related-products-section .cat-product-content .price-main {
     font-size: 1rem;
     font-weight: 700;
-    color: #00FF00; /* Green */
+    color: #2ecc71; 
 }
 
 .related-products-section .cat-product-content .price-mrp {
@@ -412,4 +424,9 @@
 @media (min-width: 769px) {
     .product-detail-grid { grid-template-columns: 1fr 1fr; }
     .product-actions-grid { max-width: 400px; }
+    
+    /* *** മാറ്റം: ഡെസ്ക്ടോപ്പിൽ ഇമേജ് ബോക്സ് വലുത് (Fixed) *** */
+    .product-gallery-swiper {
+        height: 550px; 
+    }
 }
