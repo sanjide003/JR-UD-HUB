@@ -1,7 +1,7 @@
 /* ഇത് categories.CSS
    മാറ്റം: 
-   1. ഡിസ്കൗണ്ട് ബാഡ്ജ് ചിത്രത്തിന് മുകളിൽ.
-   2. ഡമ്മി കാർഡുകൾക്കുള്ള സ്റ്റൈൽ.
+   1. കോംപാക്ട് ഹെഡറിൽ ടെക്സ്റ്റ് ഒൺലി സ്റ്റൈൽ (Underline).
+   2. വിലയുടെ നിറം പച്ച (Green).
 */
 
 /* --- 1. പേജ് ലേഔട്ട് --- */
@@ -93,7 +93,7 @@
     border-radius: 12px;
 }
 
-/* Active State */
+/* Active State (Normal View) */
 .category-grid-item.active .category-grid-name { 
     color: var(--primary-gold); 
     font-weight: 600; 
@@ -227,39 +227,43 @@
 }
 
 
-/* --- COMPACT MODE --- */
+/* --- COMPACT MODE (Text Only with Underline) --- */
 
 .sticky-header-container.compact {
-    background-color: rgba(0, 0, 0, 0.85); 
+    background-color: rgba(0, 0, 0, 0.95); /* കുറച്ചുകൂടി ഡാർക്ക് ആക്കി */
     backdrop-filter: blur(12px);
     padding-bottom: 5px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .sticky-header-container.compact .category-grid-section {
-    padding: 8px 15px;
-    gap: 8px;
+    padding: 12px 15px; /* സ്പേസ് കൂട്ടി */
+    gap: 20px; /* ഐറ്റങ്ങൾ തമ്മിലുള്ള അകലം കൂട്ടി */
     border-bottom: none;
+    align-items: center;
 }
 
 .sticky-header-container.compact .category-grid-image-box { display: none; }
 .sticky-header-container.compact .category-grid-item { min-width: auto; gap: 0; }
 
+/* *** മാറ്റം: ബട്ടൺ രൂപം മാറ്റി ടെക്സ്റ്റ് മാത്രമാക്കി *** */
 .sticky-header-container.compact .category-grid-name {
-    font-size: 0.8rem;
-    background-color: rgba(255, 255, 255, 0.08);
-    padding: 6px 14px;
-    border-radius: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: 0.9rem; /* ഫോണ്ട് വലിപ്പം കൂട്ടി */
+    background-color: transparent; /* ബാക്ക്ഗ്രൗണ്ട് കളഞ്ഞു */
+    border: none;
+    padding: 5px 0; /* പാഡിംഗ് കുറച്ചു */
     color: var(--text-muted);
+    border-radius: 0;
+    transition: all 0.3s ease;
 }
 
+/* *** മാറ്റം: ആക്ടീവ് ആകുമ്പോൾ അണ്ടർലൈൻ *** */
 .sticky-header-container.compact .category-grid-item.active .category-grid-name {
-    background-color: var(--primary-gold);
-    color: #000;
-    border-color: var(--primary-gold);
+    background-color: transparent;
+    color: var(--primary-gold);
+    box-shadow: none;
+    border-bottom: 2px solid var(--primary-gold); /* അണ്ടർലൈൻ */
     font-weight: 600;
-    box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
 }
 
 .sticky-header-container.compact .tools-layout {
@@ -330,12 +334,12 @@
     height: auto; 
 }
 
-/* *** പുതിയത്: Dummy Card Style *** */
+/* Dummy Card Style */
 .category-product-card.dummy-card {
     background-color: transparent;
     border: 1px solid rgba(255, 255, 255, 0.05);
     opacity: 0.5;
-    pointer-events: none; /* ക്ലിക്ക് ചെയ്യാൻ പറ്റില്ല */
+    pointer-events: none; 
 }
 .dummy-image-box {
     width: 100%;
@@ -360,10 +364,10 @@
     aspect-ratio: 1 / 1; 
     height: auto; 
     overflow: hidden;
-    position: relative; /* ബാഡ്ജ് വെക്കാൻ */
+    position: relative; 
 }
 
-/* *** പുതിയത്: Discount Badge on Top *** */
+/* Discount Badge on Top */
 .product-discount-badge {
     position: absolute;
     top: 8px;
@@ -409,11 +413,14 @@
     display: flex;
     align-items: center;
 }
+
+/* *** മാറ്റം: പ്രൈസ് കളർ പച്ചയാക്കി *** */
 .cat-product-content .price-main {
     font-size: 1rem;
     font-weight: 700;
-    color: var(--primary-gold);
+    color: #24a66e; /* Green Color */
 }
+
 .cat-product-content .price-mrp {
     font-size: 0.75rem;
     text-decoration: line-through;
