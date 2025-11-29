@@ -1,7 +1,8 @@
 // ഇതാണ് 'explore.js' ഫയൽ.
 // മാറ്റങ്ങൾ:
-// 1. പേരും വിലയും വ്യക്തമായി കാണിക്കുന്നു.
-// 2. റേറ്റിംഗ് സിസ്റ്റം പഴയതുപോലെ നിലനിർത്തി.
+// 1. Pagination: 10 പ്രോഡക്റ്റുകൾ വീതം ലോഡ് ചെയ്യുന്നു.
+// 2. Sort: Newest First (ഏറ്റവും പുതിയത് ആദ്യം).
+// 3. Real-time Listeners നിലനിർത്തിയിട്ടുണ്ട് (ആവശ്യപ്രകാരം).
 
 import {
     collection,
@@ -30,7 +31,7 @@ const loader = document.getElementById("explore-scroll-loader");
 let categoriesMap = new Map(); 
 let lastVisible = null;
 let isLoading = false;
-const productsPerPage = 5; 
+const PRODUCTS_PER_PAGE = 10; // *** മാറ്റം: 10 എണ്ണം വീതം ***
 let currentUser = null;
 
 onAuthStateChanged(auth, (user) => {
@@ -82,10 +83,12 @@ async function loadProducts() {
     try {
         const productsRef = collection(db, "products");
         let q;
+        
+        // *** മാറ്റം: orderBy("createdAt", "desc") ഉപയോഗിക്കുന്നു (Newest First) ***
         if (lastVisible) {
-            q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(productsPerPage));
+            q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(PRODUCTS_PER_PAGE));
         } else {
-            q = query(productsRef, orderBy("createdAt", "desc"), limit(productsPerPage));
+            q = query(productsRef, orderBy("createdAt", "desc"), limit(PRODUCTS_PER_PAGE));
         }
 
         const documentSnapshots = await getDocs(q);
@@ -94,14 +97,18 @@ async function loadProducts() {
                 feedContainer.innerHTML = '<p class="loading-placeholder-full">No products found.</p>';
             }
             if (loader) loader.style.display = 'none';
-            lastVisible = null; 
+            // Infinite scroll നിർത്താൻ lastVisible പഴയത് തന്നെ വെക്കാം അല്ലെങ്കിൽ null ആക്കാം
+            // ഇവിടെ ഒന്നും ചെയ്യുന്നില്ല, അടുത്ത തവണ സ്ക്രോൾ ചെയ്യുമ്പോൾ വീണ്ടും നോക്കും
             return;
         }
+        
         lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
 
         for (const docSnap of documentSnapshots.docs) {
             const product = docSnap.data();
             const productId = docSnap.id;
+            
+            // കാർഡ് ഉണ്ടാക്കുന്നു (HTML മാറ്റമില്ല)
             const card = document.createElement('div');
             card.className = 'explore-card';
             card.id = `product-card-${productId}`; 
@@ -200,7 +207,6 @@ function buildCardContent(productId, product) {
             <button class="read-more-btn" id="read-more-${productId}" data-id="${productId}">more</button>
         `;
     } else {
-        // വിവരണം ഇല്ലെങ്കിൽ പേര് മാത്രം കാണിക്കുക
         descriptionHTML = `<div class="description-text"><span style="color:var(--text-color); font-weight:500;">${product.name}</span></div>`;
     }
 
@@ -234,7 +240,6 @@ function buildCardContent(productId, product) {
                 <button title="${buttonTitle}" class="bookmark-btn ${activeClass}" data-id="${productId}" data-name="${product.name}" data-price="${price}" data-mrp="${mrp}" data-image="${imageUrl}" data-size="${product.size || ''}"><svg viewBox="0 0 24 24" ${svgFill}><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
             </div>
             
-            <!-- റേറ്റിംഗ് ബോക്സ് -->
             <div class="rating-box" id="rating-box-${productId}" style="display: none;">
                 <div class="rating-summary" id="rating-summary-${productId}">
                     <!-- Rating Bars Here -->
@@ -247,11 +252,9 @@ function buildCardContent(productId, product) {
                 <div class="rating-feedback">Tap a star to rate</div>
             </div>
 
-            <!-- പേരും വിലയും -->
             <div class="explore-product-title">${product.name}</div>
             <div class="price-container">${priceHTML}</div>
 
-            <!-- വിവരണം -->
             <div class="explore-product-description">
                 ${descriptionHTML}
             </div>
@@ -294,7 +297,6 @@ function setupRealtimeListeners(productId) {
         const ratingCountSpan = card.querySelector('.rating-count');
         if (ratingCountSpan) ratingCountSpan.textContent = count;
         
-        // Rating Summary Logic
         const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
         snapshot.forEach(doc => {
             const val = doc.data().rating;
@@ -302,7 +304,6 @@ function setupRealtimeListeners(productId) {
         });
         updateRatingSummary(card, counts, count);
 
-        // User Rating
         if (currentUser) {
             const userRatingDoc = snapshot.docs.find(doc => doc.id === currentUser.uid);
             if (userRatingDoc) {
@@ -356,7 +357,9 @@ function updateStarUI(card, value) {
     if (feedback) feedback.textContent = `You rated: ${value} stars`;
 }
 
+// *** Scroll Observer (Infinite Scroll) ***
 const observer = new IntersectionObserver((entries) => {
+    // 10 എണ്ണം കഴിഞ്ഞാൽ ലോഡർ കാണുമ്പോൾ അടുത്തത് വിളിക്കുന്നു
     if (entries[0].isIntersecting && !isLoading && lastVisible) { 
         loadProducts();
     }
