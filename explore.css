@@ -1,18 +1,17 @@
 /* ഇതാണ് 'explore.css' 
    മാറ്റങ്ങൾ:
-   1. പ്ലെയിൻ ലേഔട്ട് (ബോർഡറുകൾ ഒഴിവാക്കി).
-   2. കാറ്റഗറി ഐക്കണിന് പച്ച ബോർഡർ.
-   3. സേവ് ഐക്കൺ വെള്ള നിറം.
-   4. ബാനർ ബോർഡർ ഡിസൈൻ.
+   1. ബാനർ ബോർഡർ ഒഴിവാക്കി.
+   2. ഇമേജ് ഇരുവശത്തും വിടവ് നൽകി (Inset).
+   3. More/Less കളർ വെള്ള.
 */
 
 /* --- 1. ഫീഡ് കണ്ടെയ്നർ --- */
 .explore-feed-container {
-    max-width: 600px; /* മൊബൈൽ വ്യൂവിന് അനുയോജ്യമായ വീതി */
+    max-width: 600px; 
     margin: 0 auto; 
     display: flex;
     flex-direction: column;
-    gap: 0; /* കാർഡുകൾക്കിടയിൽ ഗ്യാപ്പ് വേണ്ട */
+    gap: 0; 
 }
 
 /* --- എക്സ്പ്ലോർ പേജ് ബാനർ --- */
@@ -27,9 +26,9 @@
     border-radius: 0; 
     display: none;
     
-    /* *** മാറ്റം: ബാനർ ബോർഡർ ഡിസൈൻ *** */
-    border: 2px solid var(--primary-gold);
-    box-shadow: 0 0 10px rgba(212, 175, 55, 0.3);
+    /* *** മാറ്റം: ബോർഡർ ഒഴിവാക്കി *** */
+    border: none;
+    box-shadow: none;
 }
 
 .explore-top-banner img {
@@ -49,13 +48,13 @@
 
 /* --- 2. പ്രൊഡക്റ്റ് കാർഡ് (Plain Layout) --- */
 .explore-card {
-    background-color: transparent; /* പ്ലെയിൻ ആക്കി */
-    border: none; /* ബോർഡർ ഒഴിവാക്കി */
+    background-color: transparent; 
+    border: none; 
     border-radius: 0;
     overflow: hidden;
-    margin-bottom: 2rem; /* അടുത്ത പ്രൊഡക്റ്റുമായി അകലം */
+    margin-bottom: 2rem; 
     padding-bottom: 1rem;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1); /* വേർതിരിക്കാൻ ചെറിയ വര */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
 }
 
 .explore-card:last-child {
@@ -67,9 +66,9 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    padding: 0.75rem 0; /* ഇടവും വലവും പാഡിംഗ് കുറച്ചു */
+    padding: 0.75rem 10px; /* ടെക്സ്റ്റുകൾക്ക് അല്പം പാഡിംഗ് */
     text-decoration: none;
-    border-bottom: none; /* ഹെഡർ ലൈൻ ഒഴിവാക്കി */
+    border-bottom: none; 
 }
 
 .explore-category-img {
@@ -77,9 +76,9 @@
     height: 35px;
     border-radius: 50%;
     object-fit: cover;
-    /* *** മാറ്റം: പച്ച ബോർഡർ *** */
+    /* പച്ച ബോർഡർ */
     border: 2px solid #00FF00; 
-    padding: 2px; /* ചിത്രവും ബോർഡറും തമ്മിൽ വിടവ് */
+    padding: 2px; 
 }
 
 .explore-category-name {
@@ -88,12 +87,13 @@
     font-size: 0.95rem;
 }
 
-/* 2.2 പ്രൊഡക്റ്റ് ഇമേജ് */
+/* 2.2 പ്രൊഡക്റ്റ് ഇമേജ് (മാറ്റം: ഇരുവശത്തും വിടവ്) */
 .explore-image-swiper {
-    width: 100%;
+    width: calc(100% - 30px); /* 100% ൽ നിന്ന് 30px കുറച്ചു */
+    margin: 0 auto; /* നടുക്ക് ആക്കാൻ */
     aspect-ratio: 1 / 1; 
     background-color: #000;
-    border-radius: 8px; /* ചിത്രത്തിന് അല്പം വളവ് */
+    border-radius: 12px; /* അരികുകൾ വളച്ചു */
     overflow: hidden;
 }
 .explore-image-swiper .swiper-slide img {
@@ -104,7 +104,7 @@
 
 /* 2.3 പ്രൊഡക്റ്റ് വിവരങ്ങൾ */
 .explore-card-content {
-    padding: 1rem 0; /* സൈഡ് പാഡിംഗ് ഒഴിവാക്കി */
+    padding: 0.5rem 10px; /* കണ്ടന്റിനും പാഡിംഗ് നൽകി */
 }
 
 /* 2.4 ഐക്കൺ ബട്ടണുകൾ */
@@ -113,6 +113,7 @@
     align-items: center;
     gap: 1.2rem; 
     margin-bottom: 0.5rem;
+    margin-top: 0.5rem;
 }
 
 .action-group {
@@ -135,11 +136,11 @@
     transition: transform 0.2s ease; 
 }
 .explore-action-icons button svg {
-    width: 26px; /* ഐക്കൺ അല്പം വലുതാക്കി */
+    width: 26px; 
     height: 26px;
     fill: none;
     stroke: currentColor;
-    stroke-width: 2; /* കട്ടി കൂട്ടി */
+    stroke-width: 2; 
     stroke-linecap: round;
     stroke-linejoin: round;
 }
@@ -147,9 +148,9 @@
     margin-left: auto; 
 }
 
-/* *** മാറ്റം: സേവ് ഐക്കൺ ഫിൽ കളർ വെള്ള *** */
+/* സേവ് ഐക്കൺ ഫിൽ കളർ വെള്ള */
 .explore-action-icons button.bookmark-btn.added-to-cart {
-    color: #ffffff; /* White */
+    color: #ffffff; 
     transform: scale(1.1); 
 }
 .explore-action-icons button.bookmark-btn.added-to-cart svg {
@@ -163,6 +164,7 @@
     font-weight: 600;
     color: var(--text-color);
     margin-bottom: 0.25rem;
+    display: block; /* പുതിയ വരിയിൽ വരാൻ */
 }
 .explore-card-content .price-container {
     margin-bottom: 0.5rem;
@@ -170,9 +172,10 @@
 .explore-card-content .price-main {
     font-size: 1rem;
     color: var(--text-color);
+    font-weight: 500;
 }
 
-/* *** മാറ്റം: വിവരണം (Description) - One Line Logic *** */
+/* 2.6 വിവരണം (Description) */
 .explore-product-description {
     color: var(--text-muted);
     font-size: 0.9rem;
@@ -193,15 +196,17 @@
     word-break: break-word;
 }
 
+/* *** മാറ്റം: More/Less കളർ വെള്ള *** */
 .read-more-btn {
     background: none;
     border: none;
-    color: var(--text-muted); /* ഗ്രേ കളർ */
+    color: #ffffff !important; /* White Color */
     cursor: pointer;
     font-size: 0.9rem;
     padding: 0;
     margin-left: 5px;
-    opacity: 0.8;
+    font-weight: 500;
+    opacity: 1;
 }
 
 /* --- 3. ലോഡിംഗ് --- */
@@ -223,6 +228,7 @@
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1rem;
+    margin-top: 0.5rem;
 }
 .rating-summary { margin-bottom: 1rem; }
 .rating-bar-row {
