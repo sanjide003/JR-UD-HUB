@@ -1,7 +1,7 @@
 // ഇതാണ് 'product.js' ഫയൽ.
 // മാറ്റങ്ങൾ: 
-// 1. Rating Summary Top, Star Input Bottom.
-// 2. വില പച്ച നിറത്തിൽ (CSS വഴി).
+// 1. റേറ്റിംഗ് ബോക്സ് ക്രമം മാറ്റി (Summary Top).
+// 2. സ്റ്റാർ കളർ ലോജിക് (Red to Green) ചേർത്തു.
 
 import { 
     collection, 
@@ -182,7 +182,7 @@ async function loadProductDetails() {
         const cartButtonText = isInCart ? "Remove" : "Add to Cart";
         const cartButtonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
-        // *** മാറ്റം: റേറ്റിംഗ് ഓർഡർ (Summary Top, Input Bottom) ***
+        // *** മാറ്റം: Rating Box HTML Structure (Summary Top, Input Bottom) ***
         const actionBarHTML = `
             <div class="product-action-bar">
                 <div class="action-group">
@@ -205,18 +205,14 @@ async function loadProductDetails() {
             </div>
             
             <div class="rating-box" id="rating-box-main" style="display: none;">
-                <!-- 1. Rating Summary (Top) -->
+                <!-- Summary First -->
                 <div class="rating-summary">
-                    <div class="rating-bar-row"><span>5 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>4 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>3 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>2 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
-                    <div class="rating-bar-row"><span>1 <span class="star-icon">&#9733;</span></span> <div class="bar-bg"><div class="bar-fill" style="width: 0%;"></div></div> <span class="bar-count">0</span></div>
+                    <!-- JS will fill this -->
                 </div>
                 
                 <hr class="rating-divider">
                 
-                <!-- 2. Rate Input (Bottom) -->
+                <!-- Input Last -->
                 <p class="rating-title">Rate this product</p>
                 <div class="star-rating" data-id="${productIdStr}">
                     ${[1, 2, 3, 4, 5].map(i => `<span class="star" data-value="${i}">&#9733;</span>`).join('')}
@@ -322,39 +318,51 @@ function setupRealtimeListeners(productId) {
     });
 }
 
+// *** മാറ്റം: Rating Summary Generation (With specific colors) ***
 function updateRatingSummary(counts, total) {
-    const summaryRows = document.querySelectorAll('.rating-bar-row');
+    const summaryContainer = document.querySelector('.rating-summary');
+    if (!summaryContainer) return;
+    
+    let html = '';
     const keys = [5, 4, 3, 2, 1];
-    keys.forEach((starVal, index) => {
-        const row = summaryRows[index];
+    
+    keys.forEach((starVal) => {
         const count = counts[starVal];
         const percentage = total > 0 ? (count / total) * 100 : 0;
-        const fill = row.querySelector('.bar-fill');
-        const countSpan = row.querySelector('.bar-count');
-        if (fill) fill.style.width = `${percentage}%`;
-        if (countSpan) countSpan.textContent = count;
         
-        // Colors: Green to Red
-        if (starVal >= 4) fill.style.backgroundColor = 'var(--success-green)';
-        else if (starVal === 3) fill.style.backgroundColor = '#f1c40f';
-        else fill.style.backgroundColor = 'var(--error-red)';
+        let color = '#ff4d4d'; // Red (1)
+        if (starVal === 2) color = '#ff9f43'; // Orange
+        if (starVal === 3) color = '#feca57'; // Yellow
+        if (starVal === 4) color = '#1dd1a1'; // Light Green
+        if (starVal === 5) color = '#10ac84'; // Dark Green
+
+        html += `
+            <div class="rating-bar-row">
+                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
+                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
+                <span class="bar-count">${count}</span>
+            </div>
+        `;
     });
+    summaryContainer.innerHTML = html;
 }
 
+// *** മാറ്റം: Star UI with Multi-color Classes ***
 function updateStarUI(value) {
     const stars = document.querySelectorAll('.star');
     const feedback = document.querySelector('.rating-feedback');
-    let colorClass = '';
-    if (value <= 2) colorClass = 'red-star';
-    else if (value === 3) colorClass = 'yellow-star';
-    else colorClass = 'green-star';
+    
+    const colorClass = `filled-${value}`; 
+
     stars.forEach(s => {
         s.className = 'star'; 
         if (parseInt(s.dataset.value) <= value) {
-            s.classList.add('filled', colorClass);
+            s.classList.add(colorClass);
         }
     });
-    if (feedback) feedback.textContent = `You rated: ${value} stars`;
+    
+    const messages = ["Poor", "Fair", "Good", "Very Good", "Excellent"];
+    if (feedback) feedback.textContent = value > 0 ? messages[value - 1] : "Tap a star to rate";
 }
 
 function createRipple(event, button) {
@@ -540,7 +548,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${price}"
-                            data-mrp="${mrp}"
+                            data-mrp="${product.mrp}"
                             data-image="${imageUrl}"
                             data-size="${product.size || ''}">
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
