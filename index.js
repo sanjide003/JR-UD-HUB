@@ -1,4 +1,4 @@
-// index.js - Updated Button Classes for 'For You' section
+// index.js - Updated with Premium Button Styles for Home Page
 
 import { db } from './firebase-config.js';
 import { 
@@ -196,7 +196,8 @@ function setupScrollVideoObserver() {
 
 /**
  * 2. "For You" (Top Sellers)
- * മാറ്റം: ബട്ടണുകളുടെ ക്ലാസുകൾ മാറ്റി (btn-secondary-new, btn-primary-new).
+ * മാറ്റം: ബട്ടണുകളെ കൂടുതൽ ആകർഷകമാക്കാൻ ക്ലാസുകൾ മാറ്റി.
+ * Cart = Gold (Primary), View = Outline (Secondary)
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
@@ -224,12 +225,10 @@ async function loadTopSellers() {
             const imageUrl = optimizeImage(product.images?.[0] || '', 400, 75);
             const isInCart = isItemInCart(productId);
             
-            // *** മാറ്റം: പുതിയ ബട്ടൺ ക്ലാസുകൾ ***
-            const buttonText = isInCart ? "Remove" : "Cart";
-            const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new"; 
-            
-            // ഐക്കൺ കളർ മാറ്റാൻ (Optional inline fix, but class styles handle it mostly)
-            // Note: home.css will handle layout now.
+            // *** മാറ്റം: Cart ബട്ടൺ ഗോൾഡ് (Primary), View ബട്ടൺ ഔട്ട്‌ലൈൻ (Secondary) ***
+            // ഇത് കാണാൻ കൂടുതൽ ഭംഗിയായിരിക്കും
+            const buttonText = isInCart ? "Remove" : "Add";
+            const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-primary-new"; 
             
             card.innerHTML = `
                 <div class="media-container">
@@ -249,14 +248,14 @@ async function loadTopSellers() {
                         data-mrp="${product.mrp}"
                         data-image="${imageUrl}"
                         data-size="${product.size || ''}">
-                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                             <line x1="3" y1="6" x2="21" y2="6"></line>
                             <path d="M16 10a4 4 0 0 1-8 0"></path>
                         </svg>
                         <span>${buttonText}</span>
                     </button>
-                    <a href="product.html?id=${productId}" class="btn btn-primary-new">
+                    <a href="product.html?id=${productId}" class="btn btn-secondary-new">
                         <span>View</span>
                     </a>
                 </div>
@@ -366,7 +365,7 @@ document.addEventListener('click', (e) => {
         if (button.classList.contains('added-to-cart')) {
             removeFromCart(id);
             button.classList.remove('added-to-cart');
-            if (buttonText) buttonText.textContent = 'Cart'; // Changed to 'Cart' to match style
+            if (buttonText) buttonText.textContent = 'Add';
         } else {
             const product = {
                 id: id, 
@@ -378,7 +377,7 @@ document.addEventListener('click', (e) => {
             };
             addToCart(id, product);
             button.classList.add('added-to-cart');
-            if (buttonText) buttonText.textContent = 'Remove'; // Changed to 'Remove'
+            if (buttonText) buttonText.textContent = 'Remove';
         }
     }
 });
