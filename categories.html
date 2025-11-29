@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് കാറ്റഗറി പേജ്. categories.html
-  മാറ്റം: ഫൂട്ടർ (Footer) തിരികെ കൊണ്ടുവന്നു (സ്ക്രോൾ ഏരിയയുടെ ഉള്ളിൽ).
+  മാറ്റം: സ്ക്രോൾ ചെയ്യുമ്പോൾ സെർച്ചും ഡിസ്കൗണ്ടും ഒരേ വരിയിൽ വരാനായി ഘടന മാറ്റി.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -33,18 +33,19 @@
         
         <div class="category-page-layout">
             
-            <!-- STICKY HEADER -->
+            <!-- *** STICKY HEADER CONTAINER *** -->
             <div id="sticky-header-container" class="sticky-header-container">
                 
-                <!-- കാറ്റഗറി ലിസ്റ്റ് -->
+                <!-- 3.1 കാറ്റഗറി ഗ്രിഡ് -->
                 <div class="category-grid-section" id="category-nav-section">
+                    <!-- JS വഴി ഇവിടെ കാറ്റഗറികൾ വരും -->
                     <span class="loading-placeholder">Loading...</span>
                 </div>
 
-                <!-- ടൂൾസ് (Search & Filter) -->
+                <!-- പുതിയ ലേഔട്ട് കണ്ടെയ്നർ (സെർച്ച് + ഫിൽറ്റർ) -->
                 <div class="tools-layout">
                     
-                    <!-- സെർച്ച് ബാർ -->
+                    <!-- 3.0 സെർച്ച് ബാർ -->
                     <div class="search-bar-container">
                         <div class="search-input-wrapper" id="search-wrapper">
                             <svg class="search-icon" id="search-icon-btn" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -58,6 +59,7 @@
 
                     <!-- ഫിൽറ്റർ സെക്ഷൻ -->
                     <div class="filter-section">
+                        <!-- വരി 1: പ്രൈസ് റേഞ്ചും സോർട്ടിംഗും (സ്ക്രോൾ ചെയ്യുമ്പോൾ ഇത് മറയും) -->
                         <div class="filter-row-main">
                             <div class="custom-select-wrapper">
                                 <select id="price-range-filter" class="filter-select">
@@ -79,24 +81,26 @@
                             </div>
                         </div>
 
+                        <!-- വരി 2: ഡിസ്കൗണ്ട് ചിപ്പുകൾ -->
                         <div class="filter-row-discount">
                             <span class="filter-label">Discount:</span>
                             <div class="discount-chips-container" id="discount-filters">
-                                <button class="discount-chip" data-value="10">10%</button>
-                                <button class="discount-chip" data-value="25">25%</button>
-                                <button class="discount-chip" data-value="35">35%</button>
-                                <button class="discount-chip" data-value="50">50%</button>
-                                <button class="discount-chip" data-value="60">60%</button>
-                                <button class="discount-chip" data-value="70">70%</button>
+                                <button class="discount-chip" data-value="10">10% above</button>
+                                <button class="discount-chip" data-value="25">25% above</button>
+                                <button class="discount-chip" data-value="35">35% above</button>
+                                <button class="discount-chip" data-value="50">50% above</button>
+                                <button class="discount-chip" data-value="60">60% above</button>
+                                <button class="discount-chip" data-value="70">70% above</button>
                             </div>
                         </div>
                     </div>
                 
-                </div>
+                </div> <!-- End Tools Layout -->
 
-            </div>
+            </div> 
+            <!-- End Sticky Header -->
 
-            <!-- പ്രൊഡക്റ്റ് ഗ്രിഡ് + ഫൂട്ടർ (Scroll Container) -->
+            <!-- 3.2 ഉൽപ്പന്നങ്ങൾ കാണിക്കുന്ന ഗ്രിഡ് -->
             <div class="category-page-content" id="products-scroll-container">
                 <div class="category-product-grid" id="category-product-grid">
                     <div class="loading-placeholder-full">Loading products...</div>
@@ -110,13 +114,13 @@
                     <p style="font-size: 1.1rem; margin-bottom: 0.5rem;">No products found.</p>
                     <button id="reset-filters-btn" class="btn btn-secondary-new">Reset Filters</button>
                 </div>
-
-                <!-- Footer Here to scroll with content -->
-                <footer class="main-footer-new" id="main-footer" style="margin-top: 2rem;"></footer>
             </div>
 
         </div>
     </main>
+
+    <!-- 4. ഫൂട്ടർ -->
+    <footer class="main-footer-new" id="main-footer"></footer>
 
     <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ -->
     <div id="floating-action-buttons"></div>

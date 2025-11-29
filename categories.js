@@ -1,4 +1,5 @@
-// categories.js - Fixed Layout with Dummy Cards
+// ഇതാണ് 'categories.js' ഫയൽ.
+// മാറ്റം: സ്ക്രോൾ ആനിമേഷൻ കൂടുതൽ സ്മൂത്ത് ആക്കി.
 
 import {
     collection,
@@ -15,28 +16,34 @@ import { db } from './firebase-config.js';
 import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
-setLogLevel('Silent');
+setLogLevel('Debug');
 
+// --- DOM Elements ---
 const productGrid = document.getElementById("category-product-grid");
 const categoryNavSection = document.getElementById("category-nav-section");
 const stickyHeader = document.getElementById("sticky-header-container");
 const productsScrollContainer = document.getElementById("products-scroll-container");
 const searchWrapper = document.getElementById("search-wrapper");
 const searchIconBtn = document.getElementById("search-icon-btn");
+
 const loader = document.getElementById("infinite-scroll-loader");
 const searchInput = document.getElementById("product-search-input"); 
 const clearSearchBtn = document.getElementById("clear-search-btn");
 const noResultsMsg = document.getElementById("no-results-message");
 const resetFiltersBtn = document.getElementById("reset-filters-btn");
+
+// Filter Elements
 const priceFilter = document.getElementById("price-range-filter");
 const sortFilter = document.getElementById("sort-by-filter");
 const discountChips = document.querySelectorAll(".discount-chip");
 
+// --- State ---
 let currentCategoryId = 'all'; 
 let allProductsCache = []; 
 let categoriesMap = new Map(); 
 let activeDiscount = null;
 
+// --- പേജ് ലോഡ് ആവുമ്പോൾ ---
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
     await loadCategoryList(); 
@@ -48,41 +55,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     
     await loadAllProductsCache();
+    
     setupEventListeners();
     setupScrollAnimation(); 
     updateActiveCategoryUI(currentCategoryId);
     applyFilters(); 
 });
 
+// --- SCROLL ANIMATION LOGIC (IMPROVED) ---
 function setupScrollAnimation() {
     if (!productsScrollContainer) return;
 
     productsScrollContainer.addEventListener('scroll', () => {
         const scrollTop = productsScrollContainer.scrollTop;
         
-        // Always allow compact mode because min-height ensures scrolling
-        if (scrollTop > 20) {
+        // 30px താഴേക്ക് സ്ക്രോൾ ചെയ്താൽ ഉടൻ Compact Mode ആക്കുക
+        if (scrollTop > 30) {
             stickyHeader.classList.add('compact');
         } else {
             stickyHeader.classList.remove('compact');
-            if (scrollTop <= 20) {
-                searchWrapper.classList.remove('expanded');
-            }
+            // സ്ക്രോൾ തിരിച്ചു മുകളിലെത്തുമ്പോൾ സെർച്ച് ബാർ റീസെറ്റ് ചെയ്യുക
+            searchWrapper.classList.remove('expanded');
         }
     });
 
-    if (searchIconBtn) {
-        searchIconBtn.addEventListener('click', () => {
-            if (stickyHeader.classList.contains('compact')) {
-                searchWrapper.classList.toggle('expanded');
-                if (searchWrapper.classList.contains('expanded')) {
-                    searchInput.focus();
-                }
+    // Compact Mode-ൽ സെർച്ച് ഐക്കണിൽ ക്ലിക്ക് ചെയ്താൽ വലുതാകാൻ
+    searchIconBtn.addEventListener('click', () => {
+        if (stickyHeader.classList.contains('compact')) {
+            searchWrapper.classList.toggle('expanded');
+            if (searchWrapper.classList.contains('expanded')) {
+                searchInput.focus();
             }
-        });
-    }
+        }
+    });
 }
 
+// --- Data Loading ---
 async function loadCategoryList() {
     if (!categoryNavSection) return;
     try {
@@ -119,7 +127,9 @@ async function loadCategoryList() {
         categoryNavSection.innerHTML = navHtml;
         addNavClickListeners(categoryNavSection);
 
-    } catch (error) { console.error("Error loading categories"); }
+    } catch (error) {
+        console.error("Error loading categories: ", error);
+    }
 }
 
 async function loadAllProductsCache() {
@@ -134,6 +144,7 @@ async function loadAllProductsCache() {
             if (data.mrp && data.mrp > data.price) {
                 discountPercent = Math.round(((data.mrp - data.price) / data.mrp) * 100);
             }
+            
             allProductsCache.push({
                 id: doc.id,
                 ...data,
@@ -141,8 +152,11 @@ async function loadAllProductsCache() {
                 categoryName: categoriesMap.get(data.categoryId) || ''
             });
         });
-    } catch (error) { console.error("Error loading products cache"); } 
-    finally { if (loader) loader.style.display = 'none'; }
+    } catch (error) {
+        console.error("Error loading products cache:", error);
+    } finally {
+        if (loader) loader.style.display = 'none';
+    }
 }
 
 function setupEventListeners() {
@@ -150,11 +164,13 @@ function setupEventListeners() {
         clearSearchBtn.style.display = e.target.value.length > 0 ? 'block' : 'none';
         applyFilters();
     });
+
     clearSearchBtn.addEventListener('click', () => {
         searchInput.value = '';
         clearSearchBtn.style.display = 'none';
         applyFilters();
     });
+
     priceFilter.addEventListener('change', applyFilters);
     sortFilter.addEventListener('change', applyFilters);
 
@@ -192,7 +208,10 @@ function addNavClickListeners(navElement) {
             if (categoryId === 'all') url.searchParams.delete('filter');
             else url.searchParams.set('filter', categoryId);
             window.history.pushState({}, '', url);
+            
             applyFilters();
+            
+            // കാറ്റഗറി മാറ്റുമ്പോൾ സ്ക്രോൾ മുകളിലേക്ക്
             productsScrollContainer.scrollTo({ top: 0, behavior: 'smooth' });
         }
     });
@@ -215,14 +234,13 @@ function resetAllFilters() {
     sortFilter.value = 'default';
     activeDiscount = null;
     discountChips.forEach(c => c.classList.remove('active'));
-    currentCategoryId = 'all';
-    updateActiveCategoryUI('all');
     applyFilters();
 }
 
 function applyFilters() {
     if (!productGrid) return;
     productGrid.innerHTML = '';
+    
     let filtered = [...allProductsCache];
 
     if (currentCategoryId !== 'all') {
@@ -258,75 +276,44 @@ function applyFilters() {
         filtered.sort((a, b) => b.price - a.price);
     }
 
-    // Hide default "No Results" text, we use Dummy Cards instead
-    if (noResultsMsg) noResultsMsg.style.display = 'none';
-
-    // Render Real Products
-    filtered.forEach(product => {
-        renderProductCard(product, product.id);
-    });
-
-    // *** ADD DUMMY CARDS TO FILL SPACE ***
-    // Ensure at least 8 cards (4 rows) to maintain scroll & layout
-    const MIN_CARDS = 8;
-    const remainingSlots = MIN_CARDS - filtered.length;
-
-    if (remainingSlots > 0) {
-        for (let i = 0; i < remainingSlots; i++) {
-            renderDummyCard();
-        }
+    if (filtered.length === 0) {
+        noResultsMsg.style.display = 'block';
+    } else {
+        noResultsMsg.style.display = 'none';
+        filtered.forEach(product => {
+            renderProductCard(product, product.id);
+        });
     }
-}
-
-// Function to render "No Product" Dummy Card
-function renderDummyCard() {
-    const card = document.createElement('div');
-    card.className = 'category-product-card dummy-card';
-    card.style.opacity = '0.4'; 
-    card.style.pointerEvents = 'none'; // Not clickable
-    card.style.borderColor = 'transparent';
-
-    card.innerHTML = `
-        <div class="cat-product-image-link" style="background-color: #111; display: flex; align-items: center; justify-content: center;">
-            <span style="color: #333; font-size: 0.75rem; font-weight: 600;">No Product</span>
-        </div>
-        <div class="cat-product-content">
-            <div style="background-color: #1a1a1a; height: 1em; width: 80%; margin-bottom: 5px; border-radius: 4px;"></div>
-            <div style="background-color: #1a1a1a; height: 1em; width: 50%; border-radius: 4px;"></div>
-            <div class="price-container" style="margin-top: auto;">
-                <div style="background-color: #1a1a1a; height: 1em; width: 40%; border-radius: 4px;"></div>
-            </div>
-            <div class="cat-product-buttons">
-                <div style="background-color: #1a1a1a; height: 30px; border-radius: 4px;"></div>
-                <div style="background-color: #1a1a1a; height: 30px; border-radius: 4px;"></div>
-            </div>
-        </div>
-    `;
-    productGrid.appendChild(card);
 }
 
 function renderProductCard(product, productId) {
     const card = document.createElement('div');
     card.className = 'category-product-card';
+
     const price = product.price || 0;
     const mrp = product.mrp || 0;
-    const rawImage = product.images && product.images[0] ? product.images[0] : '';
+    
+    const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
     const imageUrl = optimizeImage(rawImage, 400, 80);
+
     let priceHTML = `<span class="price-main">₹${price}</span>`;
     if (mrp > price) {
         priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
     }
+
     const isInCart = isItemInCart(productId);
     const buttonText = isInCart ? "Remove" : "Cart";
     const buttonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
     card.innerHTML = `
         <a href="product.html?id=${productId}" class="cat-product-image-link">
-            <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" loading="lazy">
+            <img src="${imageUrl}" alt="${product.name}" class="cat-product-image" loading="lazy" onerror="this.src='https://placehold.co/400x400/1e1e1e/D4AF37?text=Error'">
         </a>
         <div class="cat-product-content">
             <h3 class="cat-product-title">${product.name}</h3>
-            <div class="price-container">${priceHTML}</div>
+            <div class="price-container">
+                ${priceHTML}
+            </div>
             <div class="cat-product-buttons">
                 <button class="btn ${buttonClass} btn-add-to-cart"
                     data-id="${productId}"
@@ -335,34 +322,76 @@ function renderProductCard(product, productId) {
                     data-mrp="${mrp}"
                     data-image="${imageUrl}"
                     data-size="${product.size || ''}">
-                    <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                    <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                        <line x1="3" y1="6" x2="21" y2="6"></line>
+                        <path d="M16 10a4 4 0 0 1-8 0"></path>
+                    </svg>
                     <span>${buttonText}</span>
                 </button>
-                <a href="product.html?id=${productId}" class="btn btn-primary-new"><span>View</span></a>
+                <a href="product.html?id=${productId}" class="btn btn-primary-new">
+                    <span>View</span>
+                </a>
             </div>
         </div>
     `;
     productGrid.appendChild(card);
 }
 
-document.addEventListener('click', (e) => {
-    const button = e.target.closest('.btn-add-to-cart');
-    if (button) {
+// Ripple Effect (Reused)
+function createRipple(event, button) {
+    const ripple = document.createElement('span');
+    const rect = button.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height);
+    const x = event.clientX - rect.left - size / 2;
+    const y = event.clientY - rect.top - size / 2;
+
+    ripple.style.cssText = `
+        position: absolute; width: ${size}px; height: ${size}px;
+        left: ${x}px; top: ${y}px; border-radius: 50%;
+        background: rgba(255, 255, 255, 0.3); transform: scale(0);
+        animation: ripple-animation 0.6s ease-out; pointer-events: none;
+    `;
+
+    button.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 600);
+}
+
+if (!document.getElementById('ripple-style')) {
+    const style = document.createElement('style');
+    style.id = 'ripple-style';
+    style.textContent = `@keyframes ripple-animation { to { transform: scale(2); opacity: 0; } }`;
+    document.head.appendChild(style);
+}
+
+productGrid.addEventListener('click', (e) => {
+    const cartButton = e.target.closest('.btn-add-to-cart');
+    if (cartButton) {
         e.preventDefault();
-        const id = button.dataset.id;
-        const buttonText = button.querySelector('span');
-        if (button.classList.contains('added-to-cart')) {
+        const id = cartButton.dataset.id;
+        const buttonText = cartButton.querySelector('span');
+        
+        createRipple(e, cartButton);
+
+        if (cartButton.classList.contains('added-to-cart')) {
             removeFromCart(id);
-            button.classList.remove('added-to-cart');
+            cartButton.classList.remove('added-to-cart');
             if (buttonText) buttonText.textContent = 'Cart';
         } else {
             const product = allProductsCache.find(p => p.id === id); 
             if (product) {
-                const cartProduct = { id: product.id, name: product.name, price: product.price, mrp: product.mrp, image: product.images && product.images[0] ? product.images[0] : '', size: product.size || '' };
+                const cartProduct = {
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    mrp: product.mrp,
+                    image: product.images && product.images[0] ? product.images[0] : '',
+                    size: product.size || ''
+                };
                 addToCart(id, cartProduct);
-                button.classList.add('added-to-cart');
+                cartButton.classList.add('added-to-cart');
                 if (buttonText) buttonText.textContent = 'Remove';
             }
         }
-    }
+    } 
 });

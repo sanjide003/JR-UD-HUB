@@ -1,52 +1,529 @@
-/* home.css - Clean & Fast */
+/* ഇത് മെച്ചപ്പെടുത്തിയ home.css - Apple Watch Style Category Grid */
 
-.home-top-banner img { width: 100%; height: auto; display: block; }
-
-.hero-section {
-    width: 100%; aspect-ratio: 16/9;
-    max-height: 80vh; overflow: hidden;
-}
-@media (max-width: 768px) { .hero-section { aspect-ratio: 9/16; max-height: 70vh; } }
-
-.hero-slider, .hero-slider .swiper-slide { width: 100%; height: 100%; }
-.hero-slider img, .hero-slider video {
-    width: 100%; height: 100%; object-fit: cover;
+/* --- 1. ഹോം പേജ് ടോപ്പ് ബാനർ --- */
+.home-top-banner {
+    width: 100%;
+    height: auto;
+    line-height: 0; 
+    position: relative; 
+    padding-bottom: 4px; 
+    background-color: #000;
+    overflow: hidden;
 }
 
-/* Top Sellers */
-.top-sellers-swiper { padding: 10px 5px; }
-.product-card {
+.home-top-banner::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4px; 
+    background: linear-gradient(90deg, 
+        var(--bg-color) 0%, 
+        var(--primary-gold) 25%, 
+        var(--primary-gold) 75%, 
+        var(--bg-color) 100%
+    ); 
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+
+.home-top-banner img {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 100px; 
+    object-fit: cover;
+    animation: fadeIn 0.8s ease-out;
+}
+
+/* --- 2. ഹീറോ സ്ലൈഡർ --- */
+.hero-section-new {
+    width: 100%;
+    height: 70vh; 
+    overflow: hidden;
+    position: relative;
+}
+
+.hero-slider-new {
+    width: 100%;
+    height: 100%;
+}
+
+.hero-slider-new .swiper-slide {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero-slider-new .swiper-slide img,
+.hero-slider-new .swiper-slide video {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transform: scale(1.05);
+    transition: transform 8s ease-out;
+}
+
+/* Zoom-in effect on active slide */
+.hero-slider-new .swiper-slide-active img,
+.hero-slider-new .swiper-slide-active video {
+    animation: kenBurns 8s ease-out forwards;
+}
+
+@keyframes kenBurns {
+    0% { transform: scale(1.05); }
+    100% { transform: scale(1.1); }
+}
+
+.hero-slider-new .swiper-slide iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: 9 / 16; 
+    pointer-events: none; 
+}
+
+/* Overlay gradient for better text readability */
+.hero-slider-new .swiper-slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(to bottom, 
+        rgba(0,0,0,0.2) 0%, 
+        rgba(0,0,0,0.5) 100%
+    );
+    z-index: 1;
+}
+
+.hero-slider-new .swiper-slide::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: transparent;
+    z-index: 5;
+}
+
+/* Enhanced pagination dots (Hero) */
+.hero-slider-new .hero-pagination-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+}
+
+.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet {
+    background-color: rgba(255, 255, 255, 0.5);
+    width: 8px;
+    height: 8px;
+    opacity: 1;
+    margin: 0 6px;
+    transition: all 0.3s ease;
+    border: 2px solid transparent;
+}
+
+.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active {
+    background-color: var(--primary-gold);
+    width: 24px;
+    border-radius: 10px;
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+}
+
+/* --- 3. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ --- */
+.hero-text-section {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.7;
+    max-width: 800px;
+    opacity: 0;
+    animation: fadeInUp 1s ease-out 0.3s forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* --- 4. 'For You' (Top Sellers) --- */
+.home-section {
+    opacity: 0;
+    animation: fadeInUp 1s ease-out 0.5s forwards;
+    margin-bottom: 3rem;
+}
+
+.section-title-new {
+    position: relative;
+    display: block;
+    text-align: center;
+    margin: 0 auto 2rem;
+    padding-bottom: 0;
+}
+
+.section-title-new::after {
+    display: none;
+}
+
+.top-sellers-swiper-new {
+    padding: 0 30px; 
+}
+
+.top-sellers-swiper-new .swiper-slide {
+    text-align: center;
     border: 1px solid var(--border-color);
-    background: var(--card-bg);
-    border-radius: 8px; overflow: hidden;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
 }
-.product-card img {
-    width: 100%; aspect-ratio: 4/5; object-fit: cover;
-}
-.product-info { padding: 10px; text-align: center; }
-.product-name {
-    font-size: 0.9rem; font-weight: 600;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.product-price { color: var(--primary-gold); font-weight: 700; margin: 5px 0; }
 
-/* Category Grid */
-.category-grid-simple {
+.top-sellers-swiper-new .swiper-slide::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, 
+        rgba(212, 175, 55, 0.1) 0%, 
+        transparent 50%
+    );
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.top-sellers-swiper-new .swiper-slide:hover {
+    transform: translateY(-8px);
+    border-color: var(--primary-gold);
+    box-shadow: 0 12px 24px rgba(212, 175, 55, 0.2);
+}
+
+.top-sellers-swiper-new .swiper-slide:hover::before {
+    opacity: 1;
+}
+
+.top-sellers-product-image {
+    width: 100%;
+    aspect-ratio: 4 / 5; 
+    object-fit: cover;
+    margin-bottom: 0;
+    transition: transform 0.6s ease;
+}
+
+.top-sellers-swiper-new .swiper-slide:hover .top-sellers-product-image {
+    transform: scale(1.08);
+}
+
+.top-sellers-product-info {
+    padding: 1rem;
+    position: relative;
+    z-index: 2;
+}
+
+/* *** Modern Animated Pagination Dots *** */
+.top-sellers-pagination-new {
+    position: relative; 
+    margin-top: 1.5rem; 
+    margin-bottom: 1.5rem; 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px; 
+}
+
+.top-sellers-pagination-new .swiper-pagination-bullet {
+    width: 8px; 
+    height: 8px;
+    border-radius: 50%;
+    background-color: #333; /* Inactive color */
+    opacity: 1;
+    margin: 0 !important;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    transform: scale(0.8);
+    border: 1px solid transparent;
+}
+
+/* Active Dot - Expands to a Pill */
+.top-sellers-pagination-new .swiper-pagination-bullet-active {
+    width: 30px; /* Long pill shape */
+    height: 8px;
+    border-radius: 4px;
+    background-color: var(--primary-gold);
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+}
+
+.top-sellers-product-name {
+    font-size: 0.95rem;
+    color: var(--text-color);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transition: color 0.3s ease;
+}
+
+.top-sellers-swiper-new .swiper-slide:hover .top-sellers-product-name {
+    color: var(--primary-gold);
+}
+
+.top-sellers-product-price {
+    font-size: 1.1rem; 
+    color: var(--primary-gold);
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* *** Buttons Styling *** */
+.top-sellers-buttons {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 15px;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0;
 }
-.cat-card-simple {
-    position: relative; border-radius: 8px; overflow: hidden;
-    aspect-ratio: 3/4; display: block;
+
+.top-sellers-buttons .btn {
+    padding: 0.6rem 0.5rem;
+    font-size: 0.85rem;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    border-radius: 5px;
+    text-decoration: none;
 }
-.cat-card-simple img {
-    width: 100%; height: 100%; object-fit: cover;
-    transition: transform 0.3s;
+
+/* 1. Cart Button (Black Background) */
+.top-sellers-buttons .btn-add-to-cart {
+    background-color: #000;
+    color: #fff;
+    border: 1px solid #fff;
+    cursor: pointer;
 }
-.cat-card-simple:hover img { transform: scale(1.05); }
-.cat-overlay {
-    position: absolute; bottom: 0; left: 0; width: 100%;
-    background: rgba(0,0,0,0.7); color: #fff;
-    padding: 10px; text-align: center; font-weight: 600;
+
+.top-sellers-buttons .btn-add-to-cart svg {
+    fill: none;
+    stroke: #fff;
+}
+
+/* Cart Button Active (Remove) - Gold Text, Black BG */
+.top-sellers-buttons .btn-add-to-cart.added-to-cart {
+    background-color: #000;
+    color: var(--primary-gold);
+    border-color: var(--primary-gold);
+}
+
+/* No Fill for Icon */
+.top-sellers-buttons .btn-add-to-cart.added-to-cart svg {
+    fill: none !important;
+    stroke: var(--primary-gold) !important;
+}
+
+/* 2. View Button (REVERTED TO GOLD) */
+.top-sellers-buttons a.btn {
+    background-color: var(--primary-gold);
+    color: #000; /* Black Text */
+    border: 1px solid var(--primary-gold);
+    font-weight: 600;
+}
+
+.top-sellers-buttons a.btn:hover {
+    background-color: var(--secondary-gold);
+    border-color: var(--secondary-gold);
+    color: #000;
+}
+
+/* Ripple effect on button click */
+.top-sellers-buttons .btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+.top-sellers-buttons .btn:active::after {
+    width: 200px;
+    height: 200px;
+}
+
+/* --- 5. SHOP BY CATEGORY (Portrait Card Grid) --- */
+.home-category-grid-wrapper {
+    width: 100%;
+    padding: 0 20px 40px 20px; 
+}
+
+.category-grid-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 20px; 
+    width: 100%;
+    max-width: 500px; 
+    margin: 0 auto;   
+}
+
+.category-card-portrait {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4; 
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    border: 1px solid var(--border-color);
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.category-card-portrait:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.2);
+    border-color: var(--primary-gold);
+}
+
+.category-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.category-card-portrait:hover .category-card-img {
+    transform: scale(1.05);
+}
+
+.category-card-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    padding: 2rem 1rem 1rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.category-card-title {
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.category-card-btn {
+    font-size: 0.8rem;
+    color: var(--primary-gold);
+    border: 1px solid var(--primary-gold);
+    padding: 5px 15px;
+    border-radius: 20px;
+    background-color: rgba(0,0,0,0.5);
+    transition: all 0.3s ease;
+}
+
+.category-card-portrait:hover .category-card-btn {
+    background-color: var(--primary-gold);
+    color: #000;
+}
+
+/* --- 6. Scroll Reveal Animations --- */
+.scroll-reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-reveal.revealed {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* --- 7. Loading States & Skeletons --- */
+.skeleton {
+    background: linear-gradient(
+        90deg,
+        var(--card-bg) 0%,
+        rgba(255,255,255,0.05) 50%,
+        var(--card-bg) 100%
+    );
+    background-size: 200% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 8px;
+}
+
+@keyframes skeleton-loading {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* --- 8. Responsive --- */
+@media (max-width: 768px) {
+    .hero-section-new {
+        height: 60vh;
+    }
+    .hero-text-section {
+        padding: 2rem 1rem;
+        font-size: 0.9rem;
+    }
+    .top-sellers-swiper-new {
+        padding: 0 20px;
+    }
+}
+
+@media (min-width: 768px) {
+    .category-grid-vertical {
+        flex-direction: row;
+        justify-content: center;
+        max-width: 1000px;
+    }
+    .category-card-portrait {
+        flex: 1;
+    }
+}
+
+/* Large Desktop */
+@media (min-width: 1200px) {
+    .hero-section-new {
+        height: 80vh;
+    }
+    .container {
+        max-width: 1400px;
+    }
 }
