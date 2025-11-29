@@ -1,108 +1,463 @@
-// ഇതാണ് 'contact.js' 
-import { 
+// ഇതാണ് 'explore.js' ഫയൽ.
+// മാറ്റങ്ങൾ: 
+// 1. റേറ്റിംഗ് ബോക്സ് ക്രമം മാറ്റി (Summary Top, Rating Bottom).
+// 2. ബാക്കി ലോജിക് (Pagination, Sort) നിലനിർത്തി.
+
+import {
+    collection,
+    getDocs,
     doc,
     getDoc,
+    query,
+    limit,
+    startAfter,
+    orderBy,
+    setDoc,
+    deleteDoc,
+    onSnapshot,
+    serverTimestamp,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { db } from './firebase-config.js';
-import { loadSiteSettings } from './common.js'; // ഹെഡറും ഫൂട്ടറും ലോഡ് ചെയ്യാൻ
+import { db, auth } from './firebase-config.js';
+import { loadSiteSettings, fetchSiteSettings, optimizeImage } from './common.js'; 
+import { addToCart, isItemInCart, removeFromCart } from './cart.js';
+import { onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
 setLogLevel('Debug');
 
-// --- DOM Elements ---
-const phoneEl = document.getElementById('contact-phone-main');
-const emailEl = document.getElementById('contact-email-main');
-const addressEl = document.getElementById('contact-address-main');
-const socialIconsEl = document.getElementById('contact-social-icons');
+const feedContainer = document.getElementById("explore-feed");
+const loader = document.getElementById("explore-scroll-loader");
+let categoriesMap = new Map(); 
+let lastVisible = null;
+let isLoading = false;
+const PRODUCTS_PER_PAGE = 10; 
+let currentUser = null;
 
-// പേജ് ലോഡ് ആവുമ്പോൾ
-document.addEventListener("DOMContentLoaded", async () => {
-    // 1. ഹെഡർ, ഫൂട്ടർ, ഫ്ലോട്ടിംഗ് ബട്ടണുകൾ എന്നിവ ലോഡ് ചെയ്യുന്നു
-    await loadSiteSettings(); 
-    
-    // 2. കോൺടാക്റ്റ് വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു
-    loadContactDetails();
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        currentUser = user;
+    } else {
+        signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
+    }
 });
 
-/**
- * ഫയർബേസിൽ നിന്ന് കോൺടാക്റ്റ് വിവരങ്ങളും സോഷ്യൽ ലിങ്കുകളും ലോഡ് ചെയ്യുന്നു
- */
-async function loadContactDetails() {
-    try {
-        const docRef = doc(db, "settings", "global");
-        const docSnap = await getDoc(docRef);
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadSiteSettings(); 
+    const settings = await fetchSiteSettings();
+    if (settings && settings.homeBannerUrl) {
+        loadExploreBanner(settings.homeBannerUrl);
+    }
+    await loadCategories();   
+    await loadProducts();     
+});
 
-        if (!docSnap.exists()) {
-            console.error("Site settings document not found!");
+function loadExploreBanner(bannerUrl) {
+    const bannerContainer = document.getElementById('explore-top-banner');
+    if (!bannerContainer || !bannerUrl) return;
+    const optimizedUrl = optimizeImage(bannerUrl, 1200, 85);
+    bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Special Offer Banner" loading="lazy">`;
+    bannerContainer.style.display = 'block';
+}
+
+async function loadCategories() {
+    try {
+        const q = query(collection(db, "categories"));
+        const catSnapshot = await getDocs(q);
+        catSnapshot.forEach((doc) => {
+            const data = doc.data();
+            categoriesMap.set(doc.id, {
+                name: data.name,
+                imageUrl: data.imageUrl
+            });
+        });
+    } catch (error) { console.error("Error loading categories map: ", error); }
+}
+
+async function loadProducts() {
+    if (isLoading) return;
+    isLoading = true;
+    if (loader) loader.style.display = 'flex';
+    if (lastVisible === null) feedContainer.innerHTML = ''; 
+
+    try {
+        const productsRef = collection(db, "products");
+        let q;
+        
+        if (lastVisible) {
+            q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(PRODUCTS_PER_PAGE));
+        } else {
+            q = query(productsRef, orderBy("createdAt", "desc"), limit(PRODUCTS_PER_PAGE));
+        }
+
+        const documentSnapshots = await getDocs(q);
+        if (documentSnapshots.empty) {
+            if (feedContainer.innerHTML === '') {
+                feedContainer.innerHTML = '<p class="loading-placeholder-full">No products found.</p>';
+            }
+            if (loader) loader.style.display = 'none';
             return;
         }
+        
+        lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
 
-        const settings = docSnap.data();
-
-        // 1. ഫോൺ നമ്പർ
-        if (phoneEl) {
-            if (settings.phone) {
-                phoneEl.href = `tel:${settings.phone}`;
-                phoneEl.textContent = settings.phone;
-            } else {
-                phoneEl.textContent = 'Not available';
-            }
+        for (const docSnap of documentSnapshots.docs) {
+            const product = docSnap.data();
+            const productId = docSnap.id;
+            
+            const card = document.createElement('div');
+            card.className = 'explore-card';
+            card.id = `product-card-${productId}`; 
+            
+            card.innerHTML = `
+                ${buildCategoryHeader(product.categoryId)}
+                ${buildImageSlider(productId, product.images, product.name)}
+                ${buildCardContent(productId, product)}
+            `;
+            feedContainer.appendChild(card);
+            
+            setupRealtimeListeners(productId);
         }
-
-        // 2. ഇമെയിൽ
-        if (emailEl) {
-            if (settings.email) {
-                emailEl.href = `mailto:${settings.email}`;
-                emailEl.textContent = settings.email;
-            } else {
-                emailEl.textContent = 'Not available';
-            }
-        }
-
-        // 3. വിലാസം
-        if (addressEl) {
-            addressEl.textContent = settings.address || 'Not available';
-        }
-
-        // 4. സോഷ്യൽ മീഡിയ ഐക്കണുകൾ
-        if (socialIconsEl) {
-            let socialLinksHTML = '';
-
-            // WhatsApp
-            if (settings.followWhatsapp) {
-                socialLinksHTML += `
-                    <a href="${settings.followWhatsapp}" target="_blank" aria-label="WhatsApp" class="contact-social-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg>
-                    </a>`;
-            }
-            // Instagram
-            if (settings.instagramUrl) {
-                socialLinksHTML += `
-                    <a href="${settings.instagramUrl}" target="_blank" aria-label="Instagram" class="contact-social-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.85s-.011 3.584-.069 4.85c-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07s-3.584-.012-4.85-.07c-3.252-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.85s.012-3.584.07-4.85c.149-3.225 1.664 4.771 4.919-4.919C8.333 2.175 8.741 2.163 12 2.163m0-2.163C8.741 0 8.333.014 7.053.072 2.748.27 0 3.018 0 7.053c-.058 1.28-.072 1.688-.072 4.947s.014 3.667.072 4.947c.202 4.305 2.949 7.053 7.053 7.053 1.28.058 1.688.072 4.947.072s3.667-.014 4.947-.072c4.305-.202 7.053-2.949 7.053-7.053.058-1.28.072 1.688.072-4.947s-.014-3.667-.072-4.947C21.725 2.748 19.227 0 15.028.072 13.748.014 13.34 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.88 1.44 1.44 0 0 0 0-2.88z"/></svg>
-                    </a>`;
-            }
-            // Facebook
-            if (settings.facebookUrl) {
-                socialLinksHTML += `
-                    <a href="${settings.facebookUrl}" target="_blank" aria-label="Facebook" class="contact-social-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.9V12h2.538v-2.245c0-2.508 1.493-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.465l-1.26.001c-1.243 0-1.63.771-1.63 1.562V12h2.771l-.443 2.89H13.63v6.988C18.343 21.128 22 16.991 22 12z"/></svg>
-                    </a>`;
-            }
-            // YouTube
-            if (settings.youtubeUrl) {
-                socialLinksHTML += `
-                    <a href="${settings.youtubeUrl}" target="_blank" aria-label="YouTube" class="contact-social-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M21.58 7.19c-.23-.86-.9-1.52-1.76-1.76C18.26 5 12 5 12 5s-6.26 0-7.82.43c-.86.23-1.52.9-1.76 1.76C2 8.74 2 12 2 12s0 3.26.43 4.81c.23.86.9 1.52 1.76 1.76C5.74 19 12 19 12 19s6.26 0 7.82-.43c.86-.23 1.52-.9 1.76-1.76C22 15.26 22 12 22 12s0-3.26-.42-4.81zM9.75 15.5V8.5L15.75 12 9.75 15.5z"></path></svg>
-                    </a>`;
-            }
-
-            socialIconsEl.innerHTML = socialLinksHTML || '<span class="loading-placeholder">No social links found.</span>';
-        }
+        
+        new Swiper('.explore-image-swiper', {
+            loop: false,
+            allowTouchMove: true,
+        });
 
     } catch (error) {
-        console.error("Error loading contact details: ", error);
-        if (addressEl) addressEl.textContent = 'Error loading details.';
-        if (socialIconsEl) socialIconsEl.innerHTML = '<span class="loading-placeholder">Error loading links.</span>';
+        console.error("Error loading products: ", error);
+        feedContainer.innerHTML = '<p class="loading-placeholder-full">Error loading products.</p>';
+    } finally {
+        isLoading = false;
+        if (loader) loader.style.display = 'none';
     }
 }
+
+function buildCategoryHeader(categoryId) {
+    const category = categoriesMap.get(categoryId);
+    if (!category) return ''; 
+    
+    const categoryLink = `categories.html?filter=${categoryId}`;
+    const rawImg = category.imageUrl || 'https://placehold.co/40x40/333/D4AF37?text=C';
+    const categoryImg = optimizeImage(rawImg, 100);
+
+    return `
+        <a href="${categoryLink}" class="explore-card-header">
+            <img src="${categoryImg}" alt="${category.name}" class="explore-category-img" loading="lazy">
+            <span class="explore-category-name">${category.name}</span>
+        </a>
+    `;
+}
+
+function buildImageSlider(productId, images, productName) {
+    const productLink = `product.html?id=${productId}`;
+    let slidesHTML = '';
+
+    if (images && images.length > 0) {
+        images.forEach(imgUrl => {
+            const optimizedUrl = optimizeImage(imgUrl, 800, 85);
+            slidesHTML += `
+                <div class="swiper-slide">
+                    <a href="${productLink}">
+                        <img src="${optimizedUrl}" alt="${productName}" loading="lazy">
+                    </a>
+                </div>
+            `;
+        });
+    } else {
+        slidesHTML = `
+            <div class="swiper-slide">
+                <a href="${productLink}">
+                    <img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image" alt="${productName}" loading="lazy">
+                </a>
+            </div>
+        `;
+    }
+
+    return `
+        <div class="explore-image-swiper swiper-container">
+            <div class="swiper-wrapper">
+                ${slidesHTML}
+            </div>
+        </div>
+    `;
+}
+
+function buildCardContent(productId, product) {
+    const price = product.price || 0;
+    const mrp = product.mrp || 0;
+    let priceHTML = `<span class="price-main">₹${price}</span>`;
+    if (mrp > price) {
+        priceHTML += `<span class="price-mrp product-mrp-red" style="margin-left: 5px;"><del>₹${mrp}</del></span>`;
+    }
+
+    let descriptionHTML = '';
+    const descText = product.description || '';
+    
+    if (descText) {
+        descriptionHTML = `
+            <div class="description-text truncated" id="desc-text-${productId}">
+               <span style="color:var(--text-color); font-weight:500;">${product.name}</span> ${descText}
+            </div>
+            <button class="read-more-btn" id="read-more-${productId}" data-id="${productId}">more</button>
+        `;
+    } else {
+        descriptionHTML = `<div class="description-text"><span style="color:var(--text-color); font-weight:500;">${product.name}</span></div>`;
+    }
+
+    const rawImage = product.images && product.images[0] ? product.images[0] : '';
+    const imageUrl = optimizeImage(rawImage, 400);
+    
+    const isInCart = isItemInCart(productId);
+    const activeClass = isInCart ? 'added-to-cart' : '';
+    const svgFill = isInCart ? 'style="fill: #ffffff; stroke: #ffffff;"' : '';
+    const buttonTitle = isInCart ? 'Remove from Cart' : 'Add to Cart';
+
+    // *** മാറ്റം: Rating Box Order (Summary Top, Rating Bottom) ***
+    return `
+        <div class="explore-card-content">
+            <div class="explore-action-icons">
+                <div class="action-group">
+                    <button title="Like" class="like-btn" data-id="${productId}">
+                        <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    </button>
+                    <span class="action-count like-count">0</span>
+                </div>
+
+                <div class="action-group">
+                    <button title="Rate" class="comment-btn" data-id="${productId}">
+                        <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                    </button>
+                    <span class="action-count rating-count">0</span>
+                </div>
+
+                <button title="Share" class="share-btn" data-id="${productId}" data-name="${product.name}" data-price="${price}"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+                
+                <button title="${buttonTitle}" class="bookmark-btn ${activeClass}" data-id="${productId}" data-name="${product.name}" data-price="${price}" data-mrp="${mrp}" data-image="${imageUrl}" data-size="${product.size || ''}"><svg viewBox="0 0 24 24" ${svgFill}><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
+            </div>
+            
+            <div class="rating-box" id="rating-box-${productId}" style="display: none;">
+                <!-- Summary First -->
+                <div class="rating-summary" id="rating-summary-${productId}">
+                    <!-- Rating Bars Here -->
+                </div>
+                
+                <hr class="rating-divider">
+                
+                <!-- Rating Input Last -->
+                <p class="rating-title">Rate this product</p>
+                <div class="star-rating" data-id="${productId}">
+                    ${[1, 2, 3, 4, 5].map(i => `<span class="star" data-value="${i}">&#9733;</span>`).join('')}
+                </div>
+                <div class="rating-feedback">Tap a star to rate</div>
+            </div>
+
+            <div class="explore-product-title">${product.name}</div>
+            <div class="price-container">${priceHTML}</div>
+
+            <div class="explore-product-description">
+                ${descriptionHTML}
+            </div>
+        </div>
+    `;
+}
+
+function setupRealtimeListeners(productId) {
+    const card = document.getElementById(`product-card-${productId}`);
+    if (!card) return;
+
+    // Likes
+    const likesRef = collection(db, "products", productId, "likes");
+    onSnapshot(likesRef, (snapshot) => {
+        const count = snapshot.size;
+        const likeCountSpan = card.querySelector('.like-count');
+        if (likeCountSpan) likeCountSpan.textContent = count;
+
+        if (currentUser) {
+            const isLiked = snapshot.docs.some(doc => doc.id === currentUser.uid);
+            const likeBtn = card.querySelector('.like-btn');
+            const svg = likeBtn.querySelector('svg');
+            
+            if (isLiked) {
+                likeBtn.classList.add('liked');
+                svg.style.fill = 'var(--error-red)';
+                svg.style.stroke = 'var(--error-red)';
+            } else {
+                likeBtn.classList.remove('liked');
+                svg.style.fill = 'none';
+                svg.style.stroke = 'currentColor';
+            }
+        }
+    });
+
+    // Ratings
+    const ratingsRef = collection(db, "products", productId, "ratings");
+    onSnapshot(ratingsRef, (snapshot) => {
+        const count = snapshot.size;
+        const ratingCountSpan = card.querySelector('.rating-count');
+        if (ratingCountSpan) ratingCountSpan.textContent = count;
+        
+        const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        snapshot.forEach(doc => {
+            const val = doc.data().rating;
+            if (counts[val] !== undefined) counts[val]++;
+        });
+        updateRatingSummary(card, counts, count);
+
+        if (currentUser) {
+            const userRatingDoc = snapshot.docs.find(doc => doc.id === currentUser.uid);
+            if (userRatingDoc) {
+                updateStarUI(card, userRatingDoc.data().rating);
+            }
+        }
+    });
+}
+
+function updateRatingSummary(card, counts, total) {
+    const summaryContainer = card.querySelector('.rating-summary');
+    if (!summaryContainer) return;
+    
+    let html = '';
+    const keys = [5, 4, 3, 2, 1];
+    
+    keys.forEach((starVal) => {
+        const count = counts[starVal];
+        const percentage = total > 0 ? (count / total) * 100 : 0;
+        
+        let color = '#ff4d4d'; // Red (1)
+        if (starVal === 2) color = '#ff9f43'; // Orange
+        if (starVal === 3) color = '#feca57'; // Yellow
+        if (starVal === 4) color = '#1dd1a1'; // Light Green
+        if (starVal === 5) color = '#10ac84'; // Dark Green
+
+        html += `
+            <div class="rating-bar-row">
+                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
+                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
+                <span class="bar-count">${count}</span>
+            </div>
+        `;
+    });
+    summaryContainer.innerHTML = html;
+}
+
+function updateStarUI(card, value) {
+    const stars = card.querySelectorAll('.star');
+    const feedback = card.querySelector('.rating-feedback');
+    
+    const colorClass = `filled-${value}`; 
+
+    stars.forEach(s => {
+        s.className = 'star'; 
+        if (parseInt(s.dataset.value) <= value) {
+            s.classList.add(colorClass); 
+        }
+    });
+    
+    const messages = ["Poor", "Fair", "Good", "Very Good", "Excellent"];
+    if (feedback) feedback.textContent = value > 0 ? messages[value - 1] : "Tap a star to rate";
+}
+
+const observer = new IntersectionObserver((entries) => {
+    if (entries[0].isIntersecting && !isLoading && lastVisible) { 
+        loadProducts();
+    }
+}, { rootMargin: '400px' });
+if (loader) { observer.observe(loader); }
+
+feedContainer.addEventListener('click', async (e) => { 
+    const target = e.target;
+    if (!currentUser) return; 
+
+    if (target.classList.contains('read-more-btn')) {
+        const id = target.dataset.id;
+        const textContainer = document.getElementById(`desc-text-${id}`);
+        
+        if (textContainer.classList.contains('truncated')) {
+            textContainer.classList.remove('truncated');
+            target.textContent = 'less';
+        } else {
+            textContainer.classList.add('truncated');
+            target.textContent = 'more';
+        }
+        return;
+    }
+
+    const likeButton = target.closest('.like-btn');
+    if (likeButton) {
+        e.preventDefault();
+        const productId = likeButton.dataset.id;
+        const userLikeRef = doc(db, "products", productId, "likes", currentUser.uid);
+        
+        try {
+            if (likeButton.classList.contains('liked')) {
+                await deleteDoc(userLikeRef);
+            } else {
+                await setDoc(userLikeRef, { timestamp: serverTimestamp() });
+                likeButton.style.transform = 'scale(1.2)';
+                setTimeout(() => likeButton.style.transform = 'scale(1)', 200);
+            }
+        } catch (err) { console.error("Like error:", err); }
+    }
+
+    const commentButton = target.closest('.comment-btn');
+    if (commentButton) {
+        e.preventDefault();
+        const id = commentButton.dataset.id;
+        const ratingBox = document.getElementById(`rating-box-${id}`);
+        ratingBox.style.display = ratingBox.style.display === 'none' ? 'block' : 'none';
+    }
+
+    if (target.classList.contains('star')) {
+        const star = target;
+        const ratingContainer = star.parentElement;
+        const productId = ratingContainer.dataset.id;
+        const value = parseInt(star.dataset.value);
+        const userRatingRef = doc(db, "products", productId, "ratings", currentUser.uid);
+        try { await setDoc(userRatingRef, { rating: value, timestamp: serverTimestamp() }); } 
+        catch (err) { console.error("Rating error:", err); }
+    }
+
+    const bookmarkButton = target.closest('.bookmark-btn');
+    if (bookmarkButton) {
+        e.preventDefault();
+        const id = bookmarkButton.dataset.id;
+        const svg = bookmarkButton.querySelector('svg');
+        if (bookmarkButton.classList.contains('added-to-cart')) {
+            removeFromCart(id);
+            bookmarkButton.classList.remove('added-to-cart');
+            if (svg) {
+                svg.style.fill = 'none'; 
+                svg.style.stroke = 'currentColor';
+            }
+            bookmarkButton.title = 'Add to Cart';
+        } else {
+            const product = {
+                id: id,
+                name: bookmarkButton.dataset.name,
+                price: parseFloat(bookmarkButton.dataset.price),
+                mrp: parseFloat(bookmarkButton.dataset.mrp),
+                image: bookmarkButton.dataset.image,
+                size: bookmarkButton.dataset.size 
+            };
+            addToCart(id, product);
+            bookmarkButton.classList.add('added-to-cart');
+            if (svg) {
+                svg.style.fill = '#ffffff'; 
+                svg.style.stroke = '#ffffff';
+            }
+            bookmarkButton.title = 'Remove from Cart';
+        }
+    }
+
+    const shareButton = target.closest('.share-btn'); 
+    if (shareButton) {
+        e.preventDefault();
+        if (!navigator.share) return;
+        const id = shareButton.dataset.id;
+        const name = shareButton.dataset.name;
+        const price = shareButton.dataset.price;
+        const productLink = `${window.location.origin}/product.html?id=${id}`;
+        const shareData = { title: name, text: `Check out ${name}!\nPrice: ₹${price}\n`, url: productLink };
+        try { await navigator.share(shareData); } catch (err) { console.error('Error sharing:', err); }
+    }
+});
