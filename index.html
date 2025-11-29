@@ -1,89 +1,44 @@
-<!-- 
-  ഇതാണ് ഹോം പേജ്. index.html
-  മാറ്റം: Preloader ഘടന പഴയതുപോലെയാക്കി (Logo Container തിരികെ കൊണ്ടുവന്നു).
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JR-UD-HUB</title>
-    
     <link rel="stylesheet" href="public.css">
     <link rel="stylesheet" href="home.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body>
-
-    <!-- 0. പേജ് ലോഡർ (OLD STRUCTURE RESTORED) -->
-    <div id="preloader">
-        <div class="loader-logo-container">
-            <!-- ലോഗോയും സ്പിന്നറും common.js & public.css വഴി വരും -->
-            <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
-            <div class="loader-ring"></div>
-        </div>
-    </div>
-
-    <!-- 1. ഹെഡർ -->
+    <div id="preloader"><div class="loader-ring"></div></div>
     <header class="main-header" id="main-header"></header>
-    
-    <!-- 2. സൈഡ് മെനു (common.js വഴി) -->
-    <div class="nav-overlay" id="nav-overlay"></div>
-
-    <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main>
-        
-        <!-- ഹോം പേജ് ടോപ്പ് ബാനർ -->
         <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
-
-        <!-- 3.1. ഹീറോ സ്ലൈഡർ -->
-        <section class="hero-section-new">
-            <div class="swiper hero-slider-new" id="hero-slider-container">
-                <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <!-- സ്ലൈഡുകൾ index.js വഴി വരും -->
-                </div>
-                <div class="swiper-pagination hero-pagination-dots"></div>
-            </div>
-        </section>
-
-        <!-- 3.2. ഹീറോ ടെക്സ്റ്റ് -->
-        <section class="hero-text-section container">
-            <p>We believe that a perfumer is a poet or a storyteller who use intangible ingredients to create emotions. The main idea behind Oud Arabia is to Abstract memories that evoke our cores.</p>
-        </section>
-
-        <!-- 3.3. For You (Top Sellers) -->
-        <section class="home-section container">
-            <h2 class="section-title-new">For You</h2>
-            <div class="swiper top-sellers-swiper-new">
-                <div class="swiper-wrapper" id="top-sellers-grid">
-                    <!-- ഉൽപ്പന്നങ്ങൾ index.js വഴി വരും -->
-                </div>
-            </div>
-            <!-- Pagination -->
-            <div class="top-sellers-pagination-new"></div>
-        </section>
-
-        <!-- 3.4. ഷോപ്പ് ബൈ കാറ്റഗറി -->
-        <section class="home-section container">
-            <h2 class="section-title-new">SHOP BY CATEGORY</h2>
-            <div id="category-grid-home" class="category-grid-vertical">
-                <!-- കാറ്റഗറികൾ index.js വഴി വരും -->
-            </div>
-        </section>
         
+        <section class="hero-section">
+            <div class="swiper hero-slider" id="hero-slider-container">
+                <div class="swiper-wrapper" id="hero-slider-wrapper"></div>
+                <div class="swiper-pagination"></div>
+            </div>
+        </section>
+
+        <section class="container" style="text-align:center; padding: 2rem 1rem; color:#aaa;">
+            <p>We believe that a perfumer is a poet or a storyteller...</p>
+        </section>
+
+        <section class="container home-section">
+            <h2 class="section-title-new">For You</h2>
+            <div class="swiper top-sellers-swiper">
+                <div class="swiper-wrapper" id="top-sellers-grid"></div>
+            </div>
+        </section>
+
+        <section class="container home-section">
+            <h2 class="section-title-new">Shop By Category</h2>
+            <div id="category-grid-home" class="category-grid-simple"></div>
+        </section>
     </main>
-
-    <!-- 4. ഫൂട്ടർ -->
     <footer class="main-footer-new" id="main-footer"></footer>
-
-    <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ -->
-    <div id="floating-action-buttons"></div>
-
-    <!-- JS ഫയലുകൾ -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="cart.js"></script>
-    <script type="module" src="common.js"></script>
     <script type="module" src="index.js"></script>
 </body>
 </html>
