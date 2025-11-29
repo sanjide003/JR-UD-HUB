@@ -1,4 +1,4 @@
-/* home.css - Updated with specific button styles (No Gold Fill, White View) */
+/* home.css - Updated Explore Button Style (Gold Outline) */
 
 /* === 1. ഹോം പേജ് ടോപ്പ് ബാനർ === */
 .home-top-banner {
@@ -172,7 +172,7 @@
     text-shadow: 0 2px 4px rgba(0,0,0,0.8);
 }
 
-/* *** BUTTONS CONTAINER (UPDATED) *** */
+/* Buttons Container */
 .top-sellers-buttons {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -183,13 +183,12 @@
     border-top: none; 
 }
 
-/* പൊതുവായ ബട്ടൺ സ്റ്റൈൽ */
 .top-sellers-buttons .btn-primary-new,
 .top-sellers-buttons .btn-secondary-new {
     font-size: 0.8rem; 
     height: 40px; 
     padding: 0;
-    border-radius: 50px; /* Pill Shape */
+    border-radius: 50px; 
     text-transform: uppercase;
     font-weight: 700;
     letter-spacing: 0.5px;
@@ -201,26 +200,22 @@
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
 }
 
-/* 1. Cart Button (Updated: No Fill, Gold Border & Text) */
 .top-sellers-buttons .btn-primary-new {
-    background-color: transparent !important; /* ഫിൽ കളർ മാറ്റി */
-    color: var(--primary-gold) !important;    /* ഗോൾഡ് ടെക്സ്റ്റ് */
-    border: 1px solid var(--primary-gold) !important; /* ഗോൾഡ് ബോർഡർ */
+    background-color: transparent !important;
+    color: var(--primary-gold) !important;
+    border: 1px solid var(--primary-gold) !important;
     gap: 6px;
 }
 
-/* ഹോവർ ചെയ്യുമ്പോൾ */
 .top-sellers-buttons .btn-primary-new:hover {
-    background-color: rgba(212, 175, 55, 0.1) !important; /* ചെറിയൊരു ഗോൾഡ് ഷേഡ് */
+    background-color: rgba(212, 175, 55, 0.1) !important;
     transform: translateY(-3px);
 }
 
-/* ആഡ് ചെയ്യുമ്പോൾ (Added state) - മാറ്റമില്ല, സെയിം സ്റ്റൈൽ */
 .top-sellers-buttons .btn-primary-new.added-to-cart {
     background-color: rgba(212, 175, 55, 0.1) !important;
 }
 
-/* കാർട്ട് ഐക്കൺ കളർ */
 .top-sellers-buttons .btn-primary-new svg.icon-btn {
     stroke: var(--primary-gold);
     fill: none;
@@ -228,20 +223,18 @@
     height: 18px;
 }
 
-/* 2. View Button (Updated: White Border & Text) */
 .top-sellers-buttons .btn-secondary-new {
     background-color: transparent !important;
-    color: #ffffff !important;       /* വെള്ള ടെക്സ്റ്റ് */
-    border: 1px solid #ffffff !important; /* വെള്ള ബോർഡർ */
+    color: #ffffff !important;
+    border: 1px solid #ffffff !important;
 }
 
-/* ഹോവർ ചെയ്യുമ്പോൾ */
 .top-sellers-buttons .btn-secondary-new:hover {
     background-color: rgba(255, 255, 255, 0.1) !important;
     transform: translateY(-3px);
 }
 
-/* --- Pagination (Dot-to-Line) --- */
+/* Pagination */
 .top-sellers-pagination-new {
     position: relative;
     margin-top: 2rem;
@@ -338,22 +331,24 @@
     text-shadow: 0 2px 5px rgba(0,0,0,0.8);
 }
 
+/* *** മാറ്റം: Explore ബട്ടൺ (No Fill, Gold Outline) *** */
 .category-card-btn {
     font-size: 0.9rem;
-    color: var(--bg-color);
-    border: none;
-    padding: 10px 24px;
-    border-radius: 50px;
-    background-color: var(--primary-gold);
+    color: var(--primary-gold);
+    border: 1px solid var(--primary-gold); /* ഗോൾഡ് ബോർഡർ */
+    padding: 10px 30px;
+    border-radius: 50px; /* Pill Shape */
+    background-color: transparent; /* No Fill */
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
     box-shadow: 0 4px 10px rgba(0,0,0,0.3);
     transition: all 0.3s ease;
+    backdrop-filter: blur(2px); /* ടെക്സ്റ്റ് വ്യക്തമാക്കാൻ ചെറിയ ബ്ലർ */
 }
 
 .category-card-btn:hover {
-    background-color: #fff;
+    background-color: rgba(212, 175, 55, 0.1);
     transform: scale(1.05);
 }
 
