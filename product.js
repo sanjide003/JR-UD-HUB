@@ -1,5 +1,5 @@
 // ഇതാണ് 'product.js' ഫയൽ.
-// മാറ്റം: "More" ബട്ടൺ ഒഴിവാക്കി, എല്ലാ ഡിസ്ക്രിപ്ഷനും കാണിക്കുന്നു.
+// മാറ്റങ്ങൾ: "Description", "Specification" ഹെഡിംഗുകൾ ചേർത്തു.
 
 import { 
     collection, 
@@ -41,7 +41,6 @@ function linkify(text) {
     const urlRegex = /(\b(https|http|ftp):\/\/[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])|(\bwww\.[-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|])/ig;
     return text.replace(urlRegex, function(url, p1, p2, p3) {
         const href = p3 ? 'http://' + p3 : p1;
-        // ലിങ്ക് നീല നിറത്തിൽ കാണിക്കാൻ ക്ലാസ്സ് ആവശ്യമില്ല, CSS-ൽ !important നൽകിയിട്ടുണ്ട്.
         return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
     });
 }
@@ -148,24 +147,34 @@ async function loadProductDetails() {
             `;
         }
 
-        // *** മാറ്റം: ഡിസ്ക്രിപ്ഷൻ മുഴുവൻ കാണിക്കുന്നു (No Truncation) ***
-        let descriptionHTML = 'No description available.';
+        let descriptionHTML = '';
         if (product.description) {
             let linkifiedText = linkify(product.description);
-            // മുഴുവൻ ടെക്സ്റ്റും കാണിക്കുന്നു
-            descriptionHTML = `<div class="description-content" id="desc-content">${linkifiedText.replace(/\n/g, '<br>')}</div>`;
+            // *** മാറ്റം: Description ഹെഡിംഗും ബോക്സും ***
+            descriptionHTML = `
+                <h3 class="product-section-heading">Description</h3>
+                <div class="product-description">
+                    <div class="description-content" id="desc-content">${linkifiedText.replace(/\n/g, '<br>')}</div>
+                </div>
+            `;
         }
 
         let specificationHTML = '';
         if (product.specification) {
             const points = product.specification.split('\n').filter(line => line.trim() !== '');
             if (points.length > 0) {
-                specificationHTML = '<ul class="product-specs-list">';
+                let listHTML = '<ul class="product-specs-list">';
                 points.forEach(point => {
                     const cleanPoint = point.replace(/^-\s*/, '').trim();
-                    specificationHTML += `<li>${cleanPoint}</li>`;
+                    listHTML += `<li>${cleanPoint}</li>`;
                 });
-                specificationHTML += '</ul>';
+                listHTML += '</ul>';
+                
+                // *** മാറ്റം: Specification ഹെഡിംഗും ബോക്സും ***
+                specificationHTML = `
+                    <h3 class="product-section-heading">Specification</h3>
+                    <div class="product-specification-section">${listHTML}</div>
+                `;
             }
         }
 
@@ -220,11 +229,9 @@ async function loadProductDetails() {
                     ${priceHTML}
                 </div>
 
-                ${specificationHTML ? `<div class="product-specification-section">${specificationHTML}</div>` : ''}
+                ${specificationHTML ? specificationHTML : ''}
 
-                <div class="product-description">
-                    ${descriptionHTML}
-                </div>
+                ${descriptionHTML ? descriptionHTML : ''}
                 
                 <div class="product-actions-grid">
                     <button class="btn ${cartButtonClass}" id="add-to-cart-btn">
@@ -268,7 +275,7 @@ async function loadProductDetails() {
     }
 }
 
-// ... Realtime Listeners, Ripple, Action Buttons, Related Products Load, Cart Logic (No Changes) ...
+// ... (Other functions remain same) ...
 function setupRealtimeListeners(productId) {
     const likesRef = collection(db, "products", productId, "likes");
     onSnapshot(likesRef, (snapshot) => {
