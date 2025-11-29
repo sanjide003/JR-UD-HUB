@@ -1,42 +1,45 @@
-/* ഇത് cart.CSS 
-   മാറ്റം: ക്ലീൻ & മോഡേൺ ഡിസൈൻ.
+/* ഇത് cart.css
+   മാറ്റങ്ങൾ:
+   1. കാർട്ട് ഇനങ്ങൾക്ക് വൃത്തിയുള്ള കാർഡ് ഡിസൈൻ.
+   2. ക്വാണ്ടിറ്റി ബട്ടണുകൾക്ക് പുതിയ സ്റ്റൈൽ.
+   3. "Place Order" ബട്ടൺ ഹൈലൈറ്റ് ചെയ്തു.
 */
 
-/* --- 1. പേജ് ലേഔട്ട് --- */
+/* --- 1. കാർട്ട് പേജ് ലേഔട്ട് --- */
 .cart-page-layout-new {
     display: flex;
     flex-direction: column;
     gap: 2rem;
-    min-height: 60vh;
+    padding-bottom: 2rem;
 }
 
-/* --- 2. കാർട്ട് ഐറ്റംസ് (ഇടതുവശം) --- */
+/* --- 2. ഉൽപ്പന്നങ്ങളുടെ ലിസ്റ്റ് (ഇടതുവശം) --- */
 .cart-items-container {
     display: flex;
     flex-direction: column;
     gap: 1rem;
-    flex-grow: 1;
 }
 
 .cart-item-card {
-    background-color: var(--card-bg);
+    background-color: var(--card-bg); /* കാർഡ് ബാക്ക്ഗ്രൗണ്ട് */
     border: 1px solid var(--border-color);
     border-radius: 12px;
     overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
     display: flex;
     flex-direction: column;
-    transition: transform 0.2s ease, border-color 0.2s ease;
 }
 
 .cart-item-card:hover {
     border-color: rgba(255, 255, 255, 0.2);
 }
 
-/* കാർഡിന്റെ മുകൾ ഭാഗം (ചിത്രം + വിവരങ്ങൾ) */
+/* കാർഡിന്റെ മുകൾ ഭാഗം (ചിത്രവും വിവരങ്ങളും) */
 .cart-item-main {
     display: flex;
     padding: 1rem;
     gap: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .cart-item-image-link {
@@ -53,35 +56,37 @@
 }
 
 .cart-item-info {
+    flex-grow: 1;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    flex-grow: 1;
-}
-
-.cart-item-title-link {
-    text-decoration: none;
-    color: var(--text-color);
 }
 
 .cart-item-title {
     font-size: 1rem;
     font-weight: 600;
-    margin: 0 0 0.25rem 0;
+    color: var(--text-color);
+    margin-bottom: 4px;
     line-height: 1.4;
-    /* 2 വരിയിൽ ഒതുക്കുന്നു */
+    text-decoration: none;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
+.cart-item-title:hover {
+    color: var(--primary-gold);
+}
+
 .cart-item-meta {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 10px;
-    flex-wrap: wrap;
-    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
 }
 
 .cart-item-price {
@@ -91,35 +96,29 @@
 }
 
 .cart-item-size {
-    font-size: 0.85rem;
-    color: var(--text-muted);
     background-color: rgba(255, 255, 255, 0.05);
     padding: 2px 6px;
     border-radius: 4px;
+    font-size: 0.8rem;
 }
 
 /* ക്വാണ്ടിറ്റി കൺട്രോൾ */
-.quantity-control-wrapper {
-    display: flex;
-    align-items: center;
-    margin-top: auto;
-}
-
 .quantity-control {
     display: flex;
     align-items: center;
     background-color: #000;
     border: 1px solid var(--border-color);
     border-radius: 6px;
-    overflow: hidden;
+    width: fit-content;
+    height: 32px;
 }
 
 .quantity-btn {
+    width: 32px;
+    height: 100%;
     background: none;
     border: none;
     color: var(--text-color);
-    width: 32px;
-    height: 32px;
     font-size: 1.2rem;
     cursor: pointer;
     display: flex;
@@ -134,70 +133,73 @@
 
 .quantity-input {
     width: 40px;
-    height: 32px;
+    height: 100%;
     text-align: center;
-    background: transparent;
+    background: none;
     border: none;
-    border-left: 1px solid var(--border-color);
-    border-right: 1px solid var(--border-color);
     color: var(--text-color);
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     -moz-appearance: textfield;
 }
 .quantity-input::-webkit-outer-spin-button,
 .quantity-input::-webkit-inner-spin-button {
-    -webkit-appearance: none; margin: 0;
+    -webkit-appearance: none;
+    margin: 0;
 }
 
-/* കാർഡിന്റെ താഴത്തെ ഭാഗം (Actions) */
+/* ആക്ഷൻ ബട്ടണുകൾ (താഴെ) */
 .cart-item-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    border-top: 1px solid var(--border-color);
+    display: flex;
 }
 
-.action-btn {
-    background: none;
+.cart-action-btn {
+    flex: 1;
+    background: transparent;
     border: none;
     padding: 0.8rem;
-    font-size: 0.9rem;
-    font-weight: 600;
     cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
 }
 
-/* Remove Button */
-.remove-btn {
+.cart-action-btn:first-child {
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Remove Button Style */
+.btn-remove {
+    color: var(--text-muted);
+}
+.btn-remove:hover {
     color: var(--error-red);
-    border-right: 1px solid var(--border-color);
-}
-.remove-btn:hover {
-    background-color: rgba(231, 76, 60, 0.1);
+    background-color: rgba(231, 76, 60, 0.05);
 }
 
-/* Buy Now Button */
-.buy-now-btn {
-    color: #24a66e; /* WhatsApp Green */
+/* Buy Now Button Style */
+.btn-buy-single {
+    color: #24a66e; /* Green */
 }
-.buy-now-btn:hover {
-    background-color: rgba(36, 166, 110, 0.1);
+.btn-buy-single:hover {
+    background-color: rgba(36, 166, 110, 0.05);
+    color: #1e8c5b;
 }
 
-.action-btn svg {
+.cart-action-btn svg {
     width: 18px;
     height: 18px;
-    fill: currentColor;
+    stroke-width: 2;
 }
 
 
-/* --- 3. വലതുവശം (Price Summary) --- */
+/* --- 3. വിലവിവരപ്പട്ടിക (വലതുവശം) --- */
 .cart-summary-container {
-    flex-shrink: 0;
+    position: relative;
 }
 
 .cart-summary-card {
@@ -206,14 +208,14 @@
     border-radius: 12px;
     padding: 1.5rem;
     position: sticky;
-    top: calc(var(--header-height) + 1rem); /* Sticky Effect */
+    top: calc(var(--header-height) + 20px); /* ഹെഡറിന് താഴെ നിൽക്കാൻ */
 }
 
 .cart-summary-card h2 {
     font-size: 1.2rem;
     margin-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border-color);
     padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
     color: var(--text-color);
 }
 
@@ -221,23 +223,33 @@
     display: flex;
     justify-content: space-between;
     margin-bottom: 1rem;
+    font-size: 1rem;
     color: var(--text-muted);
-    font-size: 0.95rem;
+}
+
+.summary-row span:last-child {
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+.summary-row.discount {
+    color: var(--success-green);
+}
+.summary-row.discount span:last-child {
+    color: var(--success-green);
 }
 
 .summary-row.total {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-color);
     border-top: 1px dashed var(--border-color);
     padding-top: 1rem;
     margin-top: 1rem;
     margin-bottom: 0;
-    color: var(--text-color);
-    font-weight: 700;
-    font-size: 1.2rem;
-    align-items: center;
 }
-
-.summary-row.discount span:last-child {
-    color: var(--success-green);
+.summary-row.total span:last-child {
+    color: var(--primary-gold);
 }
 
 .summary-savings {
@@ -247,33 +259,35 @@
     padding: 0.5rem;
     border-radius: 4px;
     font-size: 0.9rem;
-    font-weight: 600;
     margin-top: 1rem;
-    border: 1px dashed rgba(46, 204, 113, 0.3);
+    font-weight: 600;
+    border: 1px dashed var(--success-green);
+    display: none;
 }
 
-/* Checkout Button */
+/* Place Order Button */
 .btn-checkout-full {
     width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
     margin-top: 1.5rem;
     background-color: #24a66e !important;
-    border-color: #24a66e !important;
+    border: none !important;
     color: #fff !important;
-    font-size: 1rem;
-    padding: 1rem;
     border-radius: 8px;
+    font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    gap: 10px;
+    box-shadow: 0 4px 15px rgba(36, 166, 110, 0.3);
+    transition: transform 0.2s, box-shadow 0.2s;
 }
 
 .btn-checkout-full:hover {
     background-color: #1e8c5b !important;
+    box-shadow: 0 6px 20px rgba(36, 166, 110, 0.4);
     transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
 }
 
 /* Empty Cart */
@@ -281,8 +295,8 @@
     text-align: center;
     padding: 4rem 1rem;
     background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
     border-radius: 12px;
+    border: 1px solid var(--border-color);
 }
 .empty-cart-message h2 {
     color: var(--text-color);
@@ -293,21 +307,29 @@
     margin-bottom: 1.5rem;
 }
 
-/* --- 4. റെസ്പോൺസീവ് --- */
+/* Error Message */
+.cart-error {
+    background-color: rgba(231, 76, 60, 0.1);
+    color: var(--error-red);
+    border: 1px solid rgba(231, 76, 60, 0.3);
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+/* --- Responsive --- */
 @media (min-width: 900px) {
     .cart-page-layout-new {
         display: grid;
-        grid-template-columns: 1.8fr 1fr; /* ഗ്രിഡ് ലേഔട്ട് */
-        align-items: start;
+        grid-template-columns: 2fr 1.2fr; /* ഗ്രിഡ് ലേഔട്ട് */
+        align-items: flex-start;
         gap: 2rem;
     }
 }
 
-@media (max-width: 480px) {
-    .cart-item-main {
-        gap: 0.75rem;
-        padding: 0.75rem;
-    }
+@media (max-width: 768px) {
     .cart-item-image {
         width: 80px;
         height: 80px;
@@ -315,8 +337,7 @@
     .cart-item-title {
         font-size: 0.95rem;
     }
-    .action-btn {
-        padding: 0.7rem;
-        font-size: 0.85rem;
+    .cart-item-price {
+        font-size: 1rem;
     }
 }
