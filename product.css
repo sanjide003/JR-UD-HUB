@@ -1,9 +1,6 @@
 /* ഇത് product.CSS
    മാറ്റങ്ങൾ:
-   1. ബട്ടൺ വലിപ്പം കുറച്ചു.
-   2. വിലയുടെ നിറം #00FF00.
-   3. താഴെയുള്ള ഡോട്ടുകൾ സ്റ്റൈൽ ചെയ്തു.
-   4. Related Products-ന് ബോർഡർ നൽകി.
+   1. വിലയുടെ നിറം സാധാരണ പച്ച (#2ecc71) ആക്കി.
 */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
@@ -30,7 +27,7 @@
     object-fit: cover;
 }
 
-/* *** മാറ്റം: Pagination Dots (For You Style) *** */
+/* Pagination Dots (For You Style) */
 .product-gallery-swiper .swiper-pagination {
     position: absolute;
     bottom: 15px;
@@ -51,7 +48,6 @@
     transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-/* Active Dot - Expands like a Pill */
 .product-gallery-swiper .swiper-pagination-bullet-active {
     width: 24px; 
     border-radius: 4px;
@@ -62,7 +58,7 @@
 /* --- 3. "More Links" (Right Side Round) --- */
 .product-more-links {
     position: absolute;
-    bottom: 40px; /* ഡോട്ടുകൾക്ക് മുകളിൽ വരാൻ */
+    bottom: 40px; 
     left: 0; 
     z-index: 10;
     display: flex;
@@ -184,10 +180,10 @@
     margin-bottom: 1.5rem; 
 }
 
-/* *** മാറ്റം: പ്രൈസ് കളർ #00FF00 *** */
+/* *** മാറ്റം: പ്രൈസ് കളർ സാധാരണ പച്ച (#2ecc71) *** */
 .product-info .price-container.large .price-main { 
     font-size: 1.8rem;
-    color: #00FF00; /* Bright Green */
+    color: #2ecc71; /* Normal Green */
     font-weight: 700;
 }
 .product-info .price-container.large .price-mrp { 
@@ -223,12 +219,12 @@
     content: "•"; color: var(--primary-gold); font-weight: bold; font-size: 1.2rem; position: absolute; left: 0; top: -2px;
 }
 
-/* *** മാറ്റം: ബട്ടൺ ഗ്രിഡ് & സൈസ് *** */
+/* ബട്ടൺ ഗ്രിഡ് & സൈസ് */
 .product-actions-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px; /* ഗ്യാപ്പ് കുറച്ചു */
-    max-width: 100%; /* മൊബൈലിൽ ഫുൾ വിഡ്ത് */
+    gap: 10px; 
+    max-width: 100%; 
     margin-bottom: 1rem;
 }
 
@@ -239,10 +235,10 @@
     color: #fff !important;
     font-weight: 600;
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 0.6rem 0.5rem; /* പാഡിംഗ് കുറച്ചു */
+    padding: 0.6rem 0.5rem; 
     border-radius: 6px;
     text-decoration: none; cursor: pointer; font-size: 0.85rem;
-    height: 40px; /* ഉയരം കുറച്ചു */
+    height: 40px; 
 }
 .btn-whatsapp svg {
     width: 18px;
@@ -282,7 +278,7 @@
     margin-top: 1rem; color: var(--success-green); font-weight: 500; display: none; 
 }
 
-/* --- 5. 'You May Also Like' (Border Added Back) --- */
+/* --- 5. 'You May Also Like' --- */
 .related-products-section {
     margin-top: 3rem;
     padding-top: 2rem;
@@ -290,7 +286,6 @@
 }
 
 .related-products-section .swiper-slide {
-    /* *** മാറ്റം: ബോർഡർ തിരികെ കൊണ്ടുവന്നു *** */
     background-color: var(--card-bg) !important;
     border: 1px solid var(--border-color) !important;
     border-radius: 8px;
@@ -308,7 +303,7 @@
     height: auto;
     overflow: hidden;
     position: relative;
-    border-radius: 0; /* കാർഡിന്റെ ബോർഡർ ഉള്ളതുകൊണ്ട് ഇമേജിന് പ്രത്യേകം വേണ്ട */
+    border-radius: 0; 
     background-color: #222;
     border-bottom: 1px solid var(--border-color);
 }
@@ -334,7 +329,7 @@
 }
 
 .related-products-section .cat-product-content {
-    padding: 0.75rem; /* പാഡിംഗ് തിരികെ നൽകി */
+    padding: 0.75rem; 
     display: flex;
     flex-direction: column;
     flex-grow: 1;
@@ -358,10 +353,11 @@
     gap: 5px;
 }
 
+/* *** മാറ്റം: പ്രൈസ് കളർ സാധാരണ പച്ച (#2ecc71) *** */
 .related-products-section .cat-product-content .price-main {
     font-size: 1rem;
     font-weight: 700;
-    color: #00FF00; /* Green */
+    color: #2ecc71; /* Normal Green */
 }
 
 .related-products-section .cat-product-content .price-mrp {
