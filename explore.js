@@ -1,5 +1,7 @@
-// ഇതാണ് പുതിയ 'explore.js' ഫയൽ.
-// മാറ്റം: ഡിസ്ക്രിപ്ഷൻ "More/Less" ടോഗിൾ സംവിധാനം.
+// ഇതാണ് 'explore.js' ഫയൽ.
+// മാറ്റങ്ങൾ:
+// 1. പേരും വിലയും വ്യക്തമായി കാണിക്കുന്നു.
+// 2. റേറ്റിംഗ് സിസ്റ്റം പഴയതുപോലെ നിലനിർത്തി.
 
 import {
     collection,
@@ -186,19 +188,20 @@ function buildCardContent(productId, product) {
         priceHTML += `<span class="price-mrp product-mrp-red" style="margin-left: 5px;"><del>₹${mrp}</del></span>`;
     }
 
-    // *** മാറ്റം: വിവരണം More/Less ലോജിക് ***
+    // വിവരണം More/Less ലോജിക്
     let descriptionHTML = '';
     const descText = product.description || '';
     
-    // വിവരണം ഉണ്ടെങ്കിൽ
     if (descText) {
-        // By default, truncated class ചേർക്കുന്നു
         descriptionHTML = `
             <div class="description-text truncated" id="desc-text-${productId}">
-                <span class="product-username-bold">${product.name}</span> ${descText}
+               <span style="color:var(--text-color); font-weight:500;">${product.name}</span> ${descText}
             </div>
             <button class="read-more-btn" id="read-more-${productId}" data-id="${productId}">more</button>
         `;
+    } else {
+        // വിവരണം ഇല്ലെങ്കിൽ പേര് മാത്രം കാണിക്കുക
+        descriptionHTML = `<div class="description-text"><span style="color:var(--text-color); font-weight:500;">${product.name}</span></div>`;
     }
 
     const rawImage = product.images && product.images[0] ? product.images[0] : '';
@@ -206,7 +209,6 @@ function buildCardContent(productId, product) {
     
     const isInCart = isItemInCart(productId);
     const activeClass = isInCart ? 'added-to-cart' : '';
-    // *** മാറ്റം: വെള്ള നിറത്തിലുള്ള ഫിൽ ***
     const svgFill = isInCart ? 'style="fill: #ffffff; stroke: #ffffff;"' : '';
     const buttonTitle = isInCart ? 'Remove from Cart' : 'Add to Cart';
 
@@ -232,6 +234,7 @@ function buildCardContent(productId, product) {
                 <button title="${buttonTitle}" class="bookmark-btn ${activeClass}" data-id="${productId}" data-name="${product.name}" data-price="${price}" data-mrp="${mrp}" data-image="${imageUrl}" data-size="${product.size || ''}"><svg viewBox="0 0 24 24" ${svgFill}><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
             </div>
             
+            <!-- റേറ്റിംഗ് ബോക്സ് -->
             <div class="rating-box" id="rating-box-${productId}" style="display: none;">
                 <div class="rating-summary" id="rating-summary-${productId}">
                     <!-- Rating Bars Here -->
@@ -243,6 +246,10 @@ function buildCardContent(productId, product) {
                 </div>
                 <div class="rating-feedback">Tap a star to rate</div>
             </div>
+
+            <!-- പേരും വിലയും -->
+            <div class="explore-product-title">${product.name}</div>
+            <div class="price-container">${priceHTML}</div>
 
             <!-- വിവരണം -->
             <div class="explore-product-description">
@@ -286,8 +293,67 @@ function setupRealtimeListeners(productId) {
         const count = snapshot.size;
         const ratingCountSpan = card.querySelector('.rating-count');
         if (ratingCountSpan) ratingCountSpan.textContent = count;
-        // Rating Logic would be here...
+        
+        // Rating Summary Logic
+        const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        snapshot.forEach(doc => {
+            const val = doc.data().rating;
+            if (counts[val] !== undefined) counts[val]++;
+        });
+        updateRatingSummary(card, counts, count);
+
+        // User Rating
+        if (currentUser) {
+            const userRatingDoc = snapshot.docs.find(doc => doc.id === currentUser.uid);
+            if (userRatingDoc) {
+                updateStarUI(card, userRatingDoc.data().rating);
+            }
+        }
     });
+}
+
+function updateRatingSummary(card, counts, total) {
+    const summaryContainer = card.querySelector('.rating-summary');
+    if (!summaryContainer) return;
+    
+    let html = '';
+    const keys = [5, 4, 3, 2, 1];
+    
+    keys.forEach((starVal) => {
+        const count = counts[starVal];
+        const percentage = total > 0 ? (count / total) * 100 : 0;
+        let color = 'var(--error-red)';
+        if (starVal >= 4) color = 'var(--success-green)';
+        else if (starVal === 3) color = '#f1c40f';
+
+        html += `
+            <div class="rating-bar-row">
+                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
+                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
+                <span class="bar-count">${count}</span>
+            </div>
+        `;
+    });
+    summaryContainer.innerHTML = html;
+}
+
+function updateStarUI(card, value) {
+    const stars = card.querySelectorAll('.star');
+    const feedback = card.querySelector('.rating-feedback');
+    
+    let colorClass = '';
+    if (value <= 2) colorClass = 'red-star';
+    else if (value === 3) colorClass = 'yellow-star';
+    else colorClass = 'green-star';
+
+    stars.forEach(s => {
+        s.className = 'star'; 
+        if (parseInt(s.dataset.value) <= value) {
+            s.classList.add('filled', colorClass);
+        }
+    });
+    
+    if (feedback) feedback.textContent = `You rated: ${value} stars`;
 }
 
 const observer = new IntersectionObserver((entries) => {
@@ -301,17 +367,14 @@ feedContainer.addEventListener('click', async (e) => {
     const target = e.target;
     if (!currentUser) return; 
 
-    // *** മാറ്റം: More / Less Toggle ***
     if (target.classList.contains('read-more-btn')) {
         const id = target.dataset.id;
         const textContainer = document.getElementById(`desc-text-${id}`);
         
         if (textContainer.classList.contains('truncated')) {
-            // Expand
             textContainer.classList.remove('truncated');
             target.textContent = 'less';
         } else {
-            // Collapse
             textContainer.classList.add('truncated');
             target.textContent = 'more';
         }
@@ -335,7 +398,6 @@ feedContainer.addEventListener('click', async (e) => {
         } catch (err) { console.error("Like error:", err); }
     }
 
-    // Comment/Rating Toggle
     const commentButton = target.closest('.comment-btn');
     if (commentButton) {
         e.preventDefault();
@@ -344,7 +406,6 @@ feedContainer.addEventListener('click', async (e) => {
         ratingBox.style.display = ratingBox.style.display === 'none' ? 'block' : 'none';
     }
 
-    // Star Rating Click
     if (target.classList.contains('star')) {
         const star = target;
         const ratingContainer = star.parentElement;
@@ -355,7 +416,6 @@ feedContainer.addEventListener('click', async (e) => {
         catch (err) { console.error("Rating error:", err); }
     }
 
-    // Bookmark / Cart
     const bookmarkButton = target.closest('.bookmark-btn');
     if (bookmarkButton) {
         e.preventDefault();
@@ -380,7 +440,6 @@ feedContainer.addEventListener('click', async (e) => {
             };
             addToCart(id, product);
             bookmarkButton.classList.add('added-to-cart');
-            // *** മാറ്റം: വെള്ള നിറം ***
             if (svg) {
                 svg.style.fill = '#ffffff'; 
                 svg.style.stroke = '#ffffff';
@@ -389,7 +448,6 @@ feedContainer.addEventListener('click', async (e) => {
         }
     }
 
-    // Share
     const shareButton = target.closest('.share-btn'); 
     if (shareButton) {
         e.preventDefault();
