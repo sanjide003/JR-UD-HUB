@@ -1,8 +1,7 @@
 // ഇതാണ് 'explore.js' ഫയൽ.
-// മാറ്റങ്ങൾ:
-// 1. Pagination: 10 പ്രോഡക്റ്റുകൾ വീതം ലോഡ് ചെയ്യുന്നു.
-// 2. Sort: Newest First (ഏറ്റവും പുതിയത് ആദ്യം).
-// 3. Real-time Listeners നിലനിർത്തിയിട്ടുണ്ട് (ആവശ്യപ്രകാരം).
+// മാറ്റങ്ങൾ: 
+// 1. Pagination 10 എണ്ണം.
+// 2. Star Rating Logic (Red to Green Colors).
 
 import {
     collection,
@@ -31,7 +30,7 @@ const loader = document.getElementById("explore-scroll-loader");
 let categoriesMap = new Map(); 
 let lastVisible = null;
 let isLoading = false;
-const PRODUCTS_PER_PAGE = 10; // *** മാറ്റം: 10 എണ്ണം വീതം ***
+const PRODUCTS_PER_PAGE = 10; 
 let currentUser = null;
 
 onAuthStateChanged(auth, (user) => {
@@ -84,7 +83,6 @@ async function loadProducts() {
         const productsRef = collection(db, "products");
         let q;
         
-        // *** മാറ്റം: orderBy("createdAt", "desc") ഉപയോഗിക്കുന്നു (Newest First) ***
         if (lastVisible) {
             q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(PRODUCTS_PER_PAGE));
         } else {
@@ -97,8 +95,6 @@ async function loadProducts() {
                 feedContainer.innerHTML = '<p class="loading-placeholder-full">No products found.</p>';
             }
             if (loader) loader.style.display = 'none';
-            // Infinite scroll നിർത്താൻ lastVisible പഴയത് തന്നെ വെക്കാം അല്ലെങ്കിൽ null ആക്കാം
-            // ഇവിടെ ഒന്നും ചെയ്യുന്നില്ല, അടുത്ത തവണ സ്ക്രോൾ ചെയ്യുമ്പോൾ വീണ്ടും നോക്കും
             return;
         }
         
@@ -108,7 +104,6 @@ async function loadProducts() {
             const product = docSnap.data();
             const productId = docSnap.id;
             
-            // കാർഡ് ഉണ്ടാക്കുന്നു (HTML മാറ്റമില്ല)
             const card = document.createElement('div');
             card.className = 'explore-card';
             card.id = `product-card-${productId}`; 
@@ -195,7 +190,6 @@ function buildCardContent(productId, product) {
         priceHTML += `<span class="price-mrp product-mrp-red" style="margin-left: 5px;"><del>₹${mrp}</del></span>`;
     }
 
-    // വിവരണം More/Less ലോജിക്
     let descriptionHTML = '';
     const descText = product.description || '';
     
@@ -241,15 +235,15 @@ function buildCardContent(productId, product) {
             </div>
             
             <div class="rating-box" id="rating-box-${productId}" style="display: none;">
-                <div class="rating-summary" id="rating-summary-${productId}">
-                    <!-- Rating Bars Here -->
-                </div>
-                <hr class="rating-divider">
                 <p class="rating-title">Rate this product</p>
                 <div class="star-rating" data-id="${productId}">
                     ${[1, 2, 3, 4, 5].map(i => `<span class="star" data-value="${i}">&#9733;</span>`).join('')}
                 </div>
                 <div class="rating-feedback">Tap a star to rate</div>
+                <hr class="rating-divider">
+                <div class="rating-summary" id="rating-summary-${productId}">
+                    <!-- Rating Bars Here -->
+                </div>
             </div>
 
             <div class="explore-product-title">${product.name}</div>
@@ -323,9 +317,13 @@ function updateRatingSummary(card, counts, total) {
     keys.forEach((starVal) => {
         const count = counts[starVal];
         const percentage = total > 0 ? (count / total) * 100 : 0;
-        let color = 'var(--error-red)';
-        if (starVal >= 4) color = 'var(--success-green)';
-        else if (starVal === 3) color = '#f1c40f';
+        
+        // ബാർ കളറുകൾ (Red to Green)
+        let color = '#ff4d4d'; // Red (1)
+        if (starVal === 2) color = '#ff9f43'; // Orange
+        if (starVal === 3) color = '#feca57'; // Yellow
+        if (starVal === 4) color = '#1dd1a1'; // Light Green
+        if (starVal === 5) color = '#10ac84'; // Dark Green
 
         html += `
             <div class="rating-bar-row">
@@ -338,28 +336,27 @@ function updateRatingSummary(card, counts, total) {
     summaryContainer.innerHTML = html;
 }
 
+// *** പുതിയ സ്റ്റാർ കളർ ലോജിക് (1-5 Different Colors) ***
 function updateStarUI(card, value) {
     const stars = card.querySelectorAll('.star');
     const feedback = card.querySelector('.rating-feedback');
     
-    let colorClass = '';
-    if (value <= 2) colorClass = 'red-star';
-    else if (value === 3) colorClass = 'yellow-star';
-    else colorClass = 'green-star';
+    // ഓരോ റേറ്റിംഗിനും വ്യത്യസ്ത നിറം
+    const colorClass = `filled-${value}`; 
 
     stars.forEach(s => {
-        s.className = 'star'; 
+        s.className = 'star'; // Reset all classes
         if (parseInt(s.dataset.value) <= value) {
-            s.classList.add('filled', colorClass);
+            s.classList.add(colorClass); // Apply specific color class
         }
     });
     
-    if (feedback) feedback.textContent = `You rated: ${value} stars`;
+    const messages = ["Poor", "Fair", "Good", "Very Good", "Excellent"];
+    if (feedback) feedback.textContent = value > 0 ? messages[value - 1] : "Tap a star to rate";
 }
 
 // *** Scroll Observer (Infinite Scroll) ***
 const observer = new IntersectionObserver((entries) => {
-    // 10 എണ്ണം കഴിഞ്ഞാൽ ലോഡർ കാണുമ്പോൾ അടുത്തത് വിളിക്കുന്നു
     if (entries[0].isIntersecting && !isLoading && lastVisible) { 
         loadProducts();
     }
