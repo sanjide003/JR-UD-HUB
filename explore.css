@@ -1,7 +1,7 @@
 /* ഇതാണ് 'explore.css' 
    മാറ്റങ്ങൾ:
-   1. കാറ്റഗറി ബോർഡർ പച്ചയാക്കി.
-   2. റേറ്റിംഗ് ഡിസൈൻ മെച്ചപ്പെടുത്തി (Red to Green Stars).
+   1. വില പച്ച നിറത്തിൽ.
+   2. റേറ്റിംഗ് ബാറുകൾക്ക് കട്ടി കൂട്ടി.
 */
 
 /* --- 1. ഫീഡ് കണ്ടെയ്നർ --- */
@@ -64,8 +64,7 @@
     height: 32px;
     border-radius: 50%;
     object-fit: cover;
-    /* *** മാറ്റം: ബോർഡർ പച്ച നിറത്തിൽ *** */
-    border: 2px solid #00ff00; 
+    border: 2px solid #00ff00; /* Green Border */
     padding: 1px; 
 }
 
@@ -167,10 +166,11 @@
     display: inline-block;
 }
 
+/* *** മാറ്റം: വിലയുടെ നിറം പച്ച *** */
 .explore-card-content .price-main {
     font-size: 0.95rem;
-    color: var(--primary-gold);
-    font-weight: 600;
+    color: #2ecc71; /* Green */
+    font-weight: 700;
 }
 
 .explore-card-content .price-mrp {
@@ -239,8 +239,10 @@
     color: var(--text-muted);
     margin-bottom: 10px;
     text-align: center;
+    margin-top: 5px; /* മുകളിൽ സ്പേസ് */
 }
 
+/* സമ്മറി മുകളിൽ വരും, മാർജിൻ താഴെ നൽകുന്നു */
 .rating-summary { margin-bottom: 15px; }
 
 .rating-bar-row {
@@ -249,34 +251,35 @@
     gap: 10px; 
     font-size: 0.8rem; 
     color: var(--text-muted); 
-    margin-bottom: 5px;
+    margin-bottom: 6px;
 }
 
+/* *** മാറ്റം: ബാർ കട്ടി കൂട്ടി *** */
 .bar-bg { 
     flex-grow: 1; 
-    height: 4px; 
+    height: 8px; /* കട്ടി കൂട്ടി */
     background-color: #333; 
-    border-radius: 2px; 
+    border-radius: 4px; 
     overflow: hidden;
 }
 
 .bar-fill { 
     height: 100%; 
     width: 0%; 
-    border-radius: 2px; 
+    border-radius: 4px; 
 }
 
 .rating-divider {
     border: 0;
     height: 1px;
     background-color: #333;
-    margin: 10px 0;
+    margin: 15px 0;
 }
 
-/* --- നക്ഷത്രങ്ങളുടെ നിറങ്ങൾ (Red to Green) --- */
+/* --- നക്ഷത്രങ്ങൾ --- */
 .star-rating { 
     font-size: 2rem; 
-    color: #333; /* ഇനാക്റ്റീവ് കളർ */
+    color: #333; 
     cursor: pointer; 
     display: flex;
     justify-content: center;
@@ -288,12 +291,11 @@
     transition: color 0.2s ease, transform 0.2s ease;
 }
 
-/* Active Colors (JavaScript will apply these classes) */
-.star.filled-1 { color: #ff4d4d; } /* Red */
-.star.filled-2 { color: #ff9f43; } /* Orange */
-.star.filled-3 { color: #feca57; } /* Yellow */
-.star.filled-4 { color: #1dd1a1; } /* Light Green */
-.star.filled-5 { color: #10ac84; } /* Dark Green */
+.star.filled-1 { color: #ff4d4d; }
+.star.filled-2 { color: #ff9f43; }
+.star.filled-3 { color: #feca57; }
+.star.filled-4 { color: #1dd1a1; }
+.star.filled-5 { color: #10ac84; }
 
 .rating-feedback {
     text-align: center;
