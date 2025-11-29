@@ -1,7 +1,7 @@
 /* ഇത് product.CSS
    മാറ്റങ്ങൾ:
-   1. നീളമുള്ള ലിങ്കുകൾ ബ്രേക്ക് ചെയ്യുന്നു (Fix Layout Issues).
-   2. ലിങ്ക് കളർ നീല.
+   1. ഡിസ്ക്രിപ്ഷൻ & സ്പെസിഫിക്കേഷൻ "Plain" ആക്കി (No Border, No Background).
+   2. ഹൈറ്റ് ഓട്ടോമാറ്റിക്.
 */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
@@ -208,14 +208,16 @@
     text-decoration: line-through;
 }
 
-/* *** മാറ്റം: ഡിസ്ക്രിപ്ഷൻ ബോക്സ് സ്റ്റൈലിംഗ് (Fix Long URL Issue) *** */
+/* *** മാറ്റം: ഡിസ്ക്രിപ്ഷൻ Plain Style *** */
 .product-description {
     margin-bottom: 1.5rem;
     color: var(--text-muted);
-    border: 1px solid var(--border-color);
-    background-color: var(--card-bg);
-    padding: 1rem;
-    border-radius: 8px;
+    
+    /* ബോർഡറും ബാക്ക്ഗ്രൗണ്ടും ഒഴിവാക്കി */
+    border: none; 
+    background-color: transparent;
+    padding: 0; 
+    
     font-size: 0.95rem;
     line-height: 1.6;
     
@@ -223,44 +225,39 @@
     max-width: 100%;
     box-sizing: border-box;
     
-    /* *** നിർബന്ധമായും ബ്രേക്ക് ചെയ്യാനുള്ള CSS *** */
     overflow-wrap: break-word; 
     word-wrap: break-word;     
-    word-break: break-word; /* നീളമുള്ള വാക്കുകൾ (URL) ബ്രേക്ക് ചെയ്യും */
+    word-break: break-word;    
     white-space: pre-wrap;     
     
-    height: auto;
+    height: auto; /* ഓട്ടോ ഹൈറ്റ് */
 }
 
-/* *** മാറ്റം: ലിങ്ക് കളർ നീല *** */
 .product-description a { 
     color: #3498db !important; 
     text-decoration: underline; 
-    word-break: break-all; /* ലിങ്കുകൾ ബ്രേക്ക് ചെയ്യാൻ */
+    word-break: break-all;
 }
 
 .description-content {
     display: block;
 }
 
-/* *** മാറ്റം: സ്പെസിഫിക്കേഷൻ ബോക്സ് സ്റ്റൈലിംഗ് (Fix Long URL Issue) *** */
+/* *** മാറ്റം: സ്പെസിഫിക്കേഷൻ Plain Style *** */
 .product-specification-section {
     margin-bottom: 1.5rem;
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 1rem;
+    
+    /* ബോർഡറും ബാക്ക്ഗ്രൗണ്ടും ഒഴിവാക്കി */
+    background-color: transparent;
+    border: none;
+    padding: 0;
     
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    
-    /* *** നിർബന്ധമായും ബ്രേക്ക് ചെയ്യാനുള്ള CSS *** */
     overflow-wrap: break-word;
-    word-wrap: break-word;
-    word-break: break-word;
     
-    height: auto; 
+    height: auto; /* ഓട്ടോ ഹൈറ്റ് */
 }
 
 .product-specs-list { list-style-type: none; padding: 0; margin: 0; }
@@ -271,7 +268,6 @@
     padding-left: 1.5rem; 
     font-size: 0.95rem;
     line-height: 1.5;
-    /* ലിസ്റ്റ് ഐറ്റത്തിനുള്ളിലും ബ്രേക്ക് ഉറപ്പാക്കുന്നു */
     word-break: break-word; 
     overflow-wrap: break-word;
 }
@@ -465,7 +461,6 @@
     .product-detail-grid { grid-template-columns: 1fr 1fr; }
     .product-actions-grid { max-width: 400px; }
     
-    /* Desktop Fixed Height */
     .product-gallery-swiper {
         height: 550px; 
     }
