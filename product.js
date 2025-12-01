@@ -1,7 +1,4 @@
-// product.js - Optimized for Low Reads & Transaction Based Updates
-// 1. Transaction based Like/Rating.
-// 2. Direct Count Display.
-
+// product.js - Fixed Interactions & Counts
 import { 
     collection, 
     getDocs, 
@@ -13,7 +10,7 @@ import {
     setDoc,
     deleteDoc,
     onSnapshot,
-    runTransaction, // *** Transaction Import ***
+    runTransaction,
     serverTimestamp,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -25,6 +22,7 @@ import { onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/f
 setLogLevel('Silent');
 
 const productDetailContent = document.getElementById('product-detail-content');
+const relatedProductsGrid = document.getElementById('related-products-grid');
 let currentProduct = null;
 let whatsappNumber = ''; 
 let currentUser = null;
@@ -32,7 +30,7 @@ let currentUser = null;
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        checkProductUserInteraction(); // Check if I liked this product
+        checkProductUserInteraction();
     } else {
         signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
     }
@@ -142,7 +140,6 @@ async function loadProductDetails() {
         const cartButtonText = isInCart ? "Remove" : "Add to Cart";
         const cartButtonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
-        // *** മാറ്റം: Counts നേരിട്ട് കാണിക്കുന്നു ***
         const likeCount = product.likeCount || 0;
         const ratingCount = product.ratingCount || 0;
 
@@ -169,7 +166,6 @@ async function loadProductDetails() {
             
             <div class="rating-box" id="rating-box-main" style="display: none;">
                 <div class="rating-summary">
-                    <!-- Placeholder -->
                     <small style="color:#aaa;">Rating summary updates on refresh</small>
                 </div>
                 <hr class="rating-divider">
@@ -204,7 +200,7 @@ async function loadProductDetails() {
 
         productDetailContent.innerHTML = galleryHTML + infoHTML;
         
-        if(currentUser) checkProductUserInteraction(); // Check likes
+        if(currentUser) checkProductUserInteraction(); 
 
         new Swiper('.product-gallery-swiper', {
             loop: true,
@@ -225,7 +221,6 @@ async function loadProductDetails() {
     }
 }
 
-// Single Read to check if I liked/rated
 function checkProductUserInteraction() {
     if (!currentUser || !currentProduct) return;
     const productId = currentProduct.id;
@@ -288,7 +283,7 @@ function setupProductActionButtons() {
     container.addEventListener('click', async (e) => {
         const target = e.target;
         
-        // Transaction based Like
+        // Like with Transaction
         const likeBtn = target.closest('.like-btn');
         if(likeBtn && currentUser && currentProduct) {
             e.preventDefault();
@@ -336,7 +331,7 @@ function setupProductActionButtons() {
             ratingBox.style.display = ratingBox.style.display === 'none' ? 'block' : 'none';
         }
 
-        // Transaction based Rating
+        // Rating with Transaction
         if(target.classList.contains('star') && currentUser && currentProduct) {
             const star = target;
             const productId = star.parentElement.dataset.id;
@@ -483,7 +478,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${price}"
-                            data-mrp="${mrp}"
+                            data-mrp="${product.mrp}"
                             data-image="${imageUrl}"
                             data-size="${product.size || ''}">
                             <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
