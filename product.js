@@ -1,4 +1,4 @@
-// product.js - Fixed Interactions & Counts
+// product.js - Real-time Likes & Ratings Enabled
 import { 
     collection, 
     getDocs, 
@@ -9,8 +9,7 @@ import {
     limit,
     setDoc,
     deleteDoc,
-    onSnapshot,
-    runTransaction,
+    onSnapshot, // *** Real-time listener ***
     serverTimestamp,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -30,7 +29,7 @@ let currentUser = null;
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        checkProductUserInteraction();
+        // ഇവിടെ setupRealtimeListeners വിളിക്കാൻ കഴിയില്ല കാരണം പ്രോഡക്റ്റ് ഐഡി ലോഡ് ആയിട്ടില്ല
     } else {
         signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
     }
@@ -140,22 +139,19 @@ async function loadProductDetails() {
         const cartButtonText = isInCart ? "Remove" : "Add to Cart";
         const cartButtonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
-        const likeCount = product.likeCount || 0;
-        const ratingCount = product.ratingCount || 0;
-
         const actionBarHTML = `
             <div class="product-action-bar">
                 <div class="action-group">
                     <button title="Like" class="like-btn" data-id="${productIdStr}">
                         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                     </button>
-                    <span class="action-count like-count">${likeCount}</span>
+                    <span class="action-count like-count">0</span>
                 </div>
                 <div class="action-group">
                     <button title="Rate" class="comment-btn" data-id="${productIdStr}">
                         <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                     </button>
-                    <span class="action-count rating-count">${ratingCount}</span>
+                    <span class="action-count rating-count">0</span>
                 </div>
                 <div class="action-group">
                     <button title="Share" class="share-btn" data-id="${productIdStr}" data-name="${product.name}" data-price="${price}">
@@ -166,7 +162,7 @@ async function loadProductDetails() {
             
             <div class="rating-box" id="rating-box-main" style="display: none;">
                 <div class="rating-summary">
-                    <small style="color:#aaa;">Rating summary updates on refresh</small>
+                    <small style="color:#aaa;">Loading ratings...</small>
                 </div>
                 <hr class="rating-divider">
                 <p class="rating-title">Rate this product</p>
@@ -200,8 +196,6 @@ async function loadProductDetails() {
 
         productDetailContent.innerHTML = galleryHTML + infoHTML;
         
-        if(currentUser) checkProductUserInteraction(); 
-
         new Swiper('.product-gallery-swiper', {
             loop: true,
             autoplay: { delay: 3000, disableOnInteraction: false },
@@ -211,6 +205,8 @@ async function loadProductDetails() {
         });
         
         setupProductActionButtons();
+        setupRealtimeListeners(productIdStr); // *** Real-time listener വിളി ***
+
         if (product.categoryId) {
             loadRelatedProducts(product.categoryId, productIdStr);
         }
@@ -221,28 +217,80 @@ async function loadProductDetails() {
     }
 }
 
-function checkProductUserInteraction() {
-    if (!currentUser || !currentProduct) return;
-    const productId = currentProduct.id;
-
-    // Like check
-    getDoc(doc(db, "products", productId, "likes", currentUser.uid)).then(snap => {
-        if(snap.exists()) {
+// *** REAL-TIME LISTENER FOR SINGLE PRODUCT ***
+function setupRealtimeListeners(productId) {
+    // 1. Likes
+    const likesRef = collection(db, "products", productId, "likes");
+    onSnapshot(likesRef, (snapshot) => {
+        const count = snapshot.size;
+        const likeCountSpan = document.querySelector('.like-count');
+        if (likeCountSpan) likeCountSpan.textContent = count;
+        
+        if (currentUser) {
+            const isLiked = snapshot.docs.some(doc => doc.id === currentUser.uid);
             const likeBtn = document.querySelector('.like-btn');
-            if(likeBtn) {
+            const svg = likeBtn.querySelector('svg');
+            if (isLiked) {
                 likeBtn.classList.add('liked');
-                likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
-                likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
+                svg.style.fill = 'var(--error-red)';
+                svg.style.stroke = 'var(--error-red)';
+            } else {
+                likeBtn.classList.remove('liked');
+                svg.style.fill = 'none';
+                svg.style.stroke = 'currentColor';
             }
         }
     });
 
-    // Rating check
-    getDoc(doc(db, "products", productId, "ratings", currentUser.uid)).then(snap => {
-        if(snap.exists()) {
-            updateStarUI(snap.data().rating);
+    // 2. Ratings
+    const ratingsRef = collection(db, "products", productId, "ratings");
+    onSnapshot(ratingsRef, (snapshot) => {
+        const count = snapshot.size;
+        const ratingCountSpan = document.querySelector('.rating-count');
+        if (ratingCountSpan) ratingCountSpan.textContent = count;
+        
+        const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+        snapshot.forEach(doc => {
+            const val = doc.data().rating;
+            if (counts[val] !== undefined) counts[val]++;
+        });
+        updateRatingSummary(counts, count);
+        
+        if (currentUser) {
+            const userRatingDoc = snapshot.docs.find(doc => doc.id === currentUser.uid);
+            if (userRatingDoc) {
+                updateStarUI(userRatingDoc.data().rating);
+            }
         }
     });
+}
+
+function updateRatingSummary(counts, total) {
+    const summaryContainer = document.querySelector('.rating-summary');
+    if (!summaryContainer) return;
+    
+    let html = '';
+    const keys = [5, 4, 3, 2, 1];
+    
+    keys.forEach((starVal) => {
+        const count = counts[starVal];
+        const percentage = total > 0 ? (count / total) * 100 : 0;
+        
+        let color = '#ff4d4d'; 
+        if (starVal === 2) color = '#ff9f43';
+        if (starVal === 3) color = '#feca57';
+        if (starVal === 4) color = '#1dd1a1';
+        if (starVal === 5) color = '#10ac84';
+
+        html += `
+            <div class="rating-bar-row">
+                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
+                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
+                <span class="bar-count">${count}</span>
+            </div>
+        `;
+    });
+    summaryContainer.innerHTML = html;
 }
 
 function updateStarUI(value) {
@@ -251,7 +299,9 @@ function updateStarUI(value) {
     const colorClass = `filled-${value}`; 
     stars.forEach(s => {
         s.className = 'star'; 
-        if (parseInt(s.dataset.value) <= value) s.classList.add(colorClass);
+        if (parseInt(s.dataset.value) <= value) {
+            s.classList.add(colorClass); 
+        }
     });
     const messages = ["Poor", "Fair", "Good", "Very Good", "Excellent"];
     if (feedback) feedback.textContent = value > 0 ? messages[value - 1] : "Tap a star to rate";
@@ -283,44 +333,21 @@ function setupProductActionButtons() {
     container.addEventListener('click', async (e) => {
         const target = e.target;
         
-        // Like with Transaction
+        // Like Action (Direct Write)
         const likeBtn = target.closest('.like-btn');
         if(likeBtn && currentUser && currentProduct) {
             e.preventDefault();
             const productId = likeBtn.dataset.id;
-            const productRef = doc(db, "products", productId);
             const userLikeRef = doc(db, "products", productId, "likes", currentUser.uid);
-            const countSpan = document.querySelector('.like-count');
-
             try {
-                await runTransaction(db, async (transaction) => {
-                    const likeDoc = await transaction.get(userLikeRef);
-                    const productDoc = await transaction.get(productRef);
-                    if (!productDoc.exists()) throw "Product does not exist";
-                    
-                    let newCount = productDoc.data().likeCount || 0;
-
-                    if (likeDoc.exists()) {
-                        transaction.delete(userLikeRef);
-                        newCount = Math.max(0, newCount - 1);
-                        transaction.update(productRef, { likeCount: newCount });
-                        
-                        likeBtn.classList.remove('liked');
-                        likeBtn.querySelector('svg').style.fill = 'none';
-                        likeBtn.querySelector('svg').style.stroke = 'currentColor';
-                    } else {
-                        transaction.set(userLikeRef, { timestamp: serverTimestamp() });
-                        newCount++;
-                        transaction.update(productRef, { likeCount: newCount });
-                        
-                        likeBtn.classList.add('liked');
-                        likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
-                        likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
-                        likeBtn.style.transform = 'scale(1.2)';
-                        setTimeout(() => likeBtn.style.transform = 'scale(1)', 200);
-                    }
-                    if(countSpan) countSpan.textContent = newCount;
-                });
+                if (likeBtn.classList.contains('liked')) {
+                    await deleteDoc(userLikeRef);
+                } else {
+                    await setDoc(userLikeRef, { timestamp: serverTimestamp() });
+                    // ആനിമേഷൻ
+                    likeBtn.style.transform = 'scale(1.2)';
+                    setTimeout(() => likeBtn.style.transform = 'scale(1)', 200);
+                }
             } catch(err) { console.error("Like error:", err); }
         }
 
@@ -331,33 +358,14 @@ function setupProductActionButtons() {
             ratingBox.style.display = ratingBox.style.display === 'none' ? 'block' : 'none';
         }
 
-        // Rating with Transaction
+        // Rating Action
         if(target.classList.contains('star') && currentUser && currentProduct) {
             const star = target;
             const productId = star.parentElement.dataset.id;
             const value = parseInt(star.dataset.value);
-            const productRef = doc(db, "products", productId);
             const userRatingRef = doc(db, "products", productId, "ratings", currentUser.uid);
-            const countSpan = document.querySelector('.rating-count');
-
             try {
-                await runTransaction(db, async (transaction) => {
-                    const ratingDoc = await transaction.get(userRatingRef);
-                    const productDoc = await transaction.get(productRef);
-                    if (!productDoc.exists()) throw "Product does not exist";
-
-                    let currentCount = productDoc.data().ratingCount || 0;
-
-                    if (!ratingDoc.exists()) {
-                        transaction.set(userRatingRef, { rating: value, timestamp: serverTimestamp() });
-                        currentCount++;
-                        transaction.update(productRef, { ratingCount: currentCount });
-                    } else {
-                        transaction.update(userRatingRef, { rating: value, timestamp: serverTimestamp() });
-                    }
-                    updateStarUI(value);
-                    if(countSpan) countSpan.textContent = currentCount;
-                });
+                await setDoc(userRatingRef, { rating: value, timestamp: serverTimestamp() });
             } catch(err) { console.error(err); }
         }
 
