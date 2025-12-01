@@ -1,7 +1,4 @@
-// explore.js - Optimized for Low Reads (Transaction Based)
-// 1. ലൈക്ക്/റേറ്റിംഗ് എണ്ണം നേരിട്ട് പ്രോഡക്റ്റിൽ നിന്ന് എടുക്കുന്നു.
-// 2. ലൈക്ക് ചെയ്യുമ്പോൾ Transaction വഴി Count അപ്ഡേറ്റ് ചെയ്യുന്നു.
-
+// explore.js - Fixed Interactions & Counts
 import {
     collection,
     getDocs,
@@ -11,7 +8,10 @@ import {
     limit,
     startAfter,
     orderBy,
-    runTransaction, // *** പുതിയത്: സുരക്ഷിതമായി എണ്ണം മാറ്റാൻ ***
+    setDoc,
+    deleteDoc,
+    onSnapshot,
+    runTransaction,
     serverTimestamp,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -33,8 +33,7 @@ let currentUser = null;
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        // ലോഗിൻ ചെയ്താൽ നിലവിലുള്ള കാർഡുകളിൽ എൻറെ ലൈക്ക് ഉണ്ടോ എന്ന് നോക്കുന്നു
-        checkUserInteractions();
+        checkUserInteractions(); // ലൈക്ക് ചെയ്തവ ചുവപ്പ് നിറത്തിൽ കാണിക്കാൻ
     } else {
         signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
     }
@@ -117,7 +116,6 @@ async function loadProducts() {
             card.className = 'explore-card';
             card.id = `product-card-${productId}`; 
             
-            // *** മാറ്റം: likeCount, ratingCount എന്നിവ നേരിട്ട് എടുക്കുന്നു ***
             card.innerHTML = `
                 ${buildCategoryHeader(product.categoryId)}
                 ${buildImageSlider(productId, product.images, product.name)}
@@ -142,7 +140,7 @@ async function loadProducts() {
     }
 }
 
-// *** പുതിയത്: യൂസർ ഏതൊക്കെ ലൈക്ക് ചെയ്തു എന്ന് ഒറ്റത്തവണ പരിശോധിക്കുന്നു ***
+// യൂസർ നേരത്തെ ലൈക്ക് ചെയ്തിട്ടുണ്ടോ എന്ന് പരിശോധിക്കുന്നു
 async function checkUserInteractions() {
     if (!currentUser) return;
     const cards = document.querySelectorAll('.explore-card');
@@ -150,9 +148,8 @@ async function checkUserInteractions() {
     cards.forEach(async (card) => {
         const productId = card.id.replace('product-card-', '');
         
-        // Like Check (Single Read)
-        const likeRef = doc(db, "products", productId, "likes", currentUser.uid);
-        getDoc(likeRef).then((snap) => {
+        // Like Status Check
+        getDoc(doc(db, "products", productId, "likes", currentUser.uid)).then((snap) => {
             if (snap.exists()) {
                 const likeBtn = card.querySelector('.like-btn');
                 if(likeBtn) {
@@ -163,9 +160,8 @@ async function checkUserInteractions() {
             }
         });
 
-        // Rating Check (Single Read)
-        const ratingRef = doc(db, "products", productId, "ratings", currentUser.uid);
-        getDoc(ratingRef).then((snap) => {
+        // User Rating Check
+        getDoc(doc(db, "products", productId, "ratings", currentUser.uid)).then((snap) => {
             if (snap.exists()) {
                 updateStarUI(card, snap.data().rating);
             }
@@ -225,9 +221,9 @@ function buildCardContent(productId, product) {
     const svgFill = isInCart ? 'style="fill: #ffffff; stroke: #ffffff;"' : '';
     const buttonTitle = isInCart ? 'Remove from Cart' : 'Add to Cart';
 
-    // *** മാറ്റം: Counts നേരിട്ട് കാണിക്കുന്നു (No Realtime Listener for count) ***
-    const likeCount = product.likeCount || 0;
-    const ratingCount = product.ratingCount || 0;
+    // Count 0 ആണെങ്കിൽ 0 എന്ന് തന്നെ കാണിക്കും
+    const likeCount = product.likeCount !== undefined ? product.likeCount : 0;
+    const ratingCount = product.ratingCount !== undefined ? product.ratingCount : 0;
 
     return `
         <div class="explore-card-content">
@@ -251,10 +247,7 @@ function buildCardContent(productId, product) {
             </div>
             
             <div class="rating-box" id="rating-box-${productId}" style="display: none;">
-                <div class="rating-summary" id="rating-summary-${productId}">
-                    <!-- Static or Lazy Loaded Summary -->
-                    <small style="color:#aaa;">Rating summary updates on refresh</small>
-                </div>
+                <div class="rating-summary" id="rating-summary-${productId}"></div>
                 <hr class="rating-divider">
                 <p class="rating-title">Rate this product</p>
                 <div class="star-rating" data-id="${productId}">
@@ -270,7 +263,6 @@ function buildCardContent(productId, product) {
     `;
 }
 
-// UI Updates
 function updateStarUI(card, value) {
     const stars = card.querySelectorAll('.star');
     const feedback = card.querySelector('.rating-feedback');
@@ -285,7 +277,7 @@ function updateStarUI(card, value) {
     if (feedback) feedback.textContent = value > 0 ? messages[value - 1] : "Tap a star to rate";
 }
 
-// *** CLICK EVENTS (With Transactions) ***
+// *** CLICK EVENTS (WITH ERROR LOGGING) ***
 feedContainer.addEventListener('click', async (e) => { 
     const target = e.target;
     if (!currentUser) return; 
@@ -303,51 +295,49 @@ feedContainer.addEventListener('click', async (e) => {
         return;
     }
 
-    // Like Button with Transaction
+    // Like Button Logic
     const likeButton = target.closest('.like-btn');
     if (likeButton) {
         e.preventDefault();
         const productId = likeButton.dataset.id;
         const productRef = doc(db, "products", productId);
         const userLikeRef = doc(db, "products", productId, "likes", currentUser.uid);
-        const countSpan = likeButton.nextElementSibling; // .like-count span
+        const countSpan = likeButton.nextElementSibling; 
 
         try {
             await runTransaction(db, async (transaction) => {
                 const likeDoc = await transaction.get(userLikeRef);
                 const productDoc = await transaction.get(productRef);
                 
-                if (!productDoc.exists()) throw "Product does not exist!";
+                if (!productDoc.exists()) throw "Product not found";
                 
                 let newCount = productDoc.data().likeCount || 0;
 
                 if (likeDoc.exists()) {
-                    // Unlike
                     transaction.delete(userLikeRef);
                     newCount = Math.max(0, newCount - 1);
                     transaction.update(productRef, { likeCount: newCount });
                     
-                    // UI Update
                     likeButton.classList.remove('liked');
                     likeButton.querySelector('svg').style.fill = 'none';
                     likeButton.querySelector('svg').style.stroke = 'currentColor';
                 } else {
-                    // Like
                     transaction.set(userLikeRef, { timestamp: serverTimestamp() });
                     newCount++;
                     transaction.update(productRef, { likeCount: newCount });
                     
-                    // UI Update
                     likeButton.classList.add('liked');
                     likeButton.querySelector('svg').style.fill = 'var(--error-red)';
                     likeButton.querySelector('svg').style.stroke = 'var(--error-red)';
                     likeButton.style.transform = 'scale(1.2)';
                     setTimeout(() => likeButton.style.transform = 'scale(1)', 200);
                 }
-                // Update Count UI
                 if(countSpan) countSpan.textContent = newCount;
             });
-        } catch (err) { console.error("Like Transaction failed: ", err); }
+        } catch (err) { 
+            console.error("Like Error:", err);
+            // alert("Unable to update like. Please check your internet or permissions."); 
+        }
     }
 
     const commentButton = target.closest('.comment-btn');
@@ -358,7 +348,7 @@ feedContainer.addEventListener('click', async (e) => {
         ratingBox.style.display = ratingBox.style.display === 'none' ? 'block' : 'none';
     }
 
-    // Rating with Transaction
+    // Rating Logic
     if (target.classList.contains('star')) {
         const star = target;
         const ratingContainer = star.parentElement;
@@ -375,29 +365,29 @@ feedContainer.addEventListener('click', async (e) => {
                 const ratingDoc = await transaction.get(userRatingRef);
                 const productDoc = await transaction.get(productRef);
                 
-                if (!productDoc.exists()) throw "Product does not exist";
+                if (!productDoc.exists()) throw "Product not found";
 
                 let currentCount = productDoc.data().ratingCount || 0;
                 
                 if (!ratingDoc.exists()) {
-                    // New Rating
                     transaction.set(userRatingRef, { rating: value, timestamp: serverTimestamp() });
                     currentCount++;
                     transaction.update(productRef, { ratingCount: currentCount });
                 } else {
-                    // Update existing rating (Count doesn't change, just value)
                     transaction.update(userRatingRef, { rating: value, timestamp: serverTimestamp() });
                 }
                 
-                // UI Update
                 updateStarUI(card, value);
                 if(countSpan) countSpan.textContent = currentCount;
             });
         } 
-        catch (err) { console.error("Rating Transaction error:", err); }
+        catch (err) { 
+            console.error("Rating Error:", err);
+            // alert("Unable to update rating. Please check permissions.");
+        }
     }
 
-    // Bookmark & Share (No changes needed)
+    // Bookmark & Share logic remains same...
     const bookmarkButton = target.closest('.bookmark-btn');
     if (bookmarkButton) {
         e.preventDefault();
@@ -437,7 +427,7 @@ feedContainer.addEventListener('click', async (e) => {
     }
 });
 
-// Scroll Observer
+// Infinite Scroll
 const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !isLoading && lastVisible) { 
         loadProducts();
