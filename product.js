@@ -1,9 +1,6 @@
-// product.js - Final Version
-// Includes:
-// 1. Rating Summary moved to TOP.
-// 2. Star Input moved to BOTTOM.
-// 3. Multi-color Star Rating (Red-to-Green).
-// 4. Linkify function for description.
+// product.js - Optimized for Low Reads & Transaction Based Updates
+// 1. Transaction based Like/Rating.
+// 2. Direct Count Display.
 
 import { 
     collection, 
@@ -16,6 +13,7 @@ import {
     setDoc,
     deleteDoc,
     onSnapshot,
+    runTransaction, // *** Transaction Import ***
     serverTimestamp,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -24,10 +22,9 @@ import { loadSiteSettings, optimizeImage } from './common.js';
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 import { onAuthStateChanged, signInAnonymously } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 
-setLogLevel('Debug');
+setLogLevel('Silent');
 
 const productDetailContent = document.getElementById('product-detail-content');
-const relatedProductsGrid = document.getElementById('related-products-grid');
 let currentProduct = null;
 let whatsappNumber = ''; 
 let currentUser = null;
@@ -35,6 +32,7 @@ let currentUser = null;
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
+        checkProductUserInteraction(); // Check if I liked this product
     } else {
         signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
     }
@@ -71,7 +69,7 @@ async function loadProductDetails() {
             if (settingsDoc.exists() && settingsDoc.data().whatsapp) {
                 whatsappNumber = settingsDoc.data().whatsapp;
             }
-        } catch (e) { console.error("Could not load whatsapp number", e); }
+        } catch (e) { }
 
         const docRef = doc(db, "products", productId);
         const docSnap = await getDoc(docRef);
@@ -106,60 +104,27 @@ async function loadProductDetails() {
         if (product.moreLinks && product.moreLinks.length > 0) {
             moreLinksHTML = '<div class="product-more-links">';
             product.moreLinks.forEach(link => {
-                moreLinksHTML += `
-                    <a href="${link.url}" class="product-promotion-link" target="_blank" rel="noopener noreferrer">
-                        <span>${link.title}</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
-                            <path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/>
-                        </svg>
-                    </a>
-                `;
+                moreLinksHTML += `<a href="${link.url}" class="product-promotion-link" target="_blank" rel="noopener noreferrer"><span>${link.title}</span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708z"/></svg></a>`;
             });
             moreLinksHTML += '</div>';
         }
 
         let galleryHTML = '';
+        let slidesHTML = '';
         if (product.images && product.images.length > 0) {
-            let slidesHTML = '';
             product.images.forEach((imgUrl) => {
                 const optimizedUrl = optimizeImage(imgUrl, 1000, 90);
-                slidesHTML += `
-                    <div class="swiper-slide">
-                        <img src="${optimizedUrl}" alt="${product.name}">
-                    </div>
-                `;
+                slidesHTML += `<div class="swiper-slide"><img src="${optimizedUrl}" alt="${product.name}"></div>`;
             });
-            galleryHTML = `
-                <div class="product-gallery-swiper swiper-container">
-                    <div class="swiper-wrapper">
-                        ${slidesHTML}
-                    </div>
-                    <div class="swiper-pagination"></div>
-                    ${moreLinksHTML}
-                </div>
-            `;
         } else {
-            galleryHTML = `
-                <div class="product-gallery-swiper swiper-container">
-                    <div class="swiper-wrapper">
-                         <div class="swiper-slide">
-                            <img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image" alt="${product.name}">
-                        </div>
-                    </div>
-                    ${moreLinksHTML}
-                </div>
-            `;
+            slidesHTML = `<div class="swiper-slide"><img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image" alt="${product.name}"></div>`;
         }
+        galleryHTML = `<div class="product-gallery-swiper swiper-container"><div class="swiper-wrapper">${slidesHTML}</div><div class="swiper-pagination"></div>${moreLinksHTML}</div>`;
 
         let descriptionHTML = '';
         if (product.description) {
             let linkifiedText = linkify(product.description);
-            descriptionHTML = `
-                <h3 class="product-section-heading">Description</h3>
-                <div class="product-description">
-                    <div class="description-content" id="desc-content">${linkifiedText.replace(/\n/g, '<br>')}</div>
-                </div>
-            `;
+            descriptionHTML = `<h3 class="product-section-heading">Description</h3><div class="product-description"><div class="description-content" id="desc-content">${linkifiedText.replace(/\n/g, '<br>')}</div></div>`;
         }
 
         let specificationHTML = '';
@@ -167,16 +132,9 @@ async function loadProductDetails() {
             const points = product.specification.split('\n').filter(line => line.trim() !== '');
             if (points.length > 0) {
                 let listHTML = '<ul class="product-specs-list">';
-                points.forEach(point => {
-                    const cleanPoint = point.replace(/^-\s*/, '').trim();
-                    listHTML += `<li>${cleanPoint}</li>`;
-                });
+                points.forEach(point => { listHTML += `<li>${point.replace(/^-\s*/, '').trim()}</li>`; });
                 listHTML += '</ul>';
-                
-                specificationHTML = `
-                    <h3 class="product-section-heading">Specification</h3>
-                    <div class="product-specification-section">${listHTML}</div>
-                `;
+                specificationHTML = `<h3 class="product-section-heading">Specification</h3><div class="product-specification-section">${listHTML}</div>`;
             }
         }
 
@@ -184,20 +142,23 @@ async function loadProductDetails() {
         const cartButtonText = isInCart ? "Remove" : "Add to Cart";
         const cartButtonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
-        // *** Rating Box: Summary Top, Input Bottom ***
+        // *** മാറ്റം: Counts നേരിട്ട് കാണിക്കുന്നു ***
+        const likeCount = product.likeCount || 0;
+        const ratingCount = product.ratingCount || 0;
+
         const actionBarHTML = `
             <div class="product-action-bar">
                 <div class="action-group">
                     <button title="Like" class="like-btn" data-id="${productIdStr}">
                         <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                     </button>
-                    <span class="action-count like-count">0</span>
+                    <span class="action-count like-count">${likeCount}</span>
                 </div>
                 <div class="action-group">
                     <button title="Rate" class="comment-btn" data-id="${productIdStr}">
                         <svg viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                     </button>
-                    <span class="action-count rating-count">0</span>
+                    <span class="action-count rating-count">${ratingCount}</span>
                 </div>
                 <div class="action-group">
                     <button title="Share" class="share-btn" data-id="${productIdStr}" data-name="${product.name}" data-price="${price}">
@@ -207,14 +168,11 @@ async function loadProductDetails() {
             </div>
             
             <div class="rating-box" id="rating-box-main" style="display: none;">
-                <!-- Summary First -->
                 <div class="rating-summary">
-                    <!-- JS will fill this -->
+                    <!-- Placeholder -->
+                    <small style="color:#aaa;">Rating summary updates on refresh</small>
                 </div>
-                
                 <hr class="rating-divider">
-                
-                <!-- Input Last -->
                 <p class="rating-title">Rate this product</p>
                 <div class="star-rating" data-id="${productIdStr}">
                     ${[1, 2, 3, 4, 5].map(i => `<span class="star" data-value="${i}">&#9733;</span>`).join('')}
@@ -227,25 +185,14 @@ async function loadProductDetails() {
             <div class="product-info">
                 ${actionBarHTML}
                 <h1 class="product-title">${product.name}</h1>
-                
-                <div class="price-container large">
-                    ${priceHTML}
-                </div>
-
+                <div class="price-container large">${priceHTML}</div>
                 ${specificationHTML ? specificationHTML : ''}
-
                 ${descriptionHTML ? descriptionHTML : ''}
-                
                 <div class="product-actions-grid">
                     <button class="btn ${cartButtonClass}" id="add-to-cart-btn">
-                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                            <line x1="3" y1="6" x2="21" y2="6"></line>
-                            <path d="M16 10a4 4 0 0 1-8 0"></path>
-                        </svg>
+                        <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                         <span>${cartButtonText}</span>
                     </button>
-                    
                     <a class="btn btn-whatsapp" id="buy-on-whatsapp-btn" href="#">
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg>
                         Buy on WhatsApp
@@ -257,6 +204,8 @@ async function loadProductDetails() {
 
         productDetailContent.innerHTML = galleryHTML + infoHTML;
         
+        if(currentUser) checkProductUserInteraction(); // Check likes
+
         new Swiper('.product-gallery-swiper', {
             loop: true,
             autoplay: { delay: 3000, disableOnInteraction: false },
@@ -266,8 +215,6 @@ async function loadProductDetails() {
         });
         
         setupProductActionButtons();
-        setupRealtimeListeners(productIdStr); 
-
         if (product.categoryId) {
             loadRelatedProducts(product.categoryId, productIdStr);
         }
@@ -278,89 +225,39 @@ async function loadProductDetails() {
     }
 }
 
-function setupRealtimeListeners(productId) {
-    const likesRef = collection(db, "products", productId, "likes");
-    onSnapshot(likesRef, (snapshot) => {
-        const count = snapshot.size;
-        const likeCountSpan = document.querySelector('.like-count');
-        if (likeCountSpan) likeCountSpan.textContent = count;
-        if (currentUser) {
-            const isLiked = snapshot.docs.some(doc => doc.id === currentUser.uid);
+// Single Read to check if I liked/rated
+function checkProductUserInteraction() {
+    if (!currentUser || !currentProduct) return;
+    const productId = currentProduct.id;
+
+    // Like check
+    getDoc(doc(db, "products", productId, "likes", currentUser.uid)).then(snap => {
+        if(snap.exists()) {
             const likeBtn = document.querySelector('.like-btn');
-            const svg = likeBtn.querySelector('svg');
-            if (isLiked) {
+            if(likeBtn) {
                 likeBtn.classList.add('liked');
-                svg.style.fill = 'var(--error-red)';
-                svg.style.stroke = 'var(--error-red)';
-            } else {
-                likeBtn.classList.remove('liked');
-                svg.style.fill = 'none';
-                svg.style.stroke = 'currentColor';
+                likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
+                likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
             }
         }
     });
 
-    const ratingsRef = collection(db, "products", productId, "ratings");
-    onSnapshot(ratingsRef, (snapshot) => {
-        const count = snapshot.size;
-        const ratingCountSpan = document.querySelector('.rating-count');
-        if (ratingCountSpan) ratingCountSpan.textContent = count;
-        const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-        snapshot.forEach(doc => {
-            const val = doc.data().rating;
-            if (counts[val] !== undefined) counts[val]++;
-        });
-        updateRatingSummary(counts, count);
-        if (currentUser) {
-            const userRatingDoc = snapshot.docs.find(doc => doc.id === currentUser.uid);
-            if (userRatingDoc) {
-                updateStarUI(userRatingDoc.data().rating);
-            }
+    // Rating check
+    getDoc(doc(db, "products", productId, "ratings", currentUser.uid)).then(snap => {
+        if(snap.exists()) {
+            updateStarUI(snap.data().rating);
         }
     });
-}
-
-function updateRatingSummary(counts, total) {
-    const summaryContainer = document.querySelector('.rating-summary');
-    if (!summaryContainer) return;
-    
-    let html = '';
-    const keys = [5, 4, 3, 2, 1];
-    
-    keys.forEach((starVal) => {
-        const count = counts[starVal];
-        const percentage = total > 0 ? (count / total) * 100 : 0;
-        
-        let color = '#ff4d4d'; // Red (1)
-        if (starVal === 2) color = '#ff9f43'; // Orange
-        if (starVal === 3) color = '#feca57'; // Yellow
-        if (starVal === 4) color = '#1dd1a1'; // Light Green
-        if (starVal === 5) color = '#10ac84'; // Dark Green
-
-        html += `
-            <div class="rating-bar-row">
-                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
-                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
-                <span class="bar-count">${count}</span>
-            </div>
-        `;
-    });
-    summaryContainer.innerHTML = html;
 }
 
 function updateStarUI(value) {
     const stars = document.querySelectorAll('.star');
     const feedback = document.querySelector('.rating-feedback');
-    
     const colorClass = `filled-${value}`; 
-
     stars.forEach(s => {
         s.className = 'star'; 
-        if (parseInt(s.dataset.value) <= value) {
-            s.classList.add(colorClass);
-        }
+        if (parseInt(s.dataset.value) <= value) s.classList.add(colorClass);
     });
-    
     const messages = ["Poor", "Fair", "Good", "Very Good", "Excellent"];
     if (feedback) feedback.textContent = value > 0 ? messages[value - 1] : "Tap a star to rate";
 }
@@ -391,20 +288,45 @@ function setupProductActionButtons() {
     container.addEventListener('click', async (e) => {
         const target = e.target;
         
+        // Transaction based Like
         const likeBtn = target.closest('.like-btn');
-        if(likeBtn && currentUser) {
+        if(likeBtn && currentUser && currentProduct) {
             e.preventDefault();
             const productId = likeBtn.dataset.id;
+            const productRef = doc(db, "products", productId);
             const userLikeRef = doc(db, "products", productId, "likes", currentUser.uid);
+            const countSpan = document.querySelector('.like-count');
+
             try {
-                if (likeBtn.classList.contains('liked')) {
-                    await deleteDoc(userLikeRef);
-                } else {
-                    await setDoc(userLikeRef, { timestamp: serverTimestamp() });
-                    likeBtn.style.transform = 'scale(1.2)';
-                    setTimeout(() => likeBtn.style.transform = 'scale(1)', 200);
-                }
-            } catch(err) { console.error(err); }
+                await runTransaction(db, async (transaction) => {
+                    const likeDoc = await transaction.get(userLikeRef);
+                    const productDoc = await transaction.get(productRef);
+                    if (!productDoc.exists()) throw "Product does not exist";
+                    
+                    let newCount = productDoc.data().likeCount || 0;
+
+                    if (likeDoc.exists()) {
+                        transaction.delete(userLikeRef);
+                        newCount = Math.max(0, newCount - 1);
+                        transaction.update(productRef, { likeCount: newCount });
+                        
+                        likeBtn.classList.remove('liked');
+                        likeBtn.querySelector('svg').style.fill = 'none';
+                        likeBtn.querySelector('svg').style.stroke = 'currentColor';
+                    } else {
+                        transaction.set(userLikeRef, { timestamp: serverTimestamp() });
+                        newCount++;
+                        transaction.update(productRef, { likeCount: newCount });
+                        
+                        likeBtn.classList.add('liked');
+                        likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
+                        likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
+                        likeBtn.style.transform = 'scale(1.2)';
+                        setTimeout(() => likeBtn.style.transform = 'scale(1)', 200);
+                    }
+                    if(countSpan) countSpan.textContent = newCount;
+                });
+            } catch(err) { console.error("Like error:", err); }
         }
 
         const commentBtn = target.closest('.comment-btn');
@@ -414,13 +336,33 @@ function setupProductActionButtons() {
             ratingBox.style.display = ratingBox.style.display === 'none' ? 'block' : 'none';
         }
 
-        if(target.classList.contains('star') && currentUser) {
+        // Transaction based Rating
+        if(target.classList.contains('star') && currentUser && currentProduct) {
             const star = target;
             const productId = star.parentElement.dataset.id;
             const value = parseInt(star.dataset.value);
+            const productRef = doc(db, "products", productId);
             const userRatingRef = doc(db, "products", productId, "ratings", currentUser.uid);
+            const countSpan = document.querySelector('.rating-count');
+
             try {
-                await setDoc(userRatingRef, { rating: value, timestamp: serverTimestamp() });
+                await runTransaction(db, async (transaction) => {
+                    const ratingDoc = await transaction.get(userRatingRef);
+                    const productDoc = await transaction.get(productRef);
+                    if (!productDoc.exists()) throw "Product does not exist";
+
+                    let currentCount = productDoc.data().ratingCount || 0;
+
+                    if (!ratingDoc.exists()) {
+                        transaction.set(userRatingRef, { rating: value, timestamp: serverTimestamp() });
+                        currentCount++;
+                        transaction.update(productRef, { ratingCount: currentCount });
+                    } else {
+                        transaction.update(userRatingRef, { rating: value, timestamp: serverTimestamp() });
+                    }
+                    updateStarUI(value);
+                    if(countSpan) countSpan.textContent = currentCount;
+                });
             } catch(err) { console.error(err); }
         }
 
@@ -500,17 +442,12 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
         const q = query(collection(db, "products"), where("categoryId", "==", categoryId), limit(10));
         const querySnapshot = await getDocs(q);
         
-        relatedProductsGrid.innerHTML = `
-            <div class="swiper related-products-swiper">
-                <div class="swiper-wrapper" id="related-products-wrapper"></div>
-            </div>
-        `;
+        relatedProductsGrid.innerHTML = `<div class="swiper related-products-swiper"><div class="swiper-wrapper" id="related-products-wrapper"></div></div>`;
         const swiperWrapper = document.getElementById('related-products-wrapper');
 
         let count = 0;
         querySnapshot.forEach((doc) => {
             if (doc.id === excludeProductId || count >= 9) return; 
-            
             const product = doc.data();
             const productId = doc.id;
             const card = document.createElement('div');
@@ -518,13 +455,11 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
             
             const price = product.price || 0;
             const mrp = product.mrp || 0;
-            
             const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
             const imageUrl = optimizeImage(rawImage, 400);
 
             let priceHTML = `<span class="price-main">₹${price}</span>`;
             let discountBadge = '';
-
             if (mrp > price) {
                 priceHTML += `<span class="price-mrp product-mrp-red"><del>₹${mrp}</del></span>`;
                 const discount = Math.round(((mrp - price) / mrp) * 100);
@@ -548,14 +483,10 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                             data-id="${productId}"
                             data-name="${product.name}"
                             data-price="${price}"
-                            data-mrp="${product.mrp}"
+                            data-mrp="${mrp}"
                             data-image="${imageUrl}"
                             data-size="${product.size || ''}">
-                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-                                <line x1="3" y1="6" x2="21" y2="6"></line>
-                                <path d="M16 10a4 4 0 0 1-8 0"></path>
-                            </svg>
+                            <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                             <span>${buttonText}</span>
                         </button>
                         <a href="product.html?id=${productId}" class="btn btn-primary-new"><span>View</span></a>
@@ -566,9 +497,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
             count++;
         });
 
-        if (count === 0) {
-            relatedProductsGrid.innerHTML = '<p class="loading-placeholder">No related products found.</p>';
-        } else {
+        if (count > 0) {
             new Swiper('.related-products-swiper', {
                 loop: false,
                 slidesPerView: 2.2,
@@ -579,6 +508,8 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
                     900: { slidesPerView: 4.2, spaceBetween: 20 },
                 }
             });
+        } else {
+            relatedProductsGrid.innerHTML = '<p class="loading-placeholder">No related products found.</p>';
         }
 
     } catch (error) { console.error("Error loading related products: ", error); }
@@ -590,9 +521,7 @@ relatedProductsGrid.addEventListener('click', (e) => {
         e.preventDefault();
         const id = cartButton.dataset.id;
         const buttonText = cartButton.querySelector('span');
-        
         createRipple(e, cartButton);
-
         if (cartButton.classList.contains('added-to-cart')) {
             removeFromCart(id);
             cartButton.classList.remove('added-to-cart');
