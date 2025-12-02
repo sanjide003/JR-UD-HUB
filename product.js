@@ -222,6 +222,7 @@ function setupRealtimeListeners(productId) {
     // 1. Likes
     const likesRef = collection(db, "products", productId, "likes");
     onSnapshot(likesRef, (snapshot) => {
+        // എണ്ണം അപ്ഡേറ്റ് ചെയ്യുന്നു
         const count = snapshot.size;
         const likeCountSpan = document.querySelector('.like-count');
         if (likeCountSpan) likeCountSpan.textContent = count;
@@ -245,6 +246,7 @@ function setupRealtimeListeners(productId) {
     // 2. Ratings
     const ratingsRef = collection(db, "products", productId, "ratings");
     onSnapshot(ratingsRef, (snapshot) => {
+        // എണ്ണം അപ്ഡേറ്റ് ചെയ്യുന്നു
         const count = snapshot.size;
         const ratingCountSpan = document.querySelector('.rating-count');
         if (ratingCountSpan) ratingCountSpan.textContent = count;
@@ -366,7 +368,7 @@ function setupProductActionButtons() {
             const userRatingRef = doc(db, "products", productId, "ratings", currentUser.uid);
             try {
                 await setDoc(userRatingRef, { rating: value, timestamp: serverTimestamp() });
-            } catch(err) { console.error(err); }
+            } catch(err) { console.error("Rating error:", err); }
         }
 
         const shareBtn = target.closest('.share-btn');
