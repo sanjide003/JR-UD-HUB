@@ -1,4 +1,7 @@
 // explore.js - Real-time Likes & Ratings Enabled
+// 1. ലൈക്ക്/റേറ്റിംഗ് തത്സമയം അപ്ഡേറ്റ് ആകുന്നു.
+// 2. 10 പ്രോഡക്റ്റ് വെച്ച് ലോഡ് ചെയ്യുന്നു.
+
 import {
     collection,
     getDocs,
@@ -298,10 +301,10 @@ function updateRatingSummary(card, counts, total) {
         const percentage = total > 0 ? (count / total) * 100 : 0;
         
         let color = '#ff4d4d'; // Red
-        if (starVal === 2) color = '#ff9f43'; // Orange
-        if (starVal === 3) color = '#feca57'; // Yellow
-        if (starVal === 4) color = '#1dd1a1'; // Light Green
-        if (starVal === 5) color = '#10ac84'; // Dark Green
+        if (starVal === 2) color = '#ff9f43';
+        if (starVal === 3) color = '#feca57';
+        if (starVal === 4) color = '#1dd1a1';
+        if (starVal === 5) color = '#10ac84';
 
         html += `
             <div class="rating-bar-row">
