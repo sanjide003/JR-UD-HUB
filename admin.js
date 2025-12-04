@@ -1,5 +1,4 @@
-// ഇതാണ് പുതിയ 'admin.js' ഫയൽ.
-// മാറ്റം: Dealer & ChatBot നമ്പറുകൾ സേവ് ചെയ്യുന്ന ലോജിക് ചേർത്തു.
+// admin.js - Updated with Theme Switching Logic
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -27,7 +26,40 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db, auth } from './firebase-config.js';
 
-// --- DOM Elements ---
+// --- Theme Logic ---
+const themeToggleBtn = document.getElementById('theme-toggle-btn');
+const themeIconMoon = document.querySelector('.theme-icon-moon');
+const themeIconSun = document.querySelector('.theme-icon-sun');
+const themeText = document.getElementById('theme-text');
+
+// Initialize Theme
+const savedTheme = localStorage.getItem('adminTheme') || 'light';
+document.documentElement.setAttribute('data-theme', savedTheme);
+updateThemeUI(savedTheme);
+
+if (themeToggleBtn) {
+    themeToggleBtn.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('adminTheme', next);
+        updateThemeUI(next);
+    });
+}
+
+function updateThemeUI(theme) {
+    if (theme === 'dark') {
+        if(themeIconMoon) themeIconMoon.style.display = 'none';
+        if(themeIconSun) themeIconSun.style.display = 'block';
+        if(themeText) themeText.textContent = 'Switch to Light';
+    } else {
+        if(themeIconMoon) themeIconMoon.style.display = 'block';
+        if(themeIconSun) themeIconSun.style.display = 'none';
+        if(themeText) themeText.textContent = 'Switch to Dark';
+    }
+}
+
+// --- Rest of Admin Logic ---
 const loginSection = document.getElementById("login-section");
 const adminPanel = document.getElementById("admin-panel");
 const loginForm = document.getElementById("login-form");
@@ -89,12 +121,13 @@ let allProductsCache = [];
 function showStatus(element, message, isError = true) {
     element.textContent = message;
     element.className = isError ? 'status-message error' : 'status-message success';
-    setTimeout(() => clearStatus(element), 4000);
+    element.style.display = 'block';
+    setTimeout(() => {
+        element.style.display = 'none';
+        element.textContent = '';
+    }, 4000);
 }
-function clearStatus(element) {
-    element.textContent = '';
-    element.className = 'status-message';
-}
+
 function disableButton(button, text = "Saving...") {
     if (!button) return;
     button.disabled = true;
@@ -114,7 +147,6 @@ function enableButton(button, defaultText) {
 
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    clearStatus(loginStatus);
     disableButton(loginButton, "Logging in..."); 
     const email = document.getElementById("login-email").value;
     const password = document.getElementById("login-password").value;
@@ -124,7 +156,7 @@ loginForm.addEventListener("submit", async (e) => {
         console.error("Login Error:", error);
         showStatus(loginStatus, `Login Failed: ${error.message}`);
     } finally {
-        enableButton(loginButton, "Login"); 
+        enableButton(loginButton, "Login to Dashboard"); 
     }
 });
 
@@ -194,8 +226,8 @@ function setupImagePreview(inputId, previewId) {
     input.addEventListener('change', updatePreview);
 }
 setupImagePreview('category-image-url', 'category-image-preview');
-setupImagePreview('setting-logo-image-url', 'logo-preview');
-setupImagePreview('setting-home-banner-url', 'banner-preview');
+setupImagePreview('setting-logo-image-url', 'logo-preview'); // Ensure this ID exists in HTML
+// setupImagePreview('setting-home-banner-url', 'banner-preview'); // Ensure this ID exists if needed
 
 async function loadAllSettings() {
     try {
@@ -208,7 +240,6 @@ async function loadAllSettings() {
             document.getElementById("setting-logo-subtitle").value = settings.logoSubtitle || '';
             document.getElementById("setting-home-banner-url").value = settings.homeBannerUrl || '';
             
-            // *** ലോഡ് ചെയ്യുന്ന ഭാഗം ***
             document.getElementById("setting-chatbot-number").value = settings.chatbotNumber || '';
             document.getElementById("setting-dealer-number").value = settings.dealerChatNumber || '';
 
@@ -224,8 +255,8 @@ async function loadAllSettings() {
             const titleElement = document.getElementById("admin-panel-title");
             if (titleElement && settings.logoText) titleElement.textContent = `${settings.logoText} - Admin`;
             
+            // Trigger preview updates
             document.getElementById("setting-logo-image-url").dispatchEvent(new Event('input'));
-            document.getElementById("setting-home-banner-url").dispatchEvent(new Event('input'));
         }
     } catch (error) { console.error("Error loading settings: ", error); showStatus(adminStatus, "Error loading site settings."); }
 }
@@ -240,17 +271,14 @@ generalSettingsForm.addEventListener("submit", async (e) => {
             logoText: document.getElementById("setting-logo-text").value,
             logoSubtitle: document.getElementById("setting-logo-subtitle").value,
             homeBannerUrl: document.getElementById("setting-home-banner-url").value,
-            // *** സേവ് ചെയ്യുന്ന ഭാഗം ***
             chatbotNumber: document.getElementById("setting-chatbot-number").value,
             dealerChatNumber: document.getElementById("setting-dealer-number").value
         };
         const docRef = doc(db, "settings", "global");
         await setDoc(docRef, settings, { merge: true });
         showStatus(adminStatus, "General settings saved!", false);
-        const titleElement = document.getElementById("admin-panel-title");
-        if (titleElement && settings.logoText) titleElement.textContent = `${settings.logoText} - Admin`;
     } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
-    finally { enableButton(button, "Save General Settings"); }
+    finally { enableButton(button, "Save Changes"); }
 });
 
 contactSettingsForm.addEventListener("submit", async (e) => {
@@ -268,7 +296,7 @@ contactSettingsForm.addEventListener("submit", async (e) => {
         await setDoc(docRef, settings, { merge: true });
         showStatus(adminStatus, "Contact details saved!", false);
     } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
-    finally { enableButton(button, "Save Contact Details"); }
+    finally { enableButton(button, "Save Info"); }
 });
 
 followSettingsForm.addEventListener("submit", async (e) => {
@@ -286,7 +314,7 @@ followSettingsForm.addEventListener("submit", async (e) => {
         await setDoc(docRef, settings, { merge: true });
         showStatus(adminStatus, '"Follow Us" links saved!', false);
     } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
-    finally { enableButton(button, 'Save "Follow Us" Links'); }
+    finally { enableButton(button, "Save Links"); }
 });
 
 function loadCategories() {
@@ -339,7 +367,7 @@ function loadProducts(categoryId = "all") {
             const id = doc.id;
             const imageUrl = product.images && product.images[0] ? product.images[0] : '';
             let priceDisplay = `₹${product.price || 0}`;
-            if (product.mrp && product.mrp > product.price) priceDisplay += ` <span class="price-mrp-admin">₹${product.mrp}</span>`;
+            
             const row = document.createElement('tr');
             row.innerHTML = `<td><img src="${imageUrl}" alt="${product.name}"></td><td>${product.name} ${product.featured ? '⭐' : ''}</td><td>${priceDisplay}</td><td><button class="btn btn-edit" data-id="${id}" data-type="product">Edit</button><button class="btn btn-delete" data-id="${id}" data-type="product">Delete</button></td>`;
             productsListBody.appendChild(row);
@@ -376,14 +404,21 @@ featuredSearchInput.addEventListener('input', (e) => {
         filtered.forEach(product => {
             const img = product.images && product.images[0] ? product.images[0] : '';
             const item = document.createElement('div');
-            item.className = 'search-result-item';
+            item.className = 'search-result-item'; // Styles needed in CSS if not present
+            item.style.padding = '10px';
+            item.style.cursor = 'pointer';
+            item.style.borderBottom = '1px solid var(--border-color)';
+            item.style.display = 'flex';
+            item.style.alignItems = 'center';
+            item.style.gap = '10px';
+            
             item.innerHTML = `
-                <img src="${img}" alt="${product.name}">
-                <div class="search-result-info">
-                    <span class="search-result-name">${product.name}</span>
-                    <span class="search-result-price">₹${product.price}</span>
+                <img src="${img}" alt="${product.name}" style="width:40px;height:40px;border-radius:4px;object-fit:cover;">
+                <div style="flex-grow:1;">
+                    <span style="font-weight:500; display:block; color:var(--text-color);">${product.name}</span>
+                    <span style="font-size:0.9rem; color:var(--text-muted);">₹${product.price}</span>
                 </div>
-                <button class="search-result-add-btn">Add</button>
+                <button class="btn" style="padding: 5px 10px; font-size:0.8rem;">Add</button>
             `;
             item.addEventListener('click', () => addToFeatured(product.id));
             featuredSearchResults.appendChild(item);
@@ -406,7 +441,7 @@ async function addToFeatured(productId) {
 }
 
 async function removeFromFeatured(productId) {
-    if(!confirm("Remove this product from Featured list? (It will not be deleted from database)")) return;
+    if(!confirm("Remove this product from Featured list?")) return;
     try {
         const ref = doc(db, "products", productId);
         await updateDoc(ref, { featured: false });
@@ -434,14 +469,15 @@ function loadFeaturedProducts() {
                 <td>${product.name}</td>
                 <td>${priceDisplay}</td>
                 <td>
-                    <button class="btn-remove-featured" data-id="${id}">Remove</button>
+                    <button class="btn btn-delete" style="background-color: transparent; border: 1px solid var(--primary-gold); color: var(--primary-gold);" onclick="this.dispatchEvent(new CustomEvent('remove-featured', {bubbles:true, detail:'${id}'}))">Remove</button>
                 </td>
             `;
             
-            row.querySelector('.btn-remove-featured').addEventListener('click', () => removeFromFeatured(id));
+            // Custom event listener for the inline button
+            row.querySelector('button').addEventListener('click', () => removeFromFeatured(id));
             featuredProductsListBody.appendChild(row);
         });
-     }, (error) => { console.error("Error loading featured products: ", error); featuredProductsListBody.innerHTML = '<tr><td colspan="4">Error loading featured products.</td></tr>'; });
+     }, (error) => { console.error("Error loading featured products: ", error); });
 }
 
 productFilterCategory.addEventListener("change", (e) => { const categoryId = e.target.value; loadProducts(categoryId); });
@@ -470,14 +506,13 @@ addProductForm.addEventListener("submit", async (e) => {
             createdAt: serverTimestamp()
         };
         
-        if (!product.categoryId || !product.name || !product.price) throw new Error("Please fill in all required fields.");
         await addDoc(collection(db, "products"), product);
         showStatus(adminStatus, "Product added successfully!", false);
         addProductForm.reset();
         populateImageUploader('product-image-list-container', []);
         populateMoreLinksUploader('product-more-links-container', []);
     } catch (error) { console.error("Error adding product: ", error); showStatus(adminStatus, `Error: ${error.message}`); } 
-    finally { enableButton(button, "Add Product"); }
+    finally { enableButton(button, "Save Product"); }
 });
 
 function loadHeroSlides() {
@@ -488,9 +523,9 @@ function loadHeroSlides() {
         querySnapshot.forEach((doc) => {
             const slide = doc.data();
             const id = doc.id;
-            let preview = (slide.type === 'image') ? `<img src="${slide.url}" alt="Preview">` : `<video src="${slide.url}" muted width="50" height="50"></video>`;
+            let preview = (slide.type === 'image') ? `<img src="${slide.url}" alt="Preview" style="width:100px;">` : `<video src="${slide.url}" muted width="100"></video>`;
             const row = document.createElement('tr');
-            row.innerHTML = `<td>${preview}</td><td>${slide.type}</td><td>${slide.order}</td><td style="word-break: break-all;">${slide.url}</td><td><button class="btn btn-delete" data-id="${id}" data-type="heroSlide">Delete</button></td>`;
+            row.innerHTML = `<td>${preview}</td><td>${slide.type}</td><td>${slide.order}</td><td><button class="btn btn-delete" data-id="${id}" data-type="heroSlide">Delete</button></td>`;
             heroSlidesListBody.appendChild(row);
         });
     }, (error) => { console.error("Error loading hero slides: ", error); showStatus(adminStatus, "Error loading hero slides."); });
@@ -555,7 +590,7 @@ confirmBtnDelete.addEventListener('click', async () => {
             showStatus(adminStatus, `${type} deleted successfully.`, false);
         }
     } catch (error) { console.error("Error deleting item: ", error); showStatus(adminStatus, `Error: ${error.message}`); } 
-    finally { enableButton(confirmBtnDelete, "Confirm Delete"); closeConfirmModal(); }
+    finally { enableButton(confirmBtnDelete, "Delete"); closeConfirmModal(); }
 });
 
 async function openEditModal(id, type) {
@@ -570,7 +605,7 @@ async function openEditModal(id, type) {
         modalTitle.textContent = `Edit ${type}`;
         
         if (type === 'category') {
-            modalForm.innerHTML = `<input type="hidden" id="modal-item-id" value="${id}"><input type="hidden" id="modal-item-type" value="category"><div class="form-group"><label for="modal-category-name">Category Name <span class="required-star">*</span></label><input type="text" id="modal-category-name" value="${data.name}" required></div><div class="form-group"><label for="modal-category-image-url">Category Image URL <span class="required-star">*</span></label><div class="inline-image-input-container"><div class="image-preview-small" id="modal-category-image-preview"></div><input type="text" class="image-url-input" id="modal-category-image-url" value="${data.imageUrl}" required></div></div><button type="submit" class="btn" id="modal-save-button"><span class="btn-text">Save Changes</span><span class="btn-loader loader-small" style="display: none;"></span></button>`;
+            modalForm.innerHTML = `<input type="hidden" id="modal-item-id" value="${id}"><input type="hidden" id="modal-item-type" value="category"><div class="form-group"><label>Category Name</label><input type="text" id="modal-category-name" value="${data.name}" required></div><div class="form-group"><label>Image URL</label><div class="inline-image-input-container"><div class="image-preview-small" id="modal-category-image-preview"></div><input type="text" id="modal-category-image-url" value="${data.imageUrl}" required></div></div><button type="submit" class="btn" id="modal-save-button">Save Changes</button>`;
             setupImagePreview('modal-category-image-url', 'modal-category-image-preview');
             document.getElementById('modal-category-image-url').dispatchEvent(new Event('input'));
         } 
@@ -579,23 +614,19 @@ async function openEditModal(id, type) {
                 <input type="hidden" id="modal-item-id" value="${id}">
                 <input type="hidden" id="modal-item-type" value="product">
                 <div class="form-grid">
-                    <div class="form-group"><label for="modal-product-name">Product Name <span class="required-star">*</span></label><input type="text" id="modal-product-name" value="${data.name}" required></div>
-                    <div class="form-group"><label for="modal-product-category">Category <span class="required-star">*</span></label><select id="modal-product-category" required>${productCategorySelect.innerHTML}</select></div>
-                    <div class="form-group"><label for="modal-product-mrp">MRP (₹)</label><input type="number" id="modal-product-mrp" value="${data.mrp || ''}"></div>
-                    <div class="form-group"><label for="modal-product-price">Retail Price (₹) <span class="required-star">*</span></label><input type="number" id="modal-product-price" value="${data.price || ''}" required></div>
+                    <div class="form-group"><label>Name</label><input type="text" id="modal-product-name" value="${data.name}" required></div>
+                    <div class="form-group"><label>Category</label><select id="modal-product-category" required>${productCategorySelect.innerHTML}</select></div>
+                    <div class="form-group"><label>MRP</label><input type="number" id="modal-product-mrp" value="${data.mrp || ''}"></div>
+                    <div class="form-group"><label>Price</label><input type="number" id="modal-product-price" value="${data.price || ''}" required></div>
                     
-                    <div class="form-group"><input type="checkbox" id="modal-product-featured" style="width: auto; margin-right: 10px;" ${data.featured ? 'checked' : ''}><label for="modal-product-featured" style="display: inline;">Featured? (Top Seller)</label></div>
+                    <div class="form-group"><input type="checkbox" id="modal-product-featured" style="width: auto; margin-right: 10px;" ${data.featured ? 'checked' : ''}><label style="display: inline;">Featured?</label></div>
                     
-                    <div class="form-group full-width">
-                        <label for="modal-product-specification">Specification</label>
-                        <textarea id="modal-product-specification" rows="4">${data.specification || ''}</textarea>
-                    </div>
-
-                    <div class="form-group full-width"><label for="modal-product-description">Description</label><textarea id="modal-product-description" rows="4">${data.description || ''}</textarea></div>
-                    <div class="form-group full-width"><label>Product Image URLs <span class="required-star">*</span></label><div id="modal-image-list-container" class="image-url-list"></div><button type="button" id="add-modal-image-url-btn" class="btn btn-secondary">Add Image URL</button></div>
-                    <div class="form-group full-width"><label>More Links</label><div id="modal-more-links-container" class="link-url-list"></div><button type="button" id="add-modal-more-link-btn" class="btn btn-secondary">Add Link</button></div>
+                    <div class="form-group full-width"><label>Specification</label><textarea id="modal-product-specification" rows="4">${data.specification || ''}</textarea></div>
+                    <div class="form-group full-width"><label>Description</label><textarea id="modal-product-description" rows="4">${data.description || ''}</textarea></div>
+                    <div class="form-group full-width"><label>Images</label><div id="modal-image-list-container" class="image-url-list"></div><button type="button" id="add-modal-image-url-btn" class="btn btn-secondary">+ Add Image</button></div>
+                    <div class="form-group full-width"><label>Links</label><div id="modal-more-links-container" class="link-url-list"></div><button type="button" id="add-modal-more-link-btn" class="btn btn-secondary">+ Add Link</button></div>
                 </div>
-                <button type="submit" class="btn" id="modal-save-button"><span class="btn-text">Save Changes</span><span class="btn-loader loader-small" style="display: none;"></span></button>
+                <button type="submit" class="btn" id="modal-save-button" style="margin-top:1.5rem;">Save Changes</button>
             `;
             document.getElementById('modal-product-category').value = data.categoryId;
             setupImageUploader('modal-image-list-container', 'add-modal-image-url-btn');
@@ -622,14 +653,11 @@ modalForm.addEventListener("submit", async (e) => {
             dataToSave = { name: document.getElementById('modal-category-name').value, imageUrl: document.getElementById('modal-category-image-url').value };
         } else if (type === 'product') {
             const imageUrls = getImageUrlsFromUploader('modal-image-list-container');
-            if (imageUrls.length === 0 || imageUrls[0] === '') throw new Error("Please add at least one image URL.");
             const moreLinks = getMoreLinksFromUploader('modal-more-links-container');
-            const specification = document.getElementById('modal-product-specification').value;
-
             dataToSave = {
                 categoryId: document.getElementById('modal-product-category').value,
                 name: document.getElementById('modal-product-name').value,
-                specification: specification,
+                specification: document.getElementById('modal-product-specification').value,
                 mrp: Number(document.getElementById('modal-product-mrp').value) || 0,
                 price: Number(document.getElementById('modal-product-price').value) || 0,
                 description: document.getElementById('modal-product-description').value,
@@ -649,15 +677,25 @@ function setupImageUploader(containerId, addBtnId) {
     const container = document.getElementById(containerId);
     const addBtn = document.getElementById(addBtnId);
     if (!container || !addBtn) return;
-    addBtn.addEventListener('click', () => { addImageInput(containerId); });
-    container.addEventListener('click', (e) => { if (e.target.classList.contains('btn-remove-image')) e.target.closest('.image-url-item').remove(); });
-    container.addEventListener('input', (e) => {
+    
+    // Remove existing listeners to avoid duplicates if called multiple times (though logic here seems fine)
+    const newBtn = addBtn.cloneNode(true);
+    addBtn.parentNode.replaceChild(newBtn, addBtn);
+    
+    newBtn.addEventListener('click', () => { addImageInput(containerId); });
+    
+    // Use event delegation on container
+    container.onclick = (e) => { 
+        if (e.target.closest('.btn-remove-image')) e.target.closest('.image-url-item').remove(); 
+    };
+    
+    container.oninput = (e) => {
         if (e.target.tagName === 'INPUT' && e.target.type === 'text') {
             const url = e.target.value.trim();
             const previewImg = e.target.closest('.image-url-item').querySelector('.image-preview-item');
             if (previewImg) previewImg.src = url || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='; 
         }
-    });
+    };
 }
 
 function addImageInput(containerId, url = '') {
@@ -665,7 +703,7 @@ function addImageInput(containerId, url = '') {
     if (!container) return;
     const item = document.createElement('div');
     item.className = 'image-url-item';
-    item.innerHTML = `<img src="${url || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" alt="Preview" class="image-preview-item"><input type="text" value="${url}" placeholder="Paste image URL here" required><button type="button" class="btn-remove-image">&times;</button>`;
+    item.innerHTML = `<img src="${url || 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='}" alt="Preview" class="image-preview-item"><input type="text" value="${url}" placeholder="Image URL"><button type="button" class="btn-remove-image">&times;</button>`;
     container.appendChild(item);
 }
 
@@ -688,8 +726,12 @@ function setupMoreLinksUploader(containerId, addBtnId) {
     const container = document.getElementById(containerId);
     const addBtn = document.getElementById(addBtnId);
     if (!container || !addBtn) return;
-    addBtn.addEventListener('click', () => addMoreLinkInput(containerId));
-    container.addEventListener('click', (e) => { if (e.target.classList.contains('btn-remove-link')) e.target.closest('.link-url-item').remove(); });
+    
+    const newBtn = addBtn.cloneNode(true);
+    addBtn.parentNode.replaceChild(newBtn, addBtn);
+    
+    newBtn.addEventListener('click', () => addMoreLinkInput(containerId));
+    container.onclick = (e) => { if (e.target.closest('.btn-remove-link')) e.target.closest('.link-url-item').remove(); };
 }
 
 function addMoreLinkInput(containerId, link = { title: '', url: '' }) {
@@ -697,7 +739,7 @@ function addMoreLinkInput(containerId, link = { title: '', url: '' }) {
     if (!container) return;
     const item = document.createElement('div');
     item.className = 'link-url-item';
-    item.innerHTML = `<input type="text" class="link-title-input" value="${link.title}" placeholder="Link Title (e.g., YouTube Review)"><input type="text" class="link-url-input" value="${link.url}" placeholder="Link URL (https://...)"><button type="button" class="btn-remove-link">&times;</button>`;
+    item.innerHTML = `<input type="text" class="link-title-input" value="${link.title}" placeholder="Title"><input type="text" class="link-url-input" value="${link.url}" placeholder="URL"><button type="button" class="btn-remove-link">&times;</button>`;
     container.appendChild(item);
 }
 
