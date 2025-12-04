@@ -1,7 +1,3 @@
-<!-- 
-  ഇതാണ് അഡ്മിൻ പാനൽ. admin.html
-  മാറ്റം: സൈഡ്‌ബാറിൽ താഴെ തീം സ്വിച്ച് ബട്ടൺ ചേർത്തു.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -13,23 +9,23 @@
 </head>
 <body>
 
-    <!-- 1. ലോഗിൻ സെക്ഷൻ -->
+    <!-- Login -->
     <section id="login-section">
         <div class="container">
             <div class="login-box">
                 <h1>Admin Login</h1>
                 <form id="login-form">
                     <div class="form-group">
-                        <label for="login-email">Email <span class="required-star">*</span></label>
+                        <label>Email</label>
                         <input type="email" id="login-email" required placeholder="admin@example.com">
                     </div>
                     <div class="form-group">
-                        <label for="login-password">Password <span class="required-star">*</span></label>
-                        <input type="password" id="login-password" required placeholder="••••••••">
+                        <label>Password</label>
+                        <input type="password" id="login-password" required>
                     </div>
-                    <button type="submit" class="btn" id="login-button">
-                        <span class="btn-text">Login to Dashboard</span>
-                        <span class="btn-loader loader-small" style="display: none;"></span>
+                    <!-- Login -> Green -->
+                    <button type="submit" class="btn btn-save" id="login-button">
+                        <span class="btn-text">Login</span>
                     </button>
                     <div id="login-status" class="status-message"></div>
                 </form>
@@ -37,22 +33,13 @@
         </div>
     </section>
 
-    <!-- 2. അഡ്മിൻ പാനൽ -->
-    <section id="admin-panel">
+    <!-- Admin Panel -->
+    <section id="admin-panel" style="display: none;">
 
         <header class="admin-main-header">
             <div class="admin-header-left">
-                <button id="admin-nav-open-btn" aria-label="Open Menu">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
-                </button>
-                <h1 id="admin-panel-title">ADMIN DASHBOARD</h1>
-            </div>
-            <div class="admin-header-right">
-                <!-- Header logout removed, moved to sidebar bottom -->
+                <button id="admin-nav-open-btn"><svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></button>
+                <h1>ADMIN DASHBOARD</h1>
             </div>
         </header>
 
@@ -61,34 +48,18 @@
                 <h2>Menu</h2>
                 <button id="admin-nav-close-btn">&times;</button>
             </div>
-            
             <div class="admin-nav-links">
-                <button class="nav-link active" data-page="page-add-product">Add New Product</button>
+                <button class="nav-link active" data-page="page-add-product">Add Product</button>
                 <button class="nav-link" data-page="page-existing-products">All Products</button>
                 <button class="nav-link" data-page="page-featured-products">Featured Items</button>
                 <button class="nav-link" data-page="page-add-category">Categories</button>
                 <button class="nav-link" data-page="page-manage-hero">Hero Slider</button>
-                <button class="nav-link" data-page="page-general-settings">Site Settings</button>
+                <button class="nav-link" data-page="page-general-settings">Settings</button>
                 <button class="nav-link" data-page="page-contact-details">Contact Info</button>
                 <button class="nav-link" data-page="page-follow-us">Social Links</button>
             </div>
-            
-            <div class="admin-nav-footer">
-                <!-- Theme Switcher -->
-                <button class="btn-theme-toggle" id="theme-toggle-btn">
-                    <span class="theme-icon-moon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                    </span>
-                    <span class="theme-icon-sun" style="display: none;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
-                    </span>
-                    <span id="theme-text">Switch to Dark</span>
-                </button>
-
-                <!-- Logout Button -->
-                <button class="btn btn-logout logout-action-btn full-width-logout" style="width:100%;">
-                    Logout
-                </button>
+            <div style="padding: 1.5rem;">
+                <button class="btn-logout logout-action-btn">Logout</button>
             </div>
         </nav>
         <div class="admin-nav-overlay" id="admin-nav-overlay"></div>
@@ -96,190 +67,101 @@
         <div class="container">
             <div id="admin-status" class="status-message"></div>
 
-            <!-- Page 1: Add New Product -->
+            <!-- 1. Add Product -->
             <div id="page-add-product" class="page-content active">
                 <form id="add-product-form" class="form-section">
                     <h2>Add New Product</h2>
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label for="product-name">Product Name <span class="required-star">*</span></label>
-                            <input type="text" id="product-name" required>
-                        </div>
-                         <div class="form-group">
-                            <label for="product-category">Category <span class="required-star">*</span></label>
-                            <select id="product-category" required>
-                                <option value="">Loading categories...</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="product-mrp">MRP (₹)</label>
-                            <input type="number" id="product-mrp" placeholder="500">
-                        </div>
-                        <div class="form-group">
-                            <label for="product-price">Retail Price (₹) <span class="required-star">*</span></label>
-                            <input type="number" id="product-price" placeholder="350" required>
-                        </div>
+                        <div class="form-group"><label>Name <span class="required-star">*</span></label><input type="text" id="product-name" required></div>
+                        <div class="form-group"><label>Category <span class="required-star">*</span></label><select id="product-category" required><option value="">Loading...</option></select></div>
+                        <div class="form-group"><label>MRP</label><input type="number" id="product-mrp"></div>
+                        <div class="form-group"><label>Price <span class="required-star">*</span></label><input type="number" id="product-price" required></div>
+                        <div class="form-group"><input type="checkbox" id="product-featured" style="width:auto; margin-right:10px;"><label style="display:inline;">Featured?</label></div>
+                        <div class="form-group full-width"><label>Specification</label><textarea id="product-specification" rows="4"></textarea></div>
+                        <div class="form-group full-width"><label>Description</label><textarea id="product-description" rows="4"></textarea></div>
                         
-                        <div class="form-group">
-                            <input type="checkbox" id="product-featured" style="width: auto; margin-right: 10px;">
-                            <label for="product-featured" style="display: inline; color: var(--text-color);">Featured (Show in Top Sellers)</label>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="product-specification">Specification (Bullet points)</label>
-                            <textarea id="product-specification" rows="4" placeholder="- Premium Quality&#10;- Long Lasting"></textarea>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="product-description">Description</label>
-                            <textarea id="product-description" rows="4"></textarea>
-                        </div>
+                        <!-- Add Image -> Blue -->
+                        <div class="form-group full-width"><label>Images</label><div id="product-image-list-container" class="image-url-list"></div><button type="button" id="add-image-url-btn" class="btn btn-blue">+ Add Image</button></div>
                         
-                        <div class="form-group full-width">
-                            <label>Product Image URLs <span class="required-star">*</span></label>
-                            <div id="product-image-list-container" class="image-url-list"></div>
-                            <button type="button" id="add-image-url-btn" class="btn btn-secondary">+ Add Image URL</button>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label>Affiliate/Extra Links</label>
-                            <div id="product-more-links-container" class="link-url-list"></div>
-                            <button type="button" id="add-more-link-btn" class="btn btn-secondary">+ Add Link</button>
-                        </div>
-
+                        <!-- Add Link -> Blue -->
+                        <div class="form-group full-width"><label>Links</label><div id="product-more-links-container" class="link-url-list"></div><button type="button" id="add-more-link-btn" class="btn btn-blue">+ Add Link</button></div>
                     </div>
-                    <div style="margin-top: 2rem; text-align: right;">
-                        <button type="submit" class="btn" id="add-product-button">
-                            <span class="btn-text">Save Product</span>
-                            <span class="btn-loader loader-small" style="display: none;"></span>
-                        </button>
-                    </div>
+                    <!-- Save -> Green -->
+                    <div style="margin-top:2rem; text-align:right;"><button type="submit" class="btn btn-save" id="add-product-button">Save Product</button></div>
                 </form>
             </div>
 
-            <!-- Page 2: Existing Products -->
+            <!-- 2. Products List -->
             <div id="page-existing-products" class="page-content">
                 <div class="data-list-section">
-                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 1.5rem;">
-                        <h2 style="margin:0; border:none;">All Products</h2>
-                        <div class="form-group" style="margin:0; width: 250px;">
-                            <select id="product-filter-category">
-                                <option value="all">All Categories</option>
-                            </select>
-                        </div>
+                    <div style="display:flex; justify-content:space-between; margin-bottom:1.5rem;">
+                        <h2>All Products</h2>
+                        <select id="product-filter-category" style="width:200px;"><option value="all">All Categories</option></select>
                     </div>
-                    
-                    <div class="data-table-wrapper">
-                        <table class="data-table">
-                            <thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Actions</th></tr></thead>
-                            <tbody id="products-list-body"></tbody>
-                        </table>
-                    </div>
+                    <div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Actions</th></tr></thead><tbody id="products-list-body"></tbody></table></div>
                 </div>
             </div>
-            
-            <!-- Other Pages Structure (Similar Design) -->
-            <!-- Featured -->
+
+            <!-- 3. Featured -->
             <div id="page-featured-products" class="page-content">
                 <div class="data-list-section">
-                    <h2 style="border:none;">Featured Products</h2>
-                    <div class="featured-search-container" style="background:var(--bg-color); padding:1.5rem; border-radius:8px; margin-bottom:1.5rem; border: 1px solid var(--border-color);">
-                        <label>Search Product to Add</label>
-                        <div class="search-wrapper">
-                            <input type="text" id="featured-product-search" placeholder="Type product name...">
-                            <div id="featured-search-results" class="search-results-dropdown"></div>
-                        </div>
+                    <h2>Featured Products</h2>
+                    <div style="background:#222; padding:1.5rem; border-radius:8px; margin-bottom:1.5rem; border:1px solid #333;">
+                        <label>Search to Add</label>
+                        <input type="text" id="featured-product-search" placeholder="Type name..." style="margin-top:10px;">
+                        <div id="featured-search-results"></div>
                     </div>
-                    <div class="data-table-wrapper">
-                        <table class="data-table">
-                            <thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Actions</th></tr></thead>
-                            <tbody id="featured-products-list-body"></tbody>
-                        </table>
-                    </div>
+                    <div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Actions</th></tr></thead><tbody id="featured-products-list-body"></tbody></table></div>
                 </div>
             </div>
 
-            <!-- Add Category -->
+            <!-- 4. Categories -->
             <div id="page-add-category" class="page-content">
                 <form id="add-category-form" class="form-section">
-                    <h2>Manage Categories</h2>
+                    <h2>Categories</h2>
                     <div class="form-grid">
-                        <div class="form-group">
-                            <label>Category Name <span class="required-star">*</span></label>
-                            <input type="text" id="category-name" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Image URL <span class="required-star">*</span></label>
-                            <div class="inline-image-input-container">
-                                <div class="image-preview-small" id="category-image-preview"></div>
-                                <input type="text" id="category-image-url" required>
-                            </div>
-                        </div>
+                        <div class="form-group"><label>Name</label><input type="text" id="category-name" required></div>
+                        <div class="form-group"><label>Image URL</label><div class="inline-image-input-container"><div class="image-preview-small" id="category-image-preview"></div><input type="text" id="category-image-url" required></div></div>
                     </div>
-                    <div style="margin-top:1.5rem; text-align:right;">
-                        <button type="submit" class="btn" id="add-category-button">
-                            <span class="btn-text">Add Category</span>
-                        </button>
-                    </div>
+                    <!-- Add -> Green -->
+                    <div style="margin-top:1.5rem; text-align:right;"><button type="submit" class="btn btn-save" id="add-category-button">Add Category</button></div>
                 </form>
-                
-                <div class="data-list-section" style="margin-top: 2rem;">
-                    <div class="data-table-wrapper">
-                        <table class="data-table">
-                            <thead><tr><th>Icon</th><th>Name</th><th>Actions</th></tr></thead>
-                            <tbody id="categories-list-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Hero Slider -->
-            <div id="page-manage-hero" class="page-content">
-                <form id="add-hero-slide-form" class="form-section">
-                    <h2>Manage Hero Slider</h2>
-                    <div class="form-grid">
-                        <div class="form-group"><label>Media URL</label><input type="text" id="hero-slide-url" required></div>
-                        <div class="form-group">
-                            <label>Type</label>
-                            <select id="hero-slide-type" required>
-                                <option value="image">Image</option>
-                                <option value="video">Video</option>
-                            </select>
-                        </div>
-                        <div class="form-group"><label>Order (1, 2, 3...)</label><input type="number" id="hero-slide-order" value="1"></div>
-                    </div>
-                    <div style="margin-top:1.5rem; text-align:right;">
-                        <button type="submit" class="btn" id="add-hero-slide-button">Add Slide</button>
-                    </div>
-                </form>
-                <div class="data-list-section" style="margin-top: 2rem;">
-                    <div class="data-table-wrapper">
-                        <table class="data-table">
-                            <thead><tr><th>Preview</th><th>Type</th><th>Order</th><th>Actions</th></tr></thead>
-                            <tbody id="hero-slides-list-body"></tbody>
-                        </table>
-                    </div>
-                </div>
+                <div class="data-list-section"><div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Icon</th><th>Name</th><th>Actions</th></tr></thead><tbody id="categories-list-body"></tbody></table></div></div>
             </div>
 
-            <!-- Settings Pages -->
+            <!-- 5. Hero Slider -->
+            <div id="page-manage-hero" class="page-content">
+                <form id="add-hero-slide-form" class="form-section">
+                    <h2>Hero Slider</h2>
+                    <div class="form-grid">
+                        <div class="form-group"><label>URL</label><input type="text" id="hero-slide-url" required></div>
+                        <div class="form-group"><label>Type</label><select id="hero-slide-type"><option value="image">Image</option><option value="video">Video</option></select></div>
+                        <div class="form-group"><label>Order</label><input type="number" id="hero-slide-order" value="1"></div>
+                    </div>
+                    <!-- Add -> Green -->
+                    <div style="margin-top:1.5rem; text-align:right;"><button type="submit" class="btn btn-save" id="add-hero-slide-button">Add Slide</button></div>
+                </form>
+                <div class="data-list-section"><div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Preview</th><th>Type</th><th>Order</th><th>Actions</th></tr></thead><tbody id="hero-slides-list-body"></tbody></table></div></div>
+            </div>
+
+            <!-- 6. General Settings -->
             <div id="page-general-settings" class="page-content">
                 <form id="general-settings-form" class="form-section">
                     <h2>General Settings</h2>
                     <div class="form-grid">
-                         <div class="form-group"><label>Logo URL</label><input type="text" id="setting-logo-image-url"></div>
+                        <div class="form-group"><label>Logo URL</label><input type="text" id="setting-logo-image-url"></div>
                         <div class="form-group"><label>Logo Text</label><input type="text" id="setting-logo-text"></div>
-                         <div class="form-group"><label>Subtitle</label><input type="text" id="setting-logo-subtitle"></div>
+                        <div class="form-group"><label>Subtitle</label><input type="text" id="setting-logo-subtitle"></div>
                         <div class="form-group"><label>Home Banner URL</label><input type="text" id="setting-home-banner-url"></div>
-                        <div class="form-group"><label>ChatBot Number</label><input type="text" id="setting-chatbot-number"></div>
-                        <div class="form-group"><label>Dealer Number</label><input type="text" id="setting-dealer-number"></div>
+                        <div class="form-group"><label>ChatBot No.</label><input type="text" id="setting-chatbot-number"></div>
+                        <div class="form-group"><label>Dealer No.</label><input type="text" id="setting-dealer-number"></div>
                     </div>
-                    <div style="margin-top:1.5rem; text-align:right;">
-                        <button type="submit" class="btn" id="save-general-settings-button">Save Changes</button>
-                    </div>
+                    <!-- Save -> Green -->
+                    <div style="margin-top:1.5rem; text-align:right;"><button type="submit" class="btn btn-save" id="save-general-settings-button">Save Changes</button></div>
                 </form>
             </div>
 
+            <!-- 7. Contact -->
             <div id="page-contact-details" class="page-content">
                 <form id="contact-settings-form" class="form-section">
                     <h2>Contact Info</h2>
@@ -289,12 +171,11 @@
                         <div class="form-group"><label>Address</label><input type="text" id="setting-address"></div>
                         <div class="form-group"><label>Order WhatsApp</label><input type="text" id="setting-whatsapp"></div>
                     </div>
-                    <div style="margin-top:1.5rem; text-align:right;">
-                        <button type="submit" class="btn" id="save-contact-settings-button">Save Info</button>
-                    </div>
+                    <div style="margin-top:1.5rem; text-align:right;"><button type="submit" class="btn btn-save" id="save-contact-settings-button">Save Info</button></div>
                 </form>
             </div>
 
+            <!-- 8. Social Links -->
             <div id="page-follow-us" class="page-content">
                 <form id="follow-settings-form" class="form-section">
                     <h2>Social Links</h2>
@@ -304,9 +185,7 @@
                         <div class="form-group"><label>Instagram</label><input type="text" id="setting-instagram-url"></div>
                         <div class="form-group"><label>YouTube</label><input type="text" id="setting-youtube-url"></div>
                     </div>
-                    <div style="margin-top:1.5rem; text-align:right;">
-                        <button type="submit" class="btn" id="save-follow-settings-button">Save Links</button>
-                    </div>
+                    <div style="margin-top:1.5rem; text-align:right;"><button type="submit" class="btn btn-save" id="save-follow-settings-button">Save Links</button></div>
                 </form>
             </div>
 
@@ -315,10 +194,7 @@
         <!-- Edit Modal -->
         <div id="edit-modal" class="modal-overlay">
             <div class="modal-content">
-                <div class="modal-header">
-                    <h2 id="modal-title">Edit Item</h2>
-                    <button class="modal-close" id="modal-close-button">&times;</button>
-                </div>
+                <div class="modal-header"><h2>Edit Item</h2><button class="modal-close" id="modal-close-button">&times;</button></div>
                 <form id="modal-form"></form>
             </div>
         </div>
@@ -326,13 +202,11 @@
         <!-- Confirm Modal -->
         <div id="confirm-modal" class="modal-overlay">
             <div class="modal-content" style="max-width: 400px; text-align: center;">
-                <div class="modal-header" style="justify-content: center;">
-                    <h2 id="confirm-title" style="color: var(--error-red);">Confirm Delete</h2>
-                </div>
-                <p id="confirm-message">Are you sure? This cannot be undone.</p>
-                <div class="confirm-buttons" style="justify-content: center; margin-top: 2rem;">
-                    <button class="btn btn-secondary" id="confirm-btn-cancel">Cancel</button>
-                    <button class="btn btn-delete" id="confirm-btn-delete">Delete</button>
+                <h2 style="color:var(--btn-red);">Confirm Delete</h2>
+                <p>Are you sure? This cannot be undone.</p>
+                <div style="margin-top:2rem; display:flex; justify-content:center; gap:1rem;">
+                    <button class="btn btn-blue" style="border:1px solid #555; color:#aaa;" id="confirm-btn-cancel">Cancel</button>
+                    <button class="btn btn-red" id="confirm-btn-delete">Delete</button>
                 </div>
             </div>
         </div>
