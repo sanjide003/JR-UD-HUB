@@ -1,8 +1,6 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. admin.html
-  മാറ്റങ്ങൾ: 
-  1. ബട്ടണുകളുടെ ക്ലാസുകൾ പുതിയ CSS-ന് അനുസരിച്ച് ക്രമീകരിച്ചു.
-  2. ലേഔട്ട് വൃത്തിയാക്കി.
+  മാറ്റം: സൈഡ്‌ബാറിൽ താഴെ തീം സ്വിച്ച് ബട്ടൺ ചേർത്തു.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -11,7 +9,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel - JR-UD-HUB</title>
     <link rel="stylesheet" href="admin.css">
-    <!-- Google Fonts for Premium Look -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -55,7 +52,7 @@
                 <h1 id="admin-panel-title">ADMIN DASHBOARD</h1>
             </div>
             <div class="admin-header-right">
-                <button class="btn btn-logout logout-action-btn header-logout-btn">Logout</button>
+                <!-- Header logout removed, moved to sidebar bottom -->
             </div>
         </header>
 
@@ -76,7 +73,19 @@
                 <button class="nav-link" data-page="page-follow-us">Social Links</button>
             </div>
             
-            <div class="admin-nav-footer" style="padding: 1.5rem;">
+            <div class="admin-nav-footer">
+                <!-- Theme Switcher -->
+                <button class="btn-theme-toggle" id="theme-toggle-btn">
+                    <span class="theme-icon-moon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    </span>
+                    <span class="theme-icon-sun" style="display: none;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    </span>
+                    <span id="theme-text">Switch to Dark</span>
+                </button>
+
+                <!-- Logout Button -->
                 <button class="btn btn-logout logout-action-btn full-width-logout" style="width:100%;">
                     Logout
                 </button>
@@ -174,7 +183,7 @@
             <div id="page-featured-products" class="page-content">
                 <div class="data-list-section">
                     <h2 style="border:none;">Featured Products</h2>
-                    <div class="featured-search-container" style="background:#222; padding:1.5rem; border-radius:8px; margin-bottom:1.5rem;">
+                    <div class="featured-search-container" style="background:var(--bg-color); padding:1.5rem; border-radius:8px; margin-bottom:1.5rem; border: 1px solid var(--border-color);">
                         <label>Search Product to Add</label>
                         <div class="search-wrapper">
                             <input type="text" id="featured-product-search" placeholder="Type product name...">
