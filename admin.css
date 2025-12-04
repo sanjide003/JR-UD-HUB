@@ -1,23 +1,34 @@
 /* * =======================================
- * ADMIN STYLESHEET (admin.css) - Updated Colors
+ * ADMIN STYLESHEET (admin.css) - Light/Dark Theme
  * =========================================
  */
 
-/* --- 1. Root Variables --- */
+/* --- 1. Root Variables (Light Theme Default) --- */
 :root {
-    --bg-color: #000000;
-    --card-bg: #111111;
-    --primary-gold: #D4AF37; /* ലോഗോയ്ക്കും ടെക്സ്റ്റിനും മാത്രം */
+    /* Light Theme Colors */
+    --bg-color: #f8f9fa;       /* Light Gray BG */
+    --card-bg: #ffffff;        /* White Card */
+    --primary-gold: #D4AF37;   /* Gold Accent */
+    
+    --text-color: #2c3e50;     /* Dark Text */
+    --text-muted: #6c757d;     /* Gray Text */
+    --border-color: #e9ecef;   /* Light Border */
     
     /* Button Colors */
-    --btn-save-green: #2ecc71;  /* Save/Add */
-    --btn-edit-blue: #3498db;   /* Edit/Add More */
-    --btn-delete-red: #e74c3c;  /* Delete/Remove */
+    --btn-save-green: #2ecc71;
+    --btn-edit-blue: #3498db;
+    --btn-delete-red: #e74c3c;
     
+    --font-main: 'Inter', sans-serif;
+}
+
+/* --- Dark Theme Overrides --- */
+[data-theme="dark"] {
+    --bg-color: #000000;
+    --card-bg: #111111;
     --text-color: #F5F5F5;
     --text-muted: #888888;
     --border-color: #333333;
-    --font-main: 'Inter', sans-serif;
 }
 
 body {
@@ -27,6 +38,7 @@ body {
     margin: 0;
     padding: 0;
     padding-top: 70px;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
@@ -44,6 +56,7 @@ body {
     max-width: 450px;
     margin: 5rem auto;
     text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
 }
 
 .login-box h1 {
@@ -58,39 +71,86 @@ body {
     align-items: center;
     padding: 0 2rem;
     height: 70px;
-    background-color: rgba(17, 17, 17, 0.95);
+    background-color: var(--card-bg); /* Card BG for Header */
     border-bottom: 1px solid var(--border-color);
     position: fixed;
     top: 0; left: 0; width: 100%;
     z-index: 1000;
     box-sizing: border-box;
+    transition: background-color 0.3s ease;
 }
 
 .admin-header-left { display: flex; align-items: center; gap: 1rem; }
-.admin-main-header h1 { color: var(--primary-gold); font-size: 1.2rem; margin: 0; text-transform: uppercase; }
+.admin-main-header h1 { color: var(--primary-gold); font-size: 1.2rem; margin: 0; text-transform: uppercase; font-weight: 700; }
 #admin-nav-open-btn { background: none; border: none; color: var(--text-color); cursor: pointer; }
 
 /* --- Sidebar --- */
 .admin-side-nav {
     position: fixed; top: 0; left: -280px; width: 280px; height: 100%;
     background-color: var(--card-bg); border-right: 1px solid var(--border-color);
-    z-index: 1002; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1002; transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color 0.3s ease;
     display: flex; flex-direction: column;
 }
 .admin-side-nav.open { left: 0; }
-.admin-nav-header { height: 70px; display: flex; align-items: center; padding: 0 1.5rem; border-bottom: 1px solid var(--border-color); }
+
+.admin-nav-header { 
+    height: 70px; display: flex; align-items: center; padding: 0 1.5rem; 
+    border-bottom: 1px solid var(--border-color); 
+}
 .admin-nav-header h2 { color: var(--primary-gold); margin: 0; }
 #admin-nav-close-btn { background: none; border: none; color: var(--text-muted); font-size: 2rem; margin-left: auto; cursor: pointer; }
+
 .admin-nav-links { flex-grow: 1; overflow-y: auto; padding: 1rem 0; }
+
 .nav-link {
     display: block; width: 100%; padding: 1rem 1.5rem; text-align: left;
     background: none; border: none; color: var(--text-muted); font-size: 0.95rem; cursor: pointer;
+    font-weight: 500;
 }
-.nav-link:hover { background-color: rgba(255, 255, 255, 0.03); color: var(--text-color); }
-.nav-link.active { background-color: rgba(52, 152, 219, 0.1); color: var(--btn-edit-blue); border-left: 3px solid var(--btn-edit-blue); }
+/* Light mode hover effect */
+.nav-link:hover { background-color: rgba(0, 0, 0, 0.05); color: var(--text-color); }
+[data-theme="dark"] .nav-link:hover { background-color: rgba(255, 255, 255, 0.05); }
+
+.nav-link.active { 
+    background-color: rgba(52, 152, 219, 0.1); 
+    color: var(--btn-edit-blue); 
+    border-left: 3px solid var(--btn-edit-blue); 
+}
+
+/* --- Sidebar Footer (Theme Switch & Logout) --- */
+.admin-nav-footer {
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+/* Theme Switch Button */
+.btn-theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    padding: 0.8rem;
+    background-color: transparent;
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+.btn-theme-toggle:hover {
+    background-color: var(--bg-color);
+    border-color: var(--primary-gold);
+    color: var(--primary-gold);
+}
+
 .admin-nav-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.7); z-index: 1001; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+    background: rgba(0,0,0,0.5); z-index: 1001; opacity: 0; visibility: hidden; transition: all 0.3s ease;
 }
 .admin-nav-overlay.open { opacity: 1; visibility: visible; }
 
@@ -102,6 +162,7 @@ body {
 .form-section {
     background-color: var(--card-bg);
     padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color); margin-bottom: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 .form-section h2 { color: var(--text-color); margin-top: 0; border-bottom: 1px solid var(--border-color); padding-bottom: 0.8rem; }
 .form-grid { display: grid; grid-template-columns: 1fr; gap: 1.5rem; }
@@ -109,13 +170,14 @@ body {
 .required-star { color: var(--btn-delete-red); }
 
 input[type="text"], input[type="email"], input[type="password"], input[type="number"], textarea, select {
-    width: 100%; padding: 0.8rem 1rem; background-color: #0a0a0a;
+    width: 100%; padding: 0.8rem 1rem; 
+    background-color: var(--bg-color); /* Matches theme bg */
     border: 1px solid var(--border-color); border-radius: 6px;
     color: var(--text-color); font-size: 1rem; box-sizing: border-box;
 }
-input:focus, textarea:focus, select:focus { outline: none; border-color: var(--btn-edit-blue); }
+input:focus, textarea:focus, select:focus { outline: none; border-color: var(--btn-edit-blue); background-color: var(--card-bg); }
 
-/* --- BUTTON STYLES (UPDATED COLORS) --- */
+/* --- BUTTON STYLES --- */
 .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
     padding: 0.8rem 1.5rem; border-radius: 6px; font-size: 0.95rem; font-weight: 600;
@@ -123,150 +185,52 @@ input:focus, textarea:focus, select:focus { outline: none; border-color: var(--b
     text-transform: uppercase; letter-spacing: 0.5px; min-width: 140px;
 }
 
-/* 1. SAVE / ADD Buttons -> GREEN */
-.btn {
-    background-color: var(--btn-save-green);
-    color: #fff;
-    border-color: var(--btn-save-green);
-}
-.btn:hover {
-    background-color: #27ae60;
-    border-color: #27ae60;
-    transform: translateY(-2px);
-}
+/* Save / Add -> Green */
+.btn { background-color: var(--btn-save-green); color: #fff; border-color: var(--btn-save-green); }
+.btn:hover { background-color: #27ae60; border-color: #27ae60; transform: translateY(-2px); }
 
-/* 2. ADD IMAGE / ADD LINK (Secondary) -> BLUE Outline */
-.btn-secondary {
-    background-color: transparent;
-    border: 1px solid var(--btn-edit-blue);
-    color: var(--btn-edit-blue);
-}
-.btn-secondary:hover {
-    background-color: var(--btn-edit-blue);
-    color: #fff;
-}
+/* Secondary -> Blue Outline */
+.btn-secondary { background-color: transparent; border: 1px solid var(--btn-edit-blue); color: var(--btn-edit-blue); }
+.btn-secondary:hover { background-color: var(--btn-edit-blue); color: #fff; }
 
-/* 3. EDIT Button -> BLUE Outline */
-.btn-edit {
-    background-color: transparent;
-    color: var(--btn-edit-blue);
-    border: 1px solid var(--btn-edit-blue);
-    padding: 0.5rem 1rem;
-    min-width: auto;
-    font-size: 0.85rem;
-    border-radius: 4px;
-    margin-right: 0.5rem;
-}
-.btn-edit:hover {
-    background-color: var(--btn-edit-blue);
-    color: #fff;
-}
+/* Edit -> Blue Outline */
+.btn-edit { background-color: transparent; color: var(--btn-edit-blue); border: 1px solid var(--btn-edit-blue); padding: 0.5rem 1rem; min-width: auto; font-size: 0.85rem; border-radius: 4px; margin-right: 0.5rem; }
+.btn-edit:hover { background-color: var(--btn-edit-blue); color: #fff; }
 
-/* 4. DELETE / REMOVE Button -> RED */
-.btn-delete {
-    background-color: rgba(231, 76, 60, 0.1);
-    color: var(--btn-delete-red);
-    border: 1px solid rgba(231, 76, 60, 0.5);
-    padding: 0.5rem 1rem;
-    min-width: auto;
-    font-size: 0.85rem;
-}
-.btn-delete:hover {
-    background-color: var(--btn-delete-red);
-    color: #fff;
-}
+/* Delete -> Red */
+.btn-delete { background-color: rgba(231, 76, 60, 0.1); color: var(--btn-delete-red); border: 1px solid rgba(231, 76, 60, 0.5); padding: 0.5rem 1rem; min-width: auto; font-size: 0.85rem; }
+.btn-delete:hover { background-color: var(--btn-delete-red); color: #fff; }
 
 /* Logout */
-.btn-logout {
-    background-color: transparent;
-    border: 1px solid var(--border-color);
-    color: var(--text-muted);
-    min-width: auto;
-    padding: 0.5rem 1rem;
-    font-size: 0.85rem;
-}
-.btn-logout:hover { border-color: var(--btn-delete-red); color: var(--btn-delete-red); }
+.btn-logout { background-color: transparent; border: 1px solid var(--border-color); color: var(--text-muted); min-width: auto; padding: 0.5rem 1rem; font-size: 0.85rem; }
+.btn-logout:hover { border-color: var(--btn-delete-red); color: var(--btn-delete-red); background-color: rgba(231, 76, 60, 0.05); }
 
-/* --- Remove Icons (X) in Inputs --- */
-.btn-remove-image, .btn-remove-link {
-    background-color: transparent;
-    border: 1px solid var(--btn-delete-red);
-    color: var(--btn-delete-red);
-    width: 40px; height: 40px; border-radius: 6px;
-    cursor: pointer; display: flex; align-items: center; justify-content: center;
-    font-size: 1.2rem;
-}
-.btn-remove-image:hover, .btn-remove-link:hover {
-    background-color: var(--btn-delete-red);
-    color: #fff;
-}
+/* --- Other Components --- */
+.btn-remove-image, .btn-remove-link { background-color: transparent; border: 1px solid var(--btn-delete-red); color: var(--btn-delete-red); width: 40px; height: 40px; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.2rem; }
+.btn-remove-image:hover, .btn-remove-link:hover { background-color: var(--btn-delete-red); color: #fff; }
 
-/* --- SOCIAL LINKS STYLING (Brand Colors) --- */
-/* WhatsApp */
-#setting-follow-whatsapp, #setting-whatsapp, #setting-chatbot-number, #setting-dealer-number {
-    border-left: 4px solid #25D366;
-}
-#setting-follow-whatsapp:focus, #setting-whatsapp:focus { border-color: #25D366; box-shadow: 0 0 0 1px #25D366; }
+#setting-follow-whatsapp, #setting-whatsapp, #setting-chatbot-number, #setting-dealer-number { border-left: 4px solid #25D366; }
+#setting-facebook-url { border-left: 4px solid #1877F2; }
+#setting-instagram-url { border-left: 4px solid #E1306C; }
+#setting-youtube-url { border-left: 4px solid #FF0000; }
 
-/* Facebook */
-#setting-facebook-url {
-    border-left: 4px solid #1877F2;
-}
-#setting-facebook-url:focus { border-color: #1877F2; box-shadow: 0 0 0 1px #1877F2; }
-
-/* Instagram */
-#setting-instagram-url {
-    border-left: 4px solid #E1306C;
-}
-#setting-instagram-url:focus { border-color: #E1306C; box-shadow: 0 0 0 1px #E1306C; }
-
-/* YouTube */
-#setting-youtube-url {
-    border-left: 4px solid #FF0000;
-}
-#setting-youtube-url:focus { border-color: #FF0000; box-shadow: 0 0 0 1px #FF0000; }
-
-
-/* --- Data Tables --- */
-.data-list-section {
-    background-color: var(--card-bg);
-    border-radius: 12px; border: 1px solid var(--border-color); padding: 1.5rem;
-}
+.data-list-section { background-color: var(--card-bg); border-radius: 12px; border: 1px solid var(--border-color); padding: 1.5rem; }
 .data-table-wrapper { overflow-x: auto; }
 .data-table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
-.data-table th {
-    text-align: left; padding: 1rem; background-color: rgba(255, 255, 255, 0.05);
-    color: var(--text-color); font-weight: 600; border-bottom: 1px solid var(--border-color);
-}
+.data-table th { text-align: left; padding: 1rem; background-color: var(--bg-color); color: var(--text-color); font-weight: 600; border-bottom: 1px solid var(--border-color); }
 .data-table td { padding: 1rem; border-bottom: 1px solid var(--border-color); color: var(--text-color); vertical-align: middle; }
 .data-table img { width: 50px; height: 50px; object-fit: cover; border-radius: 6px; }
 
-/* --- Inputs Layout --- */
 .image-url-list, .link-url-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
 .image-url-item, .link-url-item, .inline-image-input-container { display: flex; gap: 10px; align-items: center; }
-.image-preview-item, .inline-image-input-container img {
-    width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color);
-}
+.image-preview-item, .inline-image-input-container img { width: 45px; height: 45px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border-color); background-color: var(--bg-color); }
 
-/* --- Modals --- */
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px);
-    display: none; justify-content: center; align-items: center; z-index: 2000;
-}
-.modal-content {
-    background-color: #1a1a1a; padding: 2rem; border-radius: 12px;
-    border: 1px solid var(--border-color); width: 90%; max-width: 600px;
-    max-height: 90vh; overflow-y: auto;
-}
+.modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); backdrop-filter: blur(5px); display: none; justify-content: center; align-items: center; z-index: 2000; }
+.modal-content { background-color: var(--card-bg); padding: 2rem; border-radius: 12px; border: 1px solid var(--border-color); width: 90%; max-width: 600px; max-height: 90vh; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.2); }
 
-/* Responsive */
-@media (min-width: 768px) {
-    .form-grid { grid-template-columns: 1fr 1fr; gap: 2rem; }
-    .form-group.full-width { grid-column: 1 / -1; }
-}
-@media (max-width: 768px) {
-    .container { padding: 0 1rem; }
-    .btn { width: 100%; }
-    .data-table td:last-child { display: flex; gap: 5px; }
-}
+.status-message { padding: 1rem; border-radius: 6px; margin-bottom: 1.5rem; text-align: center; font-weight: 600; display: none; }
+.status-message.success { background-color: rgba(46, 204, 113, 0.15); color: var(--btn-save-green); border: 1px solid rgba(46, 204, 113, 0.3); }
+.status-message.error { background-color: rgba(231, 76, 60, 0.15); color: var(--btn-delete-red); border: 1px solid rgba(231, 76, 60, 0.3); }
+
+@media (min-width: 768px) { .form-grid { grid-template-columns: 1fr 1fr; gap: 2rem; } .form-group.full-width { grid-column: 1 / -1; } }
+@media (max-width: 768px) { .container { padding: 0 1rem; } .btn { width: 100%; } .data-table td:last-child { display: flex; gap: 5px; } }
