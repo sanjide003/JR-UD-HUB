@@ -1,4 +1,4 @@
-// admin.js - Fixed Edit/Delete Buttons & Auth Conflicts
+// admin.js - Fixed Event Delegation & Auth Issues
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -153,11 +153,11 @@ loginForm.addEventListener("submit", async (e) => {
 
 logoutButtons.forEach(btn => btn.addEventListener("click", () => signOut(auth)));
 
-// *** AUTH STATE CHANGE ***
+// *** AUTH STATE CHANGE (Fix for Anonymous User Conflict) ***
 onAuthStateChanged(auth, (user) => {
     if (user) {
         if (user.isAnonymous) {
-            // Anonymous users (from public site) shouldn't access admin
+            // If user is anonymous (from public site), force logout on admin page
             signOut(auth); 
             return;
         }
@@ -397,14 +397,23 @@ function loadFeaturedProducts() {
             let priceDisplay = `₹${product.price || 0}`;
             
             const row = document.createElement('tr');
-            row.innerHTML = `<td><img src="${imageUrl}" alt="${product.name}"></td><td>${product.name}</td><td>${priceDisplay}</td><td><button type="button" class="btn btn-delete btn-action-sm" data-id="${id}">Remove</button></td>`;
+            row.innerHTML = `
+                <td><img src="${imageUrl}" alt="${product.name}"></td>
+                <td>${product.name}</td>
+                <td>${priceDisplay}</td>
+                <td>
+                    <button class="btn btn-delete btn-action-sm" onclick="this.dispatchEvent(new CustomEvent('remove-featured', {bubbles:true, detail:'${id}'}))">Remove</button>
+                </td>
+            `;
+            
+            // Custom event listener for the inline button
             row.querySelector('button').addEventListener('click', () => removeFromFeatured(id));
             featuredProductsListBody.appendChild(row);
         });
-     });
+     }, (error) => { console.error("Error loading featured products: ", error); });
 }
 
-productFilterCategory.addEventListener("change", (e) => { loadProducts(e.target.value); });
+productFilterCategory.addEventListener("change", (e) => { const categoryId = e.target.value; loadProducts(categoryId); });
 
 addProductForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -415,10 +424,12 @@ addProductForm.addEventListener("submit", async (e) => {
         if (imageUrls.length === 0 || imageUrls[0] === '') throw new Error("Please add at least one image URL.");
         const moreLinks = getMoreLinksFromUploader('product-more-links-container');
 
+        const specification = document.getElementById("product-specification").value;
+
         const product = {
             categoryId: productCategorySelect.value,
             name: document.getElementById("product-name").value,
-            specification: document.getElementById("product-specification").value,
+            specification: specification,
             mrp: Number(document.getElementById("product-mrp").value) || 0,
             price: Number(document.getElementById("product-price").value) || 0,
             description: document.getElementById("product-description").value,
@@ -433,7 +444,7 @@ addProductForm.addEventListener("submit", async (e) => {
         addProductForm.reset();
         populateImageUploader('product-image-list-container', []);
         populateMoreLinksUploader('product-more-links-container', []);
-    } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
+    } catch (error) { console.error("Error adding product: ", error); showStatus(adminStatus, `Error: ${error.message}`); } 
     finally { enableButton(button, "Save Product"); }
 });
 
@@ -447,10 +458,10 @@ function loadHeroSlides() {
             const id = doc.id;
             let preview = (slide.type === 'image') ? `<img src="${slide.url}" alt="Preview" style="width:100px;">` : `<video src="${slide.url}" muted width="100"></video>`;
             const row = document.createElement('tr');
-            row.innerHTML = `<td>${preview}</td><td>${slide.type}</td><td>${slide.order}</td><td><button type="button" class="btn btn-delete btn-action-sm" data-id="${id}" data-type="heroSlide">Delete</button></td>`;
+            row.innerHTML = `<td>${preview}</td><td>${slide.type}</td><td>${slide.order}</td><td><button class="btn btn-delete btn-action-sm" data-id="${id}" data-type="heroSlide">Delete</button></td>`;
             heroSlidesListBody.appendChild(row);
         });
-    });
+    }, (error) => { console.error("Error loading hero slides: ", error); showStatus(adminStatus, "Error loading hero slides."); });
 }
 
 addHeroSlideForm.addEventListener("submit", async (e) => {
@@ -467,32 +478,36 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
         await addDoc(collection(db, "heroSlides"), slide);
         showStatus(adminStatus, "Hero slide added successfully!", false);
         addHeroSlideForm.reset();
-    } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
+    } catch (error) { console.error("Error adding hero slide: ", error); showStatus(adminStatus, `Error: ${error.message}`); } 
     finally { enableButton(button, "Add Slide"); }
 });
 
-// Event Delegation for Edit/Delete Buttons
 document.body.addEventListener('click', async (e) => {
     const target = e.target;
-    // *** Added preventDefault to stop any potential form submission or link behavior ***
-    if (target.classList.contains('btn-delete')) {
-        e.preventDefault();
-        const id = target.dataset.id;
-        const type = target.dataset.type;
-        openConfirmModal(id, type);
+    // Use closest to handle clicks on the icon inside the button
+    const deleteBtn = target.closest('.btn-delete');
+    if (deleteBtn) {
+        e.preventDefault(); 
+        const id = deleteBtn.dataset.id;
+        const type = deleteBtn.dataset.type;
+        if(id && type) openConfirmModal(id, type);
+        return;
     }
-    if (target.classList.contains('btn-edit')) {
+    
+    const editBtn = target.closest('.btn-edit');
+    if (editBtn) {
         e.preventDefault();
-        const id = target.dataset.id;
-        const type = target.dataset.type;
-        openEditModal(id, type);
+        const id = editBtn.dataset.id;
+        const type = editBtn.dataset.type;
+        if(id && type) openEditModal(id, type);
+        return;
     }
 });
 
 function openConfirmModal(id, type) {
     deleteInfo = { id, type }; 
     confirmTitle.textContent = `Delete ${type}?`;
-    confirmMessage.textContent = `Are you sure you want to delete this ${type}?`;
+    confirmMessage.textContent = `Are you sure you want to delete this ${type}? This action cannot be undone.`;
     confirmModal.style.display = 'flex';
 }
 function closeConfirmModal() {
@@ -515,7 +530,7 @@ confirmBtnDelete.addEventListener('click', async () => {
             await deleteDoc(doc(db, collectionName, id));
             showStatus(adminStatus, `${type} deleted successfully.`, false);
         }
-    } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
+    } catch (error) { console.error("Error deleting item: ", error); showStatus(adminStatus, `Error: ${error.message}`); } 
     finally { enableButton(confirmBtnDelete, "Delete"); closeConfirmModal(); }
 });
 
@@ -599,13 +614,11 @@ modalForm.addEventListener("submit", async (e) => {
     } catch (error) { console.error("Error saving changes: ", error); showStatus(adminStatus, `Error: ${error.message}`); enableButton(button, "Save Changes"); }
 });
 
-// Image & Link Uploader Helpers (Cleaned Up)
 function setupImageUploader(containerId, addBtnId) {
     const container = document.getElementById(containerId);
     const addBtn = document.getElementById(addBtnId);
     if (!container || !addBtn) return;
     
-    // Replace element to remove old listeners
     const newBtn = addBtn.cloneNode(true);
     addBtn.parentNode.replaceChild(newBtn, addBtn);
     
