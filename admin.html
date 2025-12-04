@@ -1,8 +1,8 @@
 <!-- 
   ഇതാണ് അഡ്മിൻ പാനൽ. admin.html
   മാറ്റങ്ങൾ: 
-  1. Login ബട്ടൺ നീലയാക്കി.
-  2. എഡിറ്റ്/ഡിലീറ്റ് ബട്ടണുകളുടെ ക്ലാസ്സ് അപ്ഡേറ്റ് ചെയ്തു (വലിപ്പം കുറയ്ക്കാൻ).
+  1. Login Button: Blue.
+  2. Edit/Delete Buttons: Compact & Correct Types.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -46,11 +46,7 @@
         <header class="admin-main-header">
             <div class="admin-header-left">
                 <button id="admin-nav-open-btn" aria-label="Open Menu">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <line x1="3" y1="12" x2="21" y2="12"></line>
-                        <line x1="3" y1="6" x2="21" y2="6"></line>
-                        <line x1="3" y1="18" x2="21" y2="18"></line>
-                    </svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
                 </button>
                 <h1 id="admin-panel-title">ADMIN DASHBOARD</h1>
             </div>
@@ -80,7 +76,7 @@
                     <span class="theme-icon-sun" style="display: none;"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></span>
                     <span id="theme-text">Dark Mode</span>
                 </button>
-                <button class="btn btn-logout logout-action-btn">Logout</button>
+                <button class="btn btn-logout logout-action-btn full-width-logout">Logout</button>
             </div>
         </nav>
         <div class="admin-nav-overlay" id="admin-nav-overlay"></div>
@@ -125,9 +121,9 @@
                 <div class="data-list-section">
                     <h2 style="border:none;">Featured Products</h2>
                     <div class="featured-search-container" style="background:var(--bg-color); padding:1.5rem; border-radius:8px; margin-bottom:1.5rem; border:1px solid var(--border-color);">
-                        <label>Search Product to Add</label>
+                        <label>Search Product</label>
                         <div class="search-wrapper">
-                            <input type="text" id="featured-product-search" placeholder="Type product name...">
+                            <input type="text" id="featured-product-search" placeholder="Type name...">
                             <div id="featured-search-results" class="search-results-dropdown"></div>
                         </div>
                     </div>
@@ -139,8 +135,8 @@
                 <form id="add-category-form" class="form-section">
                     <h2>Manage Categories</h2>
                     <div class="form-grid">
-                        <div class="form-group"><label>Category Name <span class="required-star">*</span></label><input type="text" id="category-name" required></div>
-                        <div class="form-group"><label>Image URL <span class="required-star">*</span></label><div class="inline-image-input-container"><div class="image-preview-small" id="category-image-preview"></div><input type="text" id="category-image-url" required></div></div>
+                        <div class="form-group"><label>Name <span class="required-star">*</span></label><input type="text" id="category-name" required></div>
+                        <div class="form-group"><label>Icon URL <span class="required-star">*</span></label><div class="inline-image-input-container"><div class="image-preview-small" id="category-image-preview"></div><input type="text" id="category-image-url" required></div></div>
                     </div>
                     <div style="margin-top:1.5rem; text-align:right;"><button type="submit" class="btn" id="add-category-button">Add Category</button></div>
                 </form>
@@ -203,6 +199,7 @@
 
         </div>
 
+        <!-- Edit Modal -->
         <div id="edit-modal" class="modal-overlay">
             <div class="modal-content">
                 <div class="modal-header">
@@ -213,6 +210,7 @@
             </div>
         </div>
 
+        <!-- Confirm Modal -->
         <div id="confirm-modal" class="modal-overlay">
             <div class="modal-content" style="max-width: 400px; text-align: center;">
                 <div class="modal-header" style="justify-content: center;">
