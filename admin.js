@@ -1,4 +1,4 @@
-// admin.js - Updated with Theme Switch & Mobile Responsive Data Labels
+// admin.js - Updated with Floating Toasts
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -31,10 +31,9 @@ const loginSection = document.getElementById("login-section");
 const adminPanel = document.getElementById("admin-panel");
 const loginForm = document.getElementById("login-form");
 const loginButton = document.getElementById("login-button");
-const loginStatus = document.getElementById("login-status");
 
 const logoutButtons = document.querySelectorAll(".logout-action-btn");
-const adminStatus = document.getElementById("admin-status");
+const toastContainer = document.getElementById("toast-container"); // New Container
 
 // Nav Elements
 const adminNavOpenBtn = document.getElementById("admin-nav-open-btn");
@@ -42,8 +41,6 @@ const adminNavCloseBtn = document.getElementById("admin-nav-close-btn");
 const adminSideNav = document.getElementById("admin-side-nav");
 const adminNavOverlay = document.getElementById("admin-nav-overlay");
 const adminNavLinks = document.querySelector(".admin-nav-links");
-
-// Theme Toggle Elements
 const themeToggleBtn = document.getElementById("theme-toggle-btn");
 
 // Page & Forms
@@ -57,10 +54,6 @@ const productsListBody = document.getElementById("products-list-body");
 const featuredProductsListBody = document.getElementById("featured-products-list-body"); 
 const addHeroSlideForm = document.getElementById("add-hero-slide-form");
 const heroSlidesListBody = document.getElementById("hero-slides-list-body");
-
-const generalSettingsForm = document.getElementById("general-settings-form");
-const contactSettingsForm = document.getElementById("contact-settings-form");
-const followSettingsForm = document.getElementById("follow-settings-form");
 
 // Modals
 const editModal = document.getElementById("edit-modal");
@@ -80,11 +73,9 @@ let allProductsCache = [];
 // --- Theme Logic ---
 function initTheme() {
     const savedTheme = localStorage.getItem('admin-theme') || 'dark';
-    if (savedTheme === 'light') {
-        document.body.classList.add('light-mode');
-    }
+    if (savedTheme === 'light') document.body.classList.add('light-mode');
 }
-initTheme(); // Run immediately
+initTheme();
 
 if (themeToggleBtn) {
     themeToggleBtn.addEventListener('click', () => {
@@ -94,15 +85,24 @@ if (themeToggleBtn) {
     });
 }
 
-// --- Helper Functions ---
-function showStatus(element, message, isError = true) {
-    element.textContent = message;
-    element.className = isError ? 'status-message error' : 'status-message success';
+// --- Helper Functions (Updated) ---
+
+// New Floating Toast Notification
+function showStatus(elementIgnored, message, isError = true) {
+    const toast = document.createElement('div');
+    toast.className = `toast ${isError ? 'error' : 'success'}`;
+    toast.innerHTML = `
+        <span>${isError ? '⚠️' : '✅'}</span>
+        <span>${message}</span>
+    `;
+    
+    toastContainer.appendChild(toast);
+    
+    // Remove after 3 seconds
     setTimeout(() => {
-        element.style.display = 'none';
-        element.textContent = '';
-    }, 4000);
-    element.style.display = 'block';
+        toast.style.animation = 'fadeOut 0.5s forwards';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
 }
 
 function disableButton(button, text = "Wait...") {
@@ -132,7 +132,7 @@ loginForm.addEventListener("submit", async (e) => {
     try {
         await signInWithEmailAndPassword(auth, email, password);
     } catch (error) {
-        showStatus(loginStatus, `Login Failed: ${error.message}`);
+        showStatus(null, `Login Failed: ${error.message}`);
     } finally {
         enableButton(loginButton, "Login"); 
     }
@@ -163,7 +163,6 @@ function loadInitialData() {
     setupImageUploader('product-image-list-container', 'add-image-url-btn');
     setupMoreLinksUploader('product-more-links-container', 'add-more-link-btn');
     
-    // Check if empty, add first input
     const imgContainer = document.getElementById("product-image-list-container");
     if (imgContainer && imgContainer.children.length === 0) addImageInput('product-image-list-container');
     
@@ -201,7 +200,6 @@ async function loadAllSettings() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
             const settings = docSnap.data();
-            // Fill inputs safely
             const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
             
             setVal("setting-logo-image-url", settings.logoImageUrl);
@@ -222,14 +220,12 @@ async function loadAllSettings() {
             const titleElement = document.getElementById("admin-panel-title");
             if (titleElement && settings.logoText) titleElement.textContent = `${settings.logoText} - Admin`;
             
-            // Trigger preview updates
             document.getElementById("setting-logo-image-url").dispatchEvent(new Event('input'));
             document.getElementById("setting-home-banner-url").dispatchEvent(new Event('input'));
         }
     } catch (error) { console.error(error); }
 }
 
-// Common Save Function
 async function saveSettings(formId, btnId, defaultBtnText, dataBuilder) {
     const form = document.getElementById(formId);
     form.addEventListener("submit", async (e) => {
@@ -239,13 +235,13 @@ async function saveSettings(formId, btnId, defaultBtnText, dataBuilder) {
         try {
             const data = dataBuilder();
             await setDoc(doc(db, "settings", "global"), data, { merge: true });
-            showStatus(adminStatus, "Settings saved!", false);
+            showStatus(null, "Settings saved successfully!", false);
             if (data.logoText) {
                 const titleElement = document.getElementById("admin-panel-title");
                 if (titleElement) titleElement.textContent = `${data.logoText} - Admin`;
             }
         } catch (error) {
-            showStatus(adminStatus, `Error: ${error.message}`);
+            showStatus(null, `Error: ${error.message}`);
         } finally {
             enableButton(btn, defaultBtnText);
         }
@@ -275,7 +271,6 @@ saveSettings("follow-settings-form", "save-follow-settings-button", "Save 'Follo
     youtubeUrl: document.getElementById("setting-youtube-url").value,
 }));
 
-
 // --- Categories Logic ---
 function loadCategories() {
     const q = query(collection(db, "categories"), orderBy("name"));
@@ -295,7 +290,6 @@ function loadCategories() {
         snapshot.forEach((doc) => {
             const cat = doc.data();
             const row = document.createElement('tr');
-            // Added data-label for Mobile Card View
             row.innerHTML = `
                 <td data-label="Image"><img src="${cat.imageUrl}" alt="${cat.name}"></td>
                 <td data-label="Name">${cat.name}</td>
@@ -306,7 +300,6 @@ function loadCategories() {
             `;
             categoriesListBody.appendChild(row);
 
-            // Populate Selects
             const opt = document.createElement('option');
             opt.value = doc.id;
             opt.textContent = cat.name;
@@ -326,10 +319,10 @@ addCategoryForm.addEventListener("submit", async (e) => {
             imageUrl: document.getElementById("category-image-url").value,
             createdAt: serverTimestamp()
         });
-        showStatus(adminStatus, "Category added!", false);
+        showStatus(null, "Category added successfully!", false);
         addCategoryForm.reset();
         document.getElementById('category-image-preview').innerHTML = '';
-    } catch (err) { showStatus(adminStatus, err.message); }
+    } catch (err) { showStatus(null, err.message); }
     finally { enableButton(btn, "Add Category"); }
 });
 
@@ -339,7 +332,7 @@ function loadProducts(categoryId = "all") {
     if (categoryId === "all") q = query(collection(db, "products"), orderBy("createdAt", "desc"));
     else q = query(collection(db, "products"), where("categoryId", "==", categoryId));
     
-    if (currentProductsQuery) currentProductsQuery(); // Unsubscribe prev
+    if (currentProductsQuery) currentProductsQuery(); 
     
     currentProductsQuery = onSnapshot(q, (snapshot) => {
         productsListBody.innerHTML = '';
@@ -351,7 +344,6 @@ function loadProducts(categoryId = "all") {
         snapshot.forEach((doc) => {
             const p = doc.data();
             const img = p.images && p.images[0] ? p.images[0] : '';
-            // Added data-label for Mobile Card View
             const row = document.createElement('tr');
             row.innerHTML = `
                 <td data-label="Image"><img src="${img}" alt="${p.name}"></td>
@@ -392,18 +384,18 @@ addProductForm.addEventListener("submit", async (e) => {
         };
         
         await addDoc(collection(db, "products"), product);
-        showStatus(adminStatus, "Product added!", false);
+        showStatus(null, "Product added successfully!", false);
+        // Reset form but keep user on this tab
         addProductForm.reset();
         populateImageUploader('product-image-list-container', []);
         populateMoreLinksUploader('product-more-links-container', []);
-        // Reset inputs that are not auto-cleared properly by reset() if needed
         document.getElementById("product-image-list-container").innerHTML = '';
         addImageInput('product-image-list-container');
-    } catch (err) { showStatus(adminStatus, err.message); }
+    } catch (err) { showStatus(null, err.message); }
     finally { enableButton(btn, "Add Product"); }
 });
 
-// --- Featured Search & Logic ---
+// --- Featured & Search ---
 function cacheAllProductsForSearch() {
     const q = query(collection(db, "products"));
     onSnapshot(q, (snap) => {
@@ -441,7 +433,7 @@ featuredSearchInput.addEventListener('input', (e) => {
                 await updateDoc(doc(db, "products", p.id), { featured: true });
                 featuredSearchInput.value = '';
                 featuredSearchResults.style.display = 'none';
-                showStatus(adminStatus, "Added to Featured!", false);
+                showStatus(null, "Added to Featured List!", false);
             });
             featuredSearchResults.appendChild(div);
         });
@@ -474,6 +466,7 @@ function loadFeaturedProducts() {
             row.querySelector('.btn-remove-featured').addEventListener('click', async () => {
                 if(confirm("Remove from featured?")) {
                     await updateDoc(doc(db, "products", d.id), { featured: false });
+                    showStatus(null, "Removed from Featured List", false);
                 }
             });
             featuredProductsListBody.appendChild(row);
@@ -493,9 +486,9 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
             order: Number(document.getElementById("hero-slide-order").value) || 1,
             createdAt: serverTimestamp()
         });
-        showStatus(adminStatus, "Slide added!", false);
+        showStatus(null, "Slide added successfully!", false);
         addHeroSlideForm.reset();
-    } catch(err) { showStatus(adminStatus, err.message); }
+    } catch(err) { showStatus(null, err.message); }
     finally { enableButton(btn, "Add Slide"); }
 });
 
@@ -520,7 +513,7 @@ function loadHeroSlides() {
     });
 }
 
-// --- Image Uploader UI Helpers ---
+// --- Uploader UI ---
 function setupImagePreview(inputId, previewId) {
     const input = document.getElementById(inputId);
     const box = document.getElementById(previewId);
@@ -613,7 +606,7 @@ function populateMoreLinksUploader(cId, links) {
     else addMoreLinkInput(cId);
 }
 
-// --- Deletion & Edit Modals ---
+// --- Deletion & Edit ---
 document.body.addEventListener('click', (e) => {
     if(e.target.classList.contains('btn-delete')) {
         deleteInfo = { id: e.target.dataset.id, type: e.target.dataset.type };
@@ -635,15 +628,15 @@ confirmBtnDelete.addEventListener('click', async () => {
         const col = deleteInfo.type === 'product' ? 'products' : 
                    deleteInfo.type === 'category' ? 'categories' : 'heroSlides';
         await deleteDoc(doc(db, col, deleteInfo.id));
-        showStatus(adminStatus, "Deleted!", false);
-    } catch(err) { showStatus(adminStatus, err.message); }
+        showStatus(null, "Item deleted successfully!", false);
+    } catch(err) { showStatus(null, err.message); }
     finally { 
         enableButton(confirmBtnDelete, "Confirm Delete");
         confirmModal.style.display = 'none';
     }
 });
 
-// Edit Modal Logic (Simplified for brevity, similar to Add logic)
+// Edit Modal
 async function openEditModal(id, type) {
     editModal.style.display = 'flex';
     modalForm.innerHTML = '<p>Loading...</p>';
@@ -654,18 +647,14 @@ async function openEditModal(id, type) {
         if(!d.exists()) throw new Error("Not found");
         const data = d.data();
         
-        // Re-using specific logic for product/category form generation inside modal
-        // For brevity, ensuring the key elements are recreated:
         if(type === 'category') {
             modalForm.innerHTML = `
                 <input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="category">
                 <div class="form-group"><label>Name</label><input type="text" id="edit-cat-name" value="${data.name}"></div>
                 <div class="form-group"><label>Image URL</label><input type="text" id="edit-cat-img" value="${data.imageUrl}"></div>
-                <button type="submit" class="btn" id="save-edit-btn">Save</button>
+                <button type="submit" class="btn btn-save" id="save-edit-btn">Save Changes</button>
             `;
         } else {
-             // Populate categories dropdown logic needed here or simplified text input for now?
-             // Better to fetch categories again for the dropdown
              const cats = await getDocs(query(collection(db, "categories")));
              let catOptions = '';
              cats.forEach(c => catOptions += `<option value="${c.id}" ${c.id===data.categoryId?'selected':''}>${c.data().name}</option>`);
@@ -678,12 +667,11 @@ async function openEditModal(id, type) {
                 <div class="form-group"><label>MRP</label><input type="number" id="edit-mrp" value="${data.mrp}"></div>
                 <div class="form-group"><label>Specification</label><textarea id="edit-spec">${data.specification||''}</textarea></div>
                 <div class="form-group"><label>Description</label><textarea id="edit-desc">${data.description||''}</textarea></div>
-                <div class="form-group"><label>Images (Comma separated URLs for quick edit)</label><textarea id="edit-images">${data.images?.join(',')||''}</textarea></div>
-                <button type="submit" class="btn" id="save-edit-btn">Save</button>
+                <div class="form-group"><label>Images (URLs)</label><textarea id="edit-images">${data.images?.join(',')||''}</textarea></div>
+                <button type="submit" class="btn btn-save" id="save-edit-btn">Save Changes</button>
              `;
         }
         
-        // Attach Save Event
         document.getElementById('save-edit-btn').addEventListener('click', async (e) => {
             e.preventDefault();
             const btn = e.target;
@@ -713,9 +701,9 @@ async function openEditModal(id, type) {
                 }
                 
                 await updateDoc(doc(db, col, eId), updateData);
-                showStatus(adminStatus, "Updated!", false);
+                showStatus(null, "Updated successfully!", false);
                 editModal.style.display = 'none';
-            } catch(err) { console.error(err); alert("Error saving"); enableButton(btn, "Save"); }
+            } catch(err) { console.error(err); alert("Error saving"); enableButton(btn, "Save Changes"); }
         });
         
     } catch(err) { console.error(err); editModal.style.display = 'none'; }
