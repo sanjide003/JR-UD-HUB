@@ -23,7 +23,15 @@ import {
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db, auth } from './firebase-config.js';
 
-// --- Global DOM Elements ---
+// --- Icons (SVG Strings) ---
+const ICONS = {
+    trash: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
+    edit: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`,
+    x: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
+    star: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+};
+
+// --- DOM Elements ---
 const loginSection = document.getElementById("login-section");
 const adminPanel = document.getElementById("admin-panel");
 const loginForm = document.getElementById("login-form");
@@ -49,7 +57,6 @@ const featuredProductsListBody = document.getElementById("featured-products-list
 const addHeroSlideForm = document.getElementById("add-hero-slide-form");
 const heroSlidesListBody = document.getElementById("hero-slides-list-body");
 
-// Modals
 const editModal = document.getElementById("edit-modal");
 const modalCloseButton = document.getElementById("modal-close-button");
 const modalForm = document.getElementById("modal-form");
@@ -58,25 +65,20 @@ const confirmBtnDelete = document.getElementById("confirm-btn-delete");
 const confirmCloseButton = document.getElementById("confirm-close-button");
 const confirmBtnCancel = document.getElementById("confirm-btn-cancel");
 
-// State
 let currentProductsQuery = null;
 let currentFeaturedQuery = null;
 let deleteInfo = { id: null, type: null }; 
 let allProductsCache = []; 
 
-// --- Helper: Show Toast ---
+// --- Helper Functions ---
 function showStatus(ignored, message, isError = true) {
     const toast = document.createElement('div');
     toast.className = `toast ${isError ? 'error' : 'success'}`;
-    toast.innerHTML = `<span>${isError?'⚠️':'✅'}</span><span>${message}</span>`;
+    toast.innerHTML = `<span>${isError?'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>':'<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>'}</span><span>${message}</span>`;
     toastContainer.appendChild(toast);
-    setTimeout(() => {
-        toast.style.opacity = '0';
-        setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    setTimeout(() => { toast.style.opacity = '0'; setTimeout(() => toast.remove(), 300); }, 3000);
 }
 
-// --- Helper: Button Loading State ---
 function disableButton(btn, text = "Wait...") {
     if(!btn) return;
     btn.disabled = true;
@@ -140,7 +142,6 @@ adminNavLinks.addEventListener("click", (e) => {
     }
 });
 
-// --- Initial Data Load ---
 function loadInitialData() {
     loadCategories();
     loadProducts("all");
@@ -164,7 +165,7 @@ async function loadAllSettings() {
             set("setting-logo-text", s.logoText);
             set("setting-logo-subtitle", s.logoSubtitle);
             set("setting-home-banner-url", s.homeBannerUrl);
-            set("setting-home-banner-link", s.homeBannerLink); // New Field
+            set("setting-home-banner-link", s.homeBannerLink);
             set("setting-chatbot-number", s.chatbotNumber);
             set("setting-dealer-number", s.dealerChatNumber);
             set("setting-phone", s.phone);
@@ -188,18 +189,17 @@ function bindSave(formId, btnId, txt, getter) {
         disableButton(btn, "Saving...");
         try {
             await setDoc(doc(db, "settings", "global"), getter(), { merge: true });
-            showStatus(null, "Saved!", false);
+            showStatus(null, "Saved Successfully!", false);
         } catch(err){ showStatus(null, err.message); }
         finally { enableButton(btn, txt); }
     });
 }
-
 bindSave("general-settings-form", "save-general-settings-button", "Save General Settings", () => ({
     logoImageUrl: document.getElementById("setting-logo-image-url").value,
     logoText: document.getElementById("setting-logo-text").value,
     logoSubtitle: document.getElementById("setting-logo-subtitle").value,
     homeBannerUrl: document.getElementById("setting-home-banner-url").value,
-    homeBannerLink: document.getElementById("setting-home-banner-link").value, // New Field
+    homeBannerLink: document.getElementById("setting-home-banner-link").value,
     chatbotNumber: document.getElementById("setting-chatbot-number").value,
     dealerChatNumber: document.getElementById("setting-dealer-number").value
 }));
@@ -230,7 +230,10 @@ function loadCategories() {
                 <tr>
                     <td data-label="Image"><img src="${c.imageUrl}" alt="${c.name}"></td>
                     <td data-label="Name">${c.name}</td>
-                    <td data-label="Actions"><button class="btn btn-edit" data-id="${d.id}" data-type="category">Edit</button><button class="btn btn-delete" data-id="${d.id}" data-type="category">Delete</button></td>
+                    <td data-label="Actions">
+                        <button class="btn btn-edit" data-id="${d.id}" data-type="category">${ICONS.edit} Edit</button>
+                        <button class="btn btn-delete" data-id="${d.id}" data-type="category">${ICONS.trash} Delete</button>
+                    </td>
                 </tr>`;
             const opt = `<option value="${d.id}">${c.name}</option>`;
             sel.innerHTML += opt; fil.innerHTML += opt;
@@ -261,9 +264,12 @@ function loadProducts(catId = "all") {
             productsListBody.innerHTML += `
                 <tr>
                     <td data-label="Image"><img src="${p.images?.[0]||''}"></td>
-                    <td data-label="Name">${p.name} ${p.featured?'⭐':''}</td>
+                    <td data-label="Name">${p.name} ${p.featured ? ICONS.star : ''}</td>
                     <td data-label="Price">₹${p.price}</td>
-                    <td data-label="Actions"><button class="btn btn-edit" data-id="${d.id}" data-type="product">Edit</button><button class="btn btn-delete" data-id="${d.id}" data-type="product">Delete</button></td>
+                    <td data-label="Actions">
+                        <button class="btn btn-edit" data-id="${d.id}" data-type="product">${ICONS.edit} Edit</button>
+                        <button class="btn btn-delete" data-id="${d.id}" data-type="product">${ICONS.trash} Delete</button>
+                    </td>
                 </tr>`;
         });
     });
@@ -333,7 +339,7 @@ function loadFeaturedProducts() {
         snap.forEach(d => {
             const p = d.data();
             const row = document.createElement('tr');
-            row.innerHTML = `<td data-label="Image"><img src="${p.images?.[0]||''}"></td><td data-label="Name">${p.name}</td><td data-label="Price">₹${p.price}</td><td data-label="Actions"><button class="btn btn-remove-featured" data-id="${d.id}">Remove</button></td>`;
+            row.innerHTML = `<td data-label="Image"><img src="${p.images?.[0]||''}"></td><td data-label="Name">${p.name}</td><td data-label="Price">₹${p.price}</td><td data-label="Actions"><button class="btn btn-remove-featured" data-id="${d.id}">${ICONS.x} Remove</button></td>`;
             row.querySelector('.btn-remove-featured').addEventListener('click', async () => {
                 if(confirm("Remove?")) { await updateDoc(doc(db, "products", d.id), { featured: false }); showStatus(null, "Removed", false); }
             });
@@ -362,7 +368,7 @@ function loadHeroSlides() {
         heroSlidesListBody.innerHTML = '';
         snap.forEach(d => {
             const s = d.data();
-            heroSlidesListBody.innerHTML += `<tr><td data-label="Preview">${s.type==='image'?`<img src="${s.url}">`:'Video'}</td><td data-label="Type">${s.type}</td><td data-label="Order">${s.order}</td><td data-label="URL">${s.url}</td><td data-label="Actions"><button class="btn btn-delete" data-id="${d.id}" data-type="heroSlide">Delete</button></td></tr>`;
+            heroSlidesListBody.innerHTML += `<tr><td data-label="Preview">${s.type==='image'?`<img src="${s.url}">`:'Video'}</td><td data-label="Type">${s.type}</td><td data-label="Order">${s.order}</td><td data-label="URL">${s.url}</td><td data-label="Actions"><button class="btn btn-delete" data-id="${d.id}" data-type="heroSlide">${ICONS.trash} Delete</button></td></tr>`;
         });
     });
 }
@@ -383,7 +389,7 @@ function setupImageUploader(cid, bid) {
     document.getElementById(cid).addEventListener('input', e => { if(e.target.tagName==='INPUT') e.target.closest('.image-url-item').querySelector('img').src = e.target.value; });
 }
 function addImageInput(cid, val='') {
-    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="image-url-item"><img src="${val}" class="image-preview-item" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='"><input type="text" value="${val}" placeholder="URL"><button type="button" class="btn-remove-image">&times;</button></div>`);
+    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="image-url-item"><img src="${val}" class="image-preview-item" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='"><input type="text" value="${val}" placeholder="URL"><button type="button" class="btn-remove-image">${ICONS.x}</button></div>`);
 }
 function getImageUrlsFromUploader(cid) { return Array.from(document.getElementById(cid).querySelectorAll('input')).map(i=>i.value.trim()).filter(v=>v); }
 function populateImageUploader(cid, urls) { const c=document.getElementById(cid); c.innerHTML=''; (urls&&urls.length?urls:['']).forEach(u=>addImageInput(cid, u)); }
@@ -394,13 +400,12 @@ function setupMoreLinksUploader(cid, bid) {
     document.getElementById(cid).addEventListener('click', e => { if(e.target.closest('.btn-remove-link')) e.target.closest('.link-url-item').remove(); });
 }
 function addLinkInput(cid, d={title:'',url:''}) {
-    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="link-url-item"><input type="text" class="link-title-input" value="${d.title}" placeholder="Title"><input type="text" class="link-url-input" value="${d.url}" placeholder="URL"><button type="button" class="btn-remove-link">&times;</button></div>`);
+    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="link-url-item"><input type="text" class="link-title-input" value="${d.title}" placeholder="Title"><input type="text" class="link-url-input" value="${d.url}" placeholder="URL"><button type="button" class="btn-remove-link">${ICONS.x}</button></div>`);
 }
 function getMoreLinksFromUploader(cid) { 
     return Array.from(document.getElementById(cid).querySelectorAll('.link-url-item')).map(d => ({ title: d.querySelector('.link-title-input').value.trim(), url: d.querySelector('.link-url-input').value.trim() })).filter(l => l.title && l.url); 
 }
 function populateMoreLinksUploader(cid, links) { const c=document.getElementById(cid); c.innerHTML=''; (links&&links.length?links:[{title:'',url:''}]).forEach(l=>addLinkInput(cid, l)); }
-
 
 // --- DELETION ---
 document.body.addEventListener('click', e => {
@@ -416,8 +421,8 @@ confirmBtnDelete.onclick = async () => {
     disableButton(confirmBtnDelete, "Deleting...");
     try {
         await deleteDoc(doc(db, deleteInfo.type==='product'?'products':deleteInfo.type==='category'?'categories':'heroSlides', deleteInfo.id));
-        showStatus(null, "Deleted", false);
-    } catch(e) { showStatus(null, e.message); } finally { enableButton(confirmBtnDelete, "Confirm Delete"); confirmModal.style.display='none'; }
+        showStatus(null, "Deleted Successfully", false);
+    } catch(e) { showStatus(null, e.message); } finally { enableButton(confirmBtnDelete, "Delete"); confirmModal.style.display='none'; }
 };
 
 // --- COMPREHENSIVE EDIT MODAL ---
@@ -436,7 +441,7 @@ async function openEditModal(id, type) {
                 <input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="category">
                 <div class="form-group"><label>Name</label><input type="text" id="edit-cat-name" value="${data.name}"></div>
                 <div class="form-group"><label>Image URL</label><input type="text" id="edit-cat-img" value="${data.imageUrl}"></div>
-                <button type="submit" class="btn btn-save" id="save-edit-btn">Save Changes</button>`;
+                <button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
         } else {
              // Fetch Categories for dropdown
              const catsSnap = await getDocs(query(collection(db, "categories")));
@@ -457,7 +462,9 @@ async function openEditModal(id, type) {
                     <div class="form-group full-width">
                         <label>Images</label>
                         <div id="edit-image-list" class="image-url-list"></div>
-                        <button type="button" id="btn-add-edit-image" class="btn btn-secondary" style="margin-top:5px;">Add Image</button>
+                        <button type="button" id="btn-add-edit-image" class="btn btn-secondary" style="margin-top:5px;">
+                            ${ICONS.edit.replace('Edit', '')} Add Image
+                        </button>
                     </div>
 
                     <div class="form-group full-width">
@@ -469,15 +476,12 @@ async function openEditModal(id, type) {
                 <button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>
              `;
              
-             // Setup dynamic fields for Modal
              setupImageUploader('edit-image-list', 'btn-add-edit-image');
              populateImageUploader('edit-image-list', data.images);
-             
              setupMoreLinksUploader('edit-link-list', 'btn-add-edit-link');
              populateMoreLinksUploader('edit-link-list', data.moreLinks);
         }
 
-        // Attach Save Handler
         document.getElementById('save-edit-btn').addEventListener('click', async (e) => {
             e.preventDefault();
             const btn = e.target;
@@ -505,7 +509,7 @@ async function openEditModal(id, type) {
                     };
                 }
                 await updateDoc(doc(db, col, eId), updateData);
-                showStatus(null, "Updated!", false);
+                showStatus(null, "Updated Successfully!", false);
                 editModal.style.display = 'none';
             } catch(err) { showStatus(null, err.message); enableButton(btn, "Save Changes"); }
         });
