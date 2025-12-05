@@ -165,7 +165,6 @@ async function loadAllSettings() {
             set("setting-logo-text", s.logoText);
             set("setting-logo-subtitle", s.logoSubtitle);
             set("setting-home-banner-url", s.homeBannerUrl);
-            set("setting-home-banner-link", s.homeBannerLink);
             set("setting-chatbot-number", s.chatbotNumber);
             set("setting-dealer-number", s.dealerChatNumber);
             set("setting-phone", s.phone);
@@ -199,7 +198,6 @@ bindSave("general-settings-form", "save-general-settings-button", "Save General 
     logoText: document.getElementById("setting-logo-text").value,
     logoSubtitle: document.getElementById("setting-logo-subtitle").value,
     homeBannerUrl: document.getElementById("setting-home-banner-url").value,
-    homeBannerLink: document.getElementById("setting-home-banner-link").value,
     chatbotNumber: document.getElementById("setting-chatbot-number").value,
     dealerChatNumber: document.getElementById("setting-dealer-number").value
 }));
