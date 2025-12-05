@@ -1,5 +1,3 @@
-// admin.js - Updated with Floating Toasts
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
     getAuth, 
@@ -21,21 +19,18 @@ import {
     query,
     where, 
     serverTimestamp,
-    orderBy,
-    setLogLevel
+    orderBy
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db, auth } from './firebase-config.js';
 
-// --- DOM Elements ---
+// --- Global DOM Elements ---
 const loginSection = document.getElementById("login-section");
 const adminPanel = document.getElementById("admin-panel");
 const loginForm = document.getElementById("login-form");
 const loginButton = document.getElementById("login-button");
+const toastContainer = document.getElementById("toast-container");
 
 const logoutButtons = document.querySelectorAll(".logout-action-btn");
-const toastContainer = document.getElementById("toast-container"); // New Container
-
-// Nav Elements
 const adminNavOpenBtn = document.getElementById("admin-nav-open-btn");
 const adminNavCloseBtn = document.getElementById("admin-nav-close-btn");
 const adminSideNav = document.getElementById("admin-side-nav");
@@ -43,7 +38,6 @@ const adminNavOverlay = document.getElementById("admin-nav-overlay");
 const adminNavLinks = document.querySelector(".admin-nav-links");
 const themeToggleBtn = document.getElementById("theme-toggle-btn");
 
-// Page & Forms
 const pageContents = document.querySelectorAll(".page-content");
 const navLinks = document.querySelectorAll(".nav-link");
 
@@ -70,77 +64,48 @@ let currentFeaturedQuery = null;
 let deleteInfo = { id: null, type: null }; 
 let allProductsCache = []; 
 
-// --- Theme Logic ---
-function initTheme() {
-    const savedTheme = localStorage.getItem('admin-theme') || 'dark';
-    if (savedTheme === 'light') document.body.classList.add('light-mode');
-}
-initTheme();
-
-if (themeToggleBtn) {
-    themeToggleBtn.addEventListener('click', () => {
-        document.body.classList.toggle('light-mode');
-        const theme = document.body.classList.contains('light-mode') ? 'light' : 'dark';
-        localStorage.setItem('admin-theme', theme);
-    });
-}
-
-// --- Helper Functions (Updated) ---
-
-// New Floating Toast Notification
-function showStatus(elementIgnored, message, isError = true) {
+// --- Helper: Show Toast ---
+function showStatus(ignored, message, isError = true) {
     const toast = document.createElement('div');
     toast.className = `toast ${isError ? 'error' : 'success'}`;
-    toast.innerHTML = `
-        <span>${isError ? '⚠️' : '✅'}</span>
-        <span>${message}</span>
-    `;
-    
+    toast.innerHTML = `<span>${isError?'⚠️':'✅'}</span><span>${message}</span>`;
     toastContainer.appendChild(toast);
-    
-    // Remove after 3 seconds
     setTimeout(() => {
-        toast.style.animation = 'fadeOut 0.5s forwards';
-        setTimeout(() => toast.remove(), 500);
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
     }, 3000);
 }
 
-function disableButton(button, text = "Wait...") {
-    if (!button) return;
-    button.disabled = true;
-    const btnText = button.querySelector('.btn-text');
-    const btnLoader = button.querySelector('.btn-loader');
-    if (btnText) btnText.textContent = text;
-    if (btnLoader) btnLoader.style.display = 'inline-block';
+// --- Helper: Button Loading State ---
+function disableButton(btn, text = "Wait...") {
+    if(!btn) return;
+    btn.disabled = true;
+    const txt = btn.querySelector('.btn-text');
+    const load = btn.querySelector('.btn-loader');
+    if(txt) txt.textContent = text;
+    if(load) load.style.display = 'inline-block';
+}
+function enableButton(btn, text) {
+    if(!btn) return;
+    btn.disabled = false;
+    const txt = btn.querySelector('.btn-text');
+    const load = btn.querySelector('.btn-loader');
+    if(txt) txt.textContent = text;
+    if(load) load.style.display = 'none';
 }
 
-function enableButton(button, defaultText) {
-    if (!button) return;
-    button.disabled = false;
-    const btnText = button.querySelector('.btn-text');
-    const btnLoader = button.querySelector('.btn-loader');
-    if (btnText) btnText.textContent = defaultText;
-    if (btnLoader) btnLoader.style.display = 'none';
-}
-
-// --- Auth Logic ---
+// --- Auth ---
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     disableButton(loginButton, "Logging in..."); 
-    const email = document.getElementById("login-email").value;
-    const password = document.getElementById("login-password").value;
     try {
-        await signInWithEmailAndPassword(auth, email, password);
-    } catch (error) {
-        showStatus(null, `Login Failed: ${error.message}`);
-    } finally {
-        enableButton(loginButton, "Login"); 
-    }
+        await signInWithEmailAndPassword(auth, document.getElementById("login-email").value, document.getElementById("login-password").value);
+    } catch (error) { showStatus(null, "Login Failed", true); } 
+    finally { enableButton(loginButton, "Login"); }
 });
 
-logoutButtons.forEach(btn => {
-    btn.addEventListener("click", () => signOut(auth));
-});
+logoutButtons.forEach(btn => btn.addEventListener("click", () => signOut(auth)));
+document.querySelector('.full-width-logout').addEventListener('click', () => signOut(auth));
 
 onAuthStateChanged(auth, (user) => {
     if (user && !user.isAnonymous) {
@@ -153,328 +118,231 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-function loadInitialData() {
-    loadCategories();
-    loadProducts("all"); 
-    loadFeaturedProducts(); 
-    loadHeroSlides(); 
-    loadAllSettings();
-    cacheAllProductsForSearch(); 
-    setupImageUploader('product-image-list-container', 'add-image-url-btn');
-    setupMoreLinksUploader('product-more-links-container', 'add-more-link-btn');
-    
-    const imgContainer = document.getElementById("product-image-list-container");
-    if (imgContainer && imgContainer.children.length === 0) addImageInput('product-image-list-container');
-    
-    const linkContainer = document.getElementById("product-more-links-container");
-    if (linkContainer && linkContainer.children.length === 0) addMoreLinkInput('product-more-links-container');
-}
-
-// --- Navigation Logic ---
-function closeAdminNav() {
-    adminSideNav.classList.remove("open");
-    adminNavOverlay.classList.remove("open");
-}
-adminNavOpenBtn.addEventListener("click", () => {
-    adminSideNav.classList.add("open");
-    adminNavOverlay.classList.add("open");
+// --- Theme ---
+if(localStorage.getItem('admin-theme') === 'light') document.body.classList.add('light-mode');
+themeToggleBtn.addEventListener('click', () => {
+    document.body.classList.toggle('light-mode');
+    localStorage.setItem('admin-theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
 });
-adminNavCloseBtn.addEventListener("click", closeAdminNav);
-adminNavOverlay.addEventListener("click", closeAdminNav);
 
+// --- Nav ---
+function closeNav() { adminSideNav.classList.remove("open"); adminNavOverlay.classList.remove("open"); }
+adminNavOpenBtn.addEventListener("click", () => { adminSideNav.classList.add("open"); adminNavOverlay.classList.add("open"); });
+adminNavCloseBtn.addEventListener("click", closeNav);
+adminNavOverlay.addEventListener("click", closeNav);
 adminNavLinks.addEventListener("click", (e) => {
-    if (e.target.classList.contains("nav-link")) {
-        const pageId = e.target.getAttribute("data-page");
-        pageContents.forEach(item => item.classList.remove("active"));
-        navLinks.forEach(item => item.classList.remove("active"));
-        document.getElementById(pageId).classList.add("active");
+    if(e.target.classList.contains("nav-link")) {
+        pageContents.forEach(p => p.classList.remove("active"));
+        navLinks.forEach(n => n.classList.remove("active"));
+        document.getElementById(e.target.dataset.page).classList.add("active");
         e.target.classList.add("active");
-        closeAdminNav(); 
+        closeNav();
     }
 });
 
-// --- Settings Logic ---
+// --- Initial Data Load ---
+function loadInitialData() {
+    loadCategories();
+    loadProducts("all");
+    loadFeaturedProducts();
+    loadHeroSlides();
+    loadAllSettings();
+    cacheAllProductsForSearch();
+    setupImageUploader('product-image-list-container', 'add-image-url-btn');
+    setupMoreLinksUploader('product-more-links-container', 'add-more-link-btn');
+    if(!document.getElementById("product-image-list-container").children.length) addImageInput('product-image-list-container');
+}
+
+// --- Settings ---
 async function loadAllSettings() {
     try {
-        const docRef = doc(db, "settings", "global");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-            const settings = docSnap.data();
-            const setVal = (id, val) => { const el = document.getElementById(id); if(el) el.value = val || ''; };
-            
-            setVal("setting-logo-image-url", settings.logoImageUrl);
-            setVal("setting-logo-text", settings.logoText);
-            setVal("setting-logo-subtitle", settings.logoSubtitle);
-            setVal("setting-home-banner-url", settings.homeBannerUrl);
-            setVal("setting-chatbot-number", settings.chatbotNumber);
-            setVal("setting-dealer-number", settings.dealerChatNumber);
-            setVal("setting-phone", settings.phone);
-            setVal("setting-email", settings.email);
-            setVal("setting-address", settings.address);
-            setVal("setting-whatsapp", settings.whatsapp);
-            setVal("setting-follow-whatsapp", settings.followWhatsapp);
-            setVal("setting-facebook-url", settings.facebookUrl);
-            setVal("setting-instagram-url", settings.instagramUrl);
-            setVal("setting-youtube-url", settings.youtubeUrl);
-            
-            const titleElement = document.getElementById("admin-panel-title");
-            if (titleElement && settings.logoText) titleElement.textContent = `${settings.logoText} - Admin`;
-            
+        const snap = await getDoc(doc(db, "settings", "global"));
+        if (snap.exists()) {
+            const s = snap.data();
+            const set = (id, v) => { const el=document.getElementById(id); if(el) el.value = v||''; };
+            set("setting-logo-image-url", s.logoImageUrl);
+            set("setting-logo-text", s.logoText);
+            set("setting-logo-subtitle", s.logoSubtitle);
+            set("setting-home-banner-url", s.homeBannerUrl);
+            set("setting-home-banner-link", s.homeBannerLink); // New Field
+            set("setting-chatbot-number", s.chatbotNumber);
+            set("setting-dealer-number", s.dealerChatNumber);
+            set("setting-phone", s.phone);
+            set("setting-email", s.email);
+            set("setting-address", s.address);
+            set("setting-whatsapp", s.whatsapp);
+            set("setting-follow-whatsapp", s.followWhatsapp);
+            set("setting-facebook-url", s.facebookUrl);
+            set("setting-instagram-url", s.instagramUrl);
+            set("setting-youtube-url", s.youtubeUrl);
             document.getElementById("setting-logo-image-url").dispatchEvent(new Event('input'));
             document.getElementById("setting-home-banner-url").dispatchEvent(new Event('input'));
         }
-    } catch (error) { console.error(error); }
+    } catch (e) { console.error(e); }
 }
 
-async function saveSettings(formId, btnId, defaultBtnText, dataBuilder) {
-    const form = document.getElementById(formId);
-    form.addEventListener("submit", async (e) => {
+function bindSave(formId, btnId, txt, getter) {
+    document.getElementById(formId).addEventListener("submit", async (e) => {
         e.preventDefault();
         const btn = document.getElementById(btnId);
         disableButton(btn, "Saving...");
         try {
-            const data = dataBuilder();
-            await setDoc(doc(db, "settings", "global"), data, { merge: true });
-            showStatus(null, "Settings saved successfully!", false);
-            if (data.logoText) {
-                const titleElement = document.getElementById("admin-panel-title");
-                if (titleElement) titleElement.textContent = `${data.logoText} - Admin`;
-            }
-        } catch (error) {
-            showStatus(null, `Error: ${error.message}`);
-        } finally {
-            enableButton(btn, defaultBtnText);
-        }
+            await setDoc(doc(db, "settings", "global"), getter(), { merge: true });
+            showStatus(null, "Saved!", false);
+        } catch(err){ showStatus(null, err.message); }
+        finally { enableButton(btn, txt); }
     });
 }
 
-saveSettings("general-settings-form", "save-general-settings-button", "Save General Settings", () => ({
+bindSave("general-settings-form", "save-general-settings-button", "Save General Settings", () => ({
     logoImageUrl: document.getElementById("setting-logo-image-url").value,
     logoText: document.getElementById("setting-logo-text").value,
     logoSubtitle: document.getElementById("setting-logo-subtitle").value,
     homeBannerUrl: document.getElementById("setting-home-banner-url").value,
+    homeBannerLink: document.getElementById("setting-home-banner-link").value, // New Field
     chatbotNumber: document.getElementById("setting-chatbot-number").value,
     dealerChatNumber: document.getElementById("setting-dealer-number").value
 }));
-
-saveSettings("contact-settings-form", "save-contact-settings-button", "Save Contact Details", () => ({
+bindSave("contact-settings-form", "save-contact-settings-button", "Save Details", () => ({
     phone: document.getElementById("setting-phone").value,
     email: document.getElementById("setting-email").value,
     address: document.getElementById("setting-address").value,
     whatsapp: document.getElementById("setting-whatsapp").value,
 }));
-
-saveSettings("follow-settings-form", "save-follow-settings-button", "Save 'Follow Us' Links", () => ({
+bindSave("follow-settings-form", "save-follow-settings-button", "Save Links", () => ({
     followWhatsapp: document.getElementById("setting-follow-whatsapp").value,
     facebookUrl: document.getElementById("setting-facebook-url").value,
     instagramUrl: document.getElementById("setting-instagram-url").value,
     youtubeUrl: document.getElementById("setting-youtube-url").value,
 }));
 
-// --- Categories Logic ---
+// --- Categories ---
 function loadCategories() {
-    const q = query(collection(db, "categories"), orderBy("name"));
-    const select = document.getElementById("product-category");
-    const filter = document.getElementById("product-filter-category");
-    
-    onSnapshot(q, (snapshot) => {
+    onSnapshot(query(collection(db, "categories"), orderBy("name")), (snap) => {
         categoriesListBody.innerHTML = '';
-        select.innerHTML = '<option value="">Select a category...</option>';
-        filter.innerHTML = '<option value="all">All Categories</option>';
-        
-        if (snapshot.empty) {
-            categoriesListBody.innerHTML = '<tr><td colspan="3" style="text-align:center">No categories found.</td></tr>';
-            return;
-        }
-
-        snapshot.forEach((doc) => {
-            const cat = doc.data();
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td data-label="Image"><img src="${cat.imageUrl}" alt="${cat.name}"></td>
-                <td data-label="Name">${cat.name}</td>
-                <td data-label="Actions">
-                    <button class="btn-edit" data-id="${doc.id}" data-type="category">Edit</button>
-                    <button class="btn-delete" data-id="${doc.id}" data-type="category">Delete</button>
-                </td>
-            `;
-            categoriesListBody.appendChild(row);
-
-            const opt = document.createElement('option');
-            opt.value = doc.id;
-            opt.textContent = cat.name;
-            select.appendChild(opt.cloneNode(true));
-            filter.appendChild(opt.cloneNode(true));
+        const sel = document.getElementById("product-category");
+        const fil = document.getElementById("product-filter-category");
+        sel.innerHTML = '<option value="">Select...</option>';
+        fil.innerHTML = '<option value="all">All</option>';
+        snap.forEach(d => {
+            const c = d.data();
+            categoriesListBody.innerHTML += `
+                <tr>
+                    <td data-label="Image"><img src="${c.imageUrl}" alt="${c.name}"></td>
+                    <td data-label="Name">${c.name}</td>
+                    <td data-label="Actions"><button class="btn btn-edit" data-id="${d.id}" data-type="category">Edit</button><button class="btn btn-delete" data-id="${d.id}" data-type="category">Delete</button></td>
+                </tr>`;
+            const opt = `<option value="${d.id}">${c.name}</option>`;
+            sel.innerHTML += opt; fil.innerHTML += opt;
         });
     });
 }
-
 addCategoryForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = document.getElementById("add-category-button");
     disableButton(btn, "Adding...");
     try {
-        await addDoc(collection(db, "categories"), {
-            name: document.getElementById("category-name").value,
-            imageUrl: document.getElementById("category-image-url").value,
-            createdAt: serverTimestamp()
-        });
-        showStatus(null, "Category added successfully!", false);
+        await addDoc(collection(db, "categories"), { name: document.getElementById("category-name").value, imageUrl: document.getElementById("category-image-url").value, createdAt: serverTimestamp() });
+        showStatus(null, "Category Added", false);
         addCategoryForm.reset();
         document.getElementById('category-image-preview').innerHTML = '';
-    } catch (err) { showStatus(null, err.message); }
-    finally { enableButton(btn, "Add Category"); }
+    } catch(e) { showStatus(null, e.message); } finally { enableButton(btn, "Add Category"); }
 });
 
-// --- Products Logic ---
-function loadProducts(categoryId = "all") {
-    let q;
-    if (categoryId === "all") q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-    else q = query(collection(db, "products"), where("categoryId", "==", categoryId));
-    
-    if (currentProductsQuery) currentProductsQuery(); 
-    
-    currentProductsQuery = onSnapshot(q, (snapshot) => {
+// --- Products ---
+function loadProducts(catId = "all") {
+    let q = (catId === "all") ? query(collection(db, "products"), orderBy("createdAt", "desc")) : query(collection(db, "products"), where("categoryId", "==", catId));
+    if(currentProductsQuery) currentProductsQuery();
+    currentProductsQuery = onSnapshot(q, (snap) => {
         productsListBody.innerHTML = '';
-        if (snapshot.empty) {
-            productsListBody.innerHTML = '<tr><td colspan="4" style="text-align:center">No products found.</td></tr>';
-            return;
-        }
-        
-        snapshot.forEach((doc) => {
-            const p = doc.data();
-            const img = p.images && p.images[0] ? p.images[0] : '';
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td data-label="Image"><img src="${img}" alt="${p.name}"></td>
-                <td data-label="Name">${p.name} ${p.featured ? '⭐' : ''}</td>
-                <td data-label="Price">₹${p.price}</td>
-                <td data-label="Actions">
-                    <button class="btn-edit" data-id="${doc.id}" data-type="product">Edit</button>
-                    <button class="btn-delete" data-id="${doc.id}" data-type="product">Delete</button>
-                </td>
-            `;
-            productsListBody.appendChild(row);
+        if(snap.empty) productsListBody.innerHTML = '<tr><td colspan="4" style="text-align:center">No products.</td></tr>';
+        snap.forEach(d => {
+            const p = d.data();
+            productsListBody.innerHTML += `
+                <tr>
+                    <td data-label="Image"><img src="${p.images?.[0]||''}"></td>
+                    <td data-label="Name">${p.name} ${p.featured?'⭐':''}</td>
+                    <td data-label="Price">₹${p.price}</td>
+                    <td data-label="Actions"><button class="btn btn-edit" data-id="${d.id}" data-type="product">Edit</button><button class="btn btn-delete" data-id="${d.id}" data-type="product">Delete</button></td>
+                </tr>`;
         });
     });
 }
-
 document.getElementById("product-filter-category").addEventListener("change", (e) => loadProducts(e.target.value));
 
 addProductForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = document.getElementById("add-product-button");
     disableButton(btn, "Adding...");
-    
     try {
-        const imageUrls = getImageUrlsFromUploader('product-image-list-container');
-        if (!imageUrls.length) throw new Error("Add at least one image.");
-        
-        const product = {
+        const imgs = getImageUrlsFromUploader('product-image-list-container');
+        if(!imgs.length) throw new Error("Add at least 1 image");
+        await addDoc(collection(db, "products"), {
             categoryId: document.getElementById("product-category").value,
             name: document.getElementById("product-name").value,
             specification: document.getElementById("product-specification").value,
-            mrp: Number(document.getElementById("product-mrp").value) || 0,
-            price: Number(document.getElementById("product-price").value) || 0,
+            mrp: Number(document.getElementById("product-mrp").value)||0,
+            price: Number(document.getElementById("product-price").value)||0,
             description: document.getElementById("product-description").value,
             featured: document.getElementById("product-featured").checked,
-            images: imageUrls,
+            images: imgs,
             moreLinks: getMoreLinksFromUploader('product-more-links-container'),
             createdAt: serverTimestamp()
-        };
-        
-        await addDoc(collection(db, "products"), product);
-        showStatus(null, "Product added successfully!", false);
-        // Reset form but keep user on this tab
+        });
+        showStatus(null, "Product Added", false);
         addProductForm.reset();
         populateImageUploader('product-image-list-container', []);
         populateMoreLinksUploader('product-more-links-container', []);
-        document.getElementById("product-image-list-container").innerHTML = '';
         addImageInput('product-image-list-container');
-    } catch (err) { showStatus(null, err.message); }
-    finally { enableButton(btn, "Add Product"); }
+    } catch(e) { showStatus(null, e.message); } finally { enableButton(btn, "Add Product"); }
 });
 
-// --- Featured & Search ---
+// --- Featured ---
 function cacheAllProductsForSearch() {
-    const q = query(collection(db, "products"));
-    onSnapshot(q, (snap) => {
+    onSnapshot(query(collection(db, "products")), (snap) => {
         allProductsCache = [];
         snap.forEach(d => allProductsCache.push({ id: d.id, ...d.data() }));
     });
 }
-
-const featuredSearchInput = document.getElementById("featured-product-search");
-const featuredSearchResults = document.getElementById("featured-search-results");
-
-featuredSearchInput.addEventListener('input', (e) => {
-    const term = e.target.value.toLowerCase().trim();
-    featuredSearchResults.innerHTML = '';
-    
-    if (term.length < 2) {
-        featuredSearchResults.style.display = 'none';
-        return;
-    }
-
-    const filtered = allProductsCache.filter(p => !p.featured && p.name.toLowerCase().includes(term));
-    
-    if (filtered.length > 0) {
-        featuredSearchResults.style.display = 'block';
-        filtered.forEach(p => {
-            const div = document.createElement('div');
-            div.className = 'search-result-item';
-            const img = p.images?.[0] || '';
-            div.innerHTML = `
-                <img src="${img}" style="width:30px;height:30px;border-radius:4px;margin-right:10px">
-                <span style="flex:1">${p.name} - ₹${p.price}</span>
-                <button class="search-result-add-btn btn-secondary" style="padding:2px 8px;font-size:0.8rem">Add</button>
-            `;
-            div.querySelector('button').addEventListener('click', async () => {
+const searchInp = document.getElementById("featured-product-search");
+const searchRes = document.getElementById("featured-search-results");
+searchInp.addEventListener('input', (e) => {
+    const t = e.target.value.toLowerCase().trim();
+    searchRes.innerHTML = '';
+    if(t.length < 2) return;
+    const res = allProductsCache.filter(p => !p.featured && p.name.toLowerCase().includes(t));
+    if(res.length) {
+        searchRes.style.display = 'block';
+        res.forEach(p => {
+            const d = document.createElement('div');
+            d.className = 'search-result-item';
+            d.innerHTML = `<img src="${p.images?.[0]}" style="width:30px;height:30px"><span>${p.name} - ₹${p.price}</span>`;
+            d.addEventListener('click', async () => {
                 await updateDoc(doc(db, "products", p.id), { featured: true });
-                featuredSearchInput.value = '';
-                featuredSearchResults.style.display = 'none';
-                showStatus(null, "Added to Featured List!", false);
+                searchInp.value = ''; searchRes.style.display = 'none'; showStatus(null, "Added to Featured", false);
             });
-            featuredSearchResults.appendChild(div);
+            searchRes.appendChild(d);
         });
-    } else {
-        featuredSearchResults.style.display = 'none';
-    }
+    } else searchRes.style.display = 'none';
 });
 
 function loadFeaturedProducts() {
-    const q = query(collection(db, "products"), where("featured", "==", true));
-    if (currentFeaturedQuery) currentFeaturedQuery();
-    
-    currentFeaturedQuery = onSnapshot(q, (snap) => {
+    if(currentFeaturedQuery) currentFeaturedQuery();
+    currentFeaturedQuery = onSnapshot(query(collection(db, "products"), where("featured", "==", true)), (snap) => {
         featuredProductsListBody.innerHTML = '';
-        if (snap.empty) {
-            featuredProductsListBody.innerHTML = '<tr><td colspan="4" style="text-align:center">No featured products.</td></tr>';
-            return;
-        }
         snap.forEach(d => {
             const p = d.data();
             const row = document.createElement('tr');
-            row.innerHTML = `
-                <td data-label="Image"><img src="${p.images?.[0]||''}" alt="${p.name}"></td>
-                <td data-label="Name">${p.name}</td>
-                <td data-label="Price">₹${p.price}</td>
-                <td data-label="Actions">
-                    <button class="btn-remove-featured" data-id="${d.id}">Remove</button>
-                </td>
-            `;
+            row.innerHTML = `<td data-label="Image"><img src="${p.images?.[0]||''}"></td><td data-label="Name">${p.name}</td><td data-label="Price">₹${p.price}</td><td data-label="Actions"><button class="btn btn-remove-featured" data-id="${d.id}">Remove</button></td>`;
             row.querySelector('.btn-remove-featured').addEventListener('click', async () => {
-                if(confirm("Remove from featured?")) {
-                    await updateDoc(doc(db, "products", d.id), { featured: false });
-                    showStatus(null, "Removed from Featured List", false);
-                }
+                if(confirm("Remove?")) { await updateDoc(doc(db, "products", d.id), { featured: false }); showStatus(null, "Removed", false); }
             });
             featuredProductsListBody.appendChild(row);
         });
     });
 }
 
-// --- Hero Slides ---
+// --- Hero ---
 addHeroSlideForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = document.getElementById("add-hero-slide-button");
@@ -483,195 +351,133 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
         await addDoc(collection(db, "heroSlides"), {
             url: document.getElementById("hero-slide-url").value,
             type: document.getElementById("hero-slide-type").value,
-            order: Number(document.getElementById("hero-slide-order").value) || 1,
+            order: Number(document.getElementById("hero-slide-order").value)||1,
             createdAt: serverTimestamp()
         });
-        showStatus(null, "Slide added successfully!", false);
-        addHeroSlideForm.reset();
-    } catch(err) { showStatus(null, err.message); }
-    finally { enableButton(btn, "Add Slide"); }
+        showStatus(null, "Slide Added", false); addHeroSlideForm.reset();
+    } catch(e) { showStatus(null, e.message); } finally { enableButton(btn, "Add Slide"); }
 });
-
 function loadHeroSlides() {
-    const q = query(collection(db, "heroSlides"), orderBy("order"));
-    onSnapshot(q, (snap) => {
+    onSnapshot(query(collection(db, "heroSlides"), orderBy("order")), (snap) => {
         heroSlidesListBody.innerHTML = '';
-        if(snap.empty) { heroSlidesListBody.innerHTML = '<tr><td colspan="5">No slides.</td></tr>'; return; }
         snap.forEach(d => {
             const s = d.data();
-            const prev = s.type === 'image' ? `<img src="${s.url}" width="50">` : 'Video';
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td data-label="Preview">${prev}</td>
-                <td data-label="Type">${s.type}</td>
-                <td data-label="Order">${s.order}</td>
-                <td data-label="URL" style="word-break:break-all;font-size:0.8rem">${s.url}</td>
-                <td data-label="Actions"><button class="btn-delete" data-id="${d.id}" data-type="heroSlide">Delete</button></td>
-            `;
-            heroSlidesListBody.appendChild(row);
+            heroSlidesListBody.innerHTML += `<tr><td data-label="Preview">${s.type==='image'?`<img src="${s.url}">`:'Video'}</td><td data-label="Type">${s.type}</td><td data-label="Order">${s.order}</td><td data-label="URL">${s.url}</td><td data-label="Actions"><button class="btn btn-delete" data-id="${d.id}" data-type="heroSlide">Delete</button></td></tr>`;
         });
     });
 }
 
-// --- Uploader UI ---
-function setupImagePreview(inputId, previewId) {
-    const input = document.getElementById(inputId);
-    const box = document.getElementById(previewId);
-    if(!input || !box) return;
-    const update = () => {
-        const val = input.value.trim();
-        box.innerHTML = val ? `<img src="${val}" style="width:100%;height:100%;object-fit:cover">` : '';
-    };
-    input.addEventListener('input', update);
+// --- Uploader Logic ---
+function setupImagePreview(id, pid) {
+    const el = document.getElementById(id);
+    if(el) el.addEventListener('input', () => document.getElementById(pid).innerHTML = el.value ? `<img src="${el.value}">` : '');
 }
 setupImagePreview('category-image-url', 'category-image-preview');
 setupImagePreview('setting-logo-image-url', 'logo-preview');
 setupImagePreview('setting-home-banner-url', 'banner-preview');
 
-function setupImageUploader(containerId, btnId) {
-    const btn = document.getElementById(btnId);
-    if(btn) btn.addEventListener('click', () => addImageInput(containerId));
-    
-    document.getElementById(containerId).addEventListener('click', (e) => {
-        if(e.target.closest('.btn-remove-image')) e.target.closest('.image-url-item').remove();
-    });
-    
-    document.getElementById(containerId).addEventListener('input', (e) => {
-         if (e.target.tagName === 'INPUT') {
-            const img = e.target.closest('.image-url-item').querySelector('img');
-            if(img) img.src = e.target.value || '';
-        }
-    });
+function setupImageUploader(cid, bid) {
+    const btn = document.getElementById(bid);
+    if(btn) btn.onclick = () => addImageInput(cid);
+    document.getElementById(cid).addEventListener('click', e => { if(e.target.closest('.btn-remove-image')) e.target.closest('.image-url-item').remove(); });
+    document.getElementById(cid).addEventListener('input', e => { if(e.target.tagName==='INPUT') e.target.closest('.image-url-item').querySelector('img').src = e.target.value; });
 }
-
-function addImageInput(containerId, url='') {
-    const div = document.createElement('div');
-    div.className = 'image-url-item';
-    div.innerHTML = `
-        <img src="${url}" class="image-preview-item" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='">
-        <input type="text" value="${url}" placeholder="Image URL">
-        <button type="button" class="btn-remove-image">&times;</button>
-    `;
-    document.getElementById(containerId).appendChild(div);
+function addImageInput(cid, val='') {
+    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="image-url-item"><img src="${val}" class="image-preview-item" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='"><input type="text" value="${val}" placeholder="URL"><button type="button" class="btn-remove-image">&times;</button></div>`);
 }
+function getImageUrlsFromUploader(cid) { return Array.from(document.getElementById(cid).querySelectorAll('input')).map(i=>i.value.trim()).filter(v=>v); }
+function populateImageUploader(cid, urls) { const c=document.getElementById(cid); c.innerHTML=''; (urls&&urls.length?urls:['']).forEach(u=>addImageInput(cid, u)); }
 
-function getImageUrlsFromUploader(id) {
-    const urls = [];
-    document.getElementById(id).querySelectorAll('input').forEach(i => {
-        if(i.value.trim()) urls.push(i.value.trim());
-    });
-    return urls;
+function setupMoreLinksUploader(cid, bid) {
+    const btn = document.getElementById(bid);
+    if(btn) btn.onclick = () => addLinkInput(cid);
+    document.getElementById(cid).addEventListener('click', e => { if(e.target.closest('.btn-remove-link')) e.target.closest('.link-url-item').remove(); });
 }
-
-function populateImageUploader(id, urls) {
-    const c = document.getElementById(id);
-    c.innerHTML = '';
-    if(urls && urls.length) urls.forEach(u => addImageInput(id, u));
-    else addImageInput(id);
+function addLinkInput(cid, d={title:'',url:''}) {
+    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="link-url-item"><input type="text" class="link-title-input" value="${d.title}" placeholder="Title"><input type="text" class="link-url-input" value="${d.url}" placeholder="URL"><button type="button" class="btn-remove-link">&times;</button></div>`);
 }
-
-function setupMoreLinksUploader(cId, btnId) {
-    const btn = document.getElementById(btnId);
-    if(btn) btn.addEventListener('click', () => addMoreLinkInput(cId));
-    document.getElementById(cId).addEventListener('click', (e) => {
-        if(e.target.closest('.btn-remove-link')) e.target.closest('.link-url-item').remove();
-    });
+function getMoreLinksFromUploader(cid) { 
+    return Array.from(document.getElementById(cid).querySelectorAll('.link-url-item')).map(d => ({ title: d.querySelector('.link-title-input').value.trim(), url: d.querySelector('.link-url-input').value.trim() })).filter(l => l.title && l.url); 
 }
+function populateMoreLinksUploader(cid, links) { const c=document.getElementById(cid); c.innerHTML=''; (links&&links.length?links:[{title:'',url:''}]).forEach(l=>addLinkInput(cid, l)); }
 
-function addMoreLinkInput(cId, data={title:'', url:''}) {
-    const div = document.createElement('div');
-    div.className = 'link-url-item';
-    div.innerHTML = `
-        <input type="text" class="link-title-input" value="${data.title}" placeholder="Title">
-        <input type="text" class="link-url-input" value="${data.url}" placeholder="URL">
-        <button type="button" class="btn-remove-link">&times;</button>
-    `;
-    document.getElementById(cId).appendChild(div);
-}
 
-function getMoreLinksFromUploader(cId) {
-    const links = [];
-    document.getElementById(cId).querySelectorAll('.link-url-item').forEach(d => {
-        const t = d.querySelector('.link-title-input').value.trim();
-        const u = d.querySelector('.link-url-input').value.trim();
-        if(t && u) links.push({title:t, url:u});
-    });
-    return links;
-}
-
-function populateMoreLinksUploader(cId, links) {
-    const c = document.getElementById(cId);
-    c.innerHTML = '';
-    if(links && links.length) links.forEach(l => addMoreLinkInput(cId, l));
-    else addMoreLinkInput(cId);
-}
-
-// --- Deletion & Edit ---
-document.body.addEventListener('click', (e) => {
+// --- DELETION ---
+document.body.addEventListener('click', e => {
     if(e.target.classList.contains('btn-delete')) {
         deleteInfo = { id: e.target.dataset.id, type: e.target.dataset.type };
         document.getElementById('confirm-message').textContent = `Delete this ${deleteInfo.type}?`;
         confirmModal.style.display = 'flex';
     }
-    if(e.target.classList.contains('btn-edit')) {
-        openEditModal(e.target.dataset.id, e.target.dataset.type);
-    }
+    if(e.target.classList.contains('btn-edit')) openEditModal(e.target.dataset.id, e.target.dataset.type);
 });
-
-confirmCloseButton.addEventListener('click', () => confirmModal.style.display = 'none');
-confirmBtnCancel.addEventListener('click', () => confirmModal.style.display = 'none');
-
-confirmBtnDelete.addEventListener('click', async () => {
-    if(!deleteInfo.id) return;
+confirmBtnCancel.onclick = confirmCloseButton.onclick = () => confirmModal.style.display = 'none';
+confirmBtnDelete.onclick = async () => {
     disableButton(confirmBtnDelete, "Deleting...");
     try {
-        const col = deleteInfo.type === 'product' ? 'products' : 
-                   deleteInfo.type === 'category' ? 'categories' : 'heroSlides';
-        await deleteDoc(doc(db, col, deleteInfo.id));
-        showStatus(null, "Item deleted successfully!", false);
-    } catch(err) { showStatus(null, err.message); }
-    finally { 
-        enableButton(confirmBtnDelete, "Confirm Delete");
-        confirmModal.style.display = 'none';
-    }
-});
+        await deleteDoc(doc(db, deleteInfo.type==='product'?'products':deleteInfo.type==='category'?'categories':'heroSlides', deleteInfo.id));
+        showStatus(null, "Deleted", false);
+    } catch(e) { showStatus(null, e.message); } finally { enableButton(confirmBtnDelete, "Confirm Delete"); confirmModal.style.display='none'; }
+};
 
-// Edit Modal
+// --- COMPREHENSIVE EDIT MODAL ---
 async function openEditModal(id, type) {
     editModal.style.display = 'flex';
-    modalForm.innerHTML = '<p>Loading...</p>';
+    modalForm.innerHTML = '<p style="text-align:center;padding:20px;">Loading...</p>';
     
     try {
         const col = type === 'product' ? 'products' : 'categories';
-        const d = await getDoc(doc(db, col, id));
-        if(!d.exists()) throw new Error("Not found");
-        const data = d.data();
-        
+        const docSnap = await getDoc(doc(db, col, id));
+        if(!docSnap.exists()) throw new Error("Item not found");
+        const data = docSnap.data();
+
         if(type === 'category') {
             modalForm.innerHTML = `
                 <input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="category">
                 <div class="form-group"><label>Name</label><input type="text" id="edit-cat-name" value="${data.name}"></div>
                 <div class="form-group"><label>Image URL</label><input type="text" id="edit-cat-img" value="${data.imageUrl}"></div>
-                <button type="submit" class="btn btn-save" id="save-edit-btn">Save Changes</button>
-            `;
+                <button type="submit" class="btn btn-save" id="save-edit-btn">Save Changes</button>`;
         } else {
-             const cats = await getDocs(query(collection(db, "categories")));
+             // Fetch Categories for dropdown
+             const catsSnap = await getDocs(query(collection(db, "categories")));
              let catOptions = '';
-             cats.forEach(c => catOptions += `<option value="${c.id}" ${c.id===data.categoryId?'selected':''}>${c.data().name}</option>`);
+             catsSnap.forEach(c => catOptions += `<option value="${c.id}" ${c.id===data.categoryId?'selected':''}>${c.data().name}</option>`);
 
              modalForm.innerHTML = `
                 <input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="product">
-                <div class="form-group"><label>Name</label><input type="text" id="edit-name" value="${data.name}"></div>
-                <div class="form-group"><label>Category</label><select id="edit-cat">${catOptions}</select></div>
-                <div class="form-group"><label>Price</label><input type="number" id="edit-price" value="${data.price}"></div>
-                <div class="form-group"><label>MRP</label><input type="number" id="edit-mrp" value="${data.mrp}"></div>
-                <div class="form-group"><label>Specification</label><textarea id="edit-spec">${data.specification||''}</textarea></div>
-                <div class="form-group"><label>Description</label><textarea id="edit-desc">${data.description||''}</textarea></div>
-                <div class="form-group"><label>Images (URLs)</label><textarea id="edit-images">${data.images?.join(',')||''}</textarea></div>
-                <button type="submit" class="btn btn-save" id="save-edit-btn">Save Changes</button>
+                <div class="form-grid">
+                    <div class="form-group"><label>Name</label><input type="text" id="edit-name" value="${data.name}"></div>
+                    <div class="form-group"><label>Category</label><select id="edit-cat">${catOptions}</select></div>
+                    <div class="form-group"><label>Price</label><input type="number" id="edit-price" value="${data.price}"></div>
+                    <div class="form-group"><label>MRP</label><input type="number" id="edit-mrp" value="${data.mrp}"></div>
+                    <div class="form-group checkbox-group"><input type="checkbox" id="edit-featured" ${data.featured?'checked':''}><label>Featured</label></div>
+                    <div class="form-group full-width"><label>Specification</label><textarea id="edit-spec" rows="3">${data.specification||''}</textarea></div>
+                    <div class="form-group full-width"><label>Description</label><textarea id="edit-desc" rows="3">${data.description||''}</textarea></div>
+                    
+                    <div class="form-group full-width">
+                        <label>Images</label>
+                        <div id="edit-image-list" class="image-url-list"></div>
+                        <button type="button" id="btn-add-edit-image" class="btn btn-secondary" style="margin-top:5px;">Add Image</button>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>More Links</label>
+                        <div id="edit-link-list" class="link-url-list"></div>
+                        <button type="button" id="btn-add-edit-link" class="btn btn-secondary" style="margin-top:5px;">Add Link</button>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>
              `;
+             
+             // Setup dynamic fields for Modal
+             setupImageUploader('edit-image-list', 'btn-add-edit-image');
+             populateImageUploader('edit-image-list', data.images);
+             
+             setupMoreLinksUploader('edit-link-list', 'btn-add-edit-link');
+             populateMoreLinksUploader('edit-link-list', data.moreLinks);
         }
-        
+
+        // Attach Save Handler
         document.getElementById('save-edit-btn').addEventListener('click', async (e) => {
             e.preventDefault();
             const btn = e.target;
@@ -682,31 +488,28 @@ async function openEditModal(id, type) {
                 let updateData = {};
                 
                 if(eType === 'category') {
-                    updateData = {
-                        name: document.getElementById('edit-cat-name').value,
-                        imageUrl: document.getElementById('edit-cat-img').value
-                    };
+                    updateData = { name: document.getElementById('edit-cat-name').value, imageUrl: document.getElementById('edit-cat-img').value };
                 } else {
-                    const imgStr = document.getElementById('edit-images').value;
-                    const imgs = imgStr.split(',').map(s=>s.trim()).filter(s=>s);
+                    const imgs = getImageUrlsFromUploader('edit-image-list');
+                    if(!imgs.length) throw new Error("At least 1 image required");
                     updateData = {
                         name: document.getElementById('edit-name').value,
                         categoryId: document.getElementById('edit-cat').value,
                         price: Number(document.getElementById('edit-price').value),
                         mrp: Number(document.getElementById('edit-mrp').value),
+                        featured: document.getElementById('edit-featured').checked,
                         specification: document.getElementById('edit-spec').value,
                         description: document.getElementById('edit-desc').value,
-                        images: imgs
+                        images: imgs,
+                        moreLinks: getMoreLinksFromUploader('edit-link-list')
                     };
                 }
-                
                 await updateDoc(doc(db, col, eId), updateData);
-                showStatus(null, "Updated successfully!", false);
+                showStatus(null, "Updated!", false);
                 editModal.style.display = 'none';
-            } catch(err) { console.error(err); alert("Error saving"); enableButton(btn, "Save Changes"); }
+            } catch(err) { showStatus(null, err.message); enableButton(btn, "Save Changes"); }
         });
-        
-    } catch(err) { console.error(err); editModal.style.display = 'none'; }
-}
 
-modalCloseButton.addEventListener('click', () => editModal.style.display = 'none');
+    } catch(e) { console.error(e); editModal.style.display = 'none'; showStatus(null, e.message); }
+}
+modalCloseButton.onclick = () => editModal.style.display = 'none';
