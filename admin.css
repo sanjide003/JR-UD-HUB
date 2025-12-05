@@ -1,5 +1,5 @@
 /* * =======================================
- * MODERN ADMIN STYLESHEET (Fixed Layout & Icons)
+ * MODERN ADMIN STYLESHEET (Fixed Colors & Centered Title)
  * =========================================
  */
 
@@ -24,6 +24,12 @@
     --btn-delete-bg: #ef4444;
     --btn-secondary-bg: #4b5563;
     
+    /* Social Colors - Guaranteed Visibility */
+    --whatsapp-color: #25D366;
+    --facebook-color: #1877F2;
+    --instagram-color: #E1306C;
+    --youtube-color: #FF0000;
+
     --radius-sm: 8px;
     --radius-md: 12px;
     --radius-lg: 18px;
@@ -33,18 +39,16 @@
     --transition: 0.2s ease-in-out;
 }
 
-/* --- Light Mode Fixes (High Contrast) --- */
+/* --- Light Mode --- */
 body.light-mode {
     --bg-body: #f3f4f6;
     --bg-card: #ffffff;
     --bg-nav: #ffffff;
-    
-    --text-main: #111827; /* Darker black */
+    --text-main: #111827;
     --text-secondary: #4b5563;
-    
-    --border-color: #d1d5db; /* Visible border */
+    --border-color: #d1d5db;
     --input-bg: #ffffff;
-    --input-border: #9ca3af; /* Darker grey border for inputs */
+    --input-border: #9ca3af;
 }
 
 * { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
@@ -71,7 +75,7 @@ body {
     border-radius: var(--radius-md); border-left: 5px solid var(--primary-gold);
     box-shadow: var(--shadow-sm); min-width: 260px; display: flex; align-items: center; gap: 10px;
     font-weight: 600; font-size: 0.9rem; animation: slideInLeft 0.3s forwards;
-    border: 1px solid var(--border-color); /* Added border for light mode */
+    border: 1px solid var(--border-color);
 }
 .toast.success { border-left-color: var(--btn-save-bg); }
 .toast.error { border-left-color: var(--btn-delete-bg); }
@@ -84,16 +88,19 @@ body {
     background-color: var(--bg-nav); backdrop-filter: blur(10px); border-bottom: 1px solid var(--border-color);
     position: fixed; top: 0; left: 0; width: 100%; z-index: 1000; box-shadow: var(--shadow-sm);
 }
+
+/* Centered Title */
 .admin-main-header h1 { 
-    font-size: 1.25rem; font-weight: 700; color: var(--primary-gold); margin: 0; 
-    position: absolute; left: 50%; transform: translateX(-50%); /* Centered Title */
-    width: auto; white-space: nowrap;
-}
-@media (max-width: 768px) {
-    .admin-main-header h1 { position: static; transform: none; font-size: 1.1rem; }
+    font-size: 1.5rem; /* Larger */
+    font-weight: 700; color: var(--primary-gold); margin: 0; 
+    position: absolute; left: 0; width: 100%; text-align: center; /* Perfect Center */
+    pointer-events: none; /* Let clicks pass through */
 }
 
-#admin-nav-open-btn { background: transparent; border: none; cursor: pointer; padding: 8px; color: var(--text-main); }
+#admin-nav-open-btn { 
+    background: transparent; border: none; cursor: pointer; padding: 8px; color: var(--text-main); 
+    z-index: 1; /* Above title */
+}
 #admin-nav-open-btn svg { width: 28px; height: 28px; }
 
 /* Sidebar */
@@ -105,7 +112,7 @@ body {
 }
 .admin-side-nav.open { left: 0; }
 .admin-nav-header { height: 70px; display: flex; align-items: center; justify-content: space-between; padding: 0 1.5rem; border-bottom: 1px solid var(--border-color); }
-#admin-nav-close-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; display: flex; align-items: center; }
+#admin-nav-close-btn { background: none; border: none; color: var(--text-secondary); cursor: pointer; }
 
 .admin-nav-links { flex: 1; overflow-y: auto; padding: 1rem 0; }
 .nav-link {
@@ -121,9 +128,20 @@ body {
 
 /* Theme Toggle */
 .theme-switch-wrapper { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; color: var(--text-secondary); font-size: 0.9rem; }
-.theme-toggle-btn { width: 48px; height: 26px; border-radius: 13px; background: var(--input-bg); border: 1px solid var(--border-color); position: relative; cursor: pointer; }
-.theme-toggle-btn::after { content: ''; position: absolute; left: 3px; top: 2px; width: 20px; height: 20px; border-radius: 50%; background: var(--text-secondary); transition: var(--transition); }
-body.light-mode .theme-toggle-btn::after { transform: translateX(22px); background: var(--primary-gold); }
+.theme-toggle-btn { 
+    width: 60px; height: 32px; border-radius: 20px; background: var(--input-bg); border: 1px solid var(--border-color); 
+    position: relative; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 0 4px;
+}
+.theme-toggle-btn::after { 
+    content: ''; position: absolute; left: 4px; top: 3px; width: 24px; height: 24px; border-radius: 50%; 
+    background: var(--text-secondary); transition: var(--transition); z-index: 2;
+}
+body.light-mode .theme-toggle-btn::after { transform: translateX(26px); background: var(--primary-gold); }
+.icon-sun, .icon-moon { width: 16px; height: 16px; z-index: 1; color: var(--text-secondary); }
+.icon-sun { opacity: 0; transition: opacity 0.3s; }
+.icon-moon { opacity: 1; transition: opacity 0.3s; }
+body.light-mode .icon-sun { opacity: 1; }
+body.light-mode .icon-moon { opacity: 0; }
 
 /* --- Buttons --- */
 .btn {
@@ -135,7 +153,6 @@ body.light-mode .theme-toggle-btn::after { transform: translateX(22px); backgrou
 }
 .btn:active { transform: scale(0.97); }
 
-/* Spacing Utility for Save Buttons */
 .mt-large { margin-top: 20px; width: 100%; } 
 
 .btn-save { background-color: var(--btn-save-bg); }
@@ -162,7 +179,7 @@ body.light-mode .theme-toggle-btn::after { transform: translateX(22px); backgrou
     .page-content { padding: 1.5rem; }
 }
 
-.form-group { margin-bottom: 5px; } /* Reset margin */
+.form-group { margin-bottom: 5px; } 
 .form-group label { display: block; margin-bottom: 8px; color: var(--text-secondary); font-size: 0.9rem; font-weight: 500; }
 input, textarea, select {
     width: 100%; padding: 12px; border-radius: var(--radius-sm);
@@ -170,6 +187,12 @@ input, textarea, select {
     color: var(--text-main); font-size: 1rem; transition: border-color 0.2s;
 }
 input:focus, textarea:focus, select:focus { border-color: var(--primary-gold); }
+
+/* --- SOCIAL MEDIA COLORS (Stronger Specificity) --- */
+input.social-input-whatsapp { border-left: 5px solid var(--whatsapp-color) !important; }
+input.social-input-facebook { border-left: 5px solid var(--facebook-color) !important; }
+input.social-input-instagram { border-left: 5px solid var(--instagram-color) !important; }
+input.social-input-youtube { border-left: 5px solid var(--youtube-color) !important; }
 
 /* Checkbox */
 .checkbox-group { display: flex; align-items: center; gap: 12px; background: var(--input-bg); padding: 10px 15px; border-radius: var(--radius-sm); border: 1px solid var(--input-border); }
@@ -184,7 +207,6 @@ input:focus, textarea:focus, select:focus { border-color: var(--primary-gold); }
 }
 .image-preview-item, .inline-image-input-container .image-preview-small img { width: 40px; height: 40px; border-radius: 4px; object-fit: cover; border: 1px solid var(--border-color); }
 
-/* SVG Close Button */
 .btn-remove-image, .btn-remove-link { 
     width: 36px; height: 36px; border-radius: 50%; 
     background: var(--btn-delete-bg); color: white; border: none; 
