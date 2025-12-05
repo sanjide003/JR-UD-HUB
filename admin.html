@@ -1,8 +1,9 @@
 <!-- 
-  ഇതാണ് അഡ്മിൻ പാനൽ. admin.html
+  admin.html
   മാറ്റങ്ങൾ:
-  1. തീം സ്വിച്ച് (Dark/Light) സൈഡ് മെനുവിൽ ചേർത്തു.
-  2. മൊബൈൽ റെസ്പോൺസീവ് ആകാൻ ടേബിൾ ഹെഡറുകൾക്ക് data-label ചേർക്കാനുള്ള ഘടന.
+  1. Header Logout ഒഴിവാക്കി.
+  2. Floating Notification കണ്ടെയ്നർ ചേർത്തു.
+  3. Social Media ഇൻപുട്ടുകൾക്ക് പ്രത്യേക ക്ലാസുകൾ നൽകി.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -13,6 +14,9 @@
     <link rel="stylesheet" href="admin.css">
 </head>
 <body>
+
+    <!-- Floating Notification Container (Top Left) -->
+    <div id="toast-container"></div>
 
     <!-- 1. ലോഗിൻ സെക്ഷൻ -->
     <section id="login-section">
@@ -28,11 +32,10 @@
                         <label for="login-password">Password <span class="required-star">*</span></label>
                         <input type="password" id="login-password" required>
                     </div>
-                    <button type="submit" class="btn" id="login-button">
+                    <button type="submit" class="btn btn-save" id="login-button">
                         <span class="btn-text">Login</span>
                         <span class="btn-loader loader-small" style="display: none;"></span>
                     </button>
-                    <div id="login-status" class="status-message"></div>
                 </form>
             </div>
         </div>
@@ -52,9 +55,7 @@
                 </button>
                 <h1 id="admin-panel-title">JR-UD-HUB - Admin</h1>
             </div>
-            <div class="admin-header-right">
-                <button class="btn btn-logout logout-action-btn header-logout-btn">Logout</button>
-            </div>
+            <!-- Header Logout Button Removed -->
         </header>
 
         <nav class="admin-side-nav" id="admin-side-nav">
@@ -75,10 +76,8 @@
                 <button class="nav-link" data-page="page-follow-us">"Follow Us" Links</button>
             </div>
             
-            <!-- തീം സ്വിച്ച് & ലോഗൗട്ട് -->
             <div class="admin-nav-footer">
-                
-                <!-- തീം സ്വിച്ച് (Theme Toggle) -->
+                <!-- Theme Switch -->
                 <div class="theme-switch-wrapper">
                     <span class="theme-label">Theme</span>
                     <button id="theme-toggle-btn" class="theme-toggle-btn" aria-label="Toggle Dark/Light Mode">
@@ -87,7 +86,8 @@
                     </button>
                 </div>
 
-                <button class="btn btn-logout logout-action-btn full-width-logout">
+                <!-- Logout (Red Color) -->
+                <button class="btn btn-logout full-width-logout">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
                         <polyline points="16 17 21 12 16 7"></polyline>
@@ -100,8 +100,7 @@
         <div class="admin-nav-overlay" id="admin-nav-overlay"></div>
 
         <div class="container">
-            <div id="admin-status" class="status-message"></div>
-
+            
             <!-- പേജ് 1: Add New Product -->
             <div id="page-add-product" class="page-content active">
                 <form id="add-product-form" class="form-section">
@@ -126,14 +125,14 @@
                             <input type="number" id="product-price" placeholder="e.g., 350" required>
                         </div>
                         
-                        <div class="form-group">
-                            <input type="checkbox" id="product-featured" style="width: auto; margin-right: 10px;">
-                            <label for="product-featured" style="display: inline;">Featured on Home Page? (Top Seller)</label>
+                        <div class="form-group checkbox-group">
+                            <input type="checkbox" id="product-featured">
+                            <label for="product-featured">Featured on Home Page? (Top Seller)</label>
                         </div>
 
                         <div class="form-group full-width">
                             <label for="product-specification">Specification</label>
-                            <textarea id="product-specification" rows="4" placeholder="Type each point on a new line. Example:&#10;- Long Lasting&#10;- Alcohol Free"></textarea>
+                            <textarea id="product-specification" rows="4" placeholder="Type each point on a new line."></textarea>
                         </div>
 
                         <div class="form-group full-width">
@@ -154,7 +153,7 @@
                         </div>
 
                     </div>
-                    <button type="submit" class="btn" id="add-product-button">
+                    <button type="submit" class="btn btn-save" id="add-product-button">
                         <span class="btn-text">Add Product</span>
                         <span class="btn-loader loader-small" style="display: none;"></span>
                     </button>
@@ -170,7 +169,6 @@
                         <select id="product-filter-category"><option value="all">All Categories</option></select>
                     </div>
                     <div class="data-table-wrapper">
-                        <!-- headers for mobile responsive logic -->
                         <table class="data-table">
                             <thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Actions</th></tr></thead>
                             <tbody id="products-list-body"></tbody>
@@ -207,7 +205,7 @@
                         <div class="form-group"><label for="category-name">Category Name <span class="required-star">*</span></label><input type="text" id="category-name" required></div>
                         <div class="form-group"><label for="category-image-url">Category Image URL <span class="required-star">*</span></label><div class="inline-image-input-container"><div class="image-preview-small" id="category-image-preview"></div><input type="text" class="image-url-input" id="category-image-url" required></div></div>
                     </div>
-                    <button type="submit" class="btn" id="add-category-button"><span class="btn-text">Add Category</span><span class="btn-loader loader-small" style="display: none;"></span></button>
+                    <button type="submit" class="btn btn-save" id="add-category-button"><span class="btn-text">Add Category</span><span class="btn-loader loader-small" style="display: none;"></span></button>
                 </form>
             </div>
 
@@ -219,7 +217,7 @@
                 <form id="add-hero-slide-form" class="form-section">
                     <h2>Add New Hero Slide</h2>
                     <div class="form-grid"><div class="form-group"><label for="hero-slide-url">Media URL</label><input type="text" id="hero-slide-url" required></div><div class="form-group"><label for="hero-slide-type">Media Type</label><select id="hero-slide-type" required><option value="video">Video</option><option value="image">Image</option></select></div><div class="form-group"><label for="hero-slide-order">Order</label><input type="number" id="hero-slide-order" value="1" required></div></div>
-                    <button type="submit" class="btn" id="add-hero-slide-button"><span class="btn-text">Add Slide</span><span class="btn-loader loader-small" style="display: none;"></span></button>
+                    <button type="submit" class="btn btn-save" id="add-hero-slide-button"><span class="btn-text">Add Slide</span><span class="btn-loader loader-small" style="display: none;"></span></button>
                 </form>
                 <div class="data-list-section"><h2>Existing Hero Slides</h2><div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Preview</th><th>Type</th><th>Order</th><th>URL</th><th>Actions</th></tr></thead><tbody id="hero-slides-list-body"></tbody></table></div></div>
             </div>
@@ -236,34 +234,52 @@
                         
                         <div class="form-group">
                             <label for="setting-chatbot-number">ChatBot WhatsApp Number</label>
-                            <input type="text" id="setting-chatbot-number" placeholder="e.g. 15551386613">
-                            <small style="color: var(--text-muted); display: block; margin-top: 5px;">Enter number to show 'ChatBot' button. Leave blank to hide.</small>
+                            <input type="text" id="setting-chatbot-number" placeholder="e.g. 15551386613" class="social-input-whatsapp">
                         </div>
-
                         <div class="form-group">
                             <label for="setting-dealer-number">Dealer Chat WhatsApp Number</label>
-                            <input type="text" id="setting-dealer-number" placeholder="e.g. 15551234567">
-                            <small style="color: var(--text-muted); display: block; margin-top: 5px;">Enter number to show 'Chat with Dealer' button. Leave blank to hide.</small>
+                            <input type="text" id="setting-dealer-number" placeholder="e.g. 15551234567" class="social-input-whatsapp">
                         </div>
-
                     </div>
-                    <button type="submit" class="btn" id="save-general-settings-button"><span class="btn-text">Save General Settings</span><span class="btn-loader loader-small" style="display: none;"></span></button>
+                    <button type="submit" class="btn btn-save" id="save-general-settings-button"><span class="btn-text">Save General Settings</span><span class="btn-loader loader-small" style="display: none;"></span></button>
                 </form>
             </div>
 
             <div id="page-contact-details" class="page-content">
                 <form id="contact-settings-form" class="form-section">
                     <h2>Contact Details</h2>
-                    <div class="form-grid"><div class="form-group"><label for="setting-phone">Contact Phone</label><input type="text" id="setting-phone"></div><div class="form-group"><label for="setting-email">Contact Email</label><input type="email" id="setting-email"></div><div class="form-group"><label for="setting-address">Contact Address</label><input type="text" id="setting-address"></div><div class="form-group"><label for="setting-whatsapp">Order WhatsApp Number</label><input type="text" id="setting-whatsapp"></div></div>
-                    <button type="submit" class="btn" id="save-contact-settings-button"><span class="btn-text">Save Contact Details</span><span class="btn-loader loader-small" style="display: none;"></span></button>
+                    <div class="form-grid">
+                        <div class="form-group"><label for="setting-phone">Contact Phone</label><input type="text" id="setting-phone"></div>
+                        <div class="form-group"><label for="setting-email">Contact Email</label><input type="email" id="setting-email"></div>
+                        <div class="form-group"><label for="setting-address">Contact Address</label><input type="text" id="setting-address"></div>
+                        <div class="form-group"><label for="setting-whatsapp">Order WhatsApp Number</label><input type="text" id="setting-whatsapp" class="social-input-whatsapp"></div>
+                    </div>
+                    <button type="submit" class="btn btn-save" id="save-contact-settings-button"><span class="btn-text">Save Contact Details</span><span class="btn-loader loader-small" style="display: none;"></span></button>
                 </form>
             </div>
 
             <div id="page-follow-us" class="page-content">
                 <form id="follow-settings-form" class="form-section">
                     <h2>"Follow Us" Links</h2>
-                    <div class="form-grid"><div class="form-group"><label for="setting-follow-whatsapp">"Follow Us" WhatsApp Link</label><input type="text" id="setting-follow-whatsapp"></div><div class="form-group"><label for="setting-facebook-url">Facebook URL</label><input type="text" id="setting-facebook-url"></div><div class="form-group"><label for="setting-instagram-url">Instagram URL</label><input type="text" id="setting-instagram-url"></div><div class="form-group"><label for="setting-youtube-url">YouTube URL</label><input type="text" id="setting-youtube-url"></div></div>
-                    <button type="submit" class="btn" id="save-follow-settings-button"><span class="btn-text">Save "Follow Us" Links</span><span class="btn-loader loader-small" style="display: none;"></span></button>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="setting-follow-whatsapp">WhatsApp Channel Link</label>
+                            <input type="text" id="setting-follow-whatsapp" class="social-input-whatsapp">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-facebook-url">Facebook Page URL</label>
+                            <input type="text" id="setting-facebook-url" class="social-input-facebook">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-instagram-url">Instagram Profile URL</label>
+                            <input type="text" id="setting-instagram-url" class="social-input-instagram">
+                        </div>
+                        <div class="form-group">
+                            <label for="setting-youtube-url">YouTube Channel URL</label>
+                            <input type="text" id="setting-youtube-url" class="social-input-youtube">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-save" id="save-follow-settings-button"><span class="btn-text">Save "Follow Us" Links</span><span class="btn-loader loader-small" style="display: none;"></span></button>
                 </form>
             </div>
 
