@@ -1,7 +1,8 @@
 <!-- 
   ഇതാണ് പുതിയ ഹോം പേജ് (index.html).
   മാറ്റങ്ങൾ:
-  1. Budget Buys 999, 799, 599 എന്നിങ്ങനെ മൂന്ന് സെക്ഷനുകൾ ചേർത്തു.
+  1. Budget 799 നീക്കം ചെയ്തു.
+  2. "Special Discount" Banner & Items Section Deals-ന് മുകളിൽ ചേർത്തു.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -10,16 +11,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JR-UD-HUB</title>
     
-    <!-- പൊതുവായ ഡിസൈൻ -->
     <link rel="stylesheet" href="public.css">
-    <!-- ഹോം പേജിന് മാത്രമുള്ള പുതിയ ഡിസൈൻ -->
     <link rel="stylesheet" href="home.css">
-    <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
+    <!-- Special Style for new Red Section -->
+    <style>
+        .red-theme { background: linear-gradient(135deg, #ff5252 0%, #d50000 100%); }
+    </style>
 </head>
 <body>
 
-    <!-- 0. പേജ് ലോഡർ -->
     <div id="preloader">
         <div class="loader-logo-container">
             <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
@@ -27,35 +29,46 @@
         </div>
     </div>
 
-    <!-- 1. ഹെഡർ -->
     <header class="main-header" id="main-header"></header>
-    
-    <!-- 2. സൈഡ് മെനു & ഓവർലേ -->
     <nav class="side-nav" id="side-nav"></nav>
     <div class="nav-overlay" id="nav-overlay"></div>
 
-    <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main class="home-main-container">
         
-        <!-- 3.1. ഹോം ബാനർ -->
+        <!-- 1. ഹോം ബാനർ -->
         <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
 
-        <!-- 3.2. കാറ്റഗറി ഐക്കൺ ബാർ -->
+        <!-- 2. കാറ്റഗറി ഐക്കൺ -->
         <section id="icon-nav-bar" class="icon-nav-container">
             <div class="loading-placeholder-shimmer"></div>
         </section>
 
-        <!-- 3.3. വീഡിയോ സ്ലൈഡർ -->
+        <!-- 3. വീഡിയോ സ്ലൈഡർ -->
         <section class="hero-section-new">
             <div class="swiper hero-slider-new" id="hero-slider-container">
-                <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <!-- സ്ലൈഡുകൾ -->
-                </div>
+                <div class="swiper-wrapper" id="hero-slider-wrapper"></div>
                 <div class="swiper-pagination hero-pagination-dots"></div>
             </div>
         </section>
 
-        <!-- 3.4. Deals of the Day -->
+        <!-- *** 4. NEW: Special Discount Banner (From Admin) *** -->
+        <section id="special-discount-banner" class="home-top-banner" style="display: none; margin-bottom: 5px;"></section>
+
+        <!-- *** 5. NEW: Special Discount Items (High % Off) *** -->
+        <section class="deals-section red-theme container-fluid" id="special-discount-section" style="display: none;">
+            <div class="deals-header">
+                <div class="deals-title-box">
+                    <h3>Big Saving Days</h3>
+                    <div class="timer-badge">Hot Deals</div>
+                </div>
+                <a href="explore.html" class="view-all-btn" style="color: #d50000;">View All</a>
+            </div>
+            <div class="swiper deals-swiper">
+                <div class="swiper-wrapper" id="special-discount-grid"></div>
+            </div>
+        </section>
+
+        <!-- 6. Deals of the Day (Blue) -->
         <section class="deals-section blue-theme container-fluid">
             <div class="deals-header">
                 <div class="deals-title-box">
@@ -69,13 +82,13 @@
             </div>
         </section>
 
-        <!-- 3.5. Top Discounts Grid -->
+        <!-- 7. Top Discounts Grid -->
         <section class="grid-section container">
             <h3 class="section-title-simple">Top Discount of the Sale</h3>
             <div class="grid-layout-2x2" id="top-discount-grid"></div>
         </section>
 
-        <!-- 3.6. Trending Deals -->
+        <!-- 8. Trending Deals (Orange) -->
         <section class="deals-section orange-theme container-fluid">
             <div class="deals-header">
                 <div class="deals-title-box">
@@ -89,7 +102,7 @@
             </div>
         </section>
 
-        <!-- 3.7. Budget Buys (Under ₹999) -->
+        <!-- 9. Budget Buys (Under 999) -->
         <section class="budget-section container" id="section-budget-999" style="display: none;">
             <h3 class="section-title-simple">Budget Buys (Under ₹999)</h3>
             <div class="swiper budget-swiper">
@@ -97,15 +110,7 @@
             </div>
         </section>
 
-        <!-- 3.8. Budget Buys (Under ₹799) -->
-        <section class="budget-section container" id="section-budget-799" style="display: none;">
-            <h3 class="section-title-simple">Budget Buys (Under ₹799)</h3>
-            <div class="swiper budget-swiper">
-                <div class="swiper-wrapper" id="budget-buys-799"></div>
-            </div>
-        </section>
-
-        <!-- 3.9. Budget Buys (Under ₹599) -->
+        <!-- 10. Budget Buys (Under 599) -->
         <section class="budget-section container" id="section-budget-599" style="display: none;">
             <h3 class="section-title-simple">Budget Buys (Under ₹599)</h3>
             <div class="swiper budget-swiper">
@@ -113,18 +118,11 @@
             </div>
         </section>
         
-        <!-- പരസ്യ ബാനർ -->
-        <section id="sponsored-banner" class="sponsored-banner-section container" style="display: none;"></section>
-
     </main>
 
-    <!-- 4. ഫൂട്ടർ -->
     <footer class="main-footer-new" id="main-footer"></footer>
-
-    <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ -->
     <div id="floating-action-buttons"></div>
 
-    <!-- JS ഫയലുകൾ -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="cart.js"></script>
