@@ -1,4 +1,4 @@
-// index.js - Added logic for 999, 799, 599 Budget Sections
+// index.js - Updated Logic for Manual Special Discounts
 
 import { db } from './firebase-config.js';
 import { 
@@ -21,6 +21,7 @@ let allProductsCache = [];
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings();
     loadHomeBanner(); 
+    loadSpecialDiscountBanner(); 
     loadIconNav();
     loadHeroSlider();
     await fetchAllProductsAndDistribute();
@@ -40,6 +41,22 @@ async function loadHomeBanner() {
             bannerContainer.style.display = 'block';
         }
     } catch (error) { console.error("Error loading banner"); }
+}
+
+// 1.5 SPECIAL DISCOUNT BANNER
+async function loadSpecialDiscountBanner() {
+    const bannerContainer = document.getElementById('special-discount-banner');
+    if (!bannerContainer) return;
+    try {
+        const docRef = doc(db, "settings", "global");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists() && docSnap.data().specialDiscountBannerUrl) {
+            const bannerUrl = docSnap.data().specialDiscountBannerUrl;
+            const optimizedUrl = optimizeImage(bannerUrl, 1200, 90); 
+            bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Big Discount Banner" loading="lazy">`;
+            bannerContainer.style.display = 'block';
+        }
+    } catch (error) { console.error("Error loading special banner"); }
 }
 
 // 2. ICON NAV
@@ -135,16 +152,11 @@ async function loadHeroSlider() {
         }
 
         new Swiper('.hero-slider-new', {
-            loop: true, 
-            autoHeight: true, 
+            loop: true, autoHeight: true, 
             autoplay: { delay: 6000, disableOnInteraction: false },
             pagination: { el: '.hero-pagination-dots', clickable: true },
             allowTouchMove: true,
-            on: {
-                slideChangeTransitionEnd: function () {
-                    playActiveSlideVideo(this);
-                }
-            }
+            on: { slideChangeTransitionEnd: function () { playActiveSlideVideo(this); } }
         });
     } catch (error) { console.error("Error loading hero slider"); }
 }
@@ -164,7 +176,7 @@ function playActiveSlideVideo(swiper) {
     });
 }
 
-// 4. PRODUCT FETCHING & DISTRIBUTION
+// 4. PRODUCT FETCHING
 async function fetchAllProductsAndDistribute() {
     try {
         const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(50));
@@ -175,44 +187,50 @@ async function fetchAllProductsAndDistribute() {
             allProductsCache.push({ id: doc.id, ...doc.data() });
         });
 
+        populateSpecialDiscounts(allProductsCache); // *** Manual List ***
         populateDealsOfDay(allProductsCache);
         populateTopDiscountGrid(allProductsCache);
-        populateTrendyDeals(allProductsCache);
+        populateTrendyDeals(allProductsCache); // *** Manual List ***
         
-        // Populate multiple budget sections
         populateBudgetSection(allProductsCache, 999, 'budget-buys-999', 'section-budget-999');
-        populateBudgetSection(allProductsCache, 799, 'budget-buys-799', 'section-budget-799');
         populateBudgetSection(allProductsCache, 599, 'budget-buys-599', 'section-budget-599');
 
-        // Init swiper for all budget sections at once
         initBudgetSwipers();
 
     } catch (error) { console.error("Error fetching products:", error); }
 }
 
-function populateDealsOfDay(products) {
-    const container = document.getElementById('deals-of-day-grid');
-    if (!container) return;
-    const discountedProducts = products.map(p => {
-        let discount = 0;
-        if (p.mrp && p.mrp > p.price) { discount = Math.round(((p.mrp - p.price) / p.mrp) * 100); }
-        return { ...p, discount };
-    }).filter(p => p.discount > 5).sort((a, b) => b.discount - a.discount).slice(0, 8);
+// *** UPDATED: Populate items MANUALLY marked as 'specialDiscount' ***
+function populateSpecialDiscounts(products) {
+    const container = document.getElementById('special-discount-grid');
+    const section = document.getElementById('special-discount-section');
+    if (!container || !section) return;
 
-    if (discountedProducts.length === 0) renderSwiperCards(container, products.slice(0, 8));
-    else renderSwiperCards(container, discountedProducts, true);
+    // Filter by specialDiscount flag
+    const items = products.filter(p => p.specialDiscount === true);
 
-    new Swiper('.deals-section.blue-theme .deals-swiper', {
+    if (items.length === 0) {
+        section.style.display = 'none';
+        return;
+    }
+    
+    section.style.display = 'block';
+    renderSwiperCards(container, items, true);
+
+    new Swiper('.deals-section.red-theme .deals-swiper', {
         slidesPerView: 3, spaceBetween: 10, freeMode: false, 
         breakpoints: { 768: { slidesPerView: 4 }, 1024: { slidesPerView: 5 } }
     });
 }
 
+// *** UPDATED: Populate items MANUALLY marked as 'featured' (Trendy Deals) ***
 function populateTrendyDeals(products) {
     const container = document.getElementById('trending-deals-grid');
     if (!container) return;
-    let trendy = products.filter(p => p.featured);
-    if (trendy.length < 4) trendy = products.sort(() => 0.5 - Math.random()).slice(0, 8);
+    
+    // Filter by featured flag
+    let trendy = products.filter(p => p.featured === true);
+    
     renderSwiperCards(container, trendy);
     
     new Swiper('.deals-section.orange-theme .deals-swiper', {
@@ -221,15 +239,24 @@ function populateTrendyDeals(products) {
     });
 }
 
-// *** Generic Function to Populate Budget Sections ***
+function populateDealsOfDay(products) {
+    const container = document.getElementById('deals-of-day-grid');
+    if (!container) return;
+    // Keep this auto or change to manual if needed. Currently auto (random/latest)
+    const items = products.slice(0, 10); 
+    renderSwiperCards(container, items, true);
+
+    new Swiper('.deals-section.blue-theme .deals-swiper', {
+        slidesPerView: 3, spaceBetween: 10, freeMode: false, 
+        breakpoints: { 768: { slidesPerView: 4 }, 1024: { slidesPerView: 5 } }
+    });
+}
+
 function populateBudgetSection(products, priceLimit, containerId, sectionId) {
     const container = document.getElementById(containerId);
     const section = document.getElementById(sectionId);
     if (!container || !section) return;
 
-    // Filter products strictly under the price limit
-    // Also ensuring they aren't 'too cheap' (e.g. for 999, we might not want 100 rs items if we have a 599 section)
-    // For simplicity, we just check <= priceLimit.
     const budgetItems = products.filter(p => p.price <= priceLimit).slice(0, 10);
     
     if (budgetItems.length === 0) {
@@ -237,7 +264,7 @@ function populateBudgetSection(products, priceLimit, containerId, sectionId) {
         return;
     }
 
-    section.style.display = 'block'; // Show section if items exist
+    section.style.display = 'block';
     let html = '';
     budgetItems.forEach(p => {
         const img = optimizeImage(p.images?.[0] || '', 200);
@@ -258,12 +285,8 @@ function populateBudgetSection(products, priceLimit, containerId, sectionId) {
 
 function initBudgetSwipers() {
     new Swiper('.budget-swiper', { 
-        slidesPerView: 3,
-        spaceBetween: 10,
-        breakpoints: {
-            768: { slidesPerView: 4, spaceBetween: 15 },
-            1024: { slidesPerView: 6, spaceBetween: 20 }
-        }
+        slidesPerView: 3, spaceBetween: 10,
+        breakpoints: { 768: { slidesPerView: 4 }, 1024: { slidesPerView: 6 } }
     });
 }
 
@@ -296,7 +319,13 @@ function renderSwiperCards(container, items, showTag = false) {
     let html = '';
     items.forEach(p => {
         const img = optimizeImage(p.images?.[0] || '', 200);
-        const tag = showTag && p.discount > 0 ? `${p.discount}% OFF` : p.categoryName || 'Hot Deal';
+        // Calculate discount tag
+        let discount = 0;
+        if (p.mrp && p.mrp > p.price) {
+             discount = Math.round(((p.mrp - p.price) / p.mrp) * 100);
+        }
+        const tag = (showTag && discount > 0) ? `${discount}% OFF` : (p.categoryName || 'Hot Deal');
+        
         html += `
             <div class="swiper-slide">
                 <a href="product.html?id=${p.id}" class="deal-card">
