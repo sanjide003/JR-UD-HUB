@@ -1,4 +1,4 @@
-// index.js - Added YouTube Shorts Support & AutoHeight Fix
+// index.js - Separate logic for YouTube Shorts & Regular Videos
 
 import { db } from './firebase-config.js';
 import { 
@@ -75,7 +75,7 @@ async function loadIconNav() {
     } catch (error) { console.error("Error loading icon nav:", error); }
 }
 
-// 3. HERO SLIDER (Shorts & Regular YouTube Support)
+// 3. HERO SLIDER (Shorts & Standard Video Separation)
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
     if (!sliderWrapper) return;
@@ -96,27 +96,26 @@ async function loadHeroSlider() {
                 let isVideo = slide.type === 'video';
                 let videoId = '';
                 let embedUrl = '';
+                let isShorts = false; // Flag to check if it's a Short
 
-                // *** FIX: Enhanced YouTube Parsing (Includes Shorts) ***
                 if (isVideo) {
                     try {
                         const urlObj = new URL(slide.url);
                         
                         if (urlObj.hostname.includes('youtube.com')) {
                             if (urlObj.pathname.startsWith('/shorts/')) {
-                                // Handle Shorts: youtube.com/shorts/VIDEO_ID
+                                // *** SHORTS DETECTED ***
                                 videoId = urlObj.pathname.split('/shorts/')[1];
+                                isShorts = true;
                             } else if (urlObj.searchParams.has('v')) {
-                                // Handle Watch: youtube.com/watch?v=VIDEO_ID
+                                // Standard Video
                                 videoId = urlObj.searchParams.get('v');
                             }
                         } else if (urlObj.hostname.includes('youtu.be')) {
-                            // Handle Short Link: youtu.be/VIDEO_ID
                             videoId = urlObj.pathname.slice(1);
                         }
 
                         if (videoId) {
-                            // Autoplay parameters
                             embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1&autoplay=1`;
                         }
                     } catch (e) {
@@ -129,14 +128,21 @@ async function loadHeroSlider() {
                     slideEl.innerHTML = `<img src="${imgUrl}" alt="Hero" loading="lazy">`;
                 } 
                 else if (isVideo && embedUrl) {
-                    // YouTube Slide (Using the wrapper class for 16:9)
-                    slideEl.innerHTML = `
-                        <div class="video-wrapper-16-9">
-                            <iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
-                        </div>`;
+                    // *** Check isShorts flag to apply correct wrapper ***
+                    if (isShorts) {
+                        slideEl.innerHTML = `
+                            <div class="video-wrapper-shorts">
+                                <iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                            </div>`;
+                    } else {
+                        slideEl.innerHTML = `
+                            <div class="video-wrapper-16-9">
+                                <iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                            </div>`;
+                    }
                 } 
                 else if (isVideo) {
-                    // Direct MP4 Video
+                    // MP4 Video
                     slideEl.innerHTML = `<video src="${slide.url}" autoplay muted loop playsinline></video>`;
                 }
                 
@@ -146,7 +152,7 @@ async function loadHeroSlider() {
 
         new Swiper('.hero-slider-new', {
             loop: true, 
-            autoHeight: true, // Adjust height automatically
+            autoHeight: true, // IMPORTANT for mixing different sizes
             autoplay: { delay: 6000, disableOnInteraction: false },
             pagination: { el: '.hero-pagination-dots', clickable: true },
             allowTouchMove: true,
