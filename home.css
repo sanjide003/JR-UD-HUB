@@ -1,4 +1,4 @@
-/* home.css - Video & Shorts Optimization */
+/* home.css - Video Aspect Ratio Fixes (3:4 for Shorts/Others) */
 
 /* --- 1. Top Banner --- */
 .home-top-banner {
@@ -63,14 +63,13 @@
     text-align: center; white-space: normal; line-height: 1.2; max-width: 80px;
 }
 
-/* --- 3. Hero Slider (Adaptive Video Sizes) --- */
+/* --- 3. Hero Slider & Video Wrappers --- */
 .hero-section-new {
     width: 100%;
     position: relative;
     background-color: #000;
     margin-bottom: 15px;
     overflow: hidden;
-    /* Height removed to allow content to dictate height */
 }
 
 .hero-slider-new {
@@ -82,12 +81,11 @@
     width: 100%;
     height: auto;
     background-color: #000;
-    display: flex;       /* Centers content horizontally */
+    display: flex;       
     justify-content: center;
     align-items: center;
 }
 
-/* Image Slide */
 .hero-slider-new .swiper-slide img {
     width: 100%;
     height: auto;
@@ -96,52 +94,46 @@
     display: block;
 }
 
-/* Direct MP4 Video */
-.hero-slider-new .swiper-slide video {
-    width: 100%;
-    height: auto;
-    max-height: 80vh; /* Don't take up entire screen height */
-    object-fit: contain;
-    display: block;
-}
+/* *** VIDEO ASPECT RATIOS *** */
 
-/* *** VIDEO WRAPPERS *** */
-
-/* 1. Standard YouTube Video (16:9 Landscape) */
+/* 1. Standard YouTube Video (16:9) */
+/* Calculation: (9 / 16) * 100 = 56.25% */
 .video-wrapper-16-9 {
     position: relative;
     width: 100%;
-    padding-top: 56.25%; /* 16:9 Ratio */
+    padding-top: 56.25%; 
     height: 0;
     background-color: #000;
 }
 
-/* 2. YouTube Shorts (9:16 Portrait) */
-.video-wrapper-shorts {
+/* 2. Shorts & Other Videos (3:4) */
+/* Calculation: (4 / 3) * 100 = 133.33% */
+.video-wrapper-3-4 {
     position: relative;
     width: 100%;
-    padding-top: 177.77%; /* 9:16 Ratio (16 / 9 = 1.777) */
+    padding-top: 133.33%; 
     height: 0;
     background-color: #000;
 }
 
-/* Common Iframe Style */
-.hero-video-iframe {
+/* Common Video Style (Fills the wrapper) */
+.hero-video-iframe, 
+.hero-video-element {
     position: absolute;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     border: 0;
+    object-fit: cover; /* 3:4 ലേക്ക് ക്രോപ്പ് ചെയ്ത് ഫിറ്റ് ആക്കാൻ */
 }
 
-/* Desktop Adjustment for Shorts */
+/* Desktop Adjustment: Limit 3:4 video height */
 @media (min-width: 768px) {
-    /* ഡെസ്ക്ടോപ്പിൽ ഷോർട്ട്സ് വല്ലാതെ വലുതാകാതിരിക്കാൻ വീതി കുറയ്ക്കുന്നു */
-    .video-wrapper-shorts {
-        width: 350px; /* Fixed width for Shorts on large screens */
-        padding-top: 622px; /* 350px * 1.77 */
-        margin: 0 auto; /* Center it */
+    .video-wrapper-3-4 {
+        width: 400px; /* PC-യിൽ വല്ലാതെ വലുതാകാതിരിക്കാൻ */
+        padding-top: 533px; /* 400 * 1.33 */
+        margin: 0 auto; 
     }
 }
 
