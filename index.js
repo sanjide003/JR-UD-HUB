@@ -1,4 +1,4 @@
-// index.js - Updated for Responsive Slide Counts & Auto Heights
+// index.js - Added YouTube Shorts Support & AutoHeight Fix
 
 import { db } from './firebase-config.js';
 import { 
@@ -35,7 +35,6 @@ async function loadHomeBanner() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists() && docSnap.data().homeBannerUrl) {
             const bannerUrl = docSnap.data().homeBannerUrl;
-            // High quality image for full width
             const optimizedUrl = optimizeImage(bannerUrl, 1200, 90); 
             bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Banner" loading="lazy">`;
             bannerContainer.style.display = 'block';
@@ -76,7 +75,7 @@ async function loadIconNav() {
     } catch (error) { console.error("Error loading icon nav:", error); }
 }
 
-// 3. HERO SLIDER (Auto Height)
+// 3. HERO SLIDER (Shorts & Regular YouTube Support)
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
     if (!sliderWrapper) return;
@@ -98,32 +97,46 @@ async function loadHeroSlider() {
                 let videoId = '';
                 let embedUrl = '';
 
-                // YouTube URL Parsing
+                // *** FIX: Enhanced YouTube Parsing (Includes Shorts) ***
                 if (isVideo) {
-                    if (slide.url.includes('youtube.com/watch?v=')) {
-                        videoId = new URL(slide.url).searchParams.get('v');
-                    } else if (slide.url.includes('youtu.be/')) {
-                        videoId = slide.url.split('youtu.be/')[1];
-                    }
-                    if (videoId) {
-                        embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1&autoplay=1`;
+                    try {
+                        const urlObj = new URL(slide.url);
+                        
+                        if (urlObj.hostname.includes('youtube.com')) {
+                            if (urlObj.pathname.startsWith('/shorts/')) {
+                                // Handle Shorts: youtube.com/shorts/VIDEO_ID
+                                videoId = urlObj.pathname.split('/shorts/')[1];
+                            } else if (urlObj.searchParams.has('v')) {
+                                // Handle Watch: youtube.com/watch?v=VIDEO_ID
+                                videoId = urlObj.searchParams.get('v');
+                            }
+                        } else if (urlObj.hostname.includes('youtu.be')) {
+                            // Handle Short Link: youtu.be/VIDEO_ID
+                            videoId = urlObj.pathname.slice(1);
+                        }
+
+                        if (videoId) {
+                            // Autoplay parameters
+                            embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1&autoplay=1`;
+                        }
+                    } catch (e) {
+                        console.error("Invalid Video URL:", slide.url);
                     }
                 }
 
                 if (slide.type === 'image') {
-                    // Image Slide
                     const imgUrl = optimizeImage(slide.url, 1200, 90);
                     slideEl.innerHTML = `<img src="${imgUrl}" alt="Hero" loading="lazy">`;
                 } 
                 else if (isVideo && embedUrl) {
-                    // YouTube Slide (Wrapped for Aspect Ratio)
+                    // YouTube Slide (Using the wrapper class for 16:9)
                     slideEl.innerHTML = `
                         <div class="video-wrapper-16-9">
                             <iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                         </div>`;
                 } 
                 else if (isVideo) {
-                    // Direct Video
+                    // Direct MP4 Video
                     slideEl.innerHTML = `<video src="${slide.url}" autoplay muted loop playsinline></video>`;
                 }
                 
@@ -133,7 +146,7 @@ async function loadHeroSlider() {
 
         new Swiper('.hero-slider-new', {
             loop: true, 
-            autoHeight: true, // *** Key Change: Auto adjust height based on content ***
+            autoHeight: true, // Adjust height automatically
             autoplay: { delay: 6000, disableOnInteraction: false },
             pagination: { el: '.hero-pagination-dots', clickable: true },
             allowTouchMove: true,
@@ -186,8 +199,6 @@ async function fetchAllProductsAndDistribute() {
     } catch (error) { console.error("Error fetching products:", error); }
 }
 
-// --- Card Rendering Logic with Fixed 3 Items per view ---
-
 function populateDealsOfDay(products) {
     const container = document.getElementById('deals-of-day-grid');
     if (!container) return;
@@ -201,9 +212,9 @@ function populateDealsOfDay(products) {
     else renderSwiperCards(container, discountedProducts, true);
 
     new Swiper('.deals-section.blue-theme .deals-swiper', {
-        slidesPerView: 3, // *** കൃത്യം 3 എണ്ണം കാണിക്കും ***
+        slidesPerView: 3, 
         spaceBetween: 10, 
-        freeMode: false, // Snap to cards
+        freeMode: false, 
         breakpoints: {
             768: { slidesPerView: 4, spaceBetween: 15 },
             1024: { slidesPerView: 5, spaceBetween: 20 }
@@ -219,7 +230,7 @@ function populateTrendyDeals(products) {
     renderSwiperCards(container, trendy);
     
     new Swiper('.deals-section.orange-theme .deals-swiper', {
-        slidesPerView: 3, // *** കൃത്യം 3 എണ്ണം കാണിക്കും ***
+        slidesPerView: 3,
         spaceBetween: 10,
         freeMode: false,
         breakpoints: {
@@ -256,7 +267,7 @@ function populateBudgetBuys(products) {
     container.innerHTML = html;
     
     new Swiper('.budget-swiper', { 
-        slidesPerView: 3, // *** കൃത്യം 3 എണ്ണം കാണിക്കും ***
+        slidesPerView: 3,
         spaceBetween: 10,
         breakpoints: {
             768: { slidesPerView: 4, spaceBetween: 15 },
