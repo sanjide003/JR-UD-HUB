@@ -1,4 +1,4 @@
-// admin.js - Updated to manage Special Discount & Trendy Deals manually
+// admin.js - Updated logic for Banner in Special Page
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -148,7 +148,7 @@ onAuthStateChanged(auth, (user) => {
         loadCategories();
         loadProducts("all"); 
         loadFeaturedProducts();
-        loadSpecialDiscountProducts(); // New Load Function
+        loadSpecialDiscountProducts(); 
         loadHeroSlides(); 
         loadAllSettings();
         cacheAllProductsForSearch(); 
@@ -186,6 +186,7 @@ adminNavLinks.addEventListener("click", (e) => {
 function setupImagePreview(inputId, previewId) {
     const input = document.getElementById(inputId);
     const previewContainer = document.getElementById(previewId);
+    if (!input || !previewContainer) return;
     function updatePreview() {
         previewContainer.innerHTML = '';
         const url = input.value.trim();
@@ -202,7 +203,7 @@ function setupImagePreview(inputId, previewId) {
 setupImagePreview('category-image-url', 'category-image-preview');
 setupImagePreview('setting-logo-image-url', 'logo-preview');
 setupImagePreview('setting-home-banner-url', 'banner-preview');
-setupImagePreview('setting-special-discount-banner-url', 'special-banner-preview');
+setupImagePreview('special-banner-input-page', 'special-banner-page-preview'); // *** NEW ***
 
 async function loadAllSettings() {
     try {
@@ -215,7 +216,8 @@ async function loadAllSettings() {
             document.getElementById("setting-logo-subtitle").value = settings.logoSubtitle || '';
             document.getElementById("setting-home-banner-url").value = settings.homeBannerUrl || '';
             
-            document.getElementById("setting-special-discount-banner-url").value = settings.specialDiscountBannerUrl || '';
+            // Populate Banner Input in Special Page
+            document.getElementById("special-banner-input-page").value = settings.specialDiscountBannerUrl || '';
 
             document.getElementById("setting-chatbot-number").value = settings.chatbotNumber || '';
             document.getElementById("setting-dealer-number").value = settings.dealerChatNumber || '';
@@ -234,7 +236,7 @@ async function loadAllSettings() {
             
             document.getElementById("setting-logo-image-url").dispatchEvent(new Event('input'));
             document.getElementById("setting-home-banner-url").dispatchEvent(new Event('input'));
-            document.getElementById("setting-special-discount-banner-url").dispatchEvent(new Event('input'));
+            document.getElementById("special-banner-input-page").dispatchEvent(new Event('input'));
         }
     } catch (error) { console.error("Error loading settings: ", error); showStatus(adminStatus, "Error loading site settings."); }
 }
@@ -249,7 +251,7 @@ generalSettingsForm.addEventListener("submit", async (e) => {
             logoText: document.getElementById("setting-logo-text").value,
             logoSubtitle: document.getElementById("setting-logo-subtitle").value,
             homeBannerUrl: document.getElementById("setting-home-banner-url").value,
-            specialDiscountBannerUrl: document.getElementById("setting-special-discount-banner-url").value, 
+            // specialDiscountBannerUrl managed in separate page now
             chatbotNumber: document.getElementById("setting-chatbot-number").value,
             dealerChatNumber: document.getElementById("setting-dealer-number").value
         };
@@ -261,6 +263,24 @@ generalSettingsForm.addEventListener("submit", async (e) => {
     } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
     finally { enableButton(button, "Save General Settings"); }
 });
+
+// *** NEW: Save Special Banner ***
+const saveSpecialBannerBtn = document.getElementById('save-special-banner-btn');
+if (saveSpecialBannerBtn) {
+    saveSpecialBannerBtn.addEventListener('click', async () => {
+        disableButton(saveSpecialBannerBtn, "Saving...");
+        try {
+            const bannerUrl = document.getElementById("special-banner-input-page").value;
+            const docRef = doc(db, "settings", "global");
+            await setDoc(docRef, { specialDiscountBannerUrl: bannerUrl }, { merge: true });
+            showStatus(adminStatus, "Banner updated successfully!", false);
+        } catch (error) {
+            showStatus(adminStatus, `Error: ${error.message}`);
+        } finally {
+            enableButton(saveSpecialBannerBtn, "Save Banner");
+        }
+    });
+}
 
 contactSettingsForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -366,7 +386,7 @@ function cacheAllProductsForSearch() {
     });
 }
 
-// *** 1. TRENDY DEALS (FEATURED) SEARCH & ADD ***
+// 1. TRENDY DEALS (FEATURED) SEARCH & ADD
 featuredSearchInput.addEventListener('input', (e) => {
     const searchTerm = e.target.value.toLowerCase().trim();
     featuredSearchResults.innerHTML = '';
@@ -434,7 +454,7 @@ function loadFeaturedProducts() {
      }, (error) => { console.error("Error loading featured: ", error); });
 }
 
-// *** 2. SPECIAL DISCOUNT SEARCH & ADD (NEW) ***
+// 2. SPECIAL DISCOUNT SEARCH & ADD
 specialSearchInput.addEventListener('input', (e) => {
     const searchTerm = e.target.value.toLowerCase().trim();
     specialSearchResults.innerHTML = '';
@@ -523,6 +543,7 @@ addProductForm.addEventListener("submit", async (e) => {
             price: Number(document.getElementById("product-price").value) || 0,
             description: document.getElementById("product-description").value,
             featured: document.getElementById("product-featured").checked,
+            specialDiscount: document.getElementById("modal-product-special") ? document.getElementById("modal-product-special").checked : false, // Default false on add
             images: imageUrls,
             moreLinks: moreLinks,
             createdAt: serverTimestamp()
