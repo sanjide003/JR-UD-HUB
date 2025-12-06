@@ -1,10 +1,10 @@
 <!-- 
   ഇതാണ് പുതിയ ഹോം പേജ് (index.html).
-  Flipkart മോഡൽ ലേഔട്ട്:
-  1. Icon Navigation Bar (Top)
-  2. Hero Slider
-  3. Colored Deal Sections (Blue/Orange)
-  4. Grid Layouts
+  ക്രമം:
+  1. Home Banner (Top)
+  2. Category Icons
+  3. Video Slider (YouTube Friendly)
+  4. Product Deals & Grids
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -40,13 +40,16 @@
     <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main class="home-main-container">
         
-        <!-- 3.1. ടോപ്പ് കാറ്റഗറി ഐക്കൺ ബാർ (Flipkart Style) -->
+        <!-- 3.1. ഏറ്റവും മുകളിൽ: ഹോം ബാനർ -->
+        <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
+
+        <!-- 3.2. തൊട്ടുതാഴെ: കാറ്റഗറി ഐക്കൺ ബാർ -->
         <section id="icon-nav-bar" class="icon-nav-container">
             <!-- JS വഴി ഇവിടെ ഐക്കണുകൾ വരും -->
             <div class="loading-placeholder-shimmer"></div>
         </section>
 
-        <!-- 3.2. ഹീറോ സ്ലൈഡർ -->
+        <!-- 3.3. അതിനു താഴെ: വീഡിയോ സ്ലൈഡർ (Fixed Aspect Ratio) -->
         <section class="hero-section-new">
             <div class="swiper hero-slider-new" id="hero-slider-container">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
@@ -55,9 +58,6 @@
                 <div class="swiper-pagination hero-pagination-dots"></div>
             </div>
         </section>
-
-        <!-- 3.3. ഹോം ബാനർ (ഉപയോക്താവ് ആവശ്യപ്പെട്ട വലിപ്പം) -->
-        <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
 
         <!-- 3.4. Deals of the Day (BLUE Section) -->
         <section class="deals-section blue-theme container-fluid">
