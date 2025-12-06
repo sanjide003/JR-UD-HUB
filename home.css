@@ -1,31 +1,30 @@
-/* home.css - Fixed Sizes & Video Optimized
-*/
+/* home.css - Fixed Width, Auto Height & Bigger Cards */
 
-/* --- 1. Top Banner (Fixed Size) --- */
+/* --- 1. Top Banner (Auto Height) --- */
 .home-top-banner {
     width: 100%;
     margin-bottom: 0;
     padding: 0;
     background-color: #000;
+    display: block; /* Gap ഒഴിവാക്കാൻ */
 }
 .home-top-banner img {
     width: 100%;
-    height: auto;
-    max-height: 150px; /* മൊബൈലിൽ അധികം സ്ഥലം കളയാതിരിക്കാൻ */
-    object-fit: cover; /* ഇമേജ് ചതഞ്ഞു പോകാതിരിക്കാൻ */
+    height: auto; /* ഉയരം ഇമേജിന് അനുസരിച്ച് മാറും */
     display: block;
+    object-fit: contain;
 }
 
-/* --- 2. Icon Navigation (Fixed Size) --- */
+/* --- 2. Icon Navigation --- */
 .icon-nav-container {
     background-color: var(--card-bg);
-    padding: 12px 0;
+    padding: 15px 0;
     white-space: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
     display: flex;
-    gap: 15px;
+    gap: 10px; /* Gap കുറച്ചു */
     border-bottom: 1px solid var(--border-color);
     scrollbar-width: none; 
     -ms-overflow-style: none;
@@ -36,23 +35,24 @@
     display: inline-flex;
     flex-direction: column;
     align-items: center;
-    width: 70px; /* Fixed Width */
+    width: 22%; /* സ്ക്രീനിൽ ഏകദേശം 4.5 എണ്ണം വരാൻ */
+    min-width: 75px;
     text-decoration: none;
     color: var(--text-color);
     flex-shrink: 0;
 }
-.icon-nav-item:first-child { margin-left: 15px; }
-.icon-nav-item:last-child { margin-right: 15px; }
+.icon-nav-item:first-child { margin-left: 10px; }
+.icon-nav-item:last-child { margin-right: 10px; }
 
 .icon-nav-img-box {
-    width: 50px; /* Fixed Icon Size */
-    height: 50px;
+    width: 55px; 
+    height: 55px;
     border-radius: 50%;
     background-color: rgba(255, 255, 255, 0.05);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     border: 1px solid var(--border-color);
     overflow: hidden;
     transition: transform 0.2s ease;
@@ -63,38 +63,33 @@
     object-fit: cover;
 }
 .icon-nav-text {
-    font-size: 0.7rem;
+    font-size: 0.75rem;
     font-weight: 500;
     color: var(--text-muted);
     text-align: center;
-    white-space: normal; /* ടെക്സ്റ്റ് റാപ്പ് ചെയ്യാൻ */
+    white-space: normal;
     line-height: 1.2;
+    max-width: 80px;
 }
 
-/* --- 3. Hero Video Slider (16:9 Aspect Ratio Fixed) --- */
+/* --- 3. Hero Video Slider (Video Size Adaptive) --- */
 .hero-section-new {
     width: 100%;
     position: relative;
     background-color: #000;
-    
-    /* 16:9 Aspect Ratio ഉറപ്പാക്കുന്നു */
-    padding-top: 56.25%; /* 16:9 Ratio (9/16 = 0.5625) */
-    height: 0; 
+    margin-bottom: 15px;
     overflow: hidden;
-    margin-bottom: 10px;
 }
 
+/* Swiper കണ്ടെയ്നറിന്റെ ഉയരം വീഡിയോയ്ക്ക് അനുസരിച്ച് */
 .hero-slider-new {
-    position: absolute;
-    top: 0;
-    left: 0;
     width: 100%;
-    height: 100%;
+    height: auto;
 }
 
 .hero-slider-new .swiper-slide {
     width: 100%;
-    height: 100%;
+    height: auto;
     background-color: #000;
     display: flex;
     align-items: center;
@@ -102,26 +97,38 @@
 }
 
 .hero-slider-new .swiper-slide img,
-.hero-slider-new .swiper-slide video,
-.hero-slider-new .swiper-slide iframe {
+.hero-slider-new .swiper-slide video {
     width: 100%;
-    height: 100%;
-    object-fit: cover; /* സ്ക്രീൻ നിറഞ്ഞു നിൽക്കാൻ */
-    border: none;
+    height: auto; /* Aspect Ratio നിലനിർത്തുന്നു */
+    max-height: 500px; /* വല്ലാതെ വലുതാകാതിരിക്കാൻ */
+    object-fit: contain; 
+    display: block;
 }
 
-/* YouTube Iframe-ന് പ്രത്യേക ശ്രദ്ധ */
-.hero-video-iframe {
-    pointer-events: none; /* സ്ക്രോളിംഗ് തടസ്സപ്പെടുത്താതിരിക്കാൻ */
+/* YouTube Iframe Wrapper (16:9 Aspect Ratio) */
+.video-wrapper-16-9 {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%; /* 16:9 Ratio */
+    height: 0;
+}
+.video-wrapper-16-9 iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
 }
 
 /* Pagination Dots */
 .hero-pagination-dots {
-    bottom: 10px !important;
+    bottom: 15px !important;
 }
 .hero-pagination-dots .swiper-pagination-bullet {
     background: rgba(255,255,255,0.7);
     opacity: 1;
+    width: 8px; height: 8px;
 }
 .hero-pagination-dots .swiper-pagination-bullet-active {
     background: var(--primary-gold);
@@ -129,14 +136,14 @@
     border-radius: 4px;
 }
 
-/* --- 4. Deals Section (Fixed Card Sizes) --- */
+/* --- 4. Deals Section (3 Items per Screen) --- */
 .container-fluid {
     padding: 15px 10px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .deals-section {
-    border-radius: 4px;
+    border-radius: 8px;
     position: relative;
     overflow: hidden;
 }
@@ -157,7 +164,7 @@
     padding: 0 5px;
 }
 .deals-title-box h3 {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
     margin: 0;
     color: #fff;
@@ -166,44 +173,45 @@
 .timer-badge {
     background-color: #fff;
     color: #2874f0;
-    font-size: 0.65rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    padding: 2px 5px;
-    border-radius: 3px;
+    padding: 2px 6px;
+    border-radius: 4px;
     display: inline-block;
-    margin-top: 2px;
+    margin-top: 4px;
 }
 .view-all-btn {
     background-color: #fff;
     color: #2874f0;
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     font-weight: 600;
-    padding: 5px 10px;
-    border-radius: 3px;
+    padding: 6px 12px;
+    border-radius: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 .orange-theme .view-all-btn { color: #ff9f00; }
 
-/* Fixed Deal Card */
+/* Product Card - Bigger Size */
 .deal-card {
     background-color: #fff;
-    border-radius: 6px;
-    padding: 8px;
+    border-radius: 8px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-decoration: none;
     height: 100%;
-    width: 100%;
     box-sizing: border-box;
+    /* Shadows removed for cleaner flat look inside colored box */
 }
 
 .deal-img-box {
     width: 100%;
-    height: 100px; /* Fixed Image Height */
+    height: 120px; /* Increased Height */
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
 }
 .deal-img {
     max-width: 100%;
@@ -213,83 +221,81 @@
 
 .deal-info { text-align: center; width: 100%; }
 .deal-name {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     color: #333;
     font-weight: 500;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 .deal-price {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: #388e3c;
     font-weight: 700;
 }
 .deal-tag {
-    font-size: 0.65rem;
+    font-size: 0.75rem;
     color: #878787;
 }
 
 /* Swiper Settings */
 .deals-swiper { padding-bottom: 5px !important; }
-.deals-swiper .swiper-slide {
-    width: 130px; /* Fixed Slide Width */
-    height: auto;
-}
+/* slide width JS വഴി നിയന്ത്രിക്കും (slidesPerView: 3) */
 
 /* --- 5. Grid Layout (2x2 Fixed) --- */
 .grid-section {
-    padding: 10px 15px 20px 15px;
+    padding: 10px 15px 25px 15px;
     background-color: var(--card-bg);
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 .section-title-simple {
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 600;
     color: var(--text-color);
-    margin-bottom: 12px;
+    margin-bottom: 15px;
 }
 
 .grid-layout-2x2 {
     display: grid;
     grid-template-columns: 1fr 1fr; /* Two Equal Columns */
-    gap: 8px;
+    gap: 10px;
 }
 
 .grid-item-card {
     background-color: rgba(255,255,255,0.05);
     border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 8px;
+    border-radius: 8px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-decoration: none;
     position: relative;
-    height: 160px; /* Fixed Height */
+    /* Height removed to allow content to dictate, or set min-height */
+    min-height: 180px; 
 }
 .grid-badge {
     position: absolute;
     top: 0; left: 0;
     background-color: var(--success-green);
     color: #fff;
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     font-weight: 700;
-    padding: 2px 5px;
-    border-bottom-right-radius: 6px;
+    padding: 3px 8px;
+    border-bottom-right-radius: 8px;
     z-index: 2;
 }
 .grid-img {
     width: 100%;
-    height: 100px; /* Fixed Image Height */
+    height: 120px; /* Fixed Image Height */
     object-fit: contain;
-    margin-bottom: 6px;
+    margin-bottom: 8px;
     background-color: rgba(255,255,255,0.02);
     border-radius: 4px;
 }
 .grid-name {
-    font-size: 0.75rem;
+    font-size: 0.85rem;
     color: var(--text-color);
     text-align: center;
     white-space: nowrap;
@@ -298,35 +304,34 @@
     width: 100%;
 }
 .grid-discount {
-    font-size: 0.8rem;
+    font-size: 0.9rem;
     color: var(--primary-gold);
     font-weight: 700;
 }
 
 /* --- 6. Budget Section --- */
-.budget-section { padding: 0 15px 25px 15px; }
-.budget-swiper .swiper-slide { width: 120px; }
+.budget-section { padding: 0 15px 30px 15px; }
 .budget-card {
     background-color: var(--card-bg);
     border: 1px solid var(--border-color);
-    border-radius: 6px;
-    padding: 8px;
+    border-radius: 8px;
+    padding: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
     text-decoration: none;
 }
-.budget-card .deal-img-box { height: 90px; background-color: rgba(255,255,255,0.02); border-radius: 4px; }
-.budget-card .deal-name { color: var(--text-color); }
-.budget-card .deal-price { color: var(--primary-gold); }
+.budget-card .deal-img-box { height: 110px; background-color: rgba(255,255,255,0.02); border-radius: 4px; margin-bottom: 8px;}
+.budget-card .deal-name { color: var(--text-color); font-size: 0.85rem; }
+.budget-card .deal-price { color: var(--primary-gold); font-size: 0.95rem; }
 
 /* Desktop Adjustments */
 @media (min-width: 768px) {
-    .home-top-banner img { max-height: 250px; }
-    .hero-section-new { padding-top: 40%; } /* Less height on desktop */
-    .deals-swiper .swiper-slide { width: 170px; }
+    .home-top-banner img { max-height: 300px; }
+    .hero-slider-new .swiper-slide img,
+    .hero-slider-new .swiper-slide video { max-height: 500px; }
     .grid-layout-2x2 { grid-template-columns: repeat(4, 1fr); }
-    .budget-swiper .swiper-slide { width: 170px; }
-    .deal-img-box, .grid-img { height: 140px; }
-    .grid-item-card { height: 200px; }
+    .deal-img-box, .grid-img { height: 160px; }
+    
+    /* Desktop Swiper overrides handled in JS */
 }
