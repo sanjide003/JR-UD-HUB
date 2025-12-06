@@ -1,4 +1,4 @@
-// index.js - Separate logic for YouTube Shorts & Regular Videos
+// index.js - 3:4 Logic for Shorts & Other Videos
 
 import { db } from './firebase-config.js';
 import { 
@@ -75,7 +75,7 @@ async function loadIconNav() {
     } catch (error) { console.error("Error loading icon nav:", error); }
 }
 
-// 3. HERO SLIDER (Shorts & Standard Video Separation)
+// 3. HERO SLIDER (Aspect Ratio Logic: 16:9 vs 3:4)
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
     if (!sliderWrapper) return;
@@ -96,7 +96,7 @@ async function loadHeroSlider() {
                 let isVideo = slide.type === 'video';
                 let videoId = '';
                 let embedUrl = '';
-                let isShorts = false; // Flag to check if it's a Short
+                let isShorts = false; 
 
                 if (isVideo) {
                     try {
@@ -104,14 +104,16 @@ async function loadHeroSlider() {
                         
                         if (urlObj.hostname.includes('youtube.com')) {
                             if (urlObj.pathname.startsWith('/shorts/')) {
-                                // *** SHORTS DETECTED ***
+                                // *** SHORTS (3:4) ***
                                 videoId = urlObj.pathname.split('/shorts/')[1];
                                 isShorts = true;
                             } else if (urlObj.searchParams.has('v')) {
-                                // Standard Video
+                                // *** STANDARD (16:9) ***
                                 videoId = urlObj.searchParams.get('v');
                             }
                         } else if (urlObj.hostname.includes('youtu.be')) {
+                            // Can be either, defaulting to standard 16:9 unless specified otherwise in logic,
+                            // but usually these are watch links.
                             videoId = urlObj.pathname.slice(1);
                         }
 
@@ -128,10 +130,10 @@ async function loadHeroSlider() {
                     slideEl.innerHTML = `<img src="${imgUrl}" alt="Hero" loading="lazy">`;
                 } 
                 else if (isVideo && embedUrl) {
-                    // *** Check isShorts flag to apply correct wrapper ***
+                    // *** 16:9 for Normal YouTube, 3:4 for Shorts ***
                     if (isShorts) {
                         slideEl.innerHTML = `
-                            <div class="video-wrapper-shorts">
+                            <div class="video-wrapper-3-4">
                                 <iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
                             </div>`;
                     } else {
@@ -142,8 +144,11 @@ async function loadHeroSlider() {
                     }
                 } 
                 else if (isVideo) {
-                    // MP4 Video
-                    slideEl.innerHTML = `<video src="${slide.url}" autoplay muted loop playsinline></video>`;
+                    // *** Direct Videos: Always 3:4 as requested ***
+                    slideEl.innerHTML = `
+                        <div class="video-wrapper-3-4">
+                            <video class="hero-video-element" src="${slide.url}" autoplay muted loop playsinline></video>
+                        </div>`;
                 }
                 
                 sliderWrapper.appendChild(slideEl);
@@ -152,7 +157,7 @@ async function loadHeroSlider() {
 
         new Swiper('.hero-slider-new', {
             loop: true, 
-            autoHeight: true, // IMPORTANT for mixing different sizes
+            autoHeight: true, 
             autoplay: { delay: 6000, disableOnInteraction: false },
             pagination: { el: '.hero-pagination-dots', clickable: true },
             allowTouchMove: true,
