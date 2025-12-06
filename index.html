@@ -1,10 +1,8 @@
 <!-- 
   ഇതാണ് പുതിയ ഹോം പേജ് (index.html).
-  ക്രമം:
-  1. Home Banner (Top)
-  2. Category Icons
-  3. Video Slider (YouTube Friendly)
-  4. Product Deals & Grids
+  മാറ്റങ്ങൾ:
+  1. Banner & Video: Auto Height (Responsive).
+  2. Product Sections: 3 items per screen.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -40,16 +38,15 @@
     <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main class="home-main-container">
         
-        <!-- 3.1. ഏറ്റവും മുകളിൽ: ഹോം ബാനർ -->
+        <!-- 3.1. ഏറ്റവും മുകളിൽ: ഹോം ബാനർ (Auto Height) -->
         <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
 
         <!-- 3.2. തൊട്ടുതാഴെ: കാറ്റഗറി ഐക്കൺ ബാർ -->
         <section id="icon-nav-bar" class="icon-nav-container">
-            <!-- JS വഴി ഇവിടെ ഐക്കണുകൾ വരും -->
             <div class="loading-placeholder-shimmer"></div>
         </section>
 
-        <!-- 3.3. അതിനു താഴെ: വീഡിയോ സ്ലൈഡർ (Fixed Aspect Ratio) -->
+        <!-- 3.3. അതിനു താഴെ: വീഡിയോ സ്ലൈഡർ (Auto Height / YouTube Friendly) -->
         <section class="hero-section-new">
             <div class="swiper hero-slider-new" id="hero-slider-container">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
@@ -59,18 +56,18 @@
             </div>
         </section>
 
-        <!-- 3.4. Deals of the Day (BLUE Section) -->
+        <!-- 3.4. Deals of the Day (3 Items per Screen) -->
         <section class="deals-section blue-theme container-fluid">
             <div class="deals-header">
                 <div class="deals-title-box">
                     <h3>Deals of the Day</h3>
-                    <div class="timer-badge">Sale is Live</div>
+                    <div class="timer-badge">Live</div>
                 </div>
                 <a href="explore.html" class="view-all-btn">View All</a>
             </div>
             <div class="swiper deals-swiper">
                 <div class="swiper-wrapper" id="deals-of-day-grid">
-                    <!-- Cards will be injected here -->
+                    <!-- Cards injected via JS -->
                 </div>
             </div>
         </section>
@@ -79,11 +76,11 @@
         <section class="grid-section container">
             <h3 class="section-title-simple">Top Discount of the Sale</h3>
             <div class="grid-layout-2x2" id="top-discount-grid">
-                <!-- 4 Cards will be injected here -->
+                <!-- 4 Cards injected via JS -->
             </div>
         </section>
 
-        <!-- 3.6. Trending Deals (ORANGE Section) -->
+        <!-- 3.6. Trending Deals (3 Items per Screen) -->
         <section class="deals-section orange-theme container-fluid">
             <div class="deals-header">
                 <div class="deals-title-box">
@@ -94,22 +91,21 @@
             </div>
             <div class="swiper deals-swiper">
                 <div class="swiper-wrapper" id="trending-deals-grid">
-                    <!-- Cards will be injected here -->
+                    <!-- Cards injected via JS -->
                 </div>
             </div>
         </section>
 
-        <!-- 3.7. പരസ്യ ബാനർ (Sponsored) -->
+        <!-- 3.7. പരസ്യ ബാനർ -->
         <section id="sponsored-banner" class="sponsored-banner-section container" style="display: none;">
-            <!-- Single Image Banner -->
         </section>
 
-        <!-- 3.8. Budget Buys (Under ₹999) -->
+        <!-- 3.8. Budget Buys -->
         <section class="budget-section container">
             <h3 class="section-title-simple">Budget Buys (Under ₹999)</h3>
             <div class="swiper budget-swiper">
                 <div class="swiper-wrapper" id="budget-buys-grid">
-                    <!-- Cards will be injected here -->
+                    <!-- Cards injected via JS -->
                 </div>
             </div>
         </section>
