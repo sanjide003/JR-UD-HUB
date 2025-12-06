@@ -1,4 +1,4 @@
-/* home.css - Video Fix & Responsive Updates */
+/* home.css - Video & Shorts Optimization */
 
 /* --- 1. Top Banner --- */
 .home-top-banner {
@@ -63,29 +63,31 @@
     text-align: center; white-space: normal; line-height: 1.2; max-width: 80px;
 }
 
-/* --- 3. Hero Slider (Video Fix) --- */
+/* --- 3. Hero Slider (Adaptive Video Sizes) --- */
 .hero-section-new {
     width: 100%;
     position: relative;
     background-color: #000;
     margin-bottom: 15px;
     overflow: hidden;
+    /* Height removed to allow content to dictate height */
 }
 
 .hero-slider-new {
     width: 100%;
-    height: auto; /* Swiper will adjust based on content */
+    height: auto;
 }
 
-/* സ്ലൈഡിന് ഡിസ്പ്ലേ ബ്ലോക്ക് നൽകുന്നു (ഫ്ലെക്സ് ഒഴിവാക്കി) */
 .hero-slider-new .swiper-slide {
     width: 100%;
     height: auto;
     background-color: #000;
-    display: block; 
+    display: flex;       /* Centers content horizontally */
+    justify-content: center;
+    align-items: center;
 }
 
-/* ഇമേജ് സ്ലൈഡ് */
+/* Image Slide */
 .hero-slider-new .swiper-slide img {
     width: 100%;
     height: auto;
@@ -94,24 +96,36 @@
     display: block;
 }
 
-/* വീഡിയോ സ്ലൈഡ് (MP4) */
+/* Direct MP4 Video */
 .hero-slider-new .swiper-slide video {
     width: 100%;
     height: auto;
-    object-fit: cover;
+    max-height: 80vh; /* Don't take up entire screen height */
+    object-fit: contain;
     display: block;
 }
 
-/* *** VIDEO FIX: YouTube Wrapper (16:9 Ratio) *** */
+/* *** VIDEO WRAPPERS *** */
+
+/* 1. Standard YouTube Video (16:9 Landscape) */
 .video-wrapper-16-9 {
     position: relative;
     width: 100%;
-    padding-top: 56.25%; /* 16:9 Aspect Ratio (9 / 16 = 0.5625) */
+    padding-top: 56.25%; /* 16:9 Ratio */
     height: 0;
     background-color: #000;
-    overflow: hidden;
 }
 
+/* 2. YouTube Shorts (9:16 Portrait) */
+.video-wrapper-shorts {
+    position: relative;
+    width: 100%;
+    padding-top: 177.77%; /* 9:16 Ratio (16 / 9 = 1.777) */
+    height: 0;
+    background-color: #000;
+}
+
+/* Common Iframe Style */
 .hero-video-iframe {
     position: absolute;
     top: 0;
@@ -119,7 +133,16 @@
     width: 100%;
     height: 100%;
     border: 0;
-    pointer-events: auto; /* ഉപയോക്താവിന് ക്ലിക്ക് ചെയ്യാൻ അനുവദിക്കുന്നു */
+}
+
+/* Desktop Adjustment for Shorts */
+@media (min-width: 768px) {
+    /* ഡെസ്ക്ടോപ്പിൽ ഷോർട്ട്സ് വല്ലാതെ വലുതാകാതിരിക്കാൻ വീതി കുറയ്ക്കുന്നു */
+    .video-wrapper-shorts {
+        width: 350px; /* Fixed width for Shorts on large screens */
+        padding-top: 622px; /* 350px * 1.77 */
+        margin: 0 auto; /* Center it */
+    }
 }
 
 /* Pagination Dots */
@@ -148,7 +171,6 @@
 }
 .orange-theme .view-all-btn { color: #ff9f00; }
 
-/* Deal Card */
 .deal-card {
     background-color: #fff; border-radius: 8px; padding: 10px;
     display: flex; flex-direction: column; align-items: center;
@@ -210,8 +232,6 @@
 /* Desktop Adjustments */
 @media (min-width: 768px) {
     .home-top-banner img { max-height: 300px; }
-    .hero-slider-new .swiper-slide img,
-    .hero-slider-new .swiper-slide video { max-height: 500px; }
     .grid-layout-2x2 { grid-template-columns: repeat(4, 1fr); }
     .deal-img-box, .grid-img { height: 160px; }
 }
