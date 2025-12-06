@@ -1,8 +1,7 @@
 <!-- 
   ഇതാണ് പുതിയ ഹോം പേജ് (index.html).
   മാറ്റങ്ങൾ:
-  1. Banner & Video: Auto Height (Responsive).
-  2. Product Sections: 3 items per screen.
+  1. Budget Buys 999, 799, 599 എന്നിങ്ങനെ മൂന്ന് സെക്ഷനുകൾ ചേർത്തു.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -38,25 +37,25 @@
     <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main class="home-main-container">
         
-        <!-- 3.1. ഏറ്റവും മുകളിൽ: ഹോം ബാനർ (Auto Height) -->
+        <!-- 3.1. ഹോം ബാനർ -->
         <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
 
-        <!-- 3.2. തൊട്ടുതാഴെ: കാറ്റഗറി ഐക്കൺ ബാർ -->
+        <!-- 3.2. കാറ്റഗറി ഐക്കൺ ബാർ -->
         <section id="icon-nav-bar" class="icon-nav-container">
             <div class="loading-placeholder-shimmer"></div>
         </section>
 
-        <!-- 3.3. അതിനു താഴെ: വീഡിയോ സ്ലൈഡർ (Auto Height / YouTube Friendly) -->
+        <!-- 3.3. വീഡിയോ സ്ലൈഡർ -->
         <section class="hero-section-new">
             <div class="swiper hero-slider-new" id="hero-slider-container">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <!-- സ്ലൈഡുകൾ JS വഴി വരും -->
+                    <!-- സ്ലൈഡുകൾ -->
                 </div>
                 <div class="swiper-pagination hero-pagination-dots"></div>
             </div>
         </section>
 
-        <!-- 3.4. Deals of the Day (3 Items per Screen) -->
+        <!-- 3.4. Deals of the Day -->
         <section class="deals-section blue-theme container-fluid">
             <div class="deals-header">
                 <div class="deals-title-box">
@@ -66,21 +65,17 @@
                 <a href="explore.html" class="view-all-btn">View All</a>
             </div>
             <div class="swiper deals-swiper">
-                <div class="swiper-wrapper" id="deals-of-day-grid">
-                    <!-- Cards injected via JS -->
-                </div>
+                <div class="swiper-wrapper" id="deals-of-day-grid"></div>
             </div>
         </section>
 
-        <!-- 3.5. 2x2 Grid Layout (Top Discounts) -->
+        <!-- 3.5. Top Discounts Grid -->
         <section class="grid-section container">
             <h3 class="section-title-simple">Top Discount of the Sale</h3>
-            <div class="grid-layout-2x2" id="top-discount-grid">
-                <!-- 4 Cards injected via JS -->
-            </div>
+            <div class="grid-layout-2x2" id="top-discount-grid"></div>
         </section>
 
-        <!-- 3.6. Trending Deals (3 Items per Screen) -->
+        <!-- 3.6. Trending Deals -->
         <section class="deals-section orange-theme container-fluid">
             <div class="deals-header">
                 <div class="deals-title-box">
@@ -90,26 +85,37 @@
                 <a href="explore.html" class="view-all-btn">View All</a>
             </div>
             <div class="swiper deals-swiper">
-                <div class="swiper-wrapper" id="trending-deals-grid">
-                    <!-- Cards injected via JS -->
-                </div>
+                <div class="swiper-wrapper" id="trending-deals-grid"></div>
             </div>
         </section>
 
-        <!-- 3.7. പരസ്യ ബാനർ -->
-        <section id="sponsored-banner" class="sponsored-banner-section container" style="display: none;">
-        </section>
-
-        <!-- 3.8. Budget Buys -->
-        <section class="budget-section container">
+        <!-- 3.7. Budget Buys (Under ₹999) -->
+        <section class="budget-section container" id="section-budget-999" style="display: none;">
             <h3 class="section-title-simple">Budget Buys (Under ₹999)</h3>
             <div class="swiper budget-swiper">
-                <div class="swiper-wrapper" id="budget-buys-grid">
-                    <!-- Cards injected via JS -->
-                </div>
+                <div class="swiper-wrapper" id="budget-buys-999"></div>
+            </div>
+        </section>
+
+        <!-- 3.8. Budget Buys (Under ₹799) -->
+        <section class="budget-section container" id="section-budget-799" style="display: none;">
+            <h3 class="section-title-simple">Budget Buys (Under ₹799)</h3>
+            <div class="swiper budget-swiper">
+                <div class="swiper-wrapper" id="budget-buys-799"></div>
+            </div>
+        </section>
+
+        <!-- 3.9. Budget Buys (Under ₹599) -->
+        <section class="budget-section container" id="section-budget-599" style="display: none;">
+            <h3 class="section-title-simple">Budget Buys (Under ₹599)</h3>
+            <div class="swiper budget-swiper">
+                <div class="swiper-wrapper" id="budget-buys-599"></div>
             </div>
         </section>
         
+        <!-- പരസ്യ ബാനർ -->
+        <section id="sponsored-banner" class="sponsored-banner-section container" style="display: none;"></section>
+
     </main>
 
     <!-- 4. ഫൂട്ടർ -->
