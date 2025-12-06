@@ -1,4 +1,4 @@
-// index.js - Logic for Reordered Home Page
+// index.js - Updated for Responsive Slide Counts & Auto Heights
 
 import { db } from './firebase-config.js';
 import { 
@@ -35,7 +35,8 @@ async function loadHomeBanner() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists() && docSnap.data().homeBannerUrl) {
             const bannerUrl = docSnap.data().homeBannerUrl;
-            const optimizedUrl = optimizeImage(bannerUrl, 800, 85);
+            // High quality image for full width
+            const optimizedUrl = optimizeImage(bannerUrl, 1200, 90); 
             bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Banner" loading="lazy">`;
             bannerContainer.style.display = 'block';
         }
@@ -75,7 +76,7 @@ async function loadIconNav() {
     } catch (error) { console.error("Error loading icon nav:", error); }
 }
 
-// 3. HERO SLIDER (Video/Image)
+// 3. HERO SLIDER (Auto Height)
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
     if (!sliderWrapper) return;
@@ -110,15 +111,19 @@ async function loadHeroSlider() {
                 }
 
                 if (slide.type === 'image') {
-                    const imgUrl = optimizeImage(slide.url, 1000, 90);
+                    // Image Slide
+                    const imgUrl = optimizeImage(slide.url, 1200, 90);
                     slideEl.innerHTML = `<img src="${imgUrl}" alt="Hero" loading="lazy">`;
                 } 
                 else if (isVideo && embedUrl) {
-                    // YouTube Iframe
-                    slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                    // YouTube Slide (Wrapped for Aspect Ratio)
+                    slideEl.innerHTML = `
+                        <div class="video-wrapper-16-9">
+                            <iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+                        </div>`;
                 } 
                 else if (isVideo) {
-                    // Direct Video (MP4)
+                    // Direct Video
                     slideEl.innerHTML = `<video src="${slide.url}" autoplay muted loop playsinline></video>`;
                 }
                 
@@ -126,8 +131,9 @@ async function loadHeroSlider() {
             });
         }
 
-        const heroSwiper = new Swiper('.hero-slider-new', {
+        new Swiper('.hero-slider-new', {
             loop: true, 
+            autoHeight: true, // *** Key Change: Auto adjust height based on content ***
             autoplay: { delay: 6000, disableOnInteraction: false },
             pagination: { el: '.hero-pagination-dots', clickable: true },
             allowTouchMove: true,
@@ -137,7 +143,6 @@ async function loadHeroSlider() {
                 }
             }
         });
-        playActiveSlideVideo(heroSwiper);
 
     } catch (error) { console.error("Error loading hero slider"); }
 }
@@ -162,7 +167,7 @@ function playActiveSlideVideo(swiper) {
     });
 }
 
-// 4. PRODUCT FETCHING
+// 4. PRODUCT FETCHING & DISTRIBUTION
 async function fetchAllProductsAndDistribute() {
     try {
         const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(50));
@@ -181,6 +186,8 @@ async function fetchAllProductsAndDistribute() {
     } catch (error) { console.error("Error fetching products:", error); }
 }
 
+// --- Card Rendering Logic with Fixed 3 Items per view ---
+
 function populateDealsOfDay(products) {
     const container = document.getElementById('deals-of-day-grid');
     if (!container) return;
@@ -194,33 +201,14 @@ function populateDealsOfDay(products) {
     else renderSwiperCards(container, discountedProducts, true);
 
     new Swiper('.deals-section.blue-theme .deals-swiper', {
-        slidesPerView: 'auto', spaceBetween: 10, freeMode: true
+        slidesPerView: 3, // *** കൃത്യം 3 എണ്ണം കാണിക്കും ***
+        spaceBetween: 10, 
+        freeMode: false, // Snap to cards
+        breakpoints: {
+            768: { slidesPerView: 4, spaceBetween: 15 },
+            1024: { slidesPerView: 5, spaceBetween: 20 }
+        }
     });
-}
-
-function populateTopDiscountGrid(products) {
-    const container = document.getElementById('top-discount-grid');
-    if (!container) return;
-    const top4 = products.map(p => {
-        let discount = 0;
-        if (p.mrp && p.mrp > p.price) { discount = Math.round(((p.mrp - p.price) / p.mrp) * 100); }
-        return { ...p, discount };
-    }).sort((a, b) => b.discount - a.discount).slice(0, 4);
-
-    let html = '';
-    top4.forEach(p => {
-        const img = optimizeImage(p.images?.[0] || '', 200);
-        const discountTag = p.discount > 0 ? `<span class="grid-badge">${p.discount}% OFF</span>` : '';
-        html += `
-            <a href="product.html?id=${p.id}" class="grid-item-card">
-                ${discountTag}
-                <img src="${img}" alt="${p.name}" class="grid-img" loading="lazy">
-                <div class="grid-name">${p.name}</div>
-                <div class="grid-discount">₹${p.price}</div>
-            </a>
-        `;
-    });
-    container.innerHTML = html;
 }
 
 function populateTrendyDeals(products) {
@@ -229,8 +217,15 @@ function populateTrendyDeals(products) {
     let trendy = products.filter(p => p.featured);
     if (trendy.length < 4) trendy = products.sort(() => 0.5 - Math.random()).slice(0, 8);
     renderSwiperCards(container, trendy);
+    
     new Swiper('.deals-section.orange-theme .deals-swiper', {
-        slidesPerView: 'auto', spaceBetween: 10, freeMode: true
+        slidesPerView: 3, // *** കൃത്യം 3 എണ്ണം കാണിക്കും ***
+        spaceBetween: 10,
+        freeMode: false,
+        breakpoints: {
+            768: { slidesPerView: 4, spaceBetween: 15 },
+            1024: { slidesPerView: 5, spaceBetween: 20 }
+        }
     });
 }
 
@@ -259,7 +254,40 @@ function populateBudgetBuys(products) {
         `;
     });
     container.innerHTML = html;
-    new Swiper('.budget-swiper', { slidesPerView: 'auto', spaceBetween: 10, freeMode: true });
+    
+    new Swiper('.budget-swiper', { 
+        slidesPerView: 3, // *** കൃത്യം 3 എണ്ണം കാണിക്കും ***
+        spaceBetween: 10,
+        breakpoints: {
+            768: { slidesPerView: 4, spaceBetween: 15 },
+            1024: { slidesPerView: 6, spaceBetween: 20 }
+        }
+    });
+}
+
+function populateTopDiscountGrid(products) {
+    const container = document.getElementById('top-discount-grid');
+    if (!container) return;
+    const top4 = products.map(p => {
+        let discount = 0;
+        if (p.mrp && p.mrp > p.price) { discount = Math.round(((p.mrp - p.price) / p.mrp) * 100); }
+        return { ...p, discount };
+    }).sort((a, b) => b.discount - a.discount).slice(0, 4);
+
+    let html = '';
+    top4.forEach(p => {
+        const img = optimizeImage(p.images?.[0] || '', 200);
+        const discountTag = p.discount > 0 ? `<span class="grid-badge">${p.discount}% OFF</span>` : '';
+        html += `
+            <a href="product.html?id=${p.id}" class="grid-item-card">
+                ${discountTag}
+                <img src="${img}" alt="${p.name}" class="grid-img" loading="lazy">
+                <div class="grid-name">${p.name}</div>
+                <div class="grid-discount">₹${p.price}</div>
+            </a>
+        `;
+    });
+    container.innerHTML = html;
 }
 
 function renderSwiperCards(container, items, showTag = false) {
