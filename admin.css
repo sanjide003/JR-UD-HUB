@@ -1,5 +1,5 @@
 /* * =======================================
- * MODERN ADMIN STYLESHEET (Fixed Colors & Centered Title)
+ * MODERN ADMIN STYLESHEET (Updated for Mobile UX)
  * =========================================
  */
 
@@ -51,7 +51,13 @@ body.light-mode {
     --input-border: #9ca3af;
 }
 
-* { box-sizing: border-box; outline: none; -webkit-tap-highlight-color: transparent; }
+/* *** New: Mobile Optimization & Smooth Scroll *** */
+html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent; 
+}
+
+* { box-sizing: border-box; outline: none; }
 
 body {
     font-family: var(--font-main);
@@ -91,15 +97,15 @@ body {
 
 /* Centered Title */
 .admin-main-header h1 { 
-    font-size: 1.5rem; /* Larger */
+    font-size: 1.5rem; 
     font-weight: 700; color: var(--primary-gold); margin: 0; 
-    position: absolute; left: 0; width: 100%; text-align: center; /* Perfect Center */
-    pointer-events: none; /* Let clicks pass through */
+    position: absolute; left: 0; width: 100%; text-align: center; 
+    pointer-events: none; 
 }
 
 #admin-nav-open-btn { 
     background: transparent; border: none; cursor: pointer; padding: 8px; color: var(--text-main); 
-    z-index: 1; /* Above title */
+    z-index: 1; 
 }
 #admin-nav-open-btn svg { width: 28px; height: 28px; }
 
@@ -143,13 +149,14 @@ body.light-mode .theme-toggle-btn::after { transform: translateX(26px); backgrou
 body.light-mode .icon-sun { opacity: 1; }
 body.light-mode .icon-moon { opacity: 0; }
 
-/* --- Buttons --- */
+/* --- Buttons (Active State Effect Added) --- */
 .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
     padding: 12px 24px; border-radius: var(--radius-sm); border: none;
     cursor: pointer; font-weight: 600; font-size: 0.95rem;
     transition: transform 0.1s, opacity 0.2s;
     color: #fff;
+    user-select: none;
 }
 .btn:active { transform: scale(0.97); }
 
