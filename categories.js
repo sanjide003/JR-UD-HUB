@@ -1,7 +1,4 @@
-// ഇതാണ് 'categories.js' ഫയൽ.
-// മാറ്റങ്ങൾ:
-// 1. Data Saving: കുറഞ്ഞ ക്വാളിറ്റി ഇമേജുകൾ ലോഡ് ചെയ്യുന്നു.
-// 2. Minimum 8 Cards (Dummy Cards).
+// categories.js - Optimized for Speed (Image Proxy)
 
 import {
     collection,
@@ -18,7 +15,7 @@ import { db } from './firebase-config.js';
 import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
-setLogLevel('Debug');
+setLogLevel('Silent'); // ലോഗ് കുറയ്ക്കുന്നു
 
 // --- DOM Elements ---
 const productGrid = document.getElementById("category-product-grid");
@@ -70,7 +67,7 @@ function setupScrollAnimation() {
 
     productsScrollContainer.addEventListener('scroll', () => {
         const scrollTop = productsScrollContainer.scrollTop;
-        
+        // ഹെഡർ ചെറുതാകുന്നു
         if (scrollTop > 30) {
             stickyHeader.classList.add('compact');
         } else {
@@ -111,7 +108,7 @@ async function loadCategoryList() {
             const category = doc.data();
             categoriesMap.set(doc.id, category.name);
             const rawImage = category.imageUrl || 'https://placehold.co/80x80/333/D4AF37?text=C';
-            // *** മാറ്റം: ലോ ക്വാളിറ്റി ഐക്കൺ (50px, 60% quality) ***
+            // *** മാറ്റം: വളരെ ചെറിയ ഐക്കൺ സൈസ് (80px, 60% Quality) - Data Saving ***
             const optimizedIcon = optimizeImage(rawImage, 80, 60);
 
             navHtml += `
@@ -283,7 +280,7 @@ function applyFilters() {
             renderProductCard(product, product.id);
         });
 
-        // Minimum 8 cards check
+        // Dummy Cards for better layout alignment (Minimum 8)
         const minItems = 8;
         const currentCount = filtered.length;
         if (currentCount < minItems) {
@@ -316,8 +313,9 @@ function renderProductCard(product, productId) {
     const mrp = product.mrp || 0;
     
     const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
-    // *** മാറ്റം: ലോ ക്വാളിറ്റി ഇമേജ് (250px, 60% quality) ***
-    const imageUrl = optimizeImage(rawImage, 250, 60);
+    
+    // *** ഇമേജ് ഒപ്റ്റിമൈസേഷൻ: 300px, 60% Quality (Data Saver) ***
+    const imageUrl = optimizeImage(rawImage, 300, 60);
 
     let priceHTML = `<span class="price-main">₹${price}</span>`;
     let discountBadge = ''; 
@@ -347,7 +345,7 @@ function renderProductCard(product, productId) {
                     data-id="${productId}"
                     data-name="${product.name}"
                     data-price="${price}"
-                    data-mrp="${mrp}"
+                    data-mrp="${product.mrp}"
                     data-image="${imageUrl}"
                     data-size="${product.size || ''}">
                     <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
