@@ -1,4 +1,4 @@
-// index.js - Updated Logic for Manual Special Discounts
+// index.js - Updated with Premium Button Styles for Home Page
 
 import { db } from './firebase-config.js';
 import { 
@@ -13,95 +13,56 @@ import {
     setLogLevel 
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadSiteSettings, optimizeImage } from './common.js'; 
+import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
 setLogLevel('Silent');
 
-let allProductsCache = [];
-
-document.addEventListener("DOMContentLoaded", async () => {
-    await loadSiteSettings();
+document.addEventListener("DOMContentLoaded", () => {
+    loadSiteSettings();
     loadHomeBanner(); 
-    loadSpecialDiscountBanner(); 
-    loadIconNav();
     loadHeroSlider();
-    await fetchAllProductsAndDistribute();
+    loadTopSellers();
+    loadHomeCategories();
 });
 
-// 1. HOME BANNER
+/**
+ * ഹോം പേജ് ബാനർ
+ */
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
     if (!bannerContainer) return;
+
     try {
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
+
         if (docSnap.exists() && docSnap.data().homeBannerUrl) {
             const bannerUrl = docSnap.data().homeBannerUrl;
-            const optimizedUrl = optimizeImage(bannerUrl, 1200, 90); 
-            bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Banner" loading="lazy">`;
+            const optimizedUrl = optimizeImage(bannerUrl, 800, 80);
+            bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Special Offer Banner" loading="lazy">`;
             bannerContainer.style.display = 'block';
+        } else {
+            bannerContainer.style.display = 'none';
         }
-    } catch (error) { console.error("Error loading banner"); }
+    } catch (error) {
+        console.error("Error loading home banner");
+        bannerContainer.style.display = 'none';
+    }
 }
 
-// 1.5 SPECIAL DISCOUNT BANNER
-async function loadSpecialDiscountBanner() {
-    const bannerContainer = document.getElementById('special-discount-banner');
-    if (!bannerContainer) return;
-    try {
-        const docRef = doc(db, "settings", "global");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().specialDiscountBannerUrl) {
-            const bannerUrl = docSnap.data().specialDiscountBannerUrl;
-            const optimizedUrl = optimizeImage(bannerUrl, 1200, 90); 
-            bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Big Discount Banner" loading="lazy">`;
-            bannerContainer.style.display = 'block';
-        }
-    } catch (error) { console.error("Error loading special banner"); }
-}
-
-// 2. ICON NAV
-async function loadIconNav() {
-    const container = document.getElementById('icon-nav-bar');
-    if (!container) return;
-    try {
-        const q = query(collection(db, "categories"), orderBy("name"));
-        const snapshot = await getDocs(q);
-        
-        let html = `
-            <a href="categories.html" class="icon-nav-item">
-                <div class="icon-nav-img-box">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-                </div>
-                <span class="icon-nav-text">All</span>
-            </a>
-        `;
-
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            const iconUrl = optimizeImage(data.imageUrl || '', 100);
-            html += `
-                <a href="categories.html?filter=${doc.id}" class="icon-nav-item">
-                    <div class="icon-nav-img-box">
-                        <img src="${iconUrl}" alt="${data.name}" class="icon-nav-img" loading="lazy">
-                    </div>
-                    <span class="icon-nav-text">${data.name}</span>
-                </a>
-            `;
-        });
-        container.innerHTML = html;
-    } catch (error) { console.error("Error loading icon nav:", error); }
-}
-
-// 3. HERO SLIDER
+/**
+ * 1. ഹീറോ സ്ലൈഡർ
+ */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
     if (!sliderWrapper) return;
+    
     try {
         const q = query(collection(db, "heroSlides"), orderBy("order"));
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-            sliderWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/800x450/000000/D4AF37?text=No+Slides" alt="Placeholder"></div>`;
+            sliderWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/600x800/000000/D4AF37?text=JR+UD+HUB" alt="Placeholder"></div>`;
         } else {
             sliderWrapper.innerHTML = '';
             querySnapshot.forEach((doc) => {
@@ -112,52 +73,76 @@ async function loadHeroSlider() {
                 let isVideo = slide.type === 'video';
                 let videoId = '';
                 let embedUrl = '';
-                let isShorts = false; 
+                let finalUrl = slide.url;
 
                 if (isVideo) {
-                    try {
-                        const urlObj = new URL(slide.url);
-                        if (urlObj.hostname.includes('youtube.com')) {
-                            if (urlObj.pathname.startsWith('/shorts/')) {
-                                videoId = urlObj.pathname.split('/shorts/')[1];
-                                isShorts = true;
-                            } else if (urlObj.searchParams.has('v')) {
-                                videoId = urlObj.searchParams.get('v');
-                            }
-                        } else if (urlObj.hostname.includes('youtu.be')) {
-                            videoId = urlObj.pathname.slice(1);
-                        }
-                        if (videoId) {
-                            embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1&autoplay=1`;
-                        }
-                    } catch (e) { console.error("Invalid Video URL"); }
+                    if (slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
+                        try {
+                            const id = slide.url.split('/d/')[1].split('/')[0];
+                            finalUrl = `https://drive.google.com/uc?export=download&id=${id}`;
+                        } catch(e) {}
+                    } 
+                    else if (slide.url.includes('youtube.com/watch?v=')) {
+                        videoId = new URL(slide.url).searchParams.get('v');
+                    }
+                    else if (slide.url.includes('youtube.com/shorts/')) {
+                        videoId = new URL(slide.url).pathname.split('/shorts/')[1];
+                    }
+                    else if (slide.url.includes('youtu.be/')) {
+                        videoId = slide.url.split('youtu.be/')[1];
+                    }
+
+                    if (videoId) {
+                        embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1&autoplay=1`;
+                    }
                 }
 
                 if (slide.type === 'image') {
-                    const imgUrl = optimizeImage(slide.url, 1200, 90);
-                    slideEl.innerHTML = `<img src="${imgUrl}" alt="Hero" loading="lazy">`;
-                } 
-                else if (isVideo && embedUrl) {
-                    if (isShorts) {
-                        slideEl.innerHTML = `<div class="video-wrapper-3-4"><iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>`;
-                    } else {
-                        slideEl.innerHTML = `<div class="video-wrapper-16-9"><iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe></div>`;
-                    }
-                } 
-                else if (isVideo) {
-                    slideEl.innerHTML = `<div class="video-wrapper-3-4"><video class="hero-video-element" src="${slide.url}" autoplay muted loop playsinline></video></div>`;
+                    const optimizedHeroImg = optimizeImage(slide.url, 800, 85);
+                    slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
                 }
+                else if (isVideo && embedUrl) {
+                    slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%; height:100%; pointer-events:none;"></iframe>`;
+                }
+                else if (isVideo) {
+                    slideEl.innerHTML = `
+                        <video class="hero-video-element" 
+                               src="${finalUrl}" 
+                               autoplay 
+                               muted 
+                               loop 
+                               playsinline 
+                               preload="auto"
+                               style="width: 100%; height: 100%; object-fit: cover;">
+                        </video>`;
+                }
+                
                 sliderWrapper.appendChild(slideEl);
             });
         }
 
-        new Swiper('.hero-slider-new', {
-            loop: true, autoHeight: true, 
-            autoplay: { delay: 6000, disableOnInteraction: false },
-            pagination: { el: '.hero-pagination-dots', clickable: true },
+        const heroSwiper = new Swiper('.hero-slider-new', {
+            loop: true, 
             allowTouchMove: true,
-            on: { slideChangeTransitionEnd: function () { playActiveSlideVideo(this); } }
+            speed: 600,
+            autoplay: {
+                delay: 6000,
+                disableOnInteraction: false,
+            },
+            pagination: {
+                el: '.hero-pagination-dots',
+                clickable: true,
+            },
+            on: {
+                slideChangeTransitionEnd: function () {
+                    playActiveSlideVideo(this);
+                }
+            }
         });
+
+        playActiveSlideVideo(heroSwiper);
+        setupScrollVideoObserver();
+
     } catch (error) { console.error("Error loading hero slider"); }
 }
 
@@ -165,179 +150,234 @@ function playActiveSlideVideo(swiper) {
     const slides = document.querySelectorAll('.hero-slider-new .swiper-slide');
     slides.forEach((slide) => {
         const video = slide.querySelector('video');
+        if (video) {
+            if (slide.classList.contains('swiper-slide-active')) {
+                video.currentTime = 0;
+                video.play().catch(e => {});
+            } else {
+                video.pause();
+            }
+        }
         const iframe = slide.querySelector('iframe');
-        if (slide.classList.contains('swiper-slide-active')) {
-            if (video) { video.currentTime = 0; video.play().catch(e => {}); }
-            if (iframe && iframe.contentWindow) iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-        } else {
-            if (video) video.pause();
-            if (iframe && iframe.contentWindow) iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+        if (iframe && iframe.contentWindow) {
+            if (slide.classList.contains('swiper-slide-active')) {
+                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            } else {
+                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+            }
         }
     });
 }
 
-// 4. PRODUCT FETCHING
-async function fetchAllProductsAndDistribute() {
+function setupScrollVideoObserver() {
+    const sliderContainer = document.querySelector('.hero-section-new');
+    if (!sliderContainer) return;
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const activeSlide = document.querySelector('.hero-slider-new .swiper-slide-active');
+            if (!activeSlide) return;
+
+            const video = activeSlide.querySelector('video');
+            const iframe = activeSlide.querySelector('iframe');
+
+            if (entry.isIntersecting) {
+                if (video) video.play().catch(e => {});
+                if (iframe) iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+            } else {
+                if (video) video.pause();
+                if (iframe) iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+            }
+        });
+    }, { threshold: 0.5 });
+
+    observer.observe(sliderContainer);
+}
+
+/**
+ * 2. "For You" (Top Sellers)
+ * മാറ്റം: ബട്ടണുകളെ കൂടുതൽ ആകർഷകമാക്കാൻ ക്ലാസുകൾ മാറ്റി.
+ * Cart = Gold (Primary), View = Outline (Secondary)
+ */
+async function loadTopSellers() {
+    const grid = document.getElementById("top-sellers-grid");
+    if (!grid) return;
+    
+    grid.innerHTML = '<div class="swiper-slide" style="height:250px; background:#111;"></div>';
+    
     try {
-        const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(50));
-        const snapshot = await getDocs(q);
+        const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
+        const querySnapshot = await getDocs(q);
         
-        allProductsCache = [];
-        snapshot.forEach(doc => {
-            allProductsCache.push({ id: doc.id, ...doc.data() });
+        if (querySnapshot.empty) {
+            grid.innerHTML = '<p style="text-align:center; padding:20px;">No featured products.</p>'; 
+            return;
+        }
+        
+        grid.innerHTML = '';
+        
+        querySnapshot.forEach((doc) => {
+            const product = doc.data();
+            const productId = doc.id;
+            const card = document.createElement('div');
+            card.className = 'swiper-slide';
+            
+            const imageUrl = optimizeImage(product.images?.[0] || '', 400, 75);
+            const isInCart = isItemInCart(productId);
+            
+            // *** മാറ്റം: Cart ബട്ടൺ ഗോൾഡ് (Primary), View ബട്ടൺ ഔട്ട്‌ലൈൻ (Secondary) ***
+            // ഇത് കാണാൻ കൂടുതൽ ഭംഗിയായിരിക്കും
+            const buttonText = isInCart ? "Remove" : "Add";
+            const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-primary-new"; 
+            
+            card.innerHTML = `
+                <div class="media-container">
+                    <a href="product.html?id=${productId}" style="display:block; height:100%;">
+                        <img src="${imageUrl}" alt="${product.name}" class="top-sellers-product-image" loading="lazy">
+                    </a>
+                    <div class="text-overlay">
+                        <div class="top-sellers-product-name">${product.name}</div>
+                        <div class="top-sellers-product-price">₹${product.price || 0}</div>
+                    </div>
+                </div>
+                <div class="top-sellers-buttons">
+                    <button class="btn ${buttonClass} btn-add-to-cart"
+                        data-id="${productId}"
+                        data-name="${product.name}"
+                        data-price="${product.price}"
+                        data-mrp="${product.mrp}"
+                        data-image="${imageUrl}"
+                        data-size="${product.size || ''}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
+                            <line x1="3" y1="6" x2="21" y2="6"></line>
+                            <path d="M16 10a4 4 0 0 1-8 0"></path>
+                        </svg>
+                        <span>${buttonText}</span>
+                    </button>
+                    <a href="product.html?id=${productId}" class="btn btn-secondary-new">
+                        <span>View</span>
+                    </a>
+                </div>
+            `;
+            grid.appendChild(card);
         });
 
-        populateSpecialDiscounts(allProductsCache); // *** Manual List ***
-        populateDealsOfDay(allProductsCache);
-        populateTopDiscountGrid(allProductsCache);
-        populateTrendyDeals(allProductsCache); // *** Manual List ***
+        const autoplayDelay = 4000; 
+
+        new Swiper('.top-sellers-swiper-new', {
+            loop: true,
+            autoplay: { delay: autoplayDelay, disableOnInteraction: false },
+            speed: 600,
+            slidesPerView: 1, 
+            spaceBetween: 20, 
+            centeredSlides: true,
+            pagination: { 
+                el: '.top-sellers-pagination-new', 
+                clickable: true,
+                renderBullet: function (index, className) {
+                    return `<span class="${className}"><span class="pagination-progress"></span></span>`;
+                }
+            },
+            on: {
+                init: function (swiper) { startProgressBar(swiper, autoplayDelay); },
+                slideChangeTransitionStart: function (swiper) {
+                    resetProgressBars(swiper);
+                    startProgressBar(swiper, autoplayDelay);
+                }
+            },
+            breakpoints: { 
+                640: { slidesPerView: 2, spaceBetween: 20 }, 
+                1024: { slidesPerView: 4, spaceBetween: 30 } 
+            }
+        });
         
-        populateBudgetSection(allProductsCache, 999, 'budget-buys-999', 'section-budget-999');
-        populateBudgetSection(allProductsCache, 599, 'budget-buys-599', 'section-budget-599');
-
-        initBudgetSwipers();
-
-    } catch (error) { console.error("Error fetching products:", error); }
-}
-
-// *** UPDATED: Populate items MANUALLY marked as 'specialDiscount' ***
-function populateSpecialDiscounts(products) {
-    const container = document.getElementById('special-discount-grid');
-    const section = document.getElementById('special-discount-section');
-    if (!container || !section) return;
-
-    // Filter by specialDiscount flag
-    const items = products.filter(p => p.specialDiscount === true);
-
-    if (items.length === 0) {
-        section.style.display = 'none';
-        return;
+    } catch (error) { 
+        console.error("Error loading top sellers"); 
+        grid.innerHTML = '<p>Error loading products.</p>'; 
     }
-    
-    section.style.display = 'block';
-    renderSwiperCards(container, items, true);
-
-    new Swiper('.deals-section.red-theme .deals-swiper', {
-        slidesPerView: 3, spaceBetween: 10, freeMode: false, 
-        breakpoints: { 768: { slidesPerView: 4 }, 1024: { slidesPerView: 5 } }
-    });
 }
 
-// *** UPDATED: Populate items MANUALLY marked as 'featured' (Trendy Deals) ***
-function populateTrendyDeals(products) {
-    const container = document.getElementById('trending-deals-grid');
-    if (!container) return;
-    
-    // Filter by featured flag
-    let trendy = products.filter(p => p.featured === true);
-    
-    renderSwiperCards(container, trendy);
-    
-    new Swiper('.deals-section.orange-theme .deals-swiper', {
-        slidesPerView: 3, spaceBetween: 10, freeMode: false,
-        breakpoints: { 768: { slidesPerView: 4 }, 1024: { slidesPerView: 5 } }
-    });
-}
-
-function populateDealsOfDay(products) {
-    const container = document.getElementById('deals-of-day-grid');
-    if (!container) return;
-    // Keep this auto or change to manual if needed. Currently auto (random/latest)
-    const items = products.slice(0, 10); 
-    renderSwiperCards(container, items, true);
-
-    new Swiper('.deals-section.blue-theme .deals-swiper', {
-        slidesPerView: 3, spaceBetween: 10, freeMode: false, 
-        breakpoints: { 768: { slidesPerView: 4 }, 1024: { slidesPerView: 5 } }
-    });
-}
-
-function populateBudgetSection(products, priceLimit, containerId, sectionId) {
-    const container = document.getElementById(containerId);
-    const section = document.getElementById(sectionId);
-    if (!container || !section) return;
-
-    const budgetItems = products.filter(p => p.price <= priceLimit).slice(0, 10);
-    
-    if (budgetItems.length === 0) {
-        section.style.display = 'none';
-        return;
-    }
-
-    section.style.display = 'block';
-    let html = '';
-    budgetItems.forEach(p => {
-        const img = optimizeImage(p.images?.[0] || '', 200);
-        html += `
-            <div class="swiper-slide">
-                <a href="product.html?id=${p.id}" class="budget-card">
-                    <div class="deal-img-box"><img src="${img}" alt="${p.name}" class="deal-img" loading="lazy"></div>
-                    <div class="deal-info">
-                        <div class="deal-name">${p.name}</div>
-                        <div class="deal-price">₹${p.price}</div>
-                    </div>
-                </a>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-function initBudgetSwipers() {
-    new Swiper('.budget-swiper', { 
-        slidesPerView: 3, spaceBetween: 10,
-        breakpoints: { 768: { slidesPerView: 4 }, 1024: { slidesPerView: 6 } }
-    });
-}
-
-function populateTopDiscountGrid(products) {
-    const container = document.getElementById('top-discount-grid');
-    if (!container) return;
-    const top4 = products.map(p => {
-        let discount = 0;
-        if (p.mrp && p.mrp > p.price) { discount = Math.round(((p.mrp - p.price) / p.mrp) * 100); }
-        return { ...p, discount };
-    }).sort((a, b) => b.discount - a.discount).slice(0, 4);
-
-    let html = '';
-    top4.forEach(p => {
-        const img = optimizeImage(p.images?.[0] || '', 200);
-        const discountTag = p.discount > 0 ? `<span class="grid-badge">${p.discount}% OFF</span>` : '';
-        html += `
-            <a href="product.html?id=${p.id}" class="grid-item-card">
-                ${discountTag}
-                <img src="${img}" alt="${p.name}" class="grid-img" loading="lazy">
-                <div class="grid-name">${p.name}</div>
-                <div class="grid-discount">₹${p.price}</div>
-            </a>
-        `;
-    });
-    container.innerHTML = html;
-}
-
-function renderSwiperCards(container, items, showTag = false) {
-    let html = '';
-    items.forEach(p => {
-        const img = optimizeImage(p.images?.[0] || '', 200);
-        // Calculate discount tag
-        let discount = 0;
-        if (p.mrp && p.mrp > p.price) {
-             discount = Math.round(((p.mrp - p.price) / p.mrp) * 100);
+function startProgressBar(swiper, delay) {
+    const activeBullet = swiper.pagination.bullets[swiper.realIndex];
+    if (activeBullet) {
+        const progressEl = activeBullet.querySelector('.pagination-progress');
+        if (progressEl) {
+            progressEl.style.transition = 'none';
+            progressEl.style.width = '0%';
+            setTimeout(() => {
+                progressEl.style.transition = `width ${delay}ms linear`;
+                progressEl.style.width = '100%';
+            }, 50);
         }
-        const tag = (showTag && discount > 0) ? `${discount}% OFF` : (p.categoryName || 'Hot Deal');
-        
-        html += `
-            <div class="swiper-slide">
-                <a href="product.html?id=${p.id}" class="deal-card">
-                    <div class="deal-img-box"><img src="${img}" alt="${p.name}" class="deal-img" loading="lazy"></div>
-                    <div class="deal-info">
-                        <div class="deal-name">${p.name}</div>
-                        <div class="deal-price">₹${p.price}</div>
-                        <div class="deal-tag">${tag}</div>
+    }
+}
+
+function resetProgressBars(swiper) {
+    if (!swiper.pagination.bullets) return;
+    swiper.pagination.bullets.forEach(bullet => {
+        const progressEl = bullet.querySelector('.pagination-progress');
+        if (progressEl) {
+            progressEl.style.transition = 'none';
+            progressEl.style.width = '0%';
+        }
+    });
+}
+
+/**
+ * 3. SHOP BY CATEGORY
+ */
+async function loadHomeCategories() {
+    const container = document.getElementById("category-grid-home");
+    if (!container) return;
+    try {
+        const catQuery = query(collection(db, "categories"));
+        const catSnapshot = await getDocs(catQuery); 
+        if (catSnapshot.empty) { container.innerHTML = ''; return; }
+        let categories = [];
+        catSnapshot.forEach((doc) => { categories.push({ id: doc.id, ...doc.data() }); });
+        categories = categories.sort(() => 0.5 - Math.random()).slice(0, 3);
+        container.innerHTML = ''; 
+        categories.forEach(category => {
+            const item = document.createElement('div');
+            item.className = 'category-card-portrait';
+            const imageUrl = optimizeImage(category.imageUrl || '', 600, 75);
+            item.innerHTML = `
+                <a href="categories.html?filter=${category.id}" style="display:block; width:100%; height:100%;">
+                    <img src="${imageUrl}" alt="${category.name}" class="category-card-img" loading="lazy">
+                    <div class="category-card-overlay">
+                        <h3 class="category-card-title">${category.name}</h3>
+                        <span class="category-card-btn">Explore</span>
                     </div>
                 </a>
-            </div>
-        `;
-    });
-    container.innerHTML = html;
+            `;
+            container.appendChild(item);
+        });
+    } catch (error) { console.error("Error loading home categories"); }
 }
+
+document.addEventListener('click', (e) => {
+    const button = e.target.closest('.btn-add-to-cart');
+    if (button) {
+        e.preventDefault();
+        const id = button.dataset.id;
+        const buttonText = button.querySelector('span');
+        if (button.classList.contains('added-to-cart')) {
+            removeFromCart(id);
+            button.classList.remove('added-to-cart');
+            if (buttonText) buttonText.textContent = 'Add';
+        } else {
+            const product = {
+                id: id, 
+                name: button.dataset.name,
+                price: parseFloat(button.dataset.price),
+                mrp: parseFloat(button.dataset.mrp),
+                image: button.dataset.image,
+                size: button.dataset.size 
+            };
+            addToCart(id, product);
+            button.classList.add('added-to-cart');
+            if (buttonText) buttonText.textContent = 'Remove';
+        }
+    }
+});

@@ -1,4 +1,5 @@
-// admin.js - Updated logic for Banner in Special Page
+// ഇതാണ് പുതിയ 'admin.js' ഫയൽ.
+// മാറ്റം: Dealer & ChatBot നമ്പറുകൾ സേവ് ചെയ്യുന്ന ലോജിക് ചേർത്തു.
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
@@ -77,17 +78,11 @@ const confirmBtnDelete = document.getElementById("confirm-btn-delete");
 const confirmTitle = document.getElementById("confirm-title");
 const confirmMessage = document.getElementById("confirm-message");
 
-// Search Inputs
 const featuredSearchInput = document.getElementById("featured-product-search");
 const featuredSearchResults = document.getElementById("featured-search-results");
 
-const specialSearchInput = document.getElementById("special-product-search");
-const specialSearchResults = document.getElementById("special-search-results");
-const specialProductsListBody = document.getElementById("special-products-list-body");
-
 let currentProductsQuery = null;
 let currentFeaturedQuery = null;
-let currentSpecialQuery = null;
 let deleteInfo = { id: null, type: null }; 
 let allProductsCache = []; 
 
@@ -147,8 +142,7 @@ onAuthStateChanged(auth, (user) => {
         adminPanel.style.display = "block";
         loadCategories();
         loadProducts("all"); 
-        loadFeaturedProducts();
-        loadSpecialDiscountProducts(); 
+        loadFeaturedProducts(); 
         loadHeroSlides(); 
         loadAllSettings();
         cacheAllProductsForSearch(); 
@@ -186,7 +180,6 @@ adminNavLinks.addEventListener("click", (e) => {
 function setupImagePreview(inputId, previewId) {
     const input = document.getElementById(inputId);
     const previewContainer = document.getElementById(previewId);
-    if (!input || !previewContainer) return;
     function updatePreview() {
         previewContainer.innerHTML = '';
         const url = input.value.trim();
@@ -203,7 +196,6 @@ function setupImagePreview(inputId, previewId) {
 setupImagePreview('category-image-url', 'category-image-preview');
 setupImagePreview('setting-logo-image-url', 'logo-preview');
 setupImagePreview('setting-home-banner-url', 'banner-preview');
-setupImagePreview('special-banner-input-page', 'special-banner-page-preview'); // *** NEW ***
 
 async function loadAllSettings() {
     try {
@@ -216,9 +208,7 @@ async function loadAllSettings() {
             document.getElementById("setting-logo-subtitle").value = settings.logoSubtitle || '';
             document.getElementById("setting-home-banner-url").value = settings.homeBannerUrl || '';
             
-            // Populate Banner Input in Special Page
-            document.getElementById("special-banner-input-page").value = settings.specialDiscountBannerUrl || '';
-
+            // *** ലോഡ് ചെയ്യുന്ന ഭാഗം ***
             document.getElementById("setting-chatbot-number").value = settings.chatbotNumber || '';
             document.getElementById("setting-dealer-number").value = settings.dealerChatNumber || '';
 
@@ -236,7 +226,6 @@ async function loadAllSettings() {
             
             document.getElementById("setting-logo-image-url").dispatchEvent(new Event('input'));
             document.getElementById("setting-home-banner-url").dispatchEvent(new Event('input'));
-            document.getElementById("special-banner-input-page").dispatchEvent(new Event('input'));
         }
     } catch (error) { console.error("Error loading settings: ", error); showStatus(adminStatus, "Error loading site settings."); }
 }
@@ -251,7 +240,7 @@ generalSettingsForm.addEventListener("submit", async (e) => {
             logoText: document.getElementById("setting-logo-text").value,
             logoSubtitle: document.getElementById("setting-logo-subtitle").value,
             homeBannerUrl: document.getElementById("setting-home-banner-url").value,
-            // specialDiscountBannerUrl managed in separate page now
+            // *** സേവ് ചെയ്യുന്ന ഭാഗം ***
             chatbotNumber: document.getElementById("setting-chatbot-number").value,
             dealerChatNumber: document.getElementById("setting-dealer-number").value
         };
@@ -263,24 +252,6 @@ generalSettingsForm.addEventListener("submit", async (e) => {
     } catch (error) { showStatus(adminStatus, `Error: ${error.message}`); } 
     finally { enableButton(button, "Save General Settings"); }
 });
-
-// *** NEW: Save Special Banner ***
-const saveSpecialBannerBtn = document.getElementById('save-special-banner-btn');
-if (saveSpecialBannerBtn) {
-    saveSpecialBannerBtn.addEventListener('click', async () => {
-        disableButton(saveSpecialBannerBtn, "Saving...");
-        try {
-            const bannerUrl = document.getElementById("special-banner-input-page").value;
-            const docRef = doc(db, "settings", "global");
-            await setDoc(docRef, { specialDiscountBannerUrl: bannerUrl }, { merge: true });
-            showStatus(adminStatus, "Banner updated successfully!", false);
-        } catch (error) {
-            showStatus(adminStatus, `Error: ${error.message}`);
-        } finally {
-            enableButton(saveSpecialBannerBtn, "Save Banner");
-        }
-    });
-}
 
 contactSettingsForm.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -386,7 +357,6 @@ function cacheAllProductsForSearch() {
     });
 }
 
-// 1. TRENDY DEALS (FEATURED) SEARCH & ADD
 featuredSearchInput.addEventListener('input', (e) => {
     const searchTerm = e.target.value.toLowerCase().trim();
     featuredSearchResults.innerHTML = '';
@@ -407,7 +377,14 @@ featuredSearchInput.addEventListener('input', (e) => {
             const img = product.images && product.images[0] ? product.images[0] : '';
             const item = document.createElement('div');
             item.className = 'search-result-item';
-            item.innerHTML = `<img src="${img}" alt="${product.name}"><div class="search-result-info"><span class="search-result-name">${product.name}</span><span class="search-result-price">₹${product.price}</span></div><button class="search-result-add-btn">Add</button>`;
+            item.innerHTML = `
+                <img src="${img}" alt="${product.name}">
+                <div class="search-result-info">
+                    <span class="search-result-name">${product.name}</span>
+                    <span class="search-result-price">₹${product.price}</span>
+                </div>
+                <button class="search-result-add-btn">Add</button>
+            `;
             item.addEventListener('click', () => addToFeatured(product.id));
             featuredSearchResults.appendChild(item);
         });
@@ -422,17 +399,21 @@ async function addToFeatured(productId) {
         await updateDoc(ref, { featured: true });
         featuredSearchInput.value = '';
         featuredSearchResults.style.display = 'none';
-        showStatus(adminStatus, "Product added to Trendy Deals.", false);
-    } catch (error) { showStatus(adminStatus, "Error updating product."); }
+        showStatus(adminStatus, "Product added to Featured list.", false);
+    } catch (error) {
+        showStatus(adminStatus, "Error updating product.");
+    }
 }
 
 async function removeFromFeatured(productId) {
-    if(!confirm("Remove from Trendy Deals?")) return;
+    if(!confirm("Remove this product from Featured list? (It will not be deleted from database)")) return;
     try {
         const ref = doc(db, "products", productId);
         await updateDoc(ref, { featured: false });
-        showStatus(adminStatus, "Removed from Trendy Deals.", false);
-    } catch (error) { showStatus(adminStatus, "Error removing product."); }
+        showStatus(adminStatus, "Removed from Featured list.", false);
+    } catch (error) {
+        showStatus(adminStatus, "Error removing product.");
+    }
 }
 
 function loadFeaturedProducts() {
@@ -440,86 +421,27 @@ function loadFeaturedProducts() {
      if (currentFeaturedQuery) currentFeaturedQuery(); 
      currentFeaturedQuery = onSnapshot(q, (querySnapshot) => {
         featuredProductsListBody.innerHTML = '';
-        if (querySnapshot.empty) { featuredProductsListBody.innerHTML = '<tr><td colspan="4">No trendy deals found.</td></tr>'; return; }
+        if (querySnapshot.empty) { featuredProductsListBody.innerHTML = '<tr><td colspan="4">No featured products found.</td></tr>'; return; }
         querySnapshot.forEach((doc) => {
             const product = doc.data();
             const id = doc.id;
             const imageUrl = product.images && product.images[0] ? product.images[0] : '';
             let priceDisplay = `₹${product.price || 0}`;
+            
             const row = document.createElement('tr');
-            row.innerHTML = `<td><img src="${imageUrl}" alt="${product.name}"></td><td>${product.name}</td><td>${priceDisplay}</td><td><button class="btn-remove-featured" data-id="${id}">Remove</button></td>`;
+            row.innerHTML = `
+                <td><img src="${imageUrl}" alt="${product.name}"></td>
+                <td>${product.name}</td>
+                <td>${priceDisplay}</td>
+                <td>
+                    <button class="btn-remove-featured" data-id="${id}">Remove</button>
+                </td>
+            `;
+            
             row.querySelector('.btn-remove-featured').addEventListener('click', () => removeFromFeatured(id));
             featuredProductsListBody.appendChild(row);
         });
-     }, (error) => { console.error("Error loading featured: ", error); });
-}
-
-// 2. SPECIAL DISCOUNT SEARCH & ADD
-specialSearchInput.addEventListener('input', (e) => {
-    const searchTerm = e.target.value.toLowerCase().trim();
-    specialSearchResults.innerHTML = '';
-    
-    if (searchTerm.length < 2) {
-        specialSearchResults.style.display = 'none';
-        return;
-    }
-
-    const filtered = allProductsCache.filter(p => 
-        !p.specialDiscount && 
-        p.name.toLowerCase().includes(searchTerm)
-    );
-
-    if (filtered.length > 0) {
-        specialSearchResults.style.display = 'block';
-        filtered.forEach(product => {
-            const img = product.images && product.images[0] ? product.images[0] : '';
-            const item = document.createElement('div');
-            item.className = 'search-result-item';
-            item.innerHTML = `<img src="${img}" alt="${product.name}"><div class="search-result-info"><span class="search-result-name">${product.name}</span><span class="search-result-price">₹${product.price}</span></div><button class="search-result-add-btn">Add</button>`;
-            item.addEventListener('click', () => addToSpecialDiscount(product.id));
-            specialSearchResults.appendChild(item);
-        });
-    } else {
-        specialSearchResults.style.display = 'none';
-    }
-});
-
-async function addToSpecialDiscount(productId) {
-    try {
-        const ref = doc(db, "products", productId);
-        await updateDoc(ref, { specialDiscount: true });
-        specialSearchInput.value = '';
-        specialSearchResults.style.display = 'none';
-        showStatus(adminStatus, "Product added to Special Discount List.", false);
-    } catch (error) { showStatus(adminStatus, "Error updating product."); }
-}
-
-async function removeFromSpecialDiscount(productId) {
-    if(!confirm("Remove from Special Discount List?")) return;
-    try {
-        const ref = doc(db, "products", productId);
-        await updateDoc(ref, { specialDiscount: false });
-        showStatus(adminStatus, "Removed from Special Discount List.", false);
-    } catch (error) { showStatus(adminStatus, "Error removing product."); }
-}
-
-function loadSpecialDiscountProducts() {
-     const q = query(collection(db, "products"), where("specialDiscount", "==", true));
-     if (currentSpecialQuery) currentSpecialQuery(); 
-     currentSpecialQuery = onSnapshot(q, (querySnapshot) => {
-        specialProductsListBody.innerHTML = '';
-        if (querySnapshot.empty) { specialProductsListBody.innerHTML = '<tr><td colspan="4">No special discount items found.</td></tr>'; return; }
-        querySnapshot.forEach((doc) => {
-            const product = doc.data();
-            const id = doc.id;
-            const imageUrl = product.images && product.images[0] ? product.images[0] : '';
-            let priceDisplay = `₹${product.price || 0}`;
-            const row = document.createElement('tr');
-            row.innerHTML = `<td><img src="${imageUrl}" alt="${product.name}"></td><td>${product.name}</td><td>${priceDisplay}</td><td><button class="btn-remove-featured" data-id="${id}">Remove</button></td>`;
-            row.querySelector('.btn-remove-featured').addEventListener('click', () => removeFromSpecialDiscount(id));
-            specialProductsListBody.appendChild(row);
-        });
-     }, (error) => { console.error("Error loading special items: ", error); });
+     }, (error) => { console.error("Error loading featured products: ", error); featuredProductsListBody.innerHTML = '<tr><td colspan="4">Error loading featured products.</td></tr>'; });
 }
 
 productFilterCategory.addEventListener("change", (e) => { const categoryId = e.target.value; loadProducts(categoryId); });
@@ -543,7 +465,6 @@ addProductForm.addEventListener("submit", async (e) => {
             price: Number(document.getElementById("product-price").value) || 0,
             description: document.getElementById("product-description").value,
             featured: document.getElementById("product-featured").checked,
-            specialDiscount: document.getElementById("modal-product-special") ? document.getElementById("modal-product-special").checked : false, // Default false on add
             images: imageUrls,
             moreLinks: moreLinks,
             createdAt: serverTimestamp()
@@ -663,8 +584,7 @@ async function openEditModal(id, type) {
                     <div class="form-group"><label for="modal-product-mrp">MRP (₹)</label><input type="number" id="modal-product-mrp" value="${data.mrp || ''}"></div>
                     <div class="form-group"><label for="modal-product-price">Retail Price (₹) <span class="required-star">*</span></label><input type="number" id="modal-product-price" value="${data.price || ''}" required></div>
                     
-                    <div class="form-group"><input type="checkbox" id="modal-product-featured" style="width: auto; margin-right: 10px;" ${data.featured ? 'checked' : ''}><label for="modal-product-featured" style="display: inline;">Featured? (Trendy Deal)</label></div>
-                    <div class="form-group"><input type="checkbox" id="modal-product-special" style="width: auto; margin-right: 10px;" ${data.specialDiscount ? 'checked' : ''}><label for="modal-product-special" style="display: inline;">Add to Special Discount?</label></div>
+                    <div class="form-group"><input type="checkbox" id="modal-product-featured" style="width: auto; margin-right: 10px;" ${data.featured ? 'checked' : ''}><label for="modal-product-featured" style="display: inline;">Featured? (Top Seller)</label></div>
                     
                     <div class="form-group full-width">
                         <label for="modal-product-specification">Specification</label>
@@ -714,7 +634,6 @@ modalForm.addEventListener("submit", async (e) => {
                 price: Number(document.getElementById('modal-product-price').value) || 0,
                 description: document.getElementById('modal-product-description').value,
                 featured: document.getElementById('modal-product-featured').checked,
-                specialDiscount: document.getElementById('modal-product-special').checked, // Updated
                 images: imageUrls,
                 moreLinks: moreLinks,
             };

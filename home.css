@@ -1,229 +1,373 @@
-/* home.css - Video Aspect Ratio Fixes (3:4 for Shorts/Others) */
+/* home.css - Updated Explore Button Style (Gold Outline) */
 
-/* --- 1. Top Banner --- */
+/* === 1. ഹോം പേജ് ടോപ്പ് ബാനർ === */
 .home-top-banner {
     width: 100%;
-    margin-bottom: 0;
-    padding: 0;
+    height: auto;
+    position: relative;
     background-color: #000;
-    display: block;
+    border-bottom: 2px solid var(--primary-gold);
+    margin-bottom: 0;
 }
+
 .home-top-banner img {
     width: 100%;
     height: auto;
     display: block;
-    object-fit: contain;
+    max-height: 120px;
+    object-fit: cover;
 }
 
-/* --- 2. Icon Navigation --- */
-.icon-nav-container {
-    background-color: var(--card-bg);
-    padding: 15px 0;
-    white-space: nowrap;
-    overflow-x: auto;
-    overflow-y: hidden;
-    -webkit-overflow-scrolling: touch;
-    display: flex;
-    gap: 10px;
-    border-bottom: 1px solid var(--border-color);
-    scrollbar-width: none; 
-    -ms-overflow-style: none;
-}
-.icon-nav-container::-webkit-scrollbar { display: none; }
-
-.icon-nav-item {
-    display: inline-flex;
-    flex-direction: column;
-    align-items: center;
-    width: 22%;
-    min-width: 75px;
-    text-decoration: none;
-    color: var(--text-color);
-    flex-shrink: 0;
-}
-.icon-nav-item:first-child { margin-left: 10px; }
-.icon-nav-item:last-child { margin-right: 10px; }
-
-.icon-nav-img-box {
-    width: 55px; 
-    height: 55px;
-    border-radius: 50%;
-    background-color: rgba(255, 255, 255, 0.05);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 8px;
-    border: 1px solid var(--border-color);
-    overflow: hidden;
-    transition: transform 0.2s ease;
-}
-.icon-nav-img { width: 100%; height: 100%; object-fit: cover; }
-.icon-nav-text {
-    font-size: 0.75rem; font-weight: 500; color: var(--text-muted);
-    text-align: center; white-space: normal; line-height: 1.2; max-width: 80px;
-}
-
-/* --- 3. Hero Slider & Video Wrappers --- */
+/* === 2. ഹീറോ സ്ലൈഡർ === */
 .hero-section-new {
     width: 100%;
+    height: 75vh;
     position: relative;
     background-color: #000;
-    margin-bottom: 15px;
-    overflow: hidden;
 }
 
 .hero-slider-new {
     width: 100%;
-    height: auto;
+    height: 100%;
 }
 
 .hero-slider-new .swiper-slide {
     width: 100%;
-    height: auto;
-    background-color: #000;
-    display: flex;       
-    justify-content: center;
-    align-items: center;
-}
-
-.hero-slider-new .swiper-slide img {
-    width: 100%;
-    height: auto;
-    max-height: 500px;
-    object-fit: contain; 
-    display: block;
-}
-
-/* *** VIDEO ASPECT RATIOS *** */
-
-/* 1. Standard YouTube Video (16:9) */
-/* Calculation: (9 / 16) * 100 = 56.25% */
-.video-wrapper-16-9 {
+    height: 100%;
     position: relative;
-    width: 100%;
-    padding-top: 56.25%; 
-    height: 0;
-    background-color: #000;
+    overflow: hidden;
 }
 
-/* 2. Shorts & Other Videos (3:4) */
-/* Calculation: (4 / 3) * 100 = 133.33% */
-.video-wrapper-3-4 {
-    position: relative;
-    width: 100%;
-    padding-top: 133.33%; 
-    height: 0;
-    background-color: #000;
-}
-
-/* Common Video Style (Fills the wrapper) */
-.hero-video-iframe, 
-.hero-video-element {
-    position: absolute;
-    top: 0;
-    left: 0;
+.hero-slider-new .swiper-slide img,
+.hero-slider-new .swiper-slide video {
     width: 100%;
     height: 100%;
-    border: 0;
-    object-fit: cover; /* 3:4 ലേക്ക് ക്രോപ്പ് ചെയ്ത് ഫിറ്റ് ആക്കാൻ */
+    object-fit: cover;
 }
 
-/* Desktop Adjustment: Limit 3:4 video height */
+.hero-slider-new .swiper-slide iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+}
+
+.hero-slider-new .swiper-slide::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.6) 100%);
+    z-index: 1;
+}
+
+.hero-slider-new .hero-pagination-dots {
+    bottom: 20px;
+}
+
+.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet {
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 1;
+    width: 8px;
+    height: 8px;
+    transition: all 0.3s ease;
+}
+
+.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active {
+    background: var(--primary-gold);
+    width: 20px;
+    border-radius: 4px;
+}
+
+/* === 3. ഹീറോ ടെക്സ്റ്റ് സെക്ഷൻ === */
+.hero-text-section {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+/* === 4. For You (Top Sellers) === */
+.home-section {
+    margin-bottom: 3rem;
+    position: relative;
+}
+
+.section-title-new {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--primary-gold);
+    margin-bottom: 2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.top-sellers-swiper-new {
+    padding: 0 10px;
+}
+
+/* കാർഡ് കണ്ടെയ്നർ */
+.top-sellers-swiper-new .swiper-slide {
+    position: relative;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    background-color: var(--card-bg);
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+
+/* ഇമേജ് കണ്ടെയ്നർ */
+.media-container {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4 / 5; 
+    overflow: hidden;
+}
+
+.top-sellers-product-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s ease;
+}
+
+.top-sellers-swiper-new .swiper-slide:hover .top-sellers-product-image {
+    transform: scale(1.05); 
+}
+
+/* Overlay Text */
+.text-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    padding: 2rem 0.5rem 0.5rem 0.5rem;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.95) 0%, rgba(0, 0, 0, 0.6) 50%, rgba(0, 0, 0, 0) 100%);
+    text-align: center;
+    color: #fff;
+    z-index: 2;
+}
+
+.top-sellers-product-name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+    opacity: 0.95;
+}
+
+.top-sellers-product-price {
+    font-size: 1.15rem;
+    color: var(--primary-gold);
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+}
+
+/* Buttons Container */
+.top-sellers-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    width: 100%;
+    padding: 12px 15px 15px 15px; 
+    background-color: var(--card-bg);
+    border-top: none; 
+}
+
+.top-sellers-buttons .btn-primary-new,
+.top-sellers-buttons .btn-secondary-new {
+    font-size: 0.8rem; 
+    height: 40px; 
+    padding: 0;
+    border-radius: 50px; 
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+.top-sellers-buttons .btn-primary-new {
+    background-color: transparent !important;
+    color: var(--primary-gold) !important;
+    border: 1px solid var(--primary-gold) !important;
+    gap: 6px;
+}
+
+.top-sellers-buttons .btn-primary-new:hover {
+    background-color: rgba(212, 175, 55, 0.1) !important;
+    transform: translateY(-3px);
+}
+
+.top-sellers-buttons .btn-primary-new.added-to-cart {
+    background-color: rgba(212, 175, 55, 0.1) !important;
+}
+
+.top-sellers-buttons .btn-primary-new svg.icon-btn {
+    stroke: var(--primary-gold);
+    fill: none;
+    width: 18px;
+    height: 18px;
+}
+
+.top-sellers-buttons .btn-secondary-new {
+    background-color: transparent !important;
+    color: #ffffff !important;
+    border: 1px solid #ffffff !important;
+}
+
+.top-sellers-buttons .btn-secondary-new:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    transform: translateY(-3px);
+}
+
+/* Pagination */
+.top-sellers-pagination-new {
+    position: relative;
+    margin-top: 2rem;
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.top-sellers-pagination-new .swiper-pagination-bullet {
+    width: 8px; height: 8px;
+    border-radius: 4px;
+    background-color: #444;
+    opacity: 1;
+    margin: 0 !important;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.top-sellers-pagination-new .swiper-pagination-bullet-active {
+    width: 30px;
+    background-color: #444;
+}
+
+.top-sellers-pagination-new .swiper-pagination-bullet-active .pagination-progress {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background-color: var(--primary-gold);
+    border-radius: 4px;
+}
+
+@keyframes progress-fill {
+    from { width: 0%; }
+    to { width: 100%; }
+}
+
+/* === 5. SHOP BY CATEGORY (Portrait Cards) === */
+.category-grid-vertical {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+    padding: 0 15px;
+}
+
+.category-card-portrait {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 3 / 4;
+    border-radius: 16px;
+    overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: transform 0.3s ease;
+}
+
+.category-card-portrait:hover {
+    transform: translateY(-5px);
+}
+
+.category-card-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.6s ease;
+}
+
+.category-card-portrait:hover .category-card-img {
+    transform: scale(1.05);
+}
+
+.category-card-overlay {
+    position: absolute;
+    bottom: 0; left: 0; width: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+    padding: 2rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.category-card-title {
+    color: #fff;
+    font-size: 1.4rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 15px;
+    text-align: center;
+    text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+}
+
+/* *** മാറ്റം: Explore ബട്ടൺ (No Fill, Gold Outline) *** */
+.category-card-btn {
+    font-size: 0.9rem;
+    color: var(--primary-gold);
+    border: 1px solid var(--primary-gold); /* ഗോൾഡ് ബോർഡർ */
+    padding: 10px 30px;
+    border-radius: 50px; /* Pill Shape */
+    background-color: transparent; /* No Fill */
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    backdrop-filter: blur(2px); /* ടെക്സ്റ്റ് വ്യക്തമാക്കാൻ ചെറിയ ബ്ലർ */
+}
+
+.category-card-btn:hover {
+    background-color: rgba(212, 175, 55, 0.1);
+    transform: scale(1.05);
+}
+
+/* Responsive */
 @media (min-width: 768px) {
-    .video-wrapper-3-4 {
-        width: 400px; /* PC-യിൽ വല്ലാതെ വലുതാകാതിരിക്കാൻ */
-        padding-top: 533px; /* 400 * 1.33 */
-        margin: 0 auto; 
+    .category-grid-vertical {
+        flex-direction: row;
+        justify-content: center;
+        flex-wrap: wrap;
     }
+    .category-card-portrait { width: 300px; }
+    .hero-section-new { height: 85vh; }
 }
-
-/* Pagination Dots */
-.hero-pagination-dots { bottom: 15px !important; }
-.hero-pagination-dots .swiper-pagination-bullet { background: rgba(255,255,255,0.7); opacity: 1; width: 8px; height: 8px; }
-.hero-pagination-dots .swiper-pagination-bullet-active { background: var(--primary-gold); width: 20px; border-radius: 4px; }
-
-/* --- 4. Deals Section --- */
-.container-fluid { padding: 15px 10px; margin-bottom: 20px; }
-.deals-section { border-radius: 8px; position: relative; overflow: hidden; }
-.blue-theme { background: linear-gradient(135deg, #2874f0 0%, #004aad 100%); }
-.orange-theme { background: linear-gradient(135deg, #ff9f00 0%, #ff6f00 100%); }
-
-.deals-header {
-    display: flex; justify-content: space-between; align-items: center;
-    margin-bottom: 15px; color: #fff; padding: 0 5px;
-}
-.deals-title-box h3 { font-size: 1.1rem; font-weight: 700; margin: 0; color: #fff; text-transform: uppercase; }
-.timer-badge {
-    background-color: #fff; color: #2874f0; font-size: 0.7rem; font-weight: 700;
-    padding: 2px 6px; border-radius: 4px; display: inline-block; margin-top: 4px;
-}
-.view-all-btn {
-    background-color: #fff; color: #2874f0; font-size: 0.8rem; font-weight: 600;
-    padding: 6px 12px; border-radius: 4px; box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-.orange-theme .view-all-btn { color: #ff9f00; }
-
-.deal-card {
-    background-color: #fff; border-radius: 8px; padding: 10px;
-    display: flex; flex-direction: column; align-items: center;
-    text-decoration: none; height: 100%; box-sizing: border-box;
-}
-.deal-img-box {
-    width: 100%; height: 120px; display: flex; align-items: center;
-    justify-content: center; margin-bottom: 10px;
-}
-.deal-img { max-width: 100%; max-height: 100%; object-fit: contain; }
-.deal-info { text-align: center; width: 100%; }
-.deal-name {
-    font-size: 0.85rem; color: #333; font-weight: 500; white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis; margin-bottom: 4px;
-}
-.deal-price { font-size: 0.95rem; color: #388e3c; font-weight: 700; }
-.deal-tag { font-size: 0.75rem; color: #878787; }
-.deals-swiper { padding-bottom: 5px !important; }
-
-/* --- 5. Grid Layout --- */
-.grid-section {
-    padding: 10px 15px 25px 15px; background-color: var(--card-bg); margin-bottom: 20px;
-}
-.section-title-simple {
-    font-size: 1.1rem; font-weight: 600; color: var(--text-color); margin-bottom: 15px;
-}
-.grid-layout-2x2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-.grid-item-card {
-    background-color: rgba(255,255,255,0.05); border: 1px solid var(--border-color);
-    border-radius: 8px; padding: 10px; display: flex; flex-direction: column;
-    align-items: center; text-decoration: none; position: relative; min-height: 180px; 
-}
-.grid-badge {
-    position: absolute; top: 0; left: 0; background-color: var(--success-green);
-    color: #fff; font-size: 0.7rem; font-weight: 700; padding: 3px 8px;
-    border-bottom-right-radius: 8px; z-index: 2;
-}
-.grid-img {
-    width: 100%; height: 120px; object-fit: contain; margin-bottom: 8px;
-    background-color: rgba(255,255,255,0.02); border-radius: 4px;
-}
-.grid-name {
-    font-size: 0.85rem; color: var(--text-color); text-align: center;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; width: 100%;
-}
-.grid-discount { font-size: 0.9rem; color: var(--primary-gold); font-weight: 700; }
-
-/* --- 6. Budget Section --- */
-.budget-section { padding: 0 15px 30px 15px; }
-.budget-card {
-    background-color: var(--card-bg); border: 1px solid var(--border-color);
-    border-radius: 8px; padding: 10px; display: flex; flex-direction: column;
-    align-items: center; text-decoration: none;
-}
-.budget-card .deal-img-box { height: 110px; background-color: rgba(255,255,255,0.02); border-radius: 4px; margin-bottom: 8px;}
-.budget-card .deal-name { color: var(--text-color); font-size: 0.85rem; }
-.budget-card .deal-price { color: var(--primary-gold); font-size: 0.95rem; }
-
-/* Desktop Adjustments */
-@media (min-width: 768px) {
-    .home-top-banner img { max-height: 300px; }
-    .grid-layout-2x2 { grid-template-columns: repeat(4, 1fr); }
-    .deal-img-box, .grid-img { height: 160px; }
+@media (max-width: 768px) {
+    .hero-section-new { height: 60vh; }
+    .section-title-new { font-size: 1.5rem; margin-bottom: 1.5rem; }
+    
+    /* മൊബൈലിൽ ബട്ടൺ സൈസ് അഡ്ജസ്റ്റ്മെന്റ് */
+    .top-sellers-buttons { padding: 10px 12px 12px 12px; gap: 8px; }
+    .top-sellers-buttons .btn-primary-new, 
+    .top-sellers-buttons .btn-secondary-new { height: 36px; font-size: 0.75rem; }
 }

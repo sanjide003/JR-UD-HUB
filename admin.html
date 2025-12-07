@@ -1,8 +1,6 @@
 <!-- 
-  ഇതാണ് അഡ്മിൻ പാനൽ (admin.html).
-  മാറ്റങ്ങൾ:
-  1. Special Discount Banner ഇപ്പോൾ അതാത് പേജിൽ തന്നെ അപ്ഡേറ്റ് ചെയ്യാം.
-  2. ലോഗൗട്ട് ബട്ടൺ പ്രശ്നങ്ങൾ പരിഹരിച്ചു.
+  ഇതാണ് അഡ്മിൻ പാനൽ. admin.html
+  മാറ്റം: ChatBot Number-ന് താഴെ Dealer Number ചേർക്കാനുള്ള ഓപ്ഷൻ ഉൾപ്പെടുത്തി.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -53,7 +51,6 @@
                 <h1 id="admin-panel-title">JR-UD-HUB - Admin</h1>
             </div>
             <div class="admin-header-right">
-                <!-- ലോഗൗട്ട് ബട്ടൺ (Desktop) -->
                 <button class="btn btn-logout logout-action-btn header-logout-btn">Logout</button>
             </div>
         </header>
@@ -67,9 +64,7 @@
             <div class="admin-nav-links">
                 <button class="nav-link active" data-page="page-add-product">Add New Product</button>
                 <button class="nav-link" data-page="page-existing-products">Existing Products</button>
-                <button class="nav-link" data-page="page-featured-products">Trendy Deals (Featured)</button>
-                <button class="nav-link" data-page="page-special-discount-products">Special Discount Items</button>
-                
+                <button class="nav-link" data-page="page-featured-products">Featured Products</button>
                 <button class="nav-link" data-page="page-add-category">Add New Category</button>
                 <button class="nav-link" data-page="page-existing-categories">Existing Categories</button>
                 <button class="nav-link" data-page="page-manage-hero">Manage Hero</button>
@@ -79,7 +74,6 @@
             </div>
             
             <div class="admin-nav-footer">
-                <!-- ലോഗൗട്ട് ബട്ടൺ (Mobile Menu) -->
                 <button class="btn btn-logout logout-action-btn full-width-logout">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 8px;">
                         <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
@@ -95,7 +89,7 @@
         <div class="container">
             <div id="admin-status" class="status-message"></div>
 
-            <!-- Page: Add New Product -->
+            <!-- പേജ് 1: Add New Product -->
             <div id="page-add-product" class="page-content active">
                 <form id="add-product-form" class="form-section">
                     <h2>Add New Product</h2>
@@ -121,12 +115,12 @@
                         
                         <div class="form-group">
                             <input type="checkbox" id="product-featured" style="width: auto; margin-right: 10px;">
-                            <label for="product-featured" style="display: inline;">Add to Trendy Deals (Featured)</label>
+                            <label for="product-featured" style="display: inline;">Featured on Home Page? (Top Seller)</label>
                         </div>
 
                         <div class="form-group full-width">
                             <label for="product-specification">Specification</label>
-                            <textarea id="product-specification" rows="4" placeholder="Type each point on a new line."></textarea>
+                            <textarea id="product-specification" rows="4" placeholder="Type each point on a new line. Example:&#10;- Long Lasting&#10;- Alcohol Free"></textarea>
                         </div>
 
                         <div class="form-group full-width">
@@ -154,7 +148,6 @@
                 </form>
             </div>
 
-            <!-- Page: Existing Products -->
             <div id="page-existing-products" class="page-content">
                 <div class="data-list-section">
                     <h2>Existing Products</h2>
@@ -168,12 +161,12 @@
                 </div>
             </div>
             
-            <!-- Page: Trendy Deals (Featured) -->
+            <!-- Featured Products -->
             <div id="page-featured-products" class="page-content">
                 <div class="data-list-section">
-                    <h2>Trendy Deals Management (Featured)</h2>
+                    <h2>Featured Products (Top Sellers)</h2>
                     <div class="featured-search-container">
-                        <label for="featured-product-search">Search & Add to Trendy Deals</label>
+                        <label for="featured-product-search">Search & Add Products to Featured List</label>
                         <div class="search-wrapper">
                             <input type="text" id="featured-product-search" placeholder="Search product name...">
                             <div id="featured-search-results" class="search-results-dropdown"></div>
@@ -188,40 +181,7 @@
                 </div>
             </div>
 
-            <!-- *** Page: Special Discount Products & Banner *** -->
-            <div id="page-special-discount-products" class="page-content">
-                <div class="data-list-section">
-                    <h2>Special Discount Management</h2>
-                    
-                    <!-- 1. Banner Management -->
-                    <div class="featured-search-container" style="margin-bottom: 2rem; border-color: var(--primary-gold);">
-                        <label style="color: var(--primary-gold); font-size: 1.1rem;">Section Banner Image</label>
-                        <p style="color: #aaa; font-size: 0.9rem; margin-bottom: 1rem;">Upload a banner to show above the Special Discount section.</p>
-                        <div class="inline-image-input-container">
-                            <div class="image-preview-small" id="special-banner-page-preview"></div>
-                            <input type="text" id="special-banner-input-page" placeholder="Paste Banner Image URL here...">
-                        </div>
-                        <button id="save-special-banner-btn" class="btn" style="margin-top: 15px;">Save Banner</button>
-                    </div>
-
-                    <!-- 2. Product Management -->
-                    <div class="featured-search-container">
-                        <label for="special-product-search">Search & Add to Special Discount List</label>
-                        <div class="search-wrapper">
-                            <input type="text" id="special-product-search" placeholder="Search product name...">
-                            <div id="special-search-results" class="search-results-dropdown"></div>
-                        </div>
-                    </div>
-                    <div class="data-table-wrapper">
-                        <table class="data-table">
-                            <thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Actions</th></tr></thead>
-                            <tbody id="special-products-list-body"></tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Page: Add Category -->
+            <!-- Add Category -->
             <div id="page-add-category" class="page-content">
                 <form id="add-category-form" class="form-section">
                     <h2>Add New Category</h2>
@@ -246,7 +206,7 @@
                 <div class="data-list-section"><h2>Existing Hero Slides</h2><div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Preview</th><th>Type</th><th>Order</th><th>URL</th><th>Actions</th></tr></thead><tbody id="hero-slides-list-body"></tbody></table></div></div>
             </div>
 
-            <!-- General Settings -->
+            <!-- General Settings: ChatBot & Dealer Numbers -->
             <div id="page-general-settings" class="page-content">
                 <form id="general-settings-form" class="form-section">
                     <h2>General Site Settings</h2>
@@ -254,17 +214,20 @@
                          <div class="form-group"><label for="setting-logo-image-url">Logo Image URL</label><div class="inline-image-input-container"><div class="image-preview-small" id="logo-preview"></div><input type="text" id="setting-logo-image-url"></div></div>
                         <div class="form-group"><label for="setting-logo-text">Logo Text</label><input type="text" id="setting-logo-text" placeholder="e.g. JR UD HUB"></div>
                          <div class="form-group"><label for="setting-logo-subtitle">Logo Subtitle</label><input type="text" id="setting-logo-subtitle"></div>
-                        
                         <div class="form-group"><label for="setting-home-banner-url">Home Page Banner Image URL</label><div class="inline-image-input-container"><div class="image-preview-small" id="banner-preview"></div><input type="text" id="setting-home-banner-url"></div></div>
                         
+                        <!-- ChatBot Number -->
                         <div class="form-group">
                             <label for="setting-chatbot-number">ChatBot WhatsApp Number</label>
                             <input type="text" id="setting-chatbot-number" placeholder="e.g. 15551386613">
+                            <small style="color: var(--text-muted); display: block; margin-top: 5px;">Enter number to show 'ChatBot' button. Leave blank to hide.</small>
                         </div>
 
+                        <!-- *** Dealer Chat Number (New) *** -->
                         <div class="form-group">
                             <label for="setting-dealer-number">Dealer Chat WhatsApp Number</label>
                             <input type="text" id="setting-dealer-number" placeholder="e.g. 15551234567">
+                            <small style="color: var(--text-muted); display: block; margin-top: 5px;">Enter number to show 'Chat with Dealer' button. Leave blank to hide.</small>
                         </div>
 
                     </div>
