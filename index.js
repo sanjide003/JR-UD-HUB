@@ -1,4 +1,4 @@
-// index.js - Updated with Premium Button Styles for Home Page
+// index.js - Optimized for Speed & Performance
 
 import { db } from './firebase-config.js';
 import { 
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
- * ഹോം പേജ് ബാനർ
+ * 1. ഹോം പേജ് ബാനർ (Fast Load)
  */
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
@@ -38,6 +38,7 @@ async function loadHomeBanner() {
 
         if (docSnap.exists() && docSnap.data().homeBannerUrl) {
             const bannerUrl = docSnap.data().homeBannerUrl;
+            // ഒപ്റ്റിമൈസ്ഡ് ഇമേജ് (800px width)
             const optimizedUrl = optimizeImage(bannerUrl, 800, 80);
             bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Special Offer Banner" loading="lazy">`;
             bannerContainer.style.display = 'block';
@@ -51,7 +52,7 @@ async function loadHomeBanner() {
 }
 
 /**
- * 1. ഹീറോ സ്ലൈഡർ
+ * 2. ഹീറോ സ്ലൈഡർ
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -75,6 +76,7 @@ async function loadHeroSlider() {
                 let embedUrl = '';
                 let finalUrl = slide.url;
 
+                // വീഡിയോ ലിങ്ക് കൈകാര്യം ചെയ്യുന്നു
                 if (isVideo) {
                     if (slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
                         try {
@@ -98,6 +100,7 @@ async function loadHeroSlider() {
                 }
 
                 if (slide.type === 'image') {
+                    // ഇമേജ് ഒപ്റ്റിമൈസേഷൻ (800px width)
                     const optimizedHeroImg = optimizeImage(slide.url, 800, 85);
                     slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
                 }
@@ -108,10 +111,7 @@ async function loadHeroSlider() {
                     slideEl.innerHTML = `
                         <video class="hero-video-element" 
                                src="${finalUrl}" 
-                               autoplay 
-                               muted 
-                               loop 
-                               playsinline 
+                               autoplay muted loop playsinline 
                                preload="auto"
                                style="width: 100%; height: 100%; object-fit: cover;">
                         </video>`;
@@ -195,16 +195,13 @@ function setupScrollVideoObserver() {
 }
 
 /**
- * 2. "For You" (Top Sellers)
- * മാറ്റം: ബട്ടണുകളെ കൂടുതൽ ആകർഷകമാക്കാൻ ക്ലാസുകൾ മാറ്റി.
- * Cart = Gold (Primary), View = Outline (Secondary)
+ * 3. "For You" (Top Sellers)
  */
 async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
     
-    grid.innerHTML = '<div class="swiper-slide" style="height:250px; background:#111;"></div>';
-    
+    // ലോഡിംഗ് ഒഴിവാക്കി നേരിട്ട് കാണിക്കുന്നു (വേഗതയ്ക്ക് വേണ്ടി)
     try {
         const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
         const querySnapshot = await getDocs(q);
@@ -222,11 +219,10 @@ async function loadTopSellers() {
             const card = document.createElement('div');
             card.className = 'swiper-slide';
             
+            // *** ഇമേജ് ഒപ്റ്റിമൈസേഷൻ: 400px, 75% Quality ***
             const imageUrl = optimizeImage(product.images?.[0] || '', 400, 75);
             const isInCart = isItemInCart(productId);
             
-            // *** മാറ്റം: Cart ബട്ടൺ ഗോൾഡ് (Primary), View ബട്ടൺ ഔട്ട്‌ലൈൻ (Secondary) ***
-            // ഇത് കാണാൻ കൂടുതൽ ഭംഗിയായിരിക്കും
             const buttonText = isInCart ? "Remove" : "Add";
             const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-primary-new"; 
             
@@ -294,7 +290,6 @@ async function loadTopSellers() {
         
     } catch (error) { 
         console.error("Error loading top sellers"); 
-        grid.innerHTML = '<p>Error loading products.</p>'; 
     }
 }
 
@@ -325,7 +320,7 @@ function resetProgressBars(swiper) {
 }
 
 /**
- * 3. SHOP BY CATEGORY
+ * 4. SHOP BY CATEGORY
  */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
@@ -334,13 +329,18 @@ async function loadHomeCategories() {
         const catQuery = query(collection(db, "categories"));
         const catSnapshot = await getDocs(catQuery); 
         if (catSnapshot.empty) { container.innerHTML = ''; return; }
+        
         let categories = [];
         catSnapshot.forEach((doc) => { categories.push({ id: doc.id, ...doc.data() }); });
+        
+        // റാൻഡം ആയി 3 എണ്ണം കാണിക്കുന്നു
         categories = categories.sort(() => 0.5 - Math.random()).slice(0, 3);
+        
         container.innerHTML = ''; 
         categories.forEach(category => {
             const item = document.createElement('div');
             item.className = 'category-card-portrait';
+            // ഇമേജ് ഒപ്റ്റിമൈസേഷൻ
             const imageUrl = optimizeImage(category.imageUrl || '', 600, 75);
             item.innerHTML = `
                 <a href="categories.html?filter=${category.id}" style="display:block; width:100%; height:100%;">
@@ -356,6 +356,7 @@ async function loadHomeCategories() {
     } catch (error) { console.error("Error loading home categories"); }
 }
 
+// Global Click Listener for Add to Cart
 document.addEventListener('click', (e) => {
     const button = e.target.closest('.btn-add-to-cart');
     if (button) {
