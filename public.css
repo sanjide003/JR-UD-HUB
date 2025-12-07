@@ -1,6 +1,5 @@
-/* ഇതാണ് പൊതുവായ വെബ്സൈറ്റിന്റെ (public.css) മുഴുവൻ ഡിസൈനും. */
+/* public.css - Performance & UX Updates */
 
-/* --- 1. പ്രധാന വേരിയബിളുകൾ & ഫോണ്ടുകൾ --- */
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
@@ -19,6 +18,12 @@
     
     --header-height: 70px;
     --bottom-nav-height: 65px;
+}
+
+/* *** New: Smooth Scrolling Global *** */
+html {
+    scroll-behavior: smooth;
+    -webkit-tap-highlight-color: transparent; /* Remove blue highlight on tap */
 }
 
 /* --- 0. പേജ് ലോഡർ --- */
@@ -156,7 +161,7 @@ img { max-width: 100%; height: auto; display: block; }
     margin: 0;
 }
 .header-nav-desktop a,
-.header-nav-desktop button { /* Button style added */
+.header-nav-desktop button {
     color: var(--text-color);
     font-weight: 500;
     font-size: 1rem;
@@ -250,7 +255,6 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .footer-accordion-toggle.active svg { transform: rotate(180deg); }
 
-/* ഫൂട്ടർ അക്കോഡിയൻ കണ്ടന്റ് */
 .footer-accordion-content {
     max-height: 0; 
     overflow: hidden; 
@@ -270,10 +274,8 @@ img { max-width: 100%; height: auto; display: block; }
 
 /* --- 5. മൊബൈൽ ബോട്ടം നാവിഗേഷൻ & യൂസർ മെനു --- */
 .bottom-nav {
-    display: none; /* ഡെസ്ക്ടോപ്പിൽ മറയ്ക്കുന്നു */
+    display: none; 
 }
-
-/* യൂസർ മെനു ഓവർലേ (പൊതുവായ സ്റ്റൈലുകൾ) */
 .user-menu-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.6); z-index: 2000;
@@ -282,7 +284,6 @@ img { max-width: 100%; height: auto; display: block; }
 }
 .user-menu-overlay.open { opacity: 1; visibility: visible; }
 
-/* മൊബൈൽ സ്റ്റൈൽ (Bottom Sheet) */
 .user-menu-content {
     width: 100%; background-color: var(--card-bg);
     border-top-left-radius: 20px; border-top-right-radius: 20px;
@@ -322,7 +323,6 @@ img { max-width: 100%; height: auto; display: block; }
     .header-left-section { justify-self: start; }
     .header-right-section { justify-self: end; }
     
-    /* ബോട്ടം നാവിഗേഷൻ */
     .bottom-nav {
         display: flex; justify-content: space-around; align-items: center;
         position: fixed; bottom: 0; left: 0; width: 100%; height: var(--bottom-nav-height);
@@ -342,7 +342,6 @@ img { max-width: 100%; height: auto; display: block; }
         stroke-linecap: round; stroke-linejoin: round; transition: all 0.3s ease;
     }
     
-    /* ആക്ടീവ് പേജ് ഗോൾഡ് കളർ */
     .bottom-nav-item.active { 
         color: var(--primary-gold) !important; 
     }
@@ -352,7 +351,6 @@ img { max-width: 100%; height: auto; display: block; }
         fill: none; 
     }
     
-    /* കാറ്റലോഗ് ആനിമേഷൻ */
     @keyframes bounce-subtle {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-4px); }
@@ -362,7 +360,6 @@ img { max-width: 100%; height: auto; display: block; }
         stroke: var(--primary-gold);
     }
 
-    /* മൊബൈലിൽ താഴെ നിന്നാണ് വരുന്നത് */
     .user-menu-overlay { align-items: flex-end; }
     .user-menu-content { transform: translateY(100%); border-radius: 20px 20px 0 0; }
     .user-menu-overlay.open .user-menu-content { transform: translateY(0); }
@@ -376,7 +373,6 @@ img { max-width: 100%; height: auto; display: block; }
     .header-nav-desktop { display: block; }
     .main-header { padding: 0 2rem; }
 
-    /* *** മാറ്റം: ഡെസ്ക്ടോപ്പിൽ ഫൂട്ടർ എപ്പോഴും തുറന്നു കിടക്കും *** */
     .footer-accordion-toggle {
         pointer-events: none; 
         cursor: default;
@@ -423,14 +419,13 @@ img { max-width: 100%; height: auto; display: block; }
     .footer-bottom-new p { margin: 0; }
     .footer-powered-by { margin-top: 0; }
 
-    /* *** പുതിയത്: ഡെസ്ക്ടോപ്പ് അക്കൗണ്ട് മെനു (Dropdown Style) *** */
     .user-menu-overlay {
-        background-color: transparent; /* പശ്ചാത്തലം വേണ്ട */
-        align-items: flex-start; /* മുകളിൽ നിന്ന് തുടങ്ങുന്നു */
-        justify-content: flex-end; /* വലതുവശത്തേക്ക് */
-        padding-top: calc(var(--header-height) + 10px); /* ഹെഡറിന് താഴെ */
-        padding-right: 2rem; /* വലതുവശത്ത് നിന്ന് അകലം */
-        pointer-events: none; /* ഓപ്പൺ ആകാത്തപ്പോൾ ക്ലിക്ക് തടയുന്നു */
+        background-color: transparent; 
+        align-items: flex-start; 
+        justify-content: flex-end; 
+        padding-top: calc(var(--header-height) + 10px); 
+        padding-right: 2rem; 
+        pointer-events: none; 
     }
     .user-menu-overlay.open {
         pointer-events: auto;
@@ -450,7 +445,6 @@ img { max-width: 100%; height: auto; display: block; }
         opacity: 1;
         visibility: visible;
     }
-    /* ഡെസ്ക്ടോപ്പിൽ ക്ലോസ് ബട്ടൺ ആവശ്യമില്ല (പുറത്ത് ക്ലിക്ക് ചെയ്താൽ മതി) */
     .user-menu-close-btn { display: none; }
 }
 
@@ -461,21 +455,29 @@ img { max-width: 100%; height: auto; display: block; }
 .product-mrp-red del { color: var(--error-red); }
 .price-discount { font-size: 0.8rem; font-weight: 700; color: var(--success-green); background-color: rgba(46, 204, 113, 0.1); padding: 2px 6px; border-radius: 4px; }
 
-.btn-primary-new, .btn-primary-icon {
+/* *** New: Button Active State & Touch Feedback *** */
+.btn-primary-new, .btn-primary-icon, .btn-secondary-new, .float-btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
     padding: 0.75rem 1rem; font-weight: 700; border-radius: 5px; text-decoration: none;
-    cursor: pointer; font-size: 0.9rem; background-color: var(--primary-gold);
-    border: 2px solid var(--primary-gold); color: var(--bg-color); transition: all 0.3s ease;
+    cursor: pointer; font-size: 0.9rem; transition: all 0.2s ease;
+    user-select: none;
+}
+
+.btn-primary-new:active, .btn-secondary-new:active, .float-btn:active {
+    transform: scale(0.96);
+}
+
+.btn-primary-new {
+    background-color: var(--primary-gold);
+    border: 2px solid var(--primary-gold); color: var(--bg-color);
 }
 .btn-primary-new:hover { background-color: var(--secondary-gold); border-color: var(--secondary-gold); }
+
 .btn-secondary-new {
-    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
-    padding: 0.75rem 1rem; font-weight: 700; border-radius: 5px; text-decoration: none;
-    cursor: pointer; font-size: 0.9rem; background-color: transparent;
-    border: 2px solid var(--primary-gold); color: var(--primary-gold); transition: all 0.3s ease;
+    background-color: transparent;
+    border: 2px solid var(--primary-gold); color: var(--primary-gold);
 }
 .btn-secondary-new:hover { background-color: var(--primary-gold); color: var(--bg-color); }
-.btn-primary-new { gap: 0; }
 .btn-primary-new svg.icon-btn, .btn-secondary-new svg.icon-btn {
     width: 16px; height: 16px; fill: currentColor; stroke: currentColor; stroke-width: 2;
 }
