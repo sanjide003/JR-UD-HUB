@@ -1,4 +1,5 @@
-// explore.js - Single Read Architecture + Real-time Updates
+// explore.js - Optimized for Speed
+
 import {
     collection,
     getDocs,
@@ -10,7 +11,7 @@ import {
     orderBy,
     setDoc,
     deleteDoc,
-    onSnapshot, // Real-time Listener
+    onSnapshot, 
     runTransaction,
     serverTimestamp,
     setLogLevel
@@ -36,7 +37,6 @@ const activeListeners = [];
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        // ലോഗിൻ ചെയ്താൽ യൂസറുടെ ലൈക്ക് സ്റ്റാറ്റസ് ചെക്ക് ചെയ്യുന്നു
         setupUserInteractionListeners();
     } else {
         signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
@@ -66,6 +66,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 function loadExploreBanner(bannerUrl) {
     const bannerContainer = document.getElementById('explore-top-banner');
     if (!bannerContainer || !bannerUrl) return;
+    // ഒപ്റ്റിമൈസേഷൻ: 1200px width
     const optimizedUrl = optimizeImage(bannerUrl, 1200, 85);
     bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Special Offer Banner" loading="lazy">`;
     bannerContainer.style.display = 'block';
@@ -95,7 +96,6 @@ async function loadProducts() {
         const productsRef = collection(db, "products");
         let q;
         
-        // പുതിയവ ആദ്യം വരാൻ (createdAt desc)
         if (lastVisible) {
             q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(PRODUCTS_PER_PAGE));
         } else {
@@ -128,8 +128,6 @@ async function loadProducts() {
             `;
             feedContainer.appendChild(card);
             
-            // *** Single Read Listener (Count Update) ***
-            // പ്രോഡക്റ്റ് ഡോക്യുമെന്റിലെ മാറ്റം മാത്രം നോക്കുന്നു (Subcollection നോക്കുന്നില്ല)
             setupProductListener(productId);
         }
         
@@ -156,16 +154,11 @@ function setupProductListener(productId) {
 
     const productRef = doc(db, "products", productId);
     
-    // പ്രോഡക്റ്റിലെ likeCount/ratingCount മാറുമ്പോൾ മാത്രം ഇത് പ്രവർത്തിക്കും
     const unsubscribe = onSnapshot(productRef, (docSnap) => {
         if (docSnap.exists()) {
             const data = docSnap.data();
-            
-            // ലൈക്ക് കൗണ്ട് മാറ്റുന്നു
             const likeCountSpan = card.querySelector('.like-count');
             if (likeCountSpan) likeCountSpan.textContent = data.likeCount || 0;
-
-            // റേറ്റിംഗ് കൗണ്ട് മാറ്റുന്നു
             const ratingCountSpan = card.querySelector('.rating-count');
             if (ratingCountSpan) ratingCountSpan.textContent = data.ratingCount || 0;
         }
@@ -181,7 +174,6 @@ function setupUserInteractionListeners() {
     cards.forEach((card) => {
         const productId = card.id.replace('product-card-', '');
         
-        // ഞാൻ ലൈക്ക് ചെയ്തിട്ടുണ്ടോ എന്ന് നോക്കുന്നു
         const likeRef = doc(db, "products", productId, "likes", currentUser.uid);
         onSnapshot(likeRef, (docSnap) => {
             const likeBtn = card.querySelector('.like-btn');
@@ -198,7 +190,6 @@ function setupUserInteractionListeners() {
             }
         });
 
-        // ഞാൻ റേറ്റിംഗ് നൽകിയിട്ടുണ്ടോ എന്ന് നോക്കുന്നു
         const ratingRef = doc(db, "products", productId, "ratings", currentUser.uid);
         onSnapshot(ratingRef, (docSnap) => {
             if (docSnap.exists()) {
@@ -213,7 +204,8 @@ function buildCategoryHeader(categoryId) {
     if (!category) return ''; 
     const categoryLink = `categories.html?filter=${categoryId}`;
     const rawImg = category.imageUrl || 'https://placehold.co/40x40/333/D4AF37?text=C';
-    const categoryImg = optimizeImage(rawImg, 100);
+    // വളരെ ചെറിയ ഐക്കൺ (50px)
+    const categoryImg = optimizeImage(rawImg, 50);
     return `
         <a href="${categoryLink}" class="explore-card-header">
             <img src="${categoryImg}" alt="${category.name}" class="explore-category-img" loading="lazy">
@@ -227,7 +219,8 @@ function buildImageSlider(productId, images, productName) {
     let slidesHTML = '';
     if (images && images.length > 0) {
         images.forEach(imgUrl => {
-            const optimizedUrl = optimizeImage(imgUrl, 800, 85);
+            // ഒപ്റ്റിമൈസ് ചെയ്ത ഇമേജ് (600px width)
+            const optimizedUrl = optimizeImage(imgUrl, 600, 85);
             slidesHTML += `<div class="swiper-slide"><a href="${productLink}"><img src="${optimizedUrl}" alt="${productName}" loading="lazy"></a></div>`;
         });
     } else {
@@ -260,7 +253,6 @@ function buildCardContent(productId, product) {
     const svgFill = isInCart ? 'style="fill: #ffffff; stroke: #ffffff;"' : '';
     const buttonTitle = isInCart ? 'Remove from Cart' : 'Add to Cart';
 
-    // ഡാറ്റയിൽ നിന്ന് നേരിട്ട് കൗണ്ട് എടുക്കുന്നു (Initial Display)
     const likeCount = product.likeCount || 0;
     const ratingCount = product.ratingCount || 0;
 
@@ -316,7 +308,6 @@ function updateStarUI(card, value) {
     if (feedback) feedback.textContent = value > 0 ? messages[value - 1] : "Tap a star to rate";
 }
 
-// *** CLICK EVENTS WITH TRANSACTION (Safe Updates) ***
 feedContainer.addEventListener('click', async (e) => { 
     const target = e.target;
     if (!currentUser) return; 
@@ -334,7 +325,6 @@ feedContainer.addEventListener('click', async (e) => {
         return;
     }
 
-    // ലൈക്ക് ബട്ടൺ (Transaction വഴി)
     const likeButton = target.closest('.like-btn');
     if (likeButton) {
         e.preventDefault();
@@ -349,37 +339,28 @@ feedContainer.addEventListener('click', async (e) => {
                 
                 if (!productDoc.exists()) throw "Product not found";
                 
-                // നിലവിലെ കൗണ്ട് എടുക്കുന്നു
                 let newCount = productDoc.data().likeCount || 0;
 
                 if (likeDoc.exists()) {
-                    // Unlike
                     transaction.delete(userLikeRef);
                     newCount = Math.max(0, newCount - 1);
                     transaction.update(productRef, { likeCount: newCount });
-                    
-                    // UI Instant Feedback
                     likeButton.classList.remove('liked');
                     likeButton.querySelector('svg').style.fill = 'none';
                     likeButton.querySelector('svg').style.stroke = 'currentColor';
                 } else {
-                    // Like
                     transaction.set(userLikeRef, { timestamp: serverTimestamp() });
                     newCount++;
                     transaction.update(productRef, { likeCount: newCount });
-                    
-                    // UI Instant Feedback
                     likeButton.classList.add('liked');
                     likeButton.querySelector('svg').style.fill = 'var(--error-red)';
                     likeButton.querySelector('svg').style.stroke = 'var(--error-red)';
                     likeButton.style.transform = 'scale(1.2)';
                     setTimeout(() => likeButton.style.transform = 'scale(1)', 200);
                 }
-                // കൗണ്ട് മാറ്റേണ്ട കാര്യമില്ല, അത് ലിസണർ വഴി തനിയെ മാറും
             });
         } catch (err) { 
             console.error("Like Transaction Error:", err);
-            // alert("Like failed. Check permissions.");
         }
     }
 
@@ -392,7 +373,6 @@ feedContainer.addEventListener('click', async (e) => {
         if(ratingBox.style.display === 'block') loadRatingBars(id);
     }
 
-    // റേറ്റിംഗ് ബട്ടൺ (Transaction വഴി)
     if (target.classList.contains('star')) {
         const star = target;
         const ratingContainer = star.parentElement;
@@ -410,12 +390,10 @@ feedContainer.addEventListener('click', async (e) => {
                 let currentCount = productDoc.data().ratingCount || 0;
 
                 if (!ratingDoc.exists()) {
-                    // പുതിയ റേറ്റിംഗ്
                     transaction.set(userRatingRef, { rating: value, timestamp: serverTimestamp() });
                     currentCount++;
                     transaction.update(productRef, { ratingCount: currentCount });
                 } else {
-                    // പഴയത് മാറ്റുന്നു (കൗണ്ട് കൂടില്ല)
                     transaction.update(userRatingRef, { rating: value, timestamp: serverTimestamp() });
                 }
                 updateStarUI(document.getElementById(`product-card-${productId}`), value);
@@ -424,7 +402,6 @@ feedContainer.addEventListener('click', async (e) => {
         catch (err) { console.error("Rating Error:", err); }
     }
 
-    // Bookmark & Share (Standard Logic)
     const bookmarkButton = target.closest('.bookmark-btn');
     if (bookmarkButton) {
         e.preventDefault();
@@ -464,12 +441,10 @@ feedContainer.addEventListener('click', async (e) => {
     }
 });
 
-// റേറ്റിംഗ് ബാറുകൾ (ഓപ്പൺ ചെയ്യുമ്പോൾ മാത്രം ലോഡ് ചെയ്യുന്നു - Low Read)
 async function loadRatingBars(productId) {
     const summaryContainer = document.getElementById(`rating-summary-${productId}`);
     if (!summaryContainer) return;
     
-    // ഇവിടെ ലിസണർ നൽകുന്നില്ല, ഒറ്റ തവണ റീഡ് ചെയ്യുന്നു
     const ratingsRef = collection(db, "products", productId, "ratings");
     const snapshot = await getDocs(ratingsRef);
     
@@ -504,7 +479,6 @@ async function loadRatingBars(productId) {
     summaryContainer.innerHTML = html;
 }
 
-// Scroll Observer
 const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !isLoading && lastVisible) { 
         loadProducts();
