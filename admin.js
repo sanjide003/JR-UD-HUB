@@ -1,3 +1,5 @@
+// admin.js - Optimized Image Previews & Smooth UX
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
     getAuth, 
@@ -22,6 +24,7 @@ import {
     orderBy
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db, auth } from './firebase-config.js';
+import { optimizeImage } from './common.js'; // *** New Import for Fast Previews ***
 
 // --- Icons (SVG Strings) ---
 const ICONS = {
@@ -224,9 +227,11 @@ function loadCategories() {
         fil.innerHTML = '<option value="all">All</option>';
         snap.forEach(d => {
             const c = d.data();
+            // *** Optimized Image for List ***
+            const imgUrl = optimizeImage(c.imageUrl, 50, 60);
             categoriesListBody.innerHTML += `
                 <tr>
-                    <td data-label="Image"><img src="${c.imageUrl}" alt="${c.name}"></td>
+                    <td data-label="Image"><img src="${imgUrl}" alt="${c.name}"></td>
                     <td data-label="Name">${c.name}</td>
                     <td data-label="Actions">
                         <button class="btn btn-edit" data-id="${d.id}" data-type="category">${ICONS.edit} Edit</button>
@@ -259,9 +264,11 @@ function loadProducts(catId = "all") {
         if(snap.empty) productsListBody.innerHTML = '<tr><td colspan="4" style="text-align:center">No products.</td></tr>';
         snap.forEach(d => {
             const p = d.data();
+            // *** Optimized Image for List ***
+            const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50, 60) : '';
             productsListBody.innerHTML += `
                 <tr>
-                    <td data-label="Image"><img src="${p.images?.[0]||''}"></td>
+                    <td data-label="Image"><img src="${thumb}"></td>
                     <td data-label="Name">${p.name} ${p.featured ? ICONS.star : ''}</td>
                     <td data-label="Price">₹${p.price}</td>
                     <td data-label="Actions">
@@ -320,7 +327,8 @@ searchInp.addEventListener('input', (e) => {
         res.forEach(p => {
             const d = document.createElement('div');
             d.className = 'search-result-item';
-            d.innerHTML = `<img src="${p.images?.[0]}" style="width:30px;height:30px"><span>${p.name} - ₹${p.price}</span>`;
+            const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50) : '';
+            d.innerHTML = `<img src="${thumb}" style="width:30px;height:30px"><span>${p.name} - ₹${p.price}</span>`;
             d.addEventListener('click', async () => {
                 await updateDoc(doc(db, "products", p.id), { featured: true });
                 searchInp.value = ''; searchRes.style.display = 'none'; showStatus(null, "Added to Featured", false);
@@ -336,8 +344,9 @@ function loadFeaturedProducts() {
         featuredProductsListBody.innerHTML = '';
         snap.forEach(d => {
             const p = d.data();
+            const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50) : '';
             const row = document.createElement('tr');
-            row.innerHTML = `<td data-label="Image"><img src="${p.images?.[0]||''}"></td><td data-label="Name">${p.name}</td><td data-label="Price">₹${p.price}</td><td data-label="Actions"><button class="btn btn-remove-featured" data-id="${d.id}">${ICONS.x} Remove</button></td>`;
+            row.innerHTML = `<td data-label="Image"><img src="${thumb}"></td><td data-label="Name">${p.name}</td><td data-label="Price">₹${p.price}</td><td data-label="Actions"><button class="btn btn-remove-featured" data-id="${d.id}">${ICONS.x} Remove</button></td>`;
             row.querySelector('.btn-remove-featured').addEventListener('click', async () => {
                 if(confirm("Remove?")) { await updateDoc(doc(db, "products", d.id), { featured: false }); showStatus(null, "Removed", false); }
             });
@@ -366,15 +375,20 @@ function loadHeroSlides() {
         heroSlidesListBody.innerHTML = '';
         snap.forEach(d => {
             const s = d.data();
-            heroSlidesListBody.innerHTML += `<tr><td data-label="Preview">${s.type==='image'?`<img src="${s.url}">`:'Video'}</td><td data-label="Type">${s.type}</td><td data-label="Order">${s.order}</td><td data-label="URL">${s.url}</td><td data-label="Actions"><button class="btn btn-delete" data-id="${d.id}" data-type="heroSlide">${ICONS.trash} Delete</button></td></tr>`;
+            const preview = s.type === 'image' ? `<img src="${optimizeImage(s.url, 100)}">` : 'Video';
+            heroSlidesListBody.innerHTML += `<tr><td data-label="Preview">${preview}</td><td data-label="Type">${s.type}</td><td data-label="Order">${s.order}</td><td data-label="URL">${s.url}</td><td data-label="Actions"><button class="btn btn-delete" data-id="${d.id}" data-type="heroSlide">${ICONS.trash} Delete</button></td></tr>`;
         });
     });
 }
 
-// --- Uploader Logic ---
+// --- Uploader Logic (Optimized for Preview) ---
 function setupImagePreview(id, pid) {
     const el = document.getElementById(id);
-    if(el) el.addEventListener('input', () => document.getElementById(pid).innerHTML = el.value ? `<img src="${el.value}">` : '');
+    if(el) el.addEventListener('input', () => {
+        // *** Preview uses optimized URL ***
+        const url = el.value;
+        document.getElementById(pid).innerHTML = url ? `<img src="${optimizeImage(url, 200)}">` : '';
+    });
 }
 setupImagePreview('category-image-url', 'category-image-preview');
 setupImagePreview('setting-logo-image-url', 'logo-preview');
@@ -384,10 +398,18 @@ function setupImageUploader(cid, bid) {
     const btn = document.getElementById(bid);
     if(btn) btn.onclick = () => addImageInput(cid);
     document.getElementById(cid).addEventListener('click', e => { if(e.target.closest('.btn-remove-image')) e.target.closest('.image-url-item').remove(); });
-    document.getElementById(cid).addEventListener('input', e => { if(e.target.tagName==='INPUT') e.target.closest('.image-url-item').querySelector('img').src = e.target.value; });
+    // Preview on input
+    document.getElementById(cid).addEventListener('input', e => { 
+        if(e.target.tagName==='INPUT') {
+            const url = e.target.value;
+            e.target.closest('.image-url-item').querySelector('img').src = optimizeImage(url, 100);
+        }
+    });
 }
 function addImageInput(cid, val='') {
-    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="image-url-item"><img src="${val}" class="image-preview-item" onerror="this.src='data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs='"><input type="text" value="${val}" placeholder="URL"><button type="button" class="btn-remove-image">${ICONS.x}</button></div>`);
+    // *** Initial Load also optimized ***
+    const prevUrl = val ? optimizeImage(val, 100) : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
+    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="image-url-item"><img src="${prevUrl}" class="image-preview-item"><input type="text" value="${val}" placeholder="URL"><button type="button" class="btn-remove-image">${ICONS.x}</button></div>`);
 }
 function getImageUrlsFromUploader(cid) { return Array.from(document.getElementById(cid).querySelectorAll('input')).map(i=>i.value.trim()).filter(v=>v); }
 function populateImageUploader(cid, urls) { const c=document.getElementById(cid); c.innerHTML=''; (urls&&urls.length?urls:['']).forEach(u=>addImageInput(cid, u)); }
@@ -441,7 +463,6 @@ async function openEditModal(id, type) {
                 <div class="form-group"><label>Image URL</label><input type="text" id="edit-cat-img" value="${data.imageUrl}"></div>
                 <button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
         } else {
-             // Fetch Categories for dropdown
              const catsSnap = await getDocs(query(collection(db, "categories")));
              let catOptions = '';
              catsSnap.forEach(c => catOptions += `<option value="${c.id}" ${c.id===data.categoryId?'selected':''}>${c.data().name}</option>`);
