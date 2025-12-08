@@ -51,23 +51,24 @@
 }
 
 .section-header-card {
-    border-top-left-radius: 8px; border-top-right-radius: 8px;
+    border-top-left-radius: 12px; border-top-right-radius: 12px;
     padding: 15px; position: relative; overflow: hidden;
 }
 .section-title-card {
     color: #fff; font-size: 1.1rem; font-weight: 700; margin: 0;
     text-transform: uppercase; letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 .section-banner-inside img {
     width: 100%; border-radius: 4px; margin-top: 10px; display: block;
 }
 
 /* Themes */
-.blue-card-bg { background: linear-gradient(90deg, #3f5efb 0%, #fc466b 100%); }
-.blue-container { background-color: #e3f2fd; padding: 10px; border-bottom-radius: 8px; }
+.blue-card-bg { background: linear-gradient(135deg, #2874f0 0%, #5baaf9 100%); }
+.blue-container { background-color: #e3f2fd; padding: 12px; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
 
-.orange-card-bg { background: #ff6b6b; }
-.orange-container { background-color: #fff3e0; padding: 10px; border-bottom-radius: 8px; }
+.orange-card-bg { background: linear-gradient(135deg, #ff5e62 0%, #ff9966 100%); }
+.orange-container { background-color: #fff3e0; padding: 12px; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
 
 .dark-card-bg { background: #333; }
 
@@ -79,8 +80,11 @@
     text-decoration: none;
     width: 100%;
     gap: 8px;
-    height: 100%; /* Ensure full height */
+    height: 100%;
+    cursor: pointer;
+    transition: transform 0.2s;
 }
+.clean-card-wrapper:active { transform: scale(0.98); }
 
 /* The Image Box */
 .clean-card-box {
@@ -88,7 +92,7 @@
     aspect-ratio: 1/1; /* Square Shape */
     background-color: #fff;
     border-radius: 12px;
-    border: 1px solid #ddd;
+    border: 1px solid #eee;
     overflow: hidden;
     position: relative;
     display: flex;
@@ -99,41 +103,49 @@
 .clean-card-img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Shows full image */
-    padding: 10px; /* Padding for image inside box */
+    object-fit: contain; /* Full image visible */
+    padding: 8px; 
     flex-grow: 1; 
     background: #fff;
 }
 
-/* Orange Offer Bar at Bottom of Box */
+/* Offer Bar at Bottom of Box */
 .clean-card-offer-bar {
     width: 100%;
-    background-color: #ff9f43; /* Orange */
-    color: #000;
-    font-size: 0.85rem;
+    background-color: #388e3c; /* Green by default */
+    color: #fff;
+    font-size: 0.75rem;
     font-weight: 700;
     text-align: center;
-    padding: 8px 0;
+    padding: 6px 0;
     margin-top: auto; 
+    white-space: nowrap;
+}
+
+/* Orange Bar Variant */
+.orange-container .clean-card-offer-bar {
+    background-color: #ff9f43; /* Orange for Trendy section */
+    color: #000;
 }
 
 /* Title Outside Box */
 .clean-card-title {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #333;
-    font-weight: 600;
+    font-weight: 500;
     text-align: center;
     width: 100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    margin-top: 4px;
+    margin-top: 0;
 }
 
 /* === 5. Category Circles (Swiper Layout) === */
 .category-swiper {
     width: 100%;
     padding-bottom: 20px;
+    padding-left: 5px; padding-right: 5px;
 }
 
 .category-circle-item {
@@ -144,6 +156,7 @@
     text-decoration: none;
     transition: transform 0.3s ease;
     cursor: pointer;
+    width: 100%;
 }
 
 .category-circle-img-box {
