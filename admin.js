@@ -1,5 +1,3 @@
-// admin.js - Optimized Image Previews & Smooth UX
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { 
     getAuth, 
@@ -24,7 +22,7 @@ import {
     orderBy
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db, auth } from './firebase-config.js';
-import { optimizeImage } from './common.js'; // *** New Import for Fast Previews ***
+import { optimizeImage } from './common.js'; 
 
 // --- Icons (SVG Strings) ---
 const ICONS = {
@@ -155,6 +153,29 @@ function loadInitialData() {
     setupImageUploader('product-image-list-container', 'add-image-url-btn');
     setupMoreLinksUploader('product-more-links-container', 'add-more-link-btn');
     if(!document.getElementById("product-image-list-container").children.length) addImageInput('product-image-list-container');
+    
+    // *** Initialize Hero Slide Input Preview (Fix for Detached Border) ***
+    transformHeroSlideInput();
+}
+
+// *** New Function: Transform plain Hero Input to Rich Preview Input ***
+function transformHeroSlideInput() {
+    const heroInput = document.getElementById("hero-slide-url");
+    if (heroInput && !heroInput.parentElement.classList.contains('inline-image-input-container')) {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'inline-image-input-container';
+        
+        // Preview Box
+        const preview = document.createElement('div');
+        preview.className = 'image-preview-small';
+        preview.id = 'hero-slide-preview';
+        
+        heroInput.parentNode.insertBefore(wrapper, heroInput);
+        wrapper.appendChild(preview);
+        wrapper.appendChild(heroInput);
+        
+        setupImagePreview('hero-slide-url', 'hero-slide-preview');
+    }
 }
 
 // --- Settings ---
@@ -227,7 +248,6 @@ function loadCategories() {
         fil.innerHTML = '<option value="all">All</option>';
         snap.forEach(d => {
             const c = d.data();
-            // *** Optimized Image for List ***
             const imgUrl = optimizeImage(c.imageUrl, 50, 60);
             categoriesListBody.innerHTML += `
                 <tr>
@@ -264,7 +284,6 @@ function loadProducts(catId = "all") {
         if(snap.empty) productsListBody.innerHTML = '<tr><td colspan="4" style="text-align:center">No products.</td></tr>';
         snap.forEach(d => {
             const p = d.data();
-            // *** Optimized Image for List ***
             const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50, 60) : '';
             productsListBody.innerHTML += `
                 <tr>
@@ -308,7 +327,7 @@ addProductForm.addEventListener("submit", async (e) => {
     } catch(e) { showStatus(null, e.message); } finally { enableButton(btn, "Add Product"); }
 });
 
-// --- Featured ---
+// --- Featured (UPDATED: With Blue Add Button) ---
 function cacheAllProductsForSearch() {
     onSnapshot(query(collection(db, "products")), (snap) => {
         allProductsCache = [];
@@ -328,11 +347,27 @@ searchInp.addEventListener('input', (e) => {
             const d = document.createElement('div');
             d.className = 'search-result-item';
             const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50) : '';
-            d.innerHTML = `<img src="${thumb}" style="width:30px;height:30px"><span>${p.name} - ₹${p.price}</span>`;
-            d.addEventListener('click', async () => {
-                await updateDoc(doc(db, "products", p.id), { featured: true });
-                searchInp.value = ''; searchRes.style.display = 'none'; showStatus(null, "Added to Featured", false);
+            
+            // *** മാറ്റം: പ്രിവ്യൂവിനും ആഡ് ബട്ടണും പുതിയ ലേഔട്ട് ***
+            d.innerHTML = `
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="${thumb}" style="width:35px; height:35px; border-radius:4px; object-fit:cover;">
+                    <div style="display:flex; flex-direction:column; line-height:1.2;">
+                        <span style="font-size:0.9rem; font-weight:500;">${p.name}</span>
+                        <span style="font-size:0.8rem; color:var(--text-secondary);">₹${p.price}</span>
+                    </div>
+                </div>
+                <button class="btn-add-featured-action">Add</button>
+            `;
+            
+            d.querySelector('.btn-add-featured-action').addEventListener('click', async (e) => {
+                 e.stopPropagation(); // ബട്ടണിൽ ക്ലിക്ക് ചെയ്താൽ മാത്രം
+                 await updateDoc(doc(db, "products", p.id), { featured: true });
+                 searchInp.value = ''; 
+                 searchRes.style.display = 'none'; 
+                 showStatus(null, "Added to Featured", false);
             });
+            
             searchRes.appendChild(d);
         });
     } else searchRes.style.display = 'none';
@@ -367,7 +402,9 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
             order: Number(document.getElementById("hero-slide-order").value)||1,
             createdAt: serverTimestamp()
         });
-        showStatus(null, "Slide Added", false); addHeroSlideForm.reset();
+        showStatus(null, "Slide Added", false); 
+        addHeroSlideForm.reset();
+        document.getElementById('hero-slide-preview').innerHTML = ''; // Clear preview
     } catch(e) { showStatus(null, e.message); } finally { enableButton(btn, "Add Slide"); }
 });
 function loadHeroSlides() {
@@ -385,7 +422,6 @@ function loadHeroSlides() {
 function setupImagePreview(id, pid) {
     const el = document.getElementById(id);
     if(el) el.addEventListener('input', () => {
-        // *** Preview uses optimized URL ***
         const url = el.value;
         document.getElementById(pid).innerHTML = url ? `<img src="${optimizeImage(url, 200)}">` : '';
     });
@@ -407,7 +443,6 @@ function setupImageUploader(cid, bid) {
     });
 }
 function addImageInput(cid, val='') {
-    // *** Initial Load also optimized ***
     const prevUrl = val ? optimizeImage(val, 100) : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
     document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="image-url-item"><img src="${prevUrl}" class="image-preview-item"><input type="text" value="${val}" placeholder="URL"><button type="button" class="btn-remove-image">${ICONS.x}</button></div>`);
 }
