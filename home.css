@@ -1,120 +1,193 @@
-/* home.css - Fixed for Video Iframe */
+/* home.css - Clean Design & Fixed Cards */
 
-/* --- Hero Section --- */
+/* === 1. Top Banner === */
+.home-top-banner {
+    width: 100%;
+    height: auto;
+    position: relative;
+    background-color: #000;
+    border-bottom: 2px solid var(--primary-gold);
+    margin-bottom: 0;
+}
+.home-top-banner img {
+    width: 100%; height: auto; display: block; max-height: 120px; object-fit: cover;
+}
+
+/* === 2. Hero Slider === */
 .hero-section-new {
     width: 100%;
-    height: 60vh; /* Better Aspect Ratio */
+    height: 75vh;
     position: relative;
-    margin-bottom: 3rem;
-    overflow: hidden;
-    border-bottom: 1px solid var(--border-gold);
-    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    background-color: #000;
+    margin-bottom: 2rem;
 }
-@media (min-width: 768px) { .hero-section-new { height: 85vh; } }
+@media (max-width: 768px) {
+    .hero-section-new { height: 60vh; }
+}
 
 .hero-slider-new, .hero-slider-new .swiper-slide { width: 100%; height: 100%; }
+.hero-slider-new .swiper-slide { position: relative; overflow: hidden; }
 
-/* *** IMPORTANT: Video Fix *** */
 .hero-slider-new .swiper-slide img,
-.hero-slider-new .swiper-slide video,
-.hero-slider-new .swiper-slide iframe.hero-video-iframe {
+.hero-slider-new .swiper-slide video {
     width: 100%; height: 100%; object-fit: cover;
-    pointer-events: none; /* Disables youtube controls for clean look */
-    border: none;
+}
+.hero-slider-new .swiper-slide iframe {
+    width: 100%; height: 100%; object-fit: cover; pointer-events: none;
 }
 
+.hero-pagination-dots { bottom: 20px; }
 .hero-pagination-dots .swiper-pagination-bullet {
-    background: rgba(255,255,255,0.3); width: 8px; height: 8px; opacity: 1;
+    background: rgba(255, 255, 255, 0.5); opacity: 1; width: 8px; height: 8px;
 }
 .hero-pagination-dots .swiper-pagination-bullet-active {
     background: var(--primary-gold); width: 20px; border-radius: 4px;
 }
 
-/* --- Section Headers --- */
-.home-section { margin-bottom: 3rem; position: relative; }
+/* === 3. Section Containers === */
+.home-section {
+    margin-bottom: 3rem;
+    padding-left: 10px; padding-right: 10px;
+}
 
 .section-header-card {
-    display: flex; align-items: center; justify-content: space-between;
-    padding: 0 0.5rem 1rem;
+    border-top-left-radius: 12px; border-top-right-radius: 12px;
+    padding: 15px; position: relative; overflow: hidden;
 }
 .section-title-card {
-    font-size: 1.3rem; color: #fff; margin: 0;
-    text-transform: uppercase; letter-spacing: 1px;
-    background: linear-gradient(to right, #fff, #aaa);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    color: #fff; font-size: 1.1rem; font-weight: 700; margin: 0;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-.section-title-card::after {
-    content: ''; display: block; width: 40px; height: 3px;
-    background: var(--primary-gold); margin-top: 5px; border-radius: 2px;
+.section-banner-inside img {
+    width: 100%; border-radius: 4px; margin-top: 10px; display: block;
 }
 
-.section-banner-inside { margin-bottom: 1.5rem; border-radius: 12px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); }
-.section-banner-inside img { width: 100%; display: block; }
+/* Themes */
+.blue-card-bg { background: linear-gradient(135deg, #2874f0 0%, #5baaf9 100%); }
+.blue-container { background-color: #e3f2fd; padding: 12px; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
 
-/* --- Product Cards (Glass) --- */
-.product-slider-container { padding: 5px; }
+.orange-card-bg { background: linear-gradient(135deg, #ff5e62 0%, #ff9966 100%); }
+.orange-container { background-color: #fff3e0; padding: 12px; border-bottom-left-radius: 12px; border-bottom-right-radius: 12px; }
 
+.dark-card-bg { background: #333; }
+
+/* === 4. Clean Product Cards (NO BUTTONS, NEW STYLE) === */
 .clean-card-wrapper {
-    display: block; width: 100%; height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    width: 100%;
+    gap: 8px;
+    height: 100%;
+    cursor: pointer;
+    transition: transform 0.2s;
 }
+.clean-card-wrapper:active { transform: scale(0.98); }
 
+/* The Image Box */
 .clean-card-box {
-    position: relative;
-    aspect-ratio: 1/1.2;
-    background: var(--bg-card);
+    width: 100%;
+    aspect-ratio: 1/1; /* Square Shape */
+    background-color: #fff;
     border-radius: 12px;
+    border: 1px solid #eee;
     overflow: hidden;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    transition: all 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
-.clean-card-wrapper:hover .clean-card-box { border-color: var(--primary-gold); }
 
 .clean-card-img {
-    width: 100%; height: 100%; object-fit: cover;
-    transition: transform 0.5s ease;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Full image visible */
+    padding: 8px; 
+    flex-grow: 1; 
+    background: #fff;
 }
-.clean-card-wrapper:hover .clean-card-img { transform: scale(1.05); }
 
+/* Offer Bar at Bottom of Box */
 .clean-card-offer-bar {
-    position: absolute; top: 10px; left: 10px;
-    background: rgba(0,0,0,0.8);
-    backdrop-filter: blur(4px);
-    color: var(--primary-gold);
-    font-size: 0.7rem; font-weight: 700;
-    padding: 4px 8px; border-radius: 4px;
-    border: 1px solid rgba(212,175,55,0.3);
-    z-index: 2;
+    width: 100%;
+    background-color: #388e3c; /* Green by default */
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 6px 0;
+    margin-top: auto; 
+    white-space: nowrap;
 }
 
-.clean-card-info {
-    position: absolute; bottom: 0; left: 0; width: 100%;
-    padding: 15px 10px;
-    background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+/* Orange Bar Variant */
+.orange-container .clean-card-offer-bar {
+    background-color: #ff9f43; /* Orange for Trendy section */
+    color: #000;
 }
+
+/* Title Outside Box */
 .clean-card-title {
-    color: #fff; font-size: 0.9rem; font-weight: 500;
-    text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.clean-card-price {
-    color: var(--primary-gold); font-size: 0.95rem; font-weight: 700;
-    text-align: center; margin-top: 2px;
+    font-size: 0.8rem;
+    color: #333;
+    font-weight: 500;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-top: 0;
 }
 
-/* --- Categories --- */
-.category-swiper { padding: 10px 5px; }
+/* === 5. Category Circles (Swiper Layout) === */
+.category-swiper {
+    width: 100%;
+    padding-bottom: 20px;
+    padding-left: 5px; padding-right: 5px;
+}
+
 .category-circle-item {
-    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    width: 100%;
 }
+
 .category-circle-img-box {
-    width: 70px; height: 70px; border-radius: 50%;
-    padding: 2px;
-    background: linear-gradient(45deg, var(--bg-card), #222);
-    position: relative;
-    border: 1px solid var(--border-color);
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #1a1a1a;
+    border: 2px solid var(--border-color);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
+
 .category-circle-img {
-    width: 100%; height: 100%; border-radius: 50%; object-fit: cover;
+    width: 100%; height: 100%; object-fit: cover;
 }
+
 .category-circle-title {
-    font-size: 0.75rem; color: #ccc; font-weight: 500;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Responsive */
+@media (min-width: 768px) {
+    .category-circle-img-box { width: 90px; height: 90px; }
 }
