@@ -1,22 +1,22 @@
-/* home.css - Updated with New Layouts (Top Deals, Sticky Cats) */
+/* home.css - Fixed Design & Image Sizes */
 
 /* === 0. Sticky Category Header === */
 .home-sticky-header {
-    background-color: rgba(0, 0, 0, 0.95);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
     padding: 10px 0;
     position: sticky;
-    top: var(--header-height); /* Below Main Header */
+    top: var(--header-height);
     z-index: 90;
-    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
 .category-scroll-wrapper {
     display: flex;
     overflow-x: auto;
-    gap: 15px;
+    gap: 20px;
     padding: 0 15px;
-    scrollbar-width: none; /* Hide Scrollbar */
+    scrollbar-width: none;
 }
 .category-scroll-wrapper::-webkit-scrollbar { display: none; }
 
@@ -24,199 +24,205 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 6px;
-    min-width: 60px;
+    gap: 5px;
+    min-width: 70px;
     text-decoration: none;
     cursor: pointer;
-    transition: all 0.3s ease;
 }
 
 .home-cat-img-box {
-    width: 55px;
-    height: 55px;
-    border-radius: 50%; /* Circle */
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
     overflow: hidden;
-    border: 2px solid transparent;
-    transition: all 0.3s ease;
-    background: #1a1a1a;
+    background: #f1f2f4;
+    padding: 5px; /* Padding inside circle */
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .home-cat-img {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%; height: 100%; object-fit: contain;
 }
 
 .home-cat-name {
     font-size: 0.75rem;
-    color: #ccc;
+    color: #333;
+    font-weight: 500;
     white-space: nowrap;
 }
 
-/* Scroll Effect (Compact Mode) */
-.home-sticky-header.compact {
-    padding: 5px 0;
-    background-color: #000;
-}
-.home-sticky-header.compact .home-cat-img-box {
-    width: 0; height: 0; opacity: 0; margin: 0; border: none;
-}
+/* Compact Scroll Effect */
+.home-sticky-header.compact { padding: 8px 0; background: #fff; }
+.home-sticky-header.compact .home-cat-img-box { display: none; }
 .home-sticky-header.compact .home-cat-name {
-    font-size: 0.9rem;
-    color: var(--primary-gold);
-    font-weight: 500;
-    padding: 5px 10px;
-    border-bottom: 2px solid transparent;
-}
-.home-sticky-header.compact .home-cat-item:hover .home-cat-name {
-    border-bottom-color: var(--primary-gold);
+    font-size: 0.85rem; color: var(--primary-gold); padding: 4px 10px; border-radius: 15px; background: #f9f9f9;
 }
 
 
 /* === 1. Top Banner === */
-.home-top-banner {
-    width: 100%; margin-bottom: 0;
-}
+.home-top-banner { width: 100%; margin-bottom: 10px; }
 .home-top-banner img { width: 100%; display: block; }
 
-/* === 2. Hero Slider === */
+/* === 2. Hero Slider (Video Size Fixed) === */
 .hero-section-new {
     width: 100%;
-    height: 70vh; /* Adjusted height */
+    /* മൊബൈലിൽ 9:16 അനുപാതം നിലനിർത്താൻ */
+    height: auto; 
+    aspect-ratio: 16/9;
     position: relative;
     background-color: #000;
-    margin-bottom: 2rem;
+    margin-bottom: 1rem;
 }
+@media (max-width: 768px) {
+    .hero-section-new { aspect-ratio: 1/1; height: 50vh; }
+}
+
+.hero-slider-new, .hero-slider-new .swiper-slide {
+    width: 100%; height: 100%;
+}
+
 .hero-slider-new .swiper-slide img,
 .hero-slider-new .swiper-slide video {
     width: 100%; height: 100%; object-fit: cover;
 }
-.hero-pagination-dots .swiper-pagination-bullet-active {
-    background: var(--primary-gold); width: 20px; border-radius: 4px;
+
+/* === 3. Section Styling (Blue & Orange) === */
+.home-section {
+    margin-bottom: 2rem;
+    padding-left: 10px;
+    padding-right: 10px;
 }
 
-/* === 3. Top Deals Section (Blue Theme) === */
-.section-banner-box {
-    width: 100%;
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 1rem;
-}
-.section-banner-box img {
-    width: 100%; height: auto; display: block;
-}
-
-.product-slider-container.blue-theme {
-    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+.section-header-card {
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
     padding: 15px;
-    border-radius: 12px;
+    margin-bottom: 0;
+    position: relative;
+    overflow: hidden;
 }
 
+/* Blue Theme */
+.blue-card-bg {
+    background: linear-gradient(90deg, #3f5efb 0%, #fc466b 100%); /* Demo Gradient */
+    background: #4a90e2; /* Fallback Blue */
+}
+.blue-container {
+    background-color: #e3f2fd; /* Light Blue BG for products */
+    padding: 10px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+/* Orange Theme */
+.orange-card-bg {
+    background: #ff6b6b; /* Orange */
+}
+.orange-container {
+    background-color: #fff3e0; /* Light Orange BG */
+    padding: 10px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+}
+
+/* Dark Theme */
+.dark-card-bg { background: #333; }
+
+.section-title-card {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Product Cards (Flipkart Style) */
 .deal-card {
     background-color: #fff;
-    border-radius: 8px;
+    border-radius: 6px;
     overflow: hidden;
     display: flex;
     flex-direction: column;
     height: 100%;
+    border: 1px solid #eee;
+    text-decoration: none;
     position: relative;
+    padding-bottom: 8px;
 }
 
-.deal-badge {
-    position: absolute; top: 0; left: 0;
-    background: #000; color: #fff;
-    font-size: 0.65rem; padding: 2px 6px;
-    border-bottom-right-radius: 8px; z-index: 2;
-}
-
+/* --- Image Size Fix --- */
 .deal-img-box {
-    width: 100%; aspect-ratio: 1/1;
-    background: #f5f5f5;
-    display: flex; align-items: center; justify-content: center;
+    width: 100%;
+    aspect-ratio: 1 / 1; /* Square box */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: #fff; /* White Background always */
 }
+
 .deal-img {
-    width: 100%; height: 100%; object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; /* Ensure full image is visible */
+    transition: transform 0.3s ease;
 }
+
+.deal-card:hover .deal-img { transform: scale(1.05); }
 
 .deal-info {
-    padding: 8px; text-align: center;
-}
-.deal-title {
-    color: #000; font-size: 0.85rem; font-weight: 600;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.deal-price {
-    color: #2ecc71; font-weight: 700; font-size: 0.95rem;
-}
-
-/* === 4. Top Trendy Deals (Orange Theme Style) === */
-.top-sellers-swiper-new .swiper-slide {
-    background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
-    border-radius: 12px;
-    overflow: hidden;
-}
-/* Existing card styles reused */
-
-/* === 5. Top Discount Section (Orange Background) === */
-.home-section.orange-section {
-    background: linear-gradient(to bottom right, #ff9966, #ff5e62);
-    padding: 20px;
-    border-radius: 16px;
-}
-.home-section.orange-section .section-title-new {
-    color: #fff; text-shadow: 0 2px 4px rgba(0,0,0,0.2);
-}
-
-.discount-card {
-    background: #fff;
-    border-radius: 10px;
-    padding: 10px;
     text-align: center;
+    padding: 5px 8px;
+}
+
+.deal-title {
+    font-size: 0.8rem;
+    color: #333;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+}
+
+.deal-price-box {
+    margin-top: auto;
+}
+
+.deal-price {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.deal-offer {
+    font-size: 0.75rem;
+    color: #388e3c; /* Green Offer Text */
+    font-weight: 600;
+}
+
+/* Buttons inside card */
+.deal-btn-row {
     display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    height: 100%;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 5px;
+    padding: 0 5px;
 }
 
-.discount-circle {
-    background: #ff5e62;
-    color: #fff;
-    width: 50px; height: 50px;
-    border-radius: 50%;
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
-    font-size: 0.7rem; font-weight: 700;
-    line-height: 1;
-    position: absolute; top: 10px; right: 10px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    z-index: 2;
+.btn-sm-primary {
+    font-size: 0.7rem;
+    padding: 4px 10px;
+    background: var(--primary-gold);
+    color: #000;
+    border-radius: 4px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
 }
 
-.discount-img-wrapper {
-    width: 100%; aspect-ratio: 1/1; position: relative;
-}
-.discount-img {
-    width: 100%; height: 100%; object-fit: contain;
-}
-
-.discount-info { width: 100%; }
-.discount-name {
-    color: #333; font-size: 0.85rem; font-weight: 600;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.discount-price-row {
-    display: flex; justify-content: center; gap: 6px; align-items: baseline;
-}
-.discount-final-price { color: #d32f2f; font-weight: 800; font-size: 1rem; }
-.discount-mrp { color: #888; text-decoration: line-through; font-size: 0.75rem; }
-
-/* Responsive */
-@media (min-width: 768px) {
-    .home-sticky-header { padding: 15px 0; }
-    .hero-section-new { height: 85vh; }
-    .home-cat-item { min-width: 80px; }
-    .home-cat-img-box { width: 70px; height: 70px; }
-}
-@media (max-width: 768px) {
-    .hero-section-new { height: 60vh; }
-    .section-title-new { font-size: 1.3rem; margin-bottom: 1rem; }
-}
+/* Swiper Config */
+.swiper-slide { height: auto; }
