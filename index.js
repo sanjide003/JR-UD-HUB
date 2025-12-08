@@ -1,4 +1,4 @@
-// index.js - Optimized for Speed & Performance
+// index.js - Hero Slider Autoplay Stopped
 
 import { db } from './firebase-config.js';
 import { 
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
- * 1. ഹോം പേജ് ബാനർ (Fast Load)
+ * 1. ഹോം പേജ് ബാനർ
  */
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
@@ -38,7 +38,6 @@ async function loadHomeBanner() {
 
         if (docSnap.exists() && docSnap.data().homeBannerUrl) {
             const bannerUrl = docSnap.data().homeBannerUrl;
-            // ഒപ്റ്റിമൈസ്ഡ് ഇമേജ് (800px width)
             const optimizedUrl = optimizeImage(bannerUrl, 800, 80);
             bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Special Offer Banner" loading="lazy">`;
             bannerContainer.style.display = 'block';
@@ -52,7 +51,7 @@ async function loadHomeBanner() {
 }
 
 /**
- * 2. ഹീറോ സ്ലൈഡർ
+ * 2. ഹീറോ സ്ലൈഡർ (Autoplay Disabled)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -76,7 +75,6 @@ async function loadHeroSlider() {
                 let embedUrl = '';
                 let finalUrl = slide.url;
 
-                // വീഡിയോ ലിങ്ക് കൈകാര്യം ചെയ്യുന്നു
                 if (isVideo) {
                     if (slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
                         try {
@@ -100,7 +98,6 @@ async function loadHeroSlider() {
                 }
 
                 if (slide.type === 'image') {
-                    // ഇമേജ് ഒപ്റ്റിമൈസേഷൻ (800px width)
                     const optimizedHeroImg = optimizeImage(slide.url, 800, 85);
                     slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
                 }
@@ -125,10 +122,8 @@ async function loadHeroSlider() {
             loop: true, 
             allowTouchMove: true,
             speed: 600,
-            autoplay: {
-                delay: 6000,
-                disableOnInteraction: false,
-            },
+            // *** മാറ്റം: Autoplay പൂർണ്ണമായും ഒഴിവാക്കി ***
+            autoplay: false, 
             pagination: {
                 el: '.hero-pagination-dots',
                 clickable: true,
@@ -201,7 +196,6 @@ async function loadTopSellers() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
     
-    // ലോഡിംഗ് ഒഴിവാക്കി നേരിട്ട് കാണിക്കുന്നു (വേഗതയ്ക്ക് വേണ്ടി)
     try {
         const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
         const querySnapshot = await getDocs(q);
@@ -219,7 +213,6 @@ async function loadTopSellers() {
             const card = document.createElement('div');
             card.className = 'swiper-slide';
             
-            // *** ഇമേജ് ഒപ്റ്റിമൈസേഷൻ: 400px, 75% Quality ***
             const imageUrl = optimizeImage(product.images?.[0] || '', 400, 75);
             const isInCart = isItemInCart(productId);
             
@@ -319,9 +312,6 @@ function resetProgressBars(swiper) {
     });
 }
 
-/**
- * 4. SHOP BY CATEGORY
- */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
@@ -333,14 +323,12 @@ async function loadHomeCategories() {
         let categories = [];
         catSnapshot.forEach((doc) => { categories.push({ id: doc.id, ...doc.data() }); });
         
-        // റാൻഡം ആയി 3 എണ്ണം കാണിക്കുന്നു
         categories = categories.sort(() => 0.5 - Math.random()).slice(0, 3);
         
         container.innerHTML = ''; 
         categories.forEach(category => {
             const item = document.createElement('div');
             item.className = 'category-card-portrait';
-            // ഇമേജ് ഒപ്റ്റിമൈസേഷൻ
             const imageUrl = optimizeImage(category.imageUrl || '', 600, 75);
             item.innerHTML = `
                 <a href="categories.html?filter=${category.id}" style="display:block; width:100%; height:100%;">
@@ -356,7 +344,6 @@ async function loadHomeCategories() {
     } catch (error) { console.error("Error loading home categories"); }
 }
 
-// Global Click Listener for Add to Cart
 document.addEventListener('click', (e) => {
     const button = e.target.closest('.btn-add-to-cart');
     if (button) {
