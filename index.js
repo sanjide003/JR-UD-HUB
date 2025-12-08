@@ -1,4 +1,4 @@
-// index.js - Restored Hero & Fixed Image Sizes
+// index.js - Circular Cats, No Autoplay, Smart Discount Filter
 
 import { db } from './firebase-config.js';
 import { 
@@ -19,18 +19,15 @@ setLogLevel('Silent');
 
 document.addEventListener("DOMContentLoaded", () => {
     loadSiteSettings();
-    // Sticky Category Removed as requested
     loadHomeBanner(); 
     loadHeroSlider();
     loadTopDeals();         
     loadTopTrendyDeals();   
     loadTopDiscounts();     
-    loadHomeCategories(); // Restored Bottom Categories
+    loadHomeCategories(); 
 });
 
-/**
- * 1. Home Banner
- */
+// Banner
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
     if (!bannerContainer) return;
@@ -46,7 +43,7 @@ async function loadHomeBanner() {
 }
 
 /**
- * 2. Hero Slider (Autoplay ON, Video Enabled)
+ * 2. Hero Slider (Autoplay OFF)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -95,10 +92,8 @@ async function loadHeroSlider() {
         const heroSwiper = new Swiper('.hero-slider-new', {
             loop: true,
             speed: 600,
-            autoplay: {
-                delay: 5000, 
-                disableOnInteraction: false,
-            },
+            // *** മാറ്റം: Autoplay പൂർണ്ണമായും ഓഫ് ചെയ്തു ***
+            autoplay: false, 
             pagination: { el: '.hero-pagination-dots', clickable: true },
             on: {
                 slideChangeTransitionEnd: function () {
@@ -128,7 +123,7 @@ function playActiveSlideVideo(swiper) {
 }
 
 /**
- * 3. TOP DEALS (Admin Controlled)
+ * 3. SPECIAL OFFER (Admin Controlled)
  */
 async function loadTopDeals() {
     const section = document.getElementById('top-deals-section');
@@ -142,7 +137,7 @@ async function loadTopDeals() {
         
         if (settingsSnap.exists() && settingsSnap.data().topDealsBanner) {
             const bannerUrl = optimizeImage(settingsSnap.data().topDealsBanner, 1000, 85);
-            bannerContainer.innerHTML = `<img src="${bannerUrl}" alt="Top Deals">`;
+            bannerContainer.innerHTML = `<img src="${bannerUrl}" alt="Special Offer">`;
             section.style.display = 'block'; 
         }
 
@@ -171,7 +166,7 @@ async function loadTopDeals() {
 }
 
 /**
- * 4. TOP TRENDY DEALS (Orange Theme)
+ * 4. TOP TRENDY DEALS (Featured)
  */
 async function loadTopTrendyDeals() {
     const grid = document.getElementById("top-sellers-grid");
@@ -199,7 +194,7 @@ async function loadTopTrendyDeals() {
 }
 
 /**
- * 5. TOP DISCOUNT (Auto)
+ * 5. TOP DISCOUNT (Exclusive - Excludes Featured & Top Deals)
  */
 async function loadTopDiscounts() {
     const grid = document.getElementById("top-discount-grid");
@@ -212,12 +207,19 @@ async function loadTopDiscounts() {
         let products = [];
         snapshot.forEach(doc => {
             const p = doc.data();
+            
+            // *** മാറ്റം: Top Deal അല്ലെങ്കിൽ Featured ആണെങ്കിൽ ഇത് ഒഴിവാക്കുക ***
+            if (p.isTopDeal === true || p.featured === true) {
+                return; 
+            }
+
             if (p.mrp && p.price && p.mrp > p.price) {
                 const discount = Math.round(((p.mrp - p.price) / p.mrp) * 100);
                 products.push({ id: doc.id, ...p, discount });
             }
         });
 
+        // Sort by discount
         products.sort((a, b) => b.discount - a.discount);
         const topDiscounts = products.slice(0, 8);
 
@@ -242,7 +244,7 @@ async function loadTopDiscounts() {
 }
 
 /**
- * 6. RANDOM CATEGORIES (Bottom)
+ * 6. RANDOM CATEGORIES (Bottom - Circular)
  */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
@@ -255,20 +257,20 @@ async function loadHomeCategories() {
         let categories = [];
         catSnapshot.forEach((doc) => { categories.push({ id: doc.id, ...doc.data() }); });
         
-        categories = categories.sort(() => 0.5 - Math.random()).slice(0, 3);
+        categories = categories.sort(() => 0.5 - Math.random()).slice(0, 4);
         
         container.innerHTML = ''; 
         categories.forEach(category => {
             const item = document.createElement('div');
-            item.className = 'category-card-portrait';
-            const imageUrl = optimizeImage(category.imageUrl || '', 600, 75);
+            // *** മാറ്റം: പുതിയ ക്ലാസ്സ് (Circular) ഉപയോഗിക്കുന്നു ***
+            item.className = 'category-circle-item'; 
+            const imageUrl = optimizeImage(category.imageUrl || '', 150, 75);
             item.innerHTML = `
-                <a href="categories.html?filter=${category.id}" style="display:block; width:100%; height:100%;">
-                    <img src="${imageUrl}" alt="${category.name}" class="category-card-img" loading="lazy">
-                    <div class="category-card-overlay">
-                        <h3 class="category-card-title">${category.name}</h3>
-                        <span class="category-card-btn">Explore</span>
+                <a href="categories.html?filter=${category.id}" style="display:contents;">
+                    <div class="category-circle-img-box">
+                        <img src="${imageUrl}" alt="${category.name}" class="category-circle-img" loading="lazy">
                     </div>
+                    <span class="category-circle-title">${category.name}</span>
                 </a>
             `;
             container.appendChild(item);
@@ -276,7 +278,6 @@ async function loadHomeCategories() {
     } catch (error) { console.error("Error loading home categories"); }
 }
 
-// Helper: Product Card with Fixed Image Size
 function createProductCardHTML(id, product, discountVal = null) {
     const img = optimizeImage(product.images?.[0] || '', 300, 80);
     let discountTag = '';
@@ -284,7 +285,6 @@ function createProductCardHTML(id, product, discountVal = null) {
         discountTag = `<div class="discount-circle"><span>${discountVal}%</span><span>OFF</span></div>`;
     }
 
-    // Checking if already in cart for button state
     const isInCart = isItemInCart(id);
     const btnText = isInCart ? "Done" : "Add";
     const btnClass = isInCart ? "btn-sm-primary btn-add-to-cart added" : "btn-sm-primary btn-add-to-cart";
