@@ -255,9 +255,39 @@ input.social-input-youtube { border-left: 5px solid var(--youtube-color) !import
 .checkbox-group input { width: 20px; height: 20px; accent-color: var(--primary-gold); }
 .checkbox-group label { margin-bottom: 0; color: var(--text-main); }
 
+/* --- Fixed Image Input Container (Overflow Fix) --- */
+.inline-image-input-container {
+    border: 1px solid var(--input-border); 
+    background-color: var(--input-bg);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    transition: border-color 0.2s;
+    /* *** FIX: Ensure flex item (input) doesn't overflow *** */
+    min-width: 0; 
+}
+
+.inline-image-input-container:focus-within {
+    border-color: var(--primary-gold);
+}
+
+.inline-image-input-container input {
+    border: none !important; 
+    background-color: transparent !important;
+    padding: 8px 0;
+    box-shadow: none !important;
+    outline: none !important;
+    width: 100%;
+    /* *** FIX: Allow input to shrink if needed *** */
+    min-width: 0;
+    flex: 1;
+}
+
 /* Images & Links Lists */
 .image-url-list, .link-url-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 10px; }
-.image-url-item, .link-url-item, .inline-image-input-container { 
+.image-url-item, .link-url-item { 
     display: flex; gap: 10px; align-items: center; 
     background: var(--input-bg); padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-color);
 }
@@ -270,20 +300,61 @@ input.social-input-youtube { border-left: 5px solid var(--youtube-color) !import
 }
 .btn-remove-image svg, .btn-remove-link svg { width: 18px; height: 18px; }
 
-/* Responsive Table */
-.data-table { width: 100%; border-collapse: separate; border-spacing: 0 8px; }
+/* --- Responsive Table (Data Overflow Fix) --- */
+.data-table { 
+    width: 100%; 
+    border-collapse: separate; 
+    border-spacing: 0 8px; 
+    /* *** FIX: Force fixed layout to respect widths *** */
+    table-layout: fixed; 
+}
+
 .data-table th { text-align: left; padding: 12px; color: var(--text-secondary); font-size: 0.8rem; text-transform: uppercase; }
-.data-table td { background: var(--input-bg); padding: 12px; border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); }
-.data-table td:first-child { border-left: 1px solid var(--border-color); border-top-left-radius: var(--radius-md); border-bottom-left-radius: var(--radius-md); }
-.data-table td:last-child { border-right: 1px solid var(--border-color); border-top-right-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md); text-align: right; }
+.data-table td { 
+    background: var(--input-bg); 
+    padding: 12px; 
+    border-top: 1px solid var(--border-color); 
+    border-bottom: 1px solid var(--border-color); 
+    
+    /* *** FIX: Handle Long URLs *** */
+    max-width: 200px; 
+    white-space: normal; /* Allow text to wrap */
+    word-break: break-all; /* Force long links to break */
+    overflow-wrap: anywhere; 
+}
+
+.data-table td:first-child { border-left: 1px solid var(--border-color); border-top-left-radius: var(--radius-md); border-bottom-left-radius: var(--radius-md); width: 60px; /* Image column width */ }
+.data-table td:last-child { border-right: 1px solid var(--border-color); border-top-right-radius: var(--radius-md); border-bottom-right-radius: var(--radius-md); text-align: right; width: 140px; /* Actions column width */ }
 .data-table td img { width: 36px; height: 36px; object-fit: cover; border-radius: 4px; vertical-align: middle; }
 
 @media (max-width: 768px) {
     .data-table thead { display: none; }
     .data-table, tbody, tr, td { display: block; width: 100%; }
     .data-table tr { margin-bottom: 12px; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 15px; }
-    .data-table td { background: transparent; border: none; padding: 6px 0; display: flex; justify-content: space-between; align-items: center; text-align: right; }
-    .data-table td::before { content: attr(data-label); font-weight: 600; color: var(--text-secondary); font-size: 0.85rem; }
+    .data-table td { 
+        background: transparent; 
+        border: none; 
+        padding: 6px 0; 
+        display: flex; 
+        justify-content: space-between; 
+        align-items: center; 
+        text-align: right; 
+        /* Reset for mobile flex view */
+        max-width: none; 
+        word-break: break-word;
+    }
+    .data-table td::before { content: attr(data-label); font-weight: 600; color: var(--text-secondary); font-size: 0.85rem; flex-shrink: 0; margin-right: 10px; }
+    
+    /* *** FIX: Ensure URL cell wraps on mobile too *** */
+    .data-table td[data-label="URL"] {
+        display: block; /* Stack title and url */
+        text-align: left;
+    }
+    .data-table td[data-label="URL"]::before {
+        display: block;
+        margin-bottom: 4px;
+    }
+
     .data-table td:last-child { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--border-color); justify-content: flex-end; gap: 10px; }
 }
 
