@@ -1,145 +1,78 @@
-/* home.css - Fixed Design & Image Sizes */
-
-/* === 0. Sticky Category Header === */
-.home-sticky-header {
-    background-color: #fff;
-    border-bottom: 1px solid #eee;
-    padding: 10px 0;
-    position: sticky;
-    top: var(--header-height);
-    z-index: 90;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.category-scroll-wrapper {
-    display: flex;
-    overflow-x: auto;
-    gap: 20px;
-    padding: 0 15px;
-    scrollbar-width: none;
-}
-.category-scroll-wrapper::-webkit-scrollbar { display: none; }
-
-.home-cat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 5px;
-    min-width: 70px;
-    text-decoration: none;
-    cursor: pointer;
-}
-
-.home-cat-img-box {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    overflow: hidden;
-    background: #f1f2f4;
-    padding: 5px; /* Padding inside circle */
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.home-cat-img {
-    width: 100%; height: 100%; object-fit: contain;
-}
-
-.home-cat-name {
-    font-size: 0.75rem;
-    color: #333;
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-/* Compact Scroll Effect */
-.home-sticky-header.compact { padding: 8px 0; background: #fff; }
-.home-sticky-header.compact .home-cat-img-box { display: none; }
-.home-sticky-header.compact .home-cat-name {
-    font-size: 0.85rem; color: var(--primary-gold); padding: 4px 10px; border-radius: 15px; background: #f9f9f9;
-}
-
+/* home.css - Final Fixed Layout */
 
 /* === 1. Top Banner === */
-.home-top-banner { width: 100%; margin-bottom: 10px; }
-.home-top-banner img { width: 100%; display: block; }
-
-/* === 2. Hero Slider (Video Size Fixed) === */
-.hero-section-new {
+.home-top-banner {
     width: 100%;
-    /* മൊബൈലിൽ 9:16 അനുപാതം നിലനിർത്താൻ */
-    height: auto; 
-    aspect-ratio: 16/9;
+    height: auto;
     position: relative;
     background-color: #000;
-    margin-bottom: 1rem;
+    border-bottom: 2px solid var(--primary-gold);
+    margin-bottom: 0;
 }
-@media (max-width: 768px) {
-    .hero-section-new { aspect-ratio: 1/1; height: 50vh; }
+.home-top-banner img {
+    width: 100%; height: auto; display: block; max-height: 120px; object-fit: cover;
 }
 
-.hero-slider-new, .hero-slider-new .swiper-slide {
-    width: 100%; height: 100%;
+/* === 2. Hero Slider (Original) === */
+.hero-section-new {
+    width: 100%;
+    height: 75vh; /* Fixed Height Restored */
+    position: relative;
+    background-color: #000;
+    margin-bottom: 2rem;
 }
+@media (max-width: 768px) {
+    .hero-section-new { height: 60vh; } /* Mobile Height */
+}
+
+.hero-slider-new, .hero-slider-new .swiper-slide { width: 100%; height: 100%; }
+.hero-slider-new .swiper-slide { position: relative; overflow: hidden; }
 
 .hero-slider-new .swiper-slide img,
 .hero-slider-new .swiper-slide video {
     width: 100%; height: 100%; object-fit: cover;
 }
+.hero-slider-new .swiper-slide iframe {
+    width: 100%; height: 100%; object-fit: cover; pointer-events: none;
+}
 
-/* === 3. Section Styling (Blue & Orange) === */
+/* Pagination Dots */
+.hero-pagination-dots { bottom: 20px; }
+.hero-pagination-dots .swiper-pagination-bullet {
+    background: rgba(255, 255, 255, 0.5); opacity: 1; width: 8px; height: 8px;
+}
+.hero-pagination-dots .swiper-pagination-bullet-active {
+    background: var(--primary-gold); width: 20px; border-radius: 4px;
+}
+
+/* === 3. Section Containers === */
 .home-section {
-    margin-bottom: 2rem;
-    padding-left: 10px;
-    padding-right: 10px;
+    margin-bottom: 3rem;
+    padding-left: 10px; padding-right: 10px;
 }
 
 .section-header-card {
-    border-top-left-radius: 8px;
-    border-top-right-radius: 8px;
-    padding: 15px;
-    margin-bottom: 0;
-    position: relative;
-    overflow: hidden;
+    border-top-left-radius: 8px; border-top-right-radius: 8px;
+    padding: 15px; position: relative; overflow: hidden;
+}
+.section-title-card {
+    color: #fff; font-size: 1.1rem; font-weight: 700; margin: 0;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+.section-banner-inside img {
+    width: 100%; border-radius: 4px; margin-top: 10px; display: block;
 }
 
-/* Blue Theme */
-.blue-card-bg {
-    background: linear-gradient(90deg, #3f5efb 0%, #fc466b 100%); /* Demo Gradient */
-    background: #4a90e2; /* Fallback Blue */
-}
-.blue-container {
-    background-color: #e3f2fd; /* Light Blue BG for products */
-    padding: 10px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
+/* Themes */
+.blue-card-bg { background: linear-gradient(90deg, #3f5efb 0%, #fc466b 100%); }
+.blue-container { background-color: #e3f2fd; padding: 10px; border-bottom-radius: 8px; }
 
-/* Orange Theme */
-.orange-card-bg {
-    background: #ff6b6b; /* Orange */
-}
-.orange-container {
-    background-color: #fff3e0; /* Light Orange BG */
-    padding: 10px;
-    border-bottom-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-}
+.orange-card-bg { background: #ff6b6b; }
+.orange-container { background-color: #fff3e0; padding: 10px; border-bottom-radius: 8px; }
 
-/* Dark Theme */
 .dark-card-bg { background: #333; }
 
-.section-title-card {
-    color: #fff;
-    font-size: 1.1rem;
-    font-weight: 700;
-    margin: 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-/* Product Cards (Flipkart Style) */
+/* === 4. Product Cards (Fixed Size) === */
 .deal-card {
     background-color: #fff;
     border-radius: 6px;
@@ -153,76 +86,99 @@
     padding-bottom: 8px;
 }
 
-/* --- Image Size Fix --- */
+/* *** Image Box (Fixed Height) *** */
 .deal-img-box {
     width: 100%;
-    aspect-ratio: 1 / 1; /* Square box */
+    height: 180px; /* Fixed height for all images */
     display: flex;
     align-items: center;
     justify-content: center;
     padding: 10px;
-    background-color: #fff; /* White Background always */
+    background-color: #fff;
 }
 
 .deal-img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain; /* Ensure full image is visible */
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain; /* Ensure image fits without cropping */
     transition: transform 0.3s ease;
 }
-
 .deal-card:hover .deal-img { transform: scale(1.05); }
 
-.deal-info {
-    text-align: center;
-    padding: 5px 8px;
-}
-
+.deal-info { text-align: center; padding: 5px 8px; flex-grow: 1; display: flex; flex-direction: column; }
 .deal-title {
-    font-size: 0.8rem;
-    color: #333;
-    font-weight: 500;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    font-size: 0.85rem; color: #333; font-weight: 500;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
     margin-bottom: 4px;
 }
+.deal-price-box { margin-top: auto; }
+.deal-price { font-size: 1rem; font-weight: 700; color: #333; }
 
-.deal-price-box {
-    margin-top: auto;
-}
-
-.deal-price {
-    font-size: 0.95rem;
-    font-weight: 700;
-    color: #333;
-}
-
-.deal-offer {
-    font-size: 0.75rem;
-    color: #388e3c; /* Green Offer Text */
-    font-weight: 600;
-}
-
-/* Buttons inside card */
+/* Buttons */
 .deal-btn-row {
-    display: flex;
-    justify-content: center;
-    gap: 5px;
-    margin-top: 5px;
-    padding: 0 5px;
+    display: flex; justify-content: center; gap: 5px; margin-top: 8px; padding: 0 5px;
 }
-
 .btn-sm-primary {
-    font-size: 0.7rem;
-    padding: 4px 10px;
-    background: var(--primary-gold);
-    color: #000;
-    border-radius: 4px;
-    border: none;
-    cursor: pointer;
-    font-weight: 600;
+    font-size: 0.75rem; padding: 5px 12px;
+    background: var(--primary-gold); color: #000;
+    border-radius: 4px; border: none; cursor: pointer; font-weight: 600;
+}
+.btn-sm-primary.added { background: #2ecc71; color: #fff; }
+
+/* === 5. Discount Section === */
+.discount-card {
+    background: #fff; border-radius: 10px; padding: 10px;
+    text-align: center; display: flex; flex-direction: column;
+    align-items: center; gap: 8px; height: 100%;
+}
+.discount-img-wrapper {
+    width: 100%; height: 180px; /* Fixed Height */
+    position: relative; display: flex; justify-content: center; align-items: center;
+}
+.discount-img {
+    max-width: 100%; max-height: 100%; object-fit: contain;
+}
+.discount-circle {
+    background: #ff5e62; color: #fff;
+    width: 45px; height: 45px; border-radius: 50%;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 0.7rem; font-weight: 700; line-height: 1;
+    position: absolute; top: 5px; right: 5px; z-index: 2;
+}
+.discount-info { width: 100%; }
+.discount-name { font-size: 0.85rem; font-weight: 600; color: #333; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.discount-final-price { color: #d32f2f; font-weight: 800; font-size: 1rem; }
+.discount-mrp { color: #888; text-decoration: line-through; font-size: 0.75rem; margin-left: 5px; }
+
+/* === 6. Bottom Categories (Restored) === */
+.category-grid-vertical {
+    display: flex; flex-direction: column; gap: 20px; width: 100%; padding: 0 15px;
+}
+.category-card-portrait {
+    position: relative; width: 100%; aspect-ratio: 3 / 4;
+    border-radius: 16px; overflow: hidden;
+    border: 1px solid var(--border-color);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+}
+.category-card-img { width: 100%; height: 100%; object-fit: cover; }
+.category-card-overlay {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
+    padding: 2rem 1.5rem; display: flex; flex-direction: column; align-items: center;
+}
+.category-card-title {
+    color: #fff; font-size: 1.4rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px;
+}
+.category-card-btn {
+    font-size: 0.9rem; color: var(--primary-gold);
+    border: 1px solid var(--primary-gold); padding: 10px 30px;
+    border-radius: 50px; background: transparent; font-weight: 700; text-transform: uppercase;
 }
 
-/* Swiper Config */
-.swiper-slide { height: auto; }
+/* Responsive */
+@media (min-width: 768px) {
+    .category-grid-vertical { flexDirection: row; justify-content: center; flex-wrap: wrap; }
+    .category-card-portrait { width: 300px; }
+}
