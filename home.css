@@ -1,4 +1,4 @@
-/* home.css - Final Fixed Layout */
+/* home.css - Circular Categories & Fixed Layouts */
 
 /* === 1. Top Banner === */
 .home-top-banner {
@@ -13,16 +13,16 @@
     width: 100%; height: auto; display: block; max-height: 120px; object-fit: cover;
 }
 
-/* === 2. Hero Slider (Original) === */
+/* === 2. Hero Slider === */
 .hero-section-new {
     width: 100%;
-    height: 75vh; /* Fixed Height Restored */
+    height: 75vh;
     position: relative;
     background-color: #000;
     margin-bottom: 2rem;
 }
 @media (max-width: 768px) {
-    .hero-section-new { height: 60vh; } /* Mobile Height */
+    .hero-section-new { height: 60vh; }
 }
 
 .hero-slider-new, .hero-slider-new .swiper-slide { width: 100%; height: 100%; }
@@ -72,7 +72,7 @@
 
 .dark-card-bg { background: #333; }
 
-/* === 4. Product Cards (Fixed Size) === */
+/* === 4. Product Cards === */
 .deal-card {
     background-color: #fff;
     border-radius: 6px;
@@ -86,10 +86,9 @@
     padding-bottom: 8px;
 }
 
-/* *** Image Box (Fixed Height) *** */
 .deal-img-box {
     width: 100%;
-    height: 180px; /* Fixed height for all images */
+    height: 180px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -98,11 +97,9 @@
 }
 
 .deal-img {
-    max-width: 100%;
-    max-height: 100%;
-    width: auto;
-    height: auto;
-    object-fit: contain; /* Ensure image fits without cropping */
+    max-width: 100%; max-height: 100%;
+    width: auto; height: auto;
+    object-fit: contain;
     transition: transform 0.3s ease;
 }
 .deal-card:hover .deal-img { transform: scale(1.05); }
@@ -134,12 +131,10 @@
     align-items: center; gap: 8px; height: 100%;
 }
 .discount-img-wrapper {
-    width: 100%; height: 180px; /* Fixed Height */
+    width: 100%; height: 180px; 
     position: relative; display: flex; justify-content: center; align-items: center;
 }
-.discount-img {
-    max-width: 100%; max-height: 100%; object-fit: contain;
-}
+.discount-img { max-width: 100%; max-height: 100%; object-fit: contain; }
 .discount-circle {
     background: #ff5e62; color: #fff;
     width: 45px; height: 45px; border-radius: 50%;
@@ -152,33 +147,69 @@
 .discount-final-price { color: #d32f2f; font-weight: 800; font-size: 1rem; }
 .discount-mrp { color: #888; text-decoration: line-through; font-size: 0.75rem; margin-left: 5px; }
 
-/* === 6. Bottom Categories (Restored) === */
-.category-grid-vertical {
-    display: flex; flex-direction: column; gap: 20px; width: 100%; padding: 0 15px;
+/* === 6. Bottom Categories (CIRCULAR DESIGN) === */
+.category-grid-circle-layout {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 20px;
+    width: 100%;
+    padding: 10px;
 }
-.category-card-portrait {
-    position: relative; width: 100%; aspect-ratio: 3 / 4;
-    border-radius: 16px; overflow: hidden;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+
+.category-circle-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    width: 90px;
+    text-decoration: none;
+    transition: transform 0.3s ease;
 }
-.category-card-img { width: 100%; height: 100%; object-fit: cover; }
-.category-card-overlay {
-    position: absolute; bottom: 0; left: 0; width: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.6) 60%, transparent 100%);
-    padding: 2rem 1.5rem; display: flex; flex-direction: column; align-items: center;
+
+.category-circle-item:hover {
+    transform: translateY(-5px);
 }
-.category-card-title {
-    color: #fff; font-size: 1.4rem; font-weight: 700; text-transform: uppercase; margin-bottom: 15px;
+
+.category-circle-img-box {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background-color: #1a1a1a;
+    border: 2px solid var(--border-color);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: border-color 0.3s ease;
 }
-.category-card-btn {
-    font-size: 0.9rem; color: var(--primary-gold);
-    border: 1px solid var(--primary-gold); padding: 10px 30px;
-    border-radius: 50px; background: transparent; font-weight: 700; text-transform: uppercase;
+
+.category-circle-item:hover .category-circle-img-box {
+    border-color: var(--primary-gold);
+}
+
+.category-circle-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.category-circle-title {
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 /* Responsive */
-@media (min-width: 768px) {
-    .category-grid-vertical { flexDirection: row; justify-content: center; flex-wrap: wrap; }
-    .category-card-portrait { width: 300px; }
+@media (max-width: 600px) {
+    .category-grid-circle-layout { gap: 15px; }
+    .category-circle-item { width: 70px; }
+    .category-circle-img-box { width: 65px; height: 65px; }
+    .category-circle-title { font-size: 0.75rem; }
 }
