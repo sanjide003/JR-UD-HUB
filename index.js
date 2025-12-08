@@ -1,4 +1,4 @@
-// index.js - Updated with Top Deals & Auto Discounts
+// index.js - Video Autoplay Fixed & Strict Image Sizing
 
 import { db } from './firebase-config.js';
 import { 
@@ -19,12 +19,12 @@ setLogLevel('Silent');
 
 document.addEventListener("DOMContentLoaded", () => {
     loadSiteSettings();
-    loadStickyCategories(); // 1. Sticky Categories
+    loadStickyCategories();
     loadHomeBanner(); 
     loadHeroSlider();
-    loadTopDeals();         // 2. Admin Managed Top Deals
-    loadTopTrendyDeals();   // 3. Formerly "For You"
-    loadTopDiscounts();     // 4. Auto Generated Discounts
+    loadTopDeals();         
+    loadTopTrendyDeals();   
+    loadTopDiscounts();     
 });
 
 /**
@@ -43,7 +43,7 @@ async function loadStickyCategories() {
         let html = `
             <a href="categories.html" class="home-cat-item">
                 <div class="home-cat-img-box">
-                    <img src="https://placehold.co/60/333/D4AF37?text=All" alt="All" class="home-cat-img">
+                    <img src="https://placehold.co/60/fff/333?text=All" alt="All" class="home-cat-img">
                 </div>
                 <span class="home-cat-name">All</span>
             </a>
@@ -51,11 +51,12 @@ async function loadStickyCategories() {
 
         snapshot.forEach(doc => {
             const data = doc.data();
-            const img = optimizeImage(data.imageUrl, 80, 60);
+            // Category Icon: Small size, transparent/white bg optimized
+            const img = optimizeImage(data.imageUrl, 100);
             html += `
                 <a href="categories.html?filter=${doc.id}" class="home-cat-item">
                     <div class="home-cat-img-box">
-                        <img src="${img}" alt="${data.name}" class="home-cat-img">
+                        <img src="${img}" alt="${data.name}" class="home-cat-img" loading="lazy">
                     </div>
                     <span class="home-cat-name">${data.name}</span>
                 </a>
@@ -63,10 +64,10 @@ async function loadStickyCategories() {
         });
         container.innerHTML = html;
 
-        // Scroll Logic for Sticky Header
+        // Scroll Logic
         const header = document.getElementById('sticky-category-header');
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 100) {
+            if (window.scrollY > 150) {
                 header.classList.add('compact');
             } else {
                 header.classList.remove('compact');
@@ -77,7 +78,91 @@ async function loadStickyCategories() {
 }
 
 /**
- * 2. TOP DEALS (Admin Controlled)
+ * 2. Hero Slider (FIXED: Autoplay & Video)
+ */
+async function loadHeroSlider() {
+    const sliderWrapper = document.getElementById('hero-slider-wrapper');
+    if (!sliderWrapper) return;
+    
+    try {
+        const q = query(collection(db, "heroSlides"), orderBy("order"));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            sliderWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/800x450/000/fff?text=No+Slides" alt="Placeholder"></div>`;
+        } else {
+            sliderWrapper.innerHTML = '';
+            querySnapshot.forEach((doc) => {
+                const slide = doc.data();
+                const slideEl = document.createElement('div');
+                slideEl.className = 'swiper-slide';
+
+                let isVideo = slide.type === 'video';
+                let videoId = '', embedUrl = '', finalUrl = slide.url;
+
+                if (isVideo) {
+                    if (slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
+                        try { const id = slide.url.split('/d/')[1].split('/')[0]; finalUrl = `https://drive.google.com/uc?export=download&id=${id}`; } catch(e) {}
+                    } 
+                    else if (slide.url.includes('youtube.com') || slide.url.includes('youtu.be')) {
+                        if (slide.url.includes('v=')) videoId = new URL(slide.url).searchParams.get('v');
+                        else if (slide.url.includes('shorts')) videoId = new URL(slide.url).pathname.split('/shorts/')[1];
+                        else videoId = slide.url.split('youtu.be/')[1];
+                        if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&autoplay=1&playsinline=1`;
+                    }
+                }
+
+                if (slide.type === 'image') {
+                    const img = optimizeImage(slide.url, 1000, 90);
+                    slideEl.innerHTML = `<img src="${img}" alt="Hero" loading="lazy">`;
+                } else if (isVideo && embedUrl) {
+                    slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                } else if (isVideo) {
+                    // Native Video
+                    slideEl.innerHTML = `<video class="hero-video-element" src="${finalUrl}" autoplay muted loop playsinline></video>`;
+                }
+                sliderWrapper.appendChild(slideEl);
+            });
+        }
+
+        const heroSwiper = new Swiper('.hero-slider-new', {
+            loop: true,
+            speed: 600,
+            autoplay: {
+                delay: 5000, // Autoplay Re-enabled
+                disableOnInteraction: false,
+            },
+            pagination: { el: '.hero-pagination-dots', clickable: true },
+            on: {
+                slideChangeTransitionEnd: function () {
+                    playActiveSlideVideo(this);
+                }
+            }
+        });
+
+        playActiveSlideVideo(heroSwiper);
+
+    } catch (error) { console.error("Error loading hero slider"); }
+}
+
+function playActiveSlideVideo(swiper) {
+    const slides = document.querySelectorAll('.hero-slider-new .swiper-slide');
+    slides.forEach((slide) => {
+        const video = slide.querySelector('video');
+        if (video) {
+            if (slide.classList.contains('swiper-slide-active')) {
+                video.currentTime = 0;
+                video.play().catch(e => {});
+            } else {
+                video.pause();
+            }
+        }
+        // YouTube iframe logic usually handled by API, but 'autoplay=1' in URL helps.
+    });
+}
+
+/**
+ * 3. TOP DEALS (Blue Theme - Admin Controlled)
  */
 async function loadTopDeals() {
     const section = document.getElementById('top-deals-section');
@@ -86,20 +171,14 @@ async function loadTopDeals() {
     if (!section) return;
 
     try {
-        // 1. Load Banner from Settings
         const settingsRef = doc(db, "settings", "homeLayout");
         const settingsSnap = await getDoc(settingsRef);
         
         if (settingsSnap.exists() && settingsSnap.data().topDealsBanner) {
-            const bannerUrl = optimizeImage(settingsSnap.data().topDealsBanner, 1000, 80);
-            bannerContainer.innerHTML = `<img src="${bannerUrl}" alt="Top Deals">`;
-            section.style.display = 'block'; // Show section only if configured
-        } else {
-            // If no banner, maybe hide section or just show products
-            // section.style.display = 'none'; 
+            const bannerUrl = optimizeImage(settingsSnap.data().topDealsBanner, 1000, 85);
+            bannerContainer.innerHTML = `<img src="${bannerUrl}" alt="Top Deals" style="width:100%; border-radius:4px; display:block;">`;
         }
 
-        // 2. Load Products (Where isTopDeal == true)
         const q = query(collection(db, "products"), where("isTopDeal", "==", true), limit(10));
         const snapshot = await getDocs(q);
 
@@ -108,43 +187,23 @@ async function loadTopDeals() {
             return;
         }
 
-        section.style.display = 'block'; // Ensure visible if products exist
         let slidesHTML = '';
-        
         snapshot.forEach(doc => {
-            const p = doc.data();
-            const img = optimizeImage(p.images?.[0] || '', 300, 70);
-            slidesHTML += `
-                <div class="swiper-slide">
-                    <a href="product.html?id=${doc.id}" class="deal-card">
-                        <div class="deal-badge">Hot</div>
-                        <div class="deal-img-box"><img src="${img}" class="deal-img" loading="lazy"></div>
-                        <div class="deal-info">
-                            <div class="deal-title">${p.name}</div>
-                            <div class="deal-price">₹${p.price}</div>
-                        </div>
-                    </a>
-                </div>
-            `;
+            slidesHTML += createProductCardHTML(doc.id, doc.data());
         });
         grid.innerHTML = slidesHTML;
 
-        // Initialize Swiper
         new Swiper('.top-deals-swiper', {
-            slidesPerView: 2.5,
+            slidesPerView: 2.2,
             spaceBetween: 10,
-            freeMode: true,
-            breakpoints: {
-                640: { slidesPerView: 3.5 },
-                1024: { slidesPerView: 5.5 }
-            }
+            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
         });
 
-    } catch (e) { console.error("Error loading top deals", e); }
+    } catch (e) { console.error(e); }
 }
 
 /**
- * 3. TOP TRENDY DEALS (Renamed For You)
+ * 4. TOP TRENDY DEALS (Orange Theme - Featured)
  */
 async function loadTopTrendyDeals() {
     const grid = document.getElementById("top-sellers-grid");
@@ -154,77 +213,31 @@ async function loadTopTrendyDeals() {
         const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
         const querySnapshot = await getDocs(q);
         
-        if (querySnapshot.empty) {
-            grid.innerHTML = '<p style="text-align:center; padding:20px; color:#fff;">No trendy deals today.</p>'; 
-            return;
-        }
+        if (querySnapshot.empty) { grid.innerHTML = ''; return; }
         
-        grid.innerHTML = '';
-        
+        let slidesHTML = '';
         querySnapshot.forEach((doc) => {
-            const product = doc.data();
-            const productId = doc.id;
-            const card = document.createElement('div');
-            card.className = 'swiper-slide';
-            
-            const imageUrl = optimizeImage(product.images?.[0] || '', 400, 75);
-            const isInCart = isItemInCart(productId);
-            const buttonText = isInCart ? "Remove" : "Add";
-            const buttonClass = isInCart ? "btn-primary-new added-to-cart" : "btn-primary-new"; 
-            
-            card.innerHTML = `
-                <div class="media-container">
-                    <a href="product.html?id=${productId}" style="display:block; height:100%;">
-                        <img src="${imageUrl}" alt="${product.name}" class="top-sellers-product-image" loading="lazy">
-                    </a>
-                    <div class="text-overlay">
-                        <div class="top-sellers-product-name">${product.name}</div>
-                        <div class="top-sellers-product-price">₹${product.price || 0}</div>
-                    </div>
-                </div>
-                <div class="top-sellers-buttons">
-                    <button class="btn ${buttonClass} btn-add-to-cart"
-                        data-id="${productId}"
-                        data-name="${product.name}"
-                        data-price="${product.price}"
-                        data-mrp="${product.mrp}"
-                        data-image="${imageUrl}"
-                        data-size="${product.size || ''}">
-                        <span>${buttonText}</span>
-                    </button>
-                    <a href="product.html?id=${productId}" class="btn btn-secondary-new"><span>View</span></a>
-                </div>
-            `;
-            grid.appendChild(card);
+            slidesHTML += createProductCardHTML(doc.id, doc.data());
         });
+        grid.innerHTML = slidesHTML;
 
         new Swiper('.top-sellers-swiper-new', {
-            loop: true,
-            autoplay: { delay: 4000, disableOnInteraction: false },
-            speed: 600,
-            slidesPerView: 1, 
-            spaceBetween: 20, 
-            centeredSlides: true,
-            pagination: { el: '.top-sellers-pagination-new', clickable: true },
-            breakpoints: { 
-                640: { slidesPerView: 2, spaceBetween: 20 }, 
-                1024: { slidesPerView: 4, spaceBetween: 30 } 
-            }
+            slidesPerView: 2.2,
+            spaceBetween: 10,
+            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
         });
         
     } catch (error) { console.error("Error loading trendy deals"); }
 }
 
 /**
- * 4. TOP DISCOUNT OF THE SALE (Automated)
+ * 5. TOP DISCOUNT (Auto Calculated)
  */
 async function loadTopDiscounts() {
     const grid = document.getElementById("top-discount-grid");
     if (!grid) return;
 
     try {
-        // Fetch last 50 products and sort by discount in JS (Simple approach)
-        // For production with thousands of items, this needs a Cloud Function or indexed field.
         const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(50));
         const snapshot = await getDocs(q);
         
@@ -237,54 +250,64 @@ async function loadTopDiscounts() {
             }
         });
 
-        // Sort by discount descending and take top 8
         products.sort((a, b) => b.discount - a.discount);
         const topDiscounts = products.slice(0, 8);
 
-        if (topDiscounts.length === 0) {
-            document.querySelector('.orange-section').style.display = 'none';
-            return;
-        }
+        if (topDiscounts.length === 0) return;
 
         let html = '';
         topDiscounts.forEach(p => {
-            const img = optimizeImage(p.images?.[0] || '', 300, 70);
-            html += `
-                <div class="swiper-slide">
-                    <a href="product.html?id=${p.id}" class="discount-card">
-                        <div class="discount-img-wrapper">
-                            <div class="discount-circle">
-                                <span>${p.discount}%</span><span>OFF</span>
-                            </div>
-                            <img src="${img}" class="discount-img" loading="lazy">
-                        </div>
-                        <div class="discount-info">
-                            <div class="discount-name">${p.name}</div>
-                            <div class="discount-price-row">
-                                <span class="discount-final-price">₹${p.price}</span>
-                                <span class="discount-mrp">₹${p.mrp}</span>
-                            </div>
-                        </div>
-                    </a>
-                </div>
-            `;
+            html += createProductCardHTML(p.id, p, p.discount);
         });
         grid.innerHTML = html;
 
         new Swiper('.discount-swiper', {
             slidesPerView: 2.2,
-            spaceBetween: 15,
-            freeMode: true,
-            breakpoints: {
-                640: { slidesPerView: 3.2 },
-                1024: { slidesPerView: 5.2 }
-            }
+            spaceBetween: 10,
+            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
         });
 
-    } catch(e) { console.error("Error loading discounts", e); }
+    } catch(e) {}
 }
 
-// Banner Loader (Same as before)
+/**
+ * Helper: Create Standard Product Card HTML
+ */
+function createProductCardHTML(id, product, discountVal = null) {
+    // *** Image Optimization: 300px square ***
+    const img = optimizeImage(product.images?.[0] || '', 300, 80);
+    
+    let discountTag = '';
+    if (discountVal) {
+        discountTag = `<div style="position:absolute; top:5px; left:5px; background:#388e3c; color:#fff; font-size:0.6rem; padding:2px 4px; border-radius:2px; z-index:2;">${discountVal}% OFF</div>`;
+    }
+
+    return `
+        <div class="swiper-slide">
+            <a href="product.html?id=${id}" class="deal-card">
+                ${discountTag}
+                <div class="deal-img-box">
+                    <img src="${img}" class="deal-img" loading="lazy" alt="${product.name}">
+                </div>
+                <div class="deal-info">
+                    <div class="deal-title">${product.name}</div>
+                    <div class="deal-price-box">
+                        <span class="deal-price">₹${product.price}</span>
+                    </div>
+                    <div class="deal-btn-row">
+                        <button class="btn-sm-primary btn-add-to-cart" data-id="${id}" 
+                            data-name="${product.name}" data-price="${product.price}" 
+                            data-mrp="${product.mrp}" data-image="${img}">
+                            Add
+                        </button>
+                    </div>
+                </div>
+            </a>
+        </div>
+    `;
+}
+
+// Banner Loader
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
     if (!bannerContainer) return;
@@ -299,90 +322,28 @@ async function loadHomeBanner() {
     } catch (error) {}
 }
 
-// Hero Slider (Same as before - No Autoplay)
-async function loadHeroSlider() {
-    const sliderWrapper = document.getElementById('hero-slider-wrapper');
-    if (!sliderWrapper) return;
-    try {
-        const q = query(collection(db, "heroSlides"), orderBy("order"));
-        const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) {
-            sliderWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/600x800/000000/D4AF37?text=JR+UD+HUB" alt="Placeholder"></div>`;
-        } else {
-            sliderWrapper.innerHTML = '';
-            querySnapshot.forEach((doc) => {
-                const slide = doc.data();
-                const slideEl = document.createElement('div');
-                slideEl.className = 'swiper-slide';
-                // ... Video/Image logic remains identical ...
-                let isVideo = slide.type === 'video';
-                let videoId = '', embedUrl = '', finalUrl = slide.url;
-                if (isVideo) {
-                    if (slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
-                        try { const id = slide.url.split('/d/')[1].split('/')[0]; finalUrl = `https://drive.google.com/uc?export=download&id=${id}`; } catch(e) {}
-                    } else if (slide.url.includes('youtube.com/watch?v=')) { videoId = new URL(slide.url).searchParams.get('v'); }
-                    else if (slide.url.includes('youtu.be/')) { videoId = slide.url.split('youtu.be/')[1]; }
-                    if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1&autoplay=1`;
-                }
-                if (slide.type === 'image') {
-                    const optimizedHeroImg = optimizeImage(slide.url, 800, 85);
-                    slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
-                } else if (isVideo && embedUrl) {
-                    slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%; height:100%; pointer-events:none;"></iframe>`;
-                } else if (isVideo) {
-                    slideEl.innerHTML = `<video class="hero-video-element" src="${finalUrl}" autoplay muted loop playsinline preload="auto" style="width: 100%; height: 100%; object-fit: cover;"></video>`;
-                }
-                sliderWrapper.appendChild(slideEl);
-            });
-        }
-        new Swiper('.hero-slider-new', {
-            loop: true, allowTouchMove: true, speed: 600, autoplay: false,
-            pagination: { el: '.hero-pagination-dots', clickable: true }
-        });
-        setupScrollVideoObserver();
-    } catch (error) {}
-}
-
-function setupScrollVideoObserver() {
-    const sliderContainer = document.querySelector('.hero-section-new');
-    if (!sliderContainer) return;
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            const activeSlide = document.querySelector('.hero-slider-new .swiper-slide-active');
-            if (!activeSlide) return;
-            const video = activeSlide.querySelector('video');
-            const iframe = activeSlide.querySelector('iframe');
-            if (entry.isIntersecting) {
-                if (video) video.play().catch(e => {});
-                if (iframe) iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-            } else {
-                if (video) video.pause();
-                if (iframe) iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-            }
-        });
-    }, { threshold: 0.5 });
-    observer.observe(sliderContainer);
-}
-
-// Global Cart Click Listener
+// Add to Cart Listener
 document.addEventListener('click', (e) => {
     const button = e.target.closest('.btn-add-to-cart');
     if (button) {
         e.preventDefault();
+        e.stopPropagation(); // Prevent card click
         const id = button.dataset.id;
-        const buttonText = button.querySelector('span');
-        if (button.classList.contains('added-to-cart')) {
+        
+        if (button.classList.contains('added')) {
             removeFromCart(id);
-            button.classList.remove('added-to-cart');
-            if (buttonText) buttonText.textContent = 'Add';
+            button.classList.remove('added');
+            button.textContent = 'Add';
+            button.style.background = 'var(--primary-gold)';
         } else {
             const product = {
                 id: id, name: button.dataset.name, price: parseFloat(button.dataset.price),
-                mrp: parseFloat(button.dataset.mrp), image: button.dataset.image, size: button.dataset.size 
+                mrp: parseFloat(button.dataset.mrp), image: button.dataset.image, size: ''
             };
             addToCart(id, product);
-            button.classList.add('added-to-cart');
-            if (buttonText) buttonText.textContent = 'Remove';
+            button.classList.add('added');
+            button.textContent = 'Done';
+            button.style.background = '#2ecc71';
         }
     }
 });
