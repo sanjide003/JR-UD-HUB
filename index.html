@@ -1,7 +1,3 @@
-<!-- 
-  ഇതാണ് ഹോം പേജ്. index.html
-  മാറ്റം: Preloader ഘടന പഴയതുപോലെയാക്കി (Logo Container തിരികെ കൊണ്ടുവന്നു).
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,10 +11,9 @@
 </head>
 <body>
 
-    <!-- 0. പേജ് ലോഡർ (OLD STRUCTURE RESTORED) -->
+    <!-- 0. പേജ് ലോഡർ -->
     <div id="preloader">
         <div class="loader-logo-container">
-            <!-- ലോഗോയും സ്പിന്നറും common.js & public.css വഴി വരും -->
             <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
             <div class="loader-ring"></div>
         </div>
@@ -27,12 +22,20 @@
     <!-- 1. ഹെഡർ -->
     <header class="main-header" id="main-header"></header>
     
-    <!-- 2. സൈഡ് മെനു (common.js വഴി) -->
+    <!-- 2. സൈഡ് മെനു -->
     <div class="nav-overlay" id="nav-overlay"></div>
 
     <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main>
         
+        <!-- 3.0. STICKY CATEGORY BAR (New) -->
+        <div id="sticky-category-header" class="home-sticky-header">
+            <div class="category-scroll-wrapper" id="home-category-list">
+                <!-- Categories from index.js -->
+                <div class="loading-placeholder-small">Loading...</div>
+            </div>
+        </div>
+
         <!-- ഹോം പേജ് ടോപ്പ് ബാനർ -->
         <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
 
@@ -40,34 +43,44 @@
         <section class="hero-section-new">
             <div class="swiper hero-slider-new" id="hero-slider-container">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <!-- സ്ലൈഡുകൾ index.js വഴി വരും -->
+                    <!-- Slides from index.js -->
                 </div>
                 <div class="swiper-pagination hero-pagination-dots"></div>
             </div>
         </section>
 
-        <!-- 3.2. ഹീറോ ടെക്സ്റ്റ് -->
-        <section class="hero-text-section container">
-            <p>We believe that a perfumer is a poet or a storyteller who use intangible ingredients to create emotions. The main idea behind Oud Arabia is to Abstract memories that evoke our cores.</p>
-        </section>
-
-        <!-- 3.3. For You (Top Sellers) -->
-        <section class="home-section container">
-            <h2 class="section-title-new">For You</h2>
-            <div class="swiper top-sellers-swiper-new">
-                <div class="swiper-wrapper" id="top-sellers-grid">
-                    <!-- ഉൽപ്പന്നങ്ങൾ index.js വഴി വരും -->
+        <!-- 3.2. TOP DEALS (New Section controlled by Admin) -->
+        <section class="home-section container" id="top-deals-section" style="display:none;">
+            <h2 class="section-title-new">Top Deals on Tech</h2>
+            <!-- Admin Uploaded Banner -->
+            <div id="top-deals-banner-container" class="section-banner-box"></div>
+            
+            <!-- Top Deals Products Slider -->
+            <div class="product-slider-container blue-theme">
+                <div class="swiper top-deals-swiper">
+                    <div class="swiper-wrapper" id="top-deals-grid"></div>
                 </div>
             </div>
-            <!-- Pagination -->
+        </section>
+
+        <!-- 3.3. TOP TRENDY DEALS (Renamed from For You) -->
+        <section class="home-section container">
+            <h2 class="section-title-new" style="color: #ff6b6b;">Top Trendy Deals</h2> <!-- Red/Orange Title -->
+            <div class="swiper top-sellers-swiper-new">
+                <div class="swiper-wrapper" id="top-sellers-grid">
+                    <!-- Products from index.js -->
+                </div>
+            </div>
             <div class="top-sellers-pagination-new"></div>
         </section>
 
-        <!-- 3.4. ഷോപ്പ് ബൈ കാറ്റഗറി -->
-        <section class="home-section container">
-            <h2 class="section-title-new">SHOP BY CATEGORY</h2>
-            <div id="category-grid-home" class="category-grid-vertical">
-                <!-- കാറ്റഗറികൾ index.js വഴി വരും -->
+        <!-- 3.4. TOP DISCOUNT OF THE SALE (Automated) -->
+        <section class="home-section container orange-section">
+            <h2 class="section-title-new">Top Discount of the Sale</h2>
+            <div class="swiper discount-swiper">
+                <div class="swiper-wrapper" id="top-discount-grid">
+                    <!-- Auto generated high discount products -->
+                </div>
             </div>
         </section>
         
