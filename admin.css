@@ -203,6 +203,22 @@ body.light-mode .icon-moon { opacity: 0; }
 .btn-remove-featured { background-color: #f59e0b; padding: 6px 12px; font-size: 0.8rem; border-radius: var(--radius-sm); }
 .full-width-logout { width: 100%; margin-top: 0; } 
 
+/* *** NEW: Blue Add Button Style *** */
+.btn-add-featured-action {
+    background-color: #3b82f6; /* Blue */
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.btn-add-featured-action:hover {
+    background-color: #2563eb;
+}
+
 /* SVG Icons in Buttons */
 .btn svg { width: 18px; height: 18px; }
 
