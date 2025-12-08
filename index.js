@@ -1,4 +1,4 @@
-// index.js - Video Autoplay Fixed & Strict Image Sizing
+// index.js - Restored Hero & Fixed Image Sizes
 
 import { db } from './firebase-config.js';
 import { 
@@ -19,66 +19,34 @@ setLogLevel('Silent');
 
 document.addEventListener("DOMContentLoaded", () => {
     loadSiteSettings();
-    loadStickyCategories();
+    // Sticky Category Removed as requested
     loadHomeBanner(); 
     loadHeroSlider();
     loadTopDeals();         
     loadTopTrendyDeals();   
     loadTopDiscounts();     
+    loadHomeCategories(); // Restored Bottom Categories
 });
 
 /**
- * 1. Sticky Category Header
+ * 1. Home Banner
  */
-async function loadStickyCategories() {
-    const container = document.getElementById('home-category-list');
-    if (!container) return;
-
+async function loadHomeBanner() {
+    const bannerContainer = document.getElementById('home-top-banner');
+    if (!bannerContainer) return;
     try {
-        const q = query(collection(db, "categories"), orderBy("name"));
-        const snapshot = await getDocs(q);
-        
-        if(snapshot.empty) { container.innerHTML = ''; return; }
-
-        let html = `
-            <a href="categories.html" class="home-cat-item">
-                <div class="home-cat-img-box">
-                    <img src="https://placehold.co/60/fff/333?text=All" alt="All" class="home-cat-img">
-                </div>
-                <span class="home-cat-name">All</span>
-            </a>
-        `;
-
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            // Category Icon: Small size, transparent/white bg optimized
-            const img = optimizeImage(data.imageUrl, 100);
-            html += `
-                <a href="categories.html?filter=${doc.id}" class="home-cat-item">
-                    <div class="home-cat-img-box">
-                        <img src="${img}" alt="${data.name}" class="home-cat-img" loading="lazy">
-                    </div>
-                    <span class="home-cat-name">${data.name}</span>
-                </a>
-            `;
-        });
-        container.innerHTML = html;
-
-        // Scroll Logic
-        const header = document.getElementById('sticky-category-header');
-        window.addEventListener('scroll', () => {
-            if (window.scrollY > 150) {
-                header.classList.add('compact');
-            } else {
-                header.classList.remove('compact');
-            }
-        });
-
-    } catch(e) { console.error("Error loading categories", e); }
+        const docRef = doc(db, "settings", "global");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists() && docSnap.data().homeBannerUrl) {
+            const optimizedUrl = optimizeImage(docSnap.data().homeBannerUrl, 800, 80);
+            bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Banner" loading="lazy">`;
+            bannerContainer.style.display = 'block';
+        }
+    } catch (error) {}
 }
 
 /**
- * 2. Hero Slider (FIXED: Autoplay & Video)
+ * 2. Hero Slider (Autoplay ON, Video Enabled)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -118,7 +86,6 @@ async function loadHeroSlider() {
                 } else if (isVideo && embedUrl) {
                     slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 } else if (isVideo) {
-                    // Native Video
                     slideEl.innerHTML = `<video class="hero-video-element" src="${finalUrl}" autoplay muted loop playsinline></video>`;
                 }
                 sliderWrapper.appendChild(slideEl);
@@ -129,7 +96,7 @@ async function loadHeroSlider() {
             loop: true,
             speed: 600,
             autoplay: {
-                delay: 5000, // Autoplay Re-enabled
+                delay: 5000, 
                 disableOnInteraction: false,
             },
             pagination: { el: '.hero-pagination-dots', clickable: true },
@@ -157,12 +124,11 @@ function playActiveSlideVideo(swiper) {
                 video.pause();
             }
         }
-        // YouTube iframe logic usually handled by API, but 'autoplay=1' in URL helps.
     });
 }
 
 /**
- * 3. TOP DEALS (Blue Theme - Admin Controlled)
+ * 3. TOP DEALS (Admin Controlled)
  */
 async function loadTopDeals() {
     const section = document.getElementById('top-deals-section');
@@ -176,7 +142,8 @@ async function loadTopDeals() {
         
         if (settingsSnap.exists() && settingsSnap.data().topDealsBanner) {
             const bannerUrl = optimizeImage(settingsSnap.data().topDealsBanner, 1000, 85);
-            bannerContainer.innerHTML = `<img src="${bannerUrl}" alt="Top Deals" style="width:100%; border-radius:4px; display:block;">`;
+            bannerContainer.innerHTML = `<img src="${bannerUrl}" alt="Top Deals">`;
+            section.style.display = 'block'; 
         }
 
         const q = query(collection(db, "products"), where("isTopDeal", "==", true), limit(10));
@@ -187,6 +154,7 @@ async function loadTopDeals() {
             return;
         }
 
+        section.style.display = 'block';
         let slidesHTML = '';
         snapshot.forEach(doc => {
             slidesHTML += createProductCardHTML(doc.id, doc.data());
@@ -203,7 +171,7 @@ async function loadTopDeals() {
 }
 
 /**
- * 4. TOP TRENDY DEALS (Orange Theme - Featured)
+ * 4. TOP TRENDY DEALS (Orange Theme)
  */
 async function loadTopTrendyDeals() {
     const grid = document.getElementById("top-sellers-grid");
@@ -231,7 +199,7 @@ async function loadTopTrendyDeals() {
 }
 
 /**
- * 5. TOP DISCOUNT (Auto Calculated)
+ * 5. TOP DISCOUNT (Auto)
  */
 async function loadTopDiscounts() {
     const grid = document.getElementById("top-discount-grid");
@@ -253,7 +221,10 @@ async function loadTopDiscounts() {
         products.sort((a, b) => b.discount - a.discount);
         const topDiscounts = products.slice(0, 8);
 
-        if (topDiscounts.length === 0) return;
+        if (topDiscounts.length === 0) {
+            document.querySelector('.orange-section').style.display = 'none';
+            return;
+        }
 
         let html = '';
         topDiscounts.forEach(p => {
@@ -271,16 +242,53 @@ async function loadTopDiscounts() {
 }
 
 /**
- * Helper: Create Standard Product Card HTML
+ * 6. RANDOM CATEGORIES (Bottom)
  */
+async function loadHomeCategories() {
+    const container = document.getElementById("category-grid-home");
+    if (!container) return;
+    try {
+        const catQuery = query(collection(db, "categories"));
+        const catSnapshot = await getDocs(catQuery); 
+        if (catSnapshot.empty) { container.innerHTML = ''; return; }
+        
+        let categories = [];
+        catSnapshot.forEach((doc) => { categories.push({ id: doc.id, ...doc.data() }); });
+        
+        categories = categories.sort(() => 0.5 - Math.random()).slice(0, 3);
+        
+        container.innerHTML = ''; 
+        categories.forEach(category => {
+            const item = document.createElement('div');
+            item.className = 'category-card-portrait';
+            const imageUrl = optimizeImage(category.imageUrl || '', 600, 75);
+            item.innerHTML = `
+                <a href="categories.html?filter=${category.id}" style="display:block; width:100%; height:100%;">
+                    <img src="${imageUrl}" alt="${category.name}" class="category-card-img" loading="lazy">
+                    <div class="category-card-overlay">
+                        <h3 class="category-card-title">${category.name}</h3>
+                        <span class="category-card-btn">Explore</span>
+                    </div>
+                </a>
+            `;
+            container.appendChild(item);
+        });
+    } catch (error) { console.error("Error loading home categories"); }
+}
+
+// Helper: Product Card with Fixed Image Size
 function createProductCardHTML(id, product, discountVal = null) {
-    // *** Image Optimization: 300px square ***
     const img = optimizeImage(product.images?.[0] || '', 300, 80);
-    
     let discountTag = '';
     if (discountVal) {
-        discountTag = `<div style="position:absolute; top:5px; left:5px; background:#388e3c; color:#fff; font-size:0.6rem; padding:2px 4px; border-radius:2px; z-index:2;">${discountVal}% OFF</div>`;
+        discountTag = `<div class="discount-circle"><span>${discountVal}%</span><span>OFF</span></div>`;
     }
+
+    // Checking if already in cart for button state
+    const isInCart = isItemInCart(id);
+    const btnText = isInCart ? "Done" : "Add";
+    const btnClass = isInCart ? "btn-sm-primary btn-add-to-cart added" : "btn-sm-primary btn-add-to-cart";
+    const btnStyle = isInCart ? "background:#2ecc71;" : "";
 
     return `
         <div class="swiper-slide">
@@ -295,10 +303,10 @@ function createProductCardHTML(id, product, discountVal = null) {
                         <span class="deal-price">₹${product.price}</span>
                     </div>
                     <div class="deal-btn-row">
-                        <button class="btn-sm-primary btn-add-to-cart" data-id="${id}" 
+                        <button class="${btnClass}" style="${btnStyle}" data-id="${id}" 
                             data-name="${product.name}" data-price="${product.price}" 
                             data-mrp="${product.mrp}" data-image="${img}">
-                            Add
+                            ${btnText}
                         </button>
                     </div>
                 </div>
@@ -307,27 +315,11 @@ function createProductCardHTML(id, product, discountVal = null) {
     `;
 }
 
-// Banner Loader
-async function loadHomeBanner() {
-    const bannerContainer = document.getElementById('home-top-banner');
-    if (!bannerContainer) return;
-    try {
-        const docRef = doc(db, "settings", "global");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().homeBannerUrl) {
-            const optimizedUrl = optimizeImage(docSnap.data().homeBannerUrl, 800, 80);
-            bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Banner" loading="lazy">`;
-            bannerContainer.style.display = 'block';
-        }
-    } catch (error) {}
-}
-
-// Add to Cart Listener
 document.addEventListener('click', (e) => {
     const button = e.target.closest('.btn-add-to-cart');
     if (button) {
         e.preventDefault();
-        e.stopPropagation(); // Prevent card click
+        e.stopPropagation();
         const id = button.dataset.id;
         
         if (button.classList.contains('added')) {
