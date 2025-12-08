@@ -28,58 +28,69 @@
     <!-- 3. പ്രധാന ഉള്ളടക്കം -->
     <main>
         
-        <!-- 3.0. STICKY CATEGORY BAR (New) -->
+        <!-- 3.0. STICKY CATEGORY BAR -->
         <div id="sticky-category-header" class="home-sticky-header">
             <div class="category-scroll-wrapper" id="home-category-list">
-                <!-- Categories from index.js -->
-                <div class="loading-placeholder-small">Loading...</div>
+                <div class="loading-placeholder-small"></div>
             </div>
         </div>
 
-        <!-- ഹോം പേജ് ടോപ്പ് ബാനർ -->
-        <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
-
-        <!-- 3.1. ഹീറോ സ്ലൈഡർ -->
+        <!-- 3.1. ഹീറോ സ്ലൈഡർ (വീഡിയോ ശരിയാക്കി) -->
         <section class="hero-section-new">
             <div class="swiper hero-slider-new" id="hero-slider-container">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <!-- Slides from index.js -->
+                    <!-- Slides JS വഴി വരും -->
                 </div>
                 <div class="swiper-pagination hero-pagination-dots"></div>
             </div>
         </section>
 
-        <!-- 3.2. TOP DEALS (New Section controlled by Admin) -->
-        <section class="home-section container" id="top-deals-section" style="display:none;">
-            <h2 class="section-title-new">Top Deals on Tech</h2>
-            <!-- Admin Uploaded Banner -->
-            <div id="top-deals-banner-container" class="section-banner-box"></div>
+        <!-- ഹോം പേജ് ബാനർ (Optional) -->
+        <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
+
+        <!-- 3.2. TOP DEALS ON TECH (Blue Theme) -->
+        <section class="home-section container" id="top-deals-section">
+            <!-- Header with Blue Gradient Background -->
+            <div class="section-header-card blue-card-bg">
+                <h2 class="section-title-card">Top Deals on Tech</h2>
+                <div id="top-deals-banner-container" class="section-banner-inside"></div> <!-- Optional Banner inside -->
+            </div>
             
-            <!-- Top Deals Products Slider -->
-            <div class="product-slider-container blue-theme">
+            <!-- Product Slider -->
+            <div class="product-slider-container blue-container">
                 <div class="swiper top-deals-swiper">
-                    <div class="swiper-wrapper" id="top-deals-grid"></div>
+                    <div class="swiper-wrapper" id="top-deals-grid">
+                        <!-- Products JS വഴി വരും -->
+                    </div>
                 </div>
             </div>
         </section>
 
-        <!-- 3.3. TOP TRENDY DEALS (Renamed from For You) -->
+        <!-- 3.3. TOP TRENDY DEALS (Orange Theme) -->
         <section class="home-section container">
-            <h2 class="section-title-new" style="color: #ff6b6b;">Top Trendy Deals</h2> <!-- Red/Orange Title -->
-            <div class="swiper top-sellers-swiper-new">
-                <div class="swiper-wrapper" id="top-sellers-grid">
-                    <!-- Products from index.js -->
+            <div class="section-header-card orange-card-bg">
+                <h2 class="section-title-card">Top Trendy Deals</h2>
+            </div>
+            
+            <div class="product-slider-container orange-container">
+                <div class="swiper top-sellers-swiper-new">
+                    <div class="swiper-wrapper" id="top-sellers-grid">
+                        <!-- Products JS വഴി വരും -->
+                    </div>
                 </div>
             </div>
-            <div class="top-sellers-pagination-new"></div>
         </section>
 
-        <!-- 3.4. TOP DISCOUNT OF THE SALE (Automated) -->
-        <section class="home-section container orange-section">
-            <h2 class="section-title-new">Top Discount of the Sale</h2>
-            <div class="swiper discount-swiper">
-                <div class="swiper-wrapper" id="top-discount-grid">
-                    <!-- Auto generated high discount products -->
+        <!-- 3.4. TOP DISCOUNT OF THE SALE -->
+        <section class="home-section container">
+             <div class="section-header-card dark-card-bg">
+                <h2 class="section-title-card">Top Discount of the Sale</h2>
+            </div>
+            <div class="product-slider-container">
+                <div class="swiper discount-swiper">
+                    <div class="swiper-wrapper" id="top-discount-grid">
+                        <!-- Products JS വഴി വരും -->
+                    </div>
                 </div>
             </div>
         </section>
