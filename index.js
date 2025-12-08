@@ -1,8 +1,16 @@
-// index.js - Restored Video Logic & Animations
+// index.js - New Card Style (No Buttons) & Swipeable Categories
 
 import { db } from './firebase-config.js';
 import { 
-    collection, getDocs, doc, getDoc, query, where, limit, orderBy, setLogLevel 
+    collection, 
+    getDocs, 
+    doc, 
+    getDoc, 
+    query, 
+    where, 
+    limit, 
+    orderBy, 
+    setLogLevel 
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadSiteSettings, optimizeImage } from './common.js'; 
 
@@ -10,51 +18,45 @@ setLogLevel('Silent');
 
 document.addEventListener("DOMContentLoaded", () => {
     loadSiteSettings();
+    loadHomeBanner(); 
     loadHeroSlider();
-    loadTopDeals();
-    loadTopTrendyDeals();
-    loadTopDiscounts();
-    loadHomeCategories();
-    loadBanner();
-    setupScrollAnimations();
+    loadTopDeals();         
+    loadTopTrendyDeals();   
+    loadTopDiscounts();     
+    loadHomeCategories(); 
 });
 
-function setupScrollAnimations() {
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) entry.target.classList.add('visible');
-        });
-    }, { threshold: 0.1 });
-    document.querySelectorAll('.reveal-on-scroll').forEach(el => observer.observe(el));
-}
-
-async function loadBanner() {
-    const container = document.getElementById('home-top-banner');
-    if(!container) return;
+// Banner
+async function loadHomeBanner() {
+    const bannerContainer = document.getElementById('home-top-banner');
+    if (!bannerContainer) return;
     try {
-        const snap = await getDoc(doc(db, "settings", "global"));
-        if(snap.exists() && snap.data().homeBannerUrl) {
-            const url = optimizeImage(snap.data().homeBannerUrl, 1200, 85);
-            container.innerHTML = `<img src="${url}" style="width:100%;border-radius:12px;display:block;">`;
-            container.style.display = 'block';
+        const docRef = doc(db, "settings", "global");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists() && docSnap.data().homeBannerUrl) {
+            const optimizedUrl = optimizeImage(docSnap.data().homeBannerUrl, 800, 80);
+            bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Banner" loading="lazy">`;
+            bannerContainer.style.display = 'block';
         }
-    } catch(e) {}
+    } catch (error) {}
 }
 
-// *** RESTORED ORIGINAL VIDEO LOGIC ***
+/**
+ * 2. Hero Slider (Autoplay OFF)
+ */
 async function loadHeroSlider() {
-    const wrapper = document.getElementById('hero-slider-wrapper');
-    if (!wrapper) return;
+    const sliderWrapper = document.getElementById('hero-slider-wrapper');
+    if (!sliderWrapper) return;
     
     try {
         const q = query(collection(db, "heroSlides"), orderBy("order"));
-        const snapshot = await getDocs(q);
+        const querySnapshot = await getDocs(q);
 
-        if (snapshot.empty) {
-            wrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/800x600/121212/D4AF37?text=JR-UD-HUB" alt="Hero"></div>`;
+        if (querySnapshot.empty) {
+            sliderWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/800x450/000/fff?text=No+Slides" alt="Placeholder"></div>`;
         } else {
-            wrapper.innerHTML = '';
-            snapshot.forEach((doc) => {
+            sliderWrapper.innerHTML = '';
+            querySnapshot.forEach((doc) => {
                 const slide = doc.data();
                 const slideEl = document.createElement('div');
                 slideEl.className = 'swiper-slide';
@@ -63,175 +65,249 @@ async function loadHeroSlider() {
                 let videoId = '', embedUrl = '', finalUrl = slide.url;
 
                 if (isVideo) {
-                    // 1. Google Drive Video Handling
                     if (slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
-                        try { 
-                            const id = slide.url.split('/d/')[1].split('/')[0]; 
-                            finalUrl = `https://drive.google.com/uc?export=download&id=${id}`; 
-                        } catch(e) {}
+                        try { const id = slide.url.split('/d/')[1].split('/')[0]; finalUrl = `https://drive.google.com/uc?export=download&id=${id}`; } catch(e) {}
                     } 
-                    // 2. YouTube & Shorts Handling (Original Logic)
                     else if (slide.url.includes('youtube.com') || slide.url.includes('youtu.be')) {
-                        if (slide.url.includes('v=')) {
-                            videoId = new URL(slide.url).searchParams.get('v');
-                        } else if (slide.url.includes('shorts')) {
-                            videoId = new URL(slide.url).pathname.split('/shorts/')[1];
-                        } else {
-                            videoId = slide.url.split('youtu.be/')[1];
-                        }
-                        
-                        if (videoId) {
-                            // Mute & Autoplay parameters essential for background play
-                            embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&autoplay=1&playsinline=1&rel=0`;
-                        }
+                        if (slide.url.includes('v=')) videoId = new URL(slide.url).searchParams.get('v');
+                        else if (slide.url.includes('shorts')) videoId = new URL(slide.url).pathname.split('/shorts/')[1];
+                        else videoId = slide.url.split('youtu.be/')[1];
+                        if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&autoplay=1&playsinline=1`;
                     }
                 }
 
                 if (slide.type === 'image') {
-                    const img = optimizeImage(slide.url, 1200, 90);
+                    const img = optimizeImage(slide.url, 1000, 90);
                     slideEl.innerHTML = `<img src="${img}" alt="Hero" loading="lazy">`;
                 } else if (isVideo && embedUrl) {
-                    // YouTube Iframe
                     slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
                 } else if (isVideo) {
-                    // Direct Video (MP4/Drive)
                     slideEl.innerHTML = `<video class="hero-video-element" src="${finalUrl}" autoplay muted loop playsinline></video>`;
                 }
-                wrapper.appendChild(slideEl);
+                sliderWrapper.appendChild(slideEl);
             });
         }
 
         const heroSwiper = new Swiper('.hero-slider-new', {
             loop: true,
-            speed: 1000,
-            autoplay: { delay: 5000, disableOnInteraction: false },
+            speed: 600,
+            autoplay: false, 
             pagination: { el: '.hero-pagination-dots', clickable: true },
-            effect: 'fade',
-            fadeEffect: { crossFade: true },
-            // Video Play Logic on Slide Change
             on: {
                 slideChangeTransitionEnd: function () {
-                    const slides = document.querySelectorAll('.hero-slider-new .swiper-slide');
-                    slides.forEach((s) => {
-                        const vid = s.querySelector('video');
-                        if(vid) {
-                            if(s.classList.contains('swiper-slide-active')) vid.play().catch(()=>{});
-                            else vid.pause();
-                        }
-                    });
+                    playActiveSlideVideo(this);
                 }
             }
         });
 
-    } catch (error) { console.error("Slider Error", error); }
+        playActiveSlideVideo(heroSwiper);
+
+    } catch (error) { console.error("Error loading hero slider"); }
 }
 
+function playActiveSlideVideo(swiper) {
+    const slides = document.querySelectorAll('.hero-slider-new .swiper-slide');
+    slides.forEach((slide) => {
+        const video = slide.querySelector('video');
+        if (video) {
+            if (slide.classList.contains('swiper-slide-active')) {
+                video.currentTime = 0;
+                video.play().catch(e => {});
+            } else {
+                video.pause();
+            }
+        }
+    });
+}
+
+/**
+ * 3. SPECIAL OFFER (Blue Style)
+ */
+async function loadTopDeals() {
+    const section = document.getElementById('top-deals-section');
+    const bannerContainer = document.getElementById('top-deals-banner-container');
+    const grid = document.getElementById('top-deals-grid');
+    if (!section) return;
+
+    try {
+        const settingsRef = doc(db, "settings", "homeLayout");
+        const settingsSnap = await getDoc(settingsRef);
+        
+        if (settingsSnap.exists() && settingsSnap.data().topDealsBanner) {
+            const bannerUrl = optimizeImage(settingsSnap.data().topDealsBanner, 1000, 85);
+            bannerContainer.innerHTML = `<img src="${bannerUrl}" alt="Special Offer">`;
+            section.style.display = 'block'; 
+        }
+
+        const q = query(collection(db, "products"), where("isTopDeal", "==", true), limit(10));
+        const snapshot = await getDocs(q);
+
+        if (snapshot.empty) {
+            if (!settingsSnap.exists() || !settingsSnap.data().topDealsBanner) section.style.display = 'none';
+            return;
+        }
+
+        section.style.display = 'block';
+        let slidesHTML = '';
+        snapshot.forEach(doc => {
+            slidesHTML += createCleanProductCard(doc.id, doc.data());
+        });
+        grid.innerHTML = slidesHTML;
+
+        new Swiper('.top-deals-swiper', {
+            slidesPerView: 3.2,
+            spaceBetween: 10,
+            breakpoints: { 640: { slidesPerView: 4.2 }, 1024: { slidesPerView: 5.2 } }
+        });
+
+    } catch (e) { console.error(e); }
+}
+
+/**
+ * 4. TOP TRENDY DEALS (Orange Style)
+ */
+async function loadTopTrendyDeals() {
+    const grid = document.getElementById("top-sellers-grid");
+    if (!grid) return;
+    
+    try {
+        const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
+        const querySnapshot = await getDocs(q);
+        
+        if (querySnapshot.empty) { grid.innerHTML = ''; return; }
+        
+        let slidesHTML = '';
+        querySnapshot.forEach((doc) => {
+            slidesHTML += createCleanProductCard(doc.id, doc.data());
+        });
+        grid.innerHTML = slidesHTML;
+
+        new Swiper('.top-sellers-swiper-new', {
+            slidesPerView: 3.2,
+            spaceBetween: 10,
+            breakpoints: { 640: { slidesPerView: 4.2 }, 1024: { slidesPerView: 5.2 } }
+        });
+        
+    } catch (error) { console.error("Error loading trendy deals"); }
+}
+
+/**
+ * 5. TOP DISCOUNT (Exclusive & Auto)
+ */
+async function loadTopDiscounts() {
+    const grid = document.getElementById("top-discount-grid");
+    if (!grid) return;
+
+    try {
+        const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(50));
+        const snapshot = await getDocs(q);
+        
+        let products = [];
+        snapshot.forEach(doc => {
+            const p = doc.data();
+            
+            // Exclude manually featured items
+            if (p.isTopDeal === true || p.featured === true) {
+                return; 
+            }
+
+            if (p.mrp && p.price && p.mrp > p.price) {
+                const discount = Math.round(((p.mrp - p.price) / p.mrp) * 100);
+                products.push({ id: doc.id, ...p, discount });
+            }
+        });
+
+        products.sort((a, b) => b.discount - a.discount);
+        const topDiscounts = products.slice(0, 8);
+
+        if (topDiscounts.length === 0) {
+            document.querySelector('.orange-section').style.display = 'none';
+            return;
+        }
+
+        let html = '';
+        topDiscounts.forEach(p => {
+            html += createCleanProductCard(p.id, p, p.discount);
+        });
+        grid.innerHTML = html;
+
+        new Swiper('.discount-swiper', {
+            slidesPerView: 3.2,
+            spaceBetween: 10,
+            breakpoints: { 640: { slidesPerView: 4.2 }, 1024: { slidesPerView: 5.2 } }
+        });
+
+    } catch(e) {}
+}
+
+/**
+ * 6. SHOP BY CATEGORY (Swiper with 4 visible)
+ */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
     try {
-        const q = query(collection(db, "categories"), orderBy("name"));
-        const snap = await getDocs(q);
+        const catQuery = query(collection(db, "categories"), orderBy("name")); // Load ALL categories
+        const catSnapshot = await getDocs(catQuery); 
+        if (catSnapshot.empty) { container.innerHTML = ''; return; }
+        
         let html = '';
-        snap.forEach(doc => {
-            const c = doc.data();
-            const img = optimizeImage(c.imageUrl, 150);
+        catSnapshot.forEach(doc => {
+            const category = doc.data();
+            const imageUrl = optimizeImage(category.imageUrl || '', 150, 75);
             html += `
                 <div class="swiper-slide">
                     <a href="categories.html?filter=${doc.id}" class="category-circle-item">
-                        <div class="category-circle-img-box"><img src="${img}" class="category-circle-img" loading="lazy"></div>
-                        <span class="category-circle-title">${c.name}</span>
+                        <div class="category-circle-img-box">
+                            <img src="${imageUrl}" alt="${category.name}" class="category-circle-img" loading="lazy">
+                        </div>
+                        <span class="category-circle-title">${category.name}</span>
                     </a>
-                </div>`;
+                </div>
+            `;
         });
         container.innerHTML = html;
+
+        // Initialize Swiper for Categories - 4 per view
         new Swiper('.category-swiper', {
-            slidesPerView: 4, spaceBetween: 15,
-            breakpoints: { 640: { slidesPerView: 5 }, 1024: { slidesPerView: 7 } }
+            slidesPerView: 4, 
+            spaceBetween: 10,
+            freeMode: true,   
+            breakpoints: {
+                640: { slidesPerView: 5 },
+                1024: { slidesPerView: 7 }
+            }
         });
-    } catch (e) {}
+
+    } catch (error) { console.error("Error loading home categories"); }
 }
 
-function createGlassCard(id, p, discount) {
-    const img = optimizeImage(p.images?.[0], 400);
-    const offer = discount ? `${discount}% OFF` : (p.mrp > p.price ? 'OFFER' : '');
+/**
+ * HELPER: CLEAN CARD DESIGN (No Buttons, Flutter Style)
+ */
+function createCleanProductCard(id, product, discountVal = null) {
+    const img = optimizeImage(product.images?.[0] || '', 300, 80);
     
+    // Determine Offer Text
+    let offerText = "";
+    if (discountVal) {
+        offerText = `Up to ${discountVal}% Off`;
+    } else if (product.mrp > product.price) {
+        const d = Math.round(((product.mrp - product.price) / product.mrp) * 100);
+        offerText = `Min ${d}% Off`;
+    } else {
+        offerText = `From ₹${product.price}`;
+    }
+
     return `
         <div class="swiper-slide">
             <a href="product.html?id=${id}" class="clean-card-wrapper">
                 <div class="clean-card-box">
-                    ${offer ? `<div class="clean-card-offer-bar">${offer}</div>` : ''}
-                    <img src="${img}" class="clean-card-img" loading="lazy" alt="${p.name}">
-                    <div class="clean-card-info">
-                        <div class="clean-card-title">${p.name}</div>
-                        <div class="clean-card-price">₹${p.price}</div>
-                    </div>
+                    <img src="${img}" class="clean-card-img" loading="lazy" alt="${product.name}">
+                    <div class="clean-card-offer-bar">${offerText}</div>
                 </div>
+                <div class="clean-card-title">${product.name}</div>
             </a>
         </div>
     `;
-}
-
-async function loadTopDeals() {
-    const grid = document.getElementById('top-deals-grid');
-    const banner = document.getElementById('top-deals-banner-container');
-    const section = document.getElementById('top-deals-section');
-    if(!grid) return;
-
-    try {
-        const s = await getDoc(doc(db, "settings", "homeLayout"));
-        if(s.exists() && s.data().topDealsBanner) {
-            banner.innerHTML = `<img src="${optimizeImage(s.data().topDealsBanner, 1000)}" style="width:100%;display:block;">`;
-            section.style.display = 'block';
-        }
-        const q = query(collection(db, "products"), where("isTopDeal", "==", true), limit(10));
-        const snap = await getDocs(q);
-        if(!snap.empty) {
-            section.style.display = 'block';
-            let html = '';
-            snap.forEach(d => html += createGlassCard(d.id, d.data(), null));
-            grid.innerHTML = html;
-            new Swiper('.top-deals-swiper', { slidesPerView: 2.2, spaceBetween: 15, breakpoints: { 640: { slidesPerView: 3.5 }, 1024: { slidesPerView: 5 } } });
-        }
-    } catch(e) {}
-}
-
-async function loadTopTrendyDeals() {
-    const grid = document.getElementById('top-sellers-grid');
-    if(!grid) return;
-    try {
-        const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
-        const snap = await getDocs(q);
-        if(!snap.empty) {
-            let html = '';
-            snap.forEach(d => html += createGlassCard(d.id, d.data(), null));
-            grid.innerHTML = html;
-            new Swiper('.top-sellers-swiper-new', { slidesPerView: 2.2, spaceBetween: 15, breakpoints: { 640: { slidesPerView: 3.5 }, 1024: { slidesPerView: 5 } } });
-        }
-    } catch(e) {}
-}
-
-async function loadTopDiscounts() {
-    const grid = document.getElementById('top-discount-grid');
-    if(!grid) return;
-    try {
-        const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(40));
-        const snap = await getDocs(q);
-        let items = [];
-        snap.forEach(d => {
-            const p = d.data();
-            if(!p.isTopDeal && !p.featured && p.mrp > p.price) {
-                const disc = Math.round(((p.mrp - p.price)/p.mrp)*100);
-                items.push({ id:d.id, ...p, disc });
-            }
-        });
-        items.sort((a,b) => b.disc - a.disc);
-        
-        if(items.length) {
-            let html = '';
-            items.slice(0, 10).forEach(p => html += createGlassCard(p.id, p, p.disc));
-            grid.innerHTML = html;
-            new Swiper('.discount-swiper', { slidesPerView: 2.2, spaceBetween: 15, breakpoints: { 640: { slidesPerView: 3.5 }, 1024: { slidesPerView: 5 } } });
-        }
-    } catch(e) {}
 }
