@@ -24,7 +24,6 @@ import {
 import { db, auth } from './firebase-config.js';
 import { optimizeImage } from './common.js'; 
 
-// --- Icons (SVG Strings) ---
 const ICONS = {
     trash: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
     edit: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`,
@@ -32,7 +31,7 @@ const ICONS = {
     star: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
 };
 
-// --- DOM Elements ---
+// DOM Elements
 const loginSection = document.getElementById("login-section");
 const adminPanel = document.getElementById("admin-panel");
 const loginForm = document.getElementById("login-form");
@@ -50,6 +49,7 @@ const themeToggleBtn = document.getElementById("theme-toggle-btn");
 const pageContents = document.querySelectorAll(".page-content");
 const navLinks = document.querySelectorAll(".nav-link");
 
+// Product/Category Forms
 const addCategoryForm = document.getElementById("add-category-form");
 const categoriesListBody = document.getElementById("categories-list-body");
 const addProductForm = document.getElementById("add-product-form");
@@ -57,6 +57,12 @@ const productsListBody = document.getElementById("products-list-body");
 const featuredProductsListBody = document.getElementById("featured-products-list-body"); 
 const addHeroSlideForm = document.getElementById("add-hero-slide-form");
 const heroSlidesListBody = document.getElementById("hero-slides-list-body");
+
+// Top Deals (New)
+const topDealsBannerForm = document.getElementById("top-deals-banner-form");
+const topDealsListBody = document.getElementById("top-deals-list-body");
+const topDealSearchInp = document.getElementById("top-deal-search-input");
+const topDealSearchRes = document.getElementById("top-deal-search-results");
 
 const editModal = document.getElementById("edit-modal");
 const modalCloseButton = document.getElementById("modal-close-button");
@@ -68,10 +74,11 @@ const confirmBtnCancel = document.getElementById("confirm-btn-cancel");
 
 let currentProductsQuery = null;
 let currentFeaturedQuery = null;
+let currentTopDealsQuery = null;
 let deleteInfo = { id: null, type: null }; 
 let allProductsCache = []; 
 
-// --- Helper Functions ---
+// Helper Functions
 function showStatus(ignored, message, isError = true) {
     const toast = document.createElement('div');
     toast.className = `toast ${isError ? 'error' : 'success'}`;
@@ -97,7 +104,7 @@ function enableButton(btn, text) {
     if(load) load.style.display = 'none';
 }
 
-// --- Auth ---
+// Auth
 loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     disableButton(loginButton, "Logging in..."); 
@@ -121,14 +128,14 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// --- Theme ---
+// Theme
 if(localStorage.getItem('admin-theme') === 'light') document.body.classList.add('light-mode');
 themeToggleBtn.addEventListener('click', () => {
     document.body.classList.toggle('light-mode');
     localStorage.setItem('admin-theme', document.body.classList.contains('light-mode') ? 'light' : 'dark');
 });
 
-// --- Nav ---
+// Nav
 function closeNav() { adminSideNav.classList.remove("open"); adminNavOverlay.classList.remove("open"); }
 adminNavOpenBtn.addEventListener("click", () => { adminSideNav.classList.add("open"); adminNavOverlay.classList.add("open"); });
 adminNavCloseBtn.addEventListener("click", closeNav);
@@ -149,36 +156,30 @@ function loadInitialData() {
     loadFeaturedProducts();
     loadHeroSlides();
     loadAllSettings();
+    loadTopDealsConfig(); // New
     cacheAllProductsForSearch();
     setupImageUploader('product-image-list-container', 'add-image-url-btn');
     setupMoreLinksUploader('product-more-links-container', 'add-more-link-btn');
     if(!document.getElementById("product-image-list-container").children.length) addImageInput('product-image-list-container');
-    
-    // *** Initialize Hero Slide Input Preview (Fix for Detached Border) ***
     transformHeroSlideInput();
 }
 
-// *** New Function: Transform plain Hero Input to Rich Preview Input ***
 function transformHeroSlideInput() {
     const heroInput = document.getElementById("hero-slide-url");
     if (heroInput && !heroInput.parentElement.classList.contains('inline-image-input-container')) {
         const wrapper = document.createElement('div');
         wrapper.className = 'inline-image-input-container';
-        
-        // Preview Box
         const preview = document.createElement('div');
         preview.className = 'image-preview-small';
         preview.id = 'hero-slide-preview';
-        
         heroInput.parentNode.insertBefore(wrapper, heroInput);
         wrapper.appendChild(preview);
         wrapper.appendChild(heroInput);
-        
         setupImagePreview('hero-slide-url', 'hero-slide-preview');
     }
 }
 
-// --- Settings ---
+// Settings
 async function loadAllSettings() {
     try {
         const snap = await getDoc(doc(db, "settings", "global"));
@@ -238,7 +239,71 @@ bindSave("follow-settings-form", "save-follow-settings-button", "Save Links", ()
     youtubeUrl: document.getElementById("setting-youtube-url").value,
 }));
 
-// --- Categories ---
+// *** NEW: MANAGE HOME (TOP DEALS) ***
+async function loadTopDealsConfig() {
+    try {
+        // Load Banner
+        const snap = await getDoc(doc(db, "settings", "homeLayout"));
+        if(snap.exists()) {
+            document.getElementById("top-deals-banner-input").value = snap.data().topDealsBanner || '';
+            document.getElementById("top-deals-banner-input").dispatchEvent(new Event('input'));
+        }
+        
+        // Load Products
+        if(currentTopDealsQuery) currentTopDealsQuery();
+        currentTopDealsQuery = onSnapshot(query(collection(db, "products"), where("isTopDeal", "==", true)), (snap) => {
+            topDealsListBody.innerHTML = '';
+            snap.forEach(d => {
+                const p = d.data();
+                const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50) : '';
+                const row = document.createElement('tr');
+                row.innerHTML = `<td data-label="Image"><img src="${thumb}"></td><td data-label="Name">${p.name}</td><td data-label="Price">₹${p.price}</td><td data-label="Actions"><button class="btn btn-remove-featured" data-id="${d.id}" style="background-color:#ef4444;">${ICONS.x} Remove</button></td>`;
+                row.querySelector('.btn-remove-featured').addEventListener('click', async () => {
+                    if(confirm("Remove from Top Deals?")) { await updateDoc(doc(db, "products", d.id), { isTopDeal: false }); showStatus(null, "Removed", false); }
+                });
+                topDealsListBody.appendChild(row);
+            });
+        });
+    } catch(e) { console.error(e); }
+}
+
+topDealsBannerForm.addEventListener("submit", async(e) => {
+    e.preventDefault();
+    const btn = document.getElementById("save-top-deals-banner-btn");
+    disableButton(btn, "Saving...");
+    try {
+        await setDoc(doc(db, "settings", "homeLayout"), {
+            topDealsBanner: document.getElementById("top-deals-banner-input").value
+        }, { merge: true });
+        showStatus(null, "Banner Saved", false);
+    } catch(e){ showStatus(null, e.message); }
+    finally { enableButton(btn, "Save Banner"); }
+});
+
+// Search to Add to Top Deals
+topDealSearchInp.addEventListener('input', (e) => {
+    const t = e.target.value.toLowerCase().trim();
+    topDealSearchRes.innerHTML = '';
+    if(t.length < 2) return;
+    const res = allProductsCache.filter(p => !p.isTopDeal && p.name.toLowerCase().includes(t));
+    if(res.length) {
+        topDealSearchRes.style.display = 'block';
+        res.forEach(p => {
+            const d = document.createElement('div');
+            d.className = 'search-result-item';
+            const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50) : '';
+            d.innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><img src="${thumb}" style="width:35px;height:35px;border-radius:4px;object-fit:cover;"><div style="display:flex;flex-direction:column;line-height:1.2;"><span style="font-size:0.9rem;font-weight:500;">${p.name}</span><span style="font-size:0.8rem;color:var(--text-secondary);">₹${p.price}</span></div></div><button class="btn-add-featured-action">Add</button>`;
+            d.querySelector('.btn-add-featured-action').addEventListener('click', async (evt) => {
+                 evt.stopPropagation();
+                 await updateDoc(doc(db, "products", p.id), { isTopDeal: true });
+                 topDealSearchInp.value = ''; topDealSearchRes.style.display = 'none'; showStatus(null, "Added to Top Deals", false);
+            });
+            topDealSearchRes.appendChild(d);
+        });
+    } else topDealSearchRes.style.display = 'none';
+});
+
+// Categories
 function loadCategories() {
     onSnapshot(query(collection(db, "categories"), orderBy("name")), (snap) => {
         categoriesListBody.innerHTML = '';
@@ -275,7 +340,7 @@ addCategoryForm.addEventListener("submit", async (e) => {
     } catch(e) { showStatus(null, e.message); } finally { enableButton(btn, "Add Category"); }
 });
 
-// --- Products ---
+// Products
 function loadProducts(catId = "all") {
     let q = (catId === "all") ? query(collection(db, "products"), orderBy("createdAt", "desc")) : query(collection(db, "products"), where("categoryId", "==", catId));
     if(currentProductsQuery) currentProductsQuery();
@@ -327,7 +392,7 @@ addProductForm.addEventListener("submit", async (e) => {
     } catch(e) { showStatus(null, e.message); } finally { enableButton(btn, "Add Product"); }
 });
 
-// --- Featured (UPDATED: With Blue Add Button) ---
+// Featured (Trendy)
 function cacheAllProductsForSearch() {
     onSnapshot(query(collection(db, "products")), (snap) => {
         allProductsCache = [];
@@ -347,27 +412,12 @@ searchInp.addEventListener('input', (e) => {
             const d = document.createElement('div');
             d.className = 'search-result-item';
             const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50) : '';
-            
-            // *** മാറ്റം: പ്രിവ്യൂവിനും ആഡ് ബട്ടണും പുതിയ ലേഔട്ട് ***
-            d.innerHTML = `
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <img src="${thumb}" style="width:35px; height:35px; border-radius:4px; object-fit:cover;">
-                    <div style="display:flex; flex-direction:column; line-height:1.2;">
-                        <span style="font-size:0.9rem; font-weight:500;">${p.name}</span>
-                        <span style="font-size:0.8rem; color:var(--text-secondary);">₹${p.price}</span>
-                    </div>
-                </div>
-                <button class="btn-add-featured-action">Add</button>
-            `;
-            
+            d.innerHTML = `<div style="display:flex; align-items:center; gap:10px;"><img src="${thumb}" style="width:35px; height:35px; border-radius:4px; object-fit:cover;"><div style="display:flex; flex-direction:column; line-height:1.2;"><span style="font-size:0.9rem; font-weight:500;">${p.name}</span><span style="font-size:0.8rem; color:var(--text-secondary);">₹${p.price}</span></div></div><button class="btn-add-featured-action">Add</button>`;
             d.querySelector('.btn-add-featured-action').addEventListener('click', async (e) => {
-                 e.stopPropagation(); // ബട്ടണിൽ ക്ലിക്ക് ചെയ്താൽ മാത്രം
+                 e.stopPropagation();
                  await updateDoc(doc(db, "products", p.id), { featured: true });
-                 searchInp.value = ''; 
-                 searchRes.style.display = 'none'; 
-                 showStatus(null, "Added to Featured", false);
+                 searchInp.value = ''; searchRes.style.display = 'none'; showStatus(null, "Added to Trendy", false);
             });
-            
             searchRes.appendChild(d);
         });
     } else searchRes.style.display = 'none';
@@ -390,7 +440,7 @@ function loadFeaturedProducts() {
     });
 }
 
-// --- Hero ---
+// Hero
 addHeroSlideForm.addEventListener("submit", async (e) => {
     e.preventDefault();
     const btn = document.getElementById("add-hero-slide-button");
@@ -404,7 +454,7 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
         });
         showStatus(null, "Slide Added", false); 
         addHeroSlideForm.reset();
-        document.getElementById('hero-slide-preview').innerHTML = ''; // Clear preview
+        document.getElementById('hero-slide-preview').innerHTML = '';
     } catch(e) { showStatus(null, e.message); } finally { enableButton(btn, "Add Slide"); }
 });
 function loadHeroSlides() {
@@ -418,7 +468,7 @@ function loadHeroSlides() {
     });
 }
 
-// --- Uploader Logic (Optimized for Preview) ---
+// Preview Logic
 function setupImagePreview(id, pid) {
     const el = document.getElementById(id);
     if(el) el.addEventListener('input', () => {
@@ -429,12 +479,12 @@ function setupImagePreview(id, pid) {
 setupImagePreview('category-image-url', 'category-image-preview');
 setupImagePreview('setting-logo-image-url', 'logo-preview');
 setupImagePreview('setting-home-banner-url', 'banner-preview');
+setupImagePreview('top-deals-banner-input', 'top-deals-banner-preview'); // New
 
 function setupImageUploader(cid, bid) {
     const btn = document.getElementById(bid);
     if(btn) btn.onclick = () => addImageInput(cid);
     document.getElementById(cid).addEventListener('click', e => { if(e.target.closest('.btn-remove-image')) e.target.closest('.image-url-item').remove(); });
-    // Preview on input
     document.getElementById(cid).addEventListener('input', e => { 
         if(e.target.tagName==='INPUT') {
             const url = e.target.value;
@@ -462,7 +512,7 @@ function getMoreLinksFromUploader(cid) {
 }
 function populateMoreLinksUploader(cid, links) { const c=document.getElementById(cid); c.innerHTML=''; (links&&links.length?links:[{title:'',url:''}]).forEach(l=>addLinkInput(cid, l)); }
 
-// --- DELETION ---
+// Deletion
 document.body.addEventListener('click', e => {
     if(e.target.classList.contains('btn-delete')) {
         deleteInfo = { id: e.target.dataset.id, type: e.target.dataset.type };
@@ -480,11 +530,10 @@ confirmBtnDelete.onclick = async () => {
     } catch(e) { showStatus(null, e.message); } finally { enableButton(confirmBtnDelete, "Delete"); confirmModal.style.display='none'; }
 };
 
-// --- COMPREHENSIVE EDIT MODAL ---
+// Edit Modal
 async function openEditModal(id, type) {
     editModal.style.display = 'flex';
     modalForm.innerHTML = '<p style="text-align:center;padding:20px;">Loading...</p>';
-    
     try {
         const col = type === 'product' ? 'products' : 'categories';
         const docSnap = await getDoc(doc(db, col, id));
@@ -492,50 +541,17 @@ async function openEditModal(id, type) {
         const data = docSnap.data();
 
         if(type === 'category') {
-            modalForm.innerHTML = `
-                <input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="category">
-                <div class="form-group"><label>Name</label><input type="text" id="edit-cat-name" value="${data.name}"></div>
-                <div class="form-group"><label>Image URL</label><input type="text" id="edit-cat-img" value="${data.imageUrl}"></div>
-                <button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
+            modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="category"><div class="form-group"><label>Name</label><input type="text" id="edit-cat-name" value="${data.name}"></div><div class="form-group"><label>Image URL</label><input type="text" id="edit-cat-img" value="${data.imageUrl}"></div><button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
         } else {
              const catsSnap = await getDocs(query(collection(db, "categories")));
              let catOptions = '';
              catsSnap.forEach(c => catOptions += `<option value="${c.id}" ${c.id===data.categoryId?'selected':''}>${c.data().name}</option>`);
-
-             modalForm.innerHTML = `
-                <input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="product">
-                <div class="form-grid">
-                    <div class="form-group"><label>Name</label><input type="text" id="edit-name" value="${data.name}"></div>
-                    <div class="form-group"><label>Category</label><select id="edit-cat">${catOptions}</select></div>
-                    <div class="form-group"><label>Price</label><input type="number" id="edit-price" value="${data.price}"></div>
-                    <div class="form-group"><label>MRP</label><input type="number" id="edit-mrp" value="${data.mrp}"></div>
-                    <div class="form-group checkbox-group"><input type="checkbox" id="edit-featured" ${data.featured?'checked':''}><label>Featured</label></div>
-                    <div class="form-group full-width"><label>Specification</label><textarea id="edit-spec" rows="3">${data.specification||''}</textarea></div>
-                    <div class="form-group full-width"><label>Description</label><textarea id="edit-desc" rows="3">${data.description||''}</textarea></div>
-                    
-                    <div class="form-group full-width">
-                        <label>Images</label>
-                        <div id="edit-image-list" class="image-url-list"></div>
-                        <button type="button" id="btn-add-edit-image" class="btn btn-secondary" style="margin-top:5px;">
-                            ${ICONS.edit.replace('Edit', '')} Add Image
-                        </button>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label>More Links</label>
-                        <div id="edit-link-list" class="link-url-list"></div>
-                        <button type="button" id="btn-add-edit-link" class="btn btn-secondary" style="margin-top:5px;">Add Link</button>
-                    </div>
-                </div>
-                <button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>
-             `;
-             
+             modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="product"><div class="form-grid"><div class="form-group"><label>Name</label><input type="text" id="edit-name" value="${data.name}"></div><div class="form-group"><label>Category</label><select id="edit-cat">${catOptions}</select></div><div class="form-group"><label>Price</label><input type="number" id="edit-price" value="${data.price}"></div><div class="form-group"><label>MRP</label><input type="number" id="edit-mrp" value="${data.mrp}"></div><div class="form-group checkbox-group"><input type="checkbox" id="edit-featured" ${data.featured?'checked':''}><label>Featured</label></div><div class="form-group full-width"><label>Specification</label><textarea id="edit-spec" rows="3">${data.specification||''}</textarea></div><div class="form-group full-width"><label>Description</label><textarea id="edit-desc" rows="3">${data.description||''}</textarea></div><div class="form-group full-width"><label>Images</label><div id="edit-image-list" class="image-url-list"></div><button type="button" id="btn-add-edit-image" class="btn btn-secondary" style="margin-top:5px;">${ICONS.edit.replace('Edit', '')} Add Image</button></div><div class="form-group full-width"><label>More Links</label><div id="edit-link-list" class="link-url-list"></div><button type="button" id="btn-add-edit-link" class="btn btn-secondary" style="margin-top:5px;">Add Link</button></div></div><button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
              setupImageUploader('edit-image-list', 'btn-add-edit-image');
              populateImageUploader('edit-image-list', data.images);
              setupMoreLinksUploader('edit-link-list', 'btn-add-edit-link');
              populateMoreLinksUploader('edit-link-list', data.moreLinks);
         }
-
         document.getElementById('save-edit-btn').addEventListener('click', async (e) => {
             e.preventDefault();
             const btn = e.target;
@@ -544,22 +560,16 @@ async function openEditModal(id, type) {
                 const eId = document.getElementById('edit-id').value;
                 const eType = document.getElementById('edit-type').value;
                 let updateData = {};
-                
                 if(eType === 'category') {
                     updateData = { name: document.getElementById('edit-cat-name').value, imageUrl: document.getElementById('edit-cat-img').value };
                 } else {
                     const imgs = getImageUrlsFromUploader('edit-image-list');
                     if(!imgs.length) throw new Error("At least 1 image required");
                     updateData = {
-                        name: document.getElementById('edit-name').value,
-                        categoryId: document.getElementById('edit-cat').value,
-                        price: Number(document.getElementById('edit-price').value),
-                        mrp: Number(document.getElementById('edit-mrp').value),
-                        featured: document.getElementById('edit-featured').checked,
-                        specification: document.getElementById('edit-spec').value,
-                        description: document.getElementById('edit-desc').value,
-                        images: imgs,
-                        moreLinks: getMoreLinksFromUploader('edit-link-list')
+                        name: document.getElementById('edit-name').value, categoryId: document.getElementById('edit-cat').value,
+                        price: Number(document.getElementById('edit-price').value), mrp: Number(document.getElementById('edit-mrp').value),
+                        featured: document.getElementById('edit-featured').checked, specification: document.getElementById('edit-spec').value,
+                        description: document.getElementById('edit-desc').value, images: imgs, moreLinks: getMoreLinksFromUploader('edit-link-list')
                     };
                 }
                 await updateDoc(doc(db, col, eId), updateData);
@@ -567,7 +577,6 @@ async function openEditModal(id, type) {
                 editModal.style.display = 'none';
             } catch(err) { showStatus(null, err.message); enableButton(btn, "Save Changes"); }
         });
-
     } catch(e) { console.error(e); editModal.style.display = 'none'; showStatus(null, e.message); }
 }
 modalCloseButton.onclick = () => editModal.style.display = 'none';
