@@ -155,9 +155,9 @@ async function loadTopDeals() {
         grid.innerHTML = slidesHTML;
 
         new Swiper('.top-deals-swiper', {
-            slidesPerView: 2.2,
+            slidesPerView: 3.2,
             spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
+            breakpoints: { 640: { slidesPerView: 4.2 }, 1024: { slidesPerView: 5.2 } }
         });
 
     } catch (e) { console.error(e); }
@@ -183,9 +183,9 @@ async function loadTopTrendyDeals() {
         grid.innerHTML = slidesHTML;
 
         new Swiper('.top-sellers-swiper-new', {
-            slidesPerView: 2.2,
+            slidesPerView: 3.2,
             spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
+            breakpoints: { 640: { slidesPerView: 4.2 }, 1024: { slidesPerView: 5.2 } }
         });
         
     } catch (error) { console.error("Error loading trendy deals"); }
@@ -232,9 +232,9 @@ async function loadTopDiscounts() {
         grid.innerHTML = html;
 
         new Swiper('.discount-swiper', {
-            slidesPerView: 2.2,
+            slidesPerView: 3.2,
             spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
+            breakpoints: { 640: { slidesPerView: 4.2 }, 1024: { slidesPerView: 5.2 } }
         });
 
     } catch(e) {}
@@ -256,7 +256,7 @@ async function loadHomeCategories() {
             const category = doc.data();
             const imageUrl = optimizeImage(category.imageUrl || '', 150, 75);
             html += `
-                <div class="swiper-slide" style="width: auto;">
+                <div class="swiper-slide">
                     <a href="categories.html?filter=${doc.id}" class="category-circle-item">
                         <div class="category-circle-img-box">
                             <img src="${imageUrl}" alt="${category.name}" class="category-circle-img" loading="lazy">
@@ -268,11 +268,11 @@ async function loadHomeCategories() {
         });
         container.innerHTML = html;
 
-        // Initialize Swiper for Categories
+        // Initialize Swiper for Categories - 4 per view
         new Swiper('.category-swiper', {
-            slidesPerView: 4, // Show 4 items
-            spaceBetween: 15,
-            freeMode: true,   // Allow smooth swiping
+            slidesPerView: 4, 
+            spaceBetween: 10,
+            freeMode: true,   
             breakpoints: {
                 640: { slidesPerView: 5 },
                 1024: { slidesPerView: 7 }
@@ -283,7 +283,7 @@ async function loadHomeCategories() {
 }
 
 /**
- * HELPER: NEW CLEAN CARD DESIGN (Reference Image)
+ * HELPER: CLEAN CARD DESIGN (No Buttons, Flutter Style)
  */
 function createCleanProductCard(id, product, discountVal = null) {
     const img = optimizeImage(product.images?.[0] || '', 300, 80);
