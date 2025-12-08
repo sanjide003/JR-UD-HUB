@@ -1,4 +1,4 @@
-// index.js - Circular Cats, No Autoplay, Smart Discount Filter
+// index.js - New Card Style (No Buttons) & Swipeable Categories
 
 import { db } from './firebase-config.js';
 import { 
@@ -13,7 +13,6 @@ import {
     setLogLevel 
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadSiteSettings, optimizeImage } from './common.js'; 
-import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
 setLogLevel('Silent');
 
@@ -92,7 +91,6 @@ async function loadHeroSlider() {
         const heroSwiper = new Swiper('.hero-slider-new', {
             loop: true,
             speed: 600,
-            // *** മാറ്റം: Autoplay പൂർണ്ണമായും ഓഫ് ചെയ്തു ***
             autoplay: false, 
             pagination: { el: '.hero-pagination-dots', clickable: true },
             on: {
@@ -123,7 +121,7 @@ function playActiveSlideVideo(swiper) {
 }
 
 /**
- * 3. SPECIAL OFFER (Admin Controlled)
+ * 3. SPECIAL OFFER (Blue Style)
  */
 async function loadTopDeals() {
     const section = document.getElementById('top-deals-section');
@@ -152,7 +150,7 @@ async function loadTopDeals() {
         section.style.display = 'block';
         let slidesHTML = '';
         snapshot.forEach(doc => {
-            slidesHTML += createProductCardHTML(doc.id, doc.data());
+            slidesHTML += createCleanProductCard(doc.id, doc.data());
         });
         grid.innerHTML = slidesHTML;
 
@@ -166,7 +164,7 @@ async function loadTopDeals() {
 }
 
 /**
- * 4. TOP TRENDY DEALS (Featured)
+ * 4. TOP TRENDY DEALS (Orange Style)
  */
 async function loadTopTrendyDeals() {
     const grid = document.getElementById("top-sellers-grid");
@@ -180,7 +178,7 @@ async function loadTopTrendyDeals() {
         
         let slidesHTML = '';
         querySnapshot.forEach((doc) => {
-            slidesHTML += createProductCardHTML(doc.id, doc.data());
+            slidesHTML += createCleanProductCard(doc.id, doc.data());
         });
         grid.innerHTML = slidesHTML;
 
@@ -194,7 +192,7 @@ async function loadTopTrendyDeals() {
 }
 
 /**
- * 5. TOP DISCOUNT (Exclusive - Excludes Featured & Top Deals)
+ * 5. TOP DISCOUNT (Exclusive & Auto)
  */
 async function loadTopDiscounts() {
     const grid = document.getElementById("top-discount-grid");
@@ -208,7 +206,7 @@ async function loadTopDiscounts() {
         snapshot.forEach(doc => {
             const p = doc.data();
             
-            // *** മാറ്റം: Top Deal അല്ലെങ്കിൽ Featured ആണെങ്കിൽ ഇത് ഒഴിവാക്കുക ***
+            // Exclude manually featured items
             if (p.isTopDeal === true || p.featured === true) {
                 return; 
             }
@@ -219,7 +217,6 @@ async function loadTopDiscounts() {
             }
         });
 
-        // Sort by discount
         products.sort((a, b) => b.discount - a.discount);
         const topDiscounts = products.slice(0, 8);
 
@@ -230,7 +227,7 @@ async function loadTopDiscounts() {
 
         let html = '';
         topDiscounts.forEach(p => {
-            html += createProductCardHTML(p.id, p, p.discount);
+            html += createCleanProductCard(p.id, p, p.discount);
         });
         grid.innerHTML = html;
 
@@ -244,98 +241,73 @@ async function loadTopDiscounts() {
 }
 
 /**
- * 6. RANDOM CATEGORIES (Bottom - Circular)
+ * 6. SHOP BY CATEGORY (Swiper with 4 visible)
  */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
     try {
-        const catQuery = query(collection(db, "categories"));
+        const catQuery = query(collection(db, "categories"), orderBy("name")); // Load ALL categories
         const catSnapshot = await getDocs(catQuery); 
         if (catSnapshot.empty) { container.innerHTML = ''; return; }
         
-        let categories = [];
-        catSnapshot.forEach((doc) => { categories.push({ id: doc.id, ...doc.data() }); });
-        
-        categories = categories.sort(() => 0.5 - Math.random()).slice(0, 4);
-        
-        container.innerHTML = ''; 
-        categories.forEach(category => {
-            const item = document.createElement('div');
-            // *** മാറ്റം: പുതിയ ക്ലാസ്സ് (Circular) ഉപയോഗിക്കുന്നു ***
-            item.className = 'category-circle-item'; 
+        let html = '';
+        catSnapshot.forEach(doc => {
+            const category = doc.data();
             const imageUrl = optimizeImage(category.imageUrl || '', 150, 75);
-            item.innerHTML = `
-                <a href="categories.html?filter=${category.id}" style="display:contents;">
-                    <div class="category-circle-img-box">
-                        <img src="${imageUrl}" alt="${category.name}" class="category-circle-img" loading="lazy">
-                    </div>
-                    <span class="category-circle-title">${category.name}</span>
-                </a>
+            html += `
+                <div class="swiper-slide" style="width: auto;">
+                    <a href="categories.html?filter=${doc.id}" class="category-circle-item">
+                        <div class="category-circle-img-box">
+                            <img src="${imageUrl}" alt="${category.name}" class="category-circle-img" loading="lazy">
+                        </div>
+                        <span class="category-circle-title">${category.name}</span>
+                    </a>
+                </div>
             `;
-            container.appendChild(item);
         });
+        container.innerHTML = html;
+
+        // Initialize Swiper for Categories
+        new Swiper('.category-swiper', {
+            slidesPerView: 4, // Show 4 items
+            spaceBetween: 15,
+            freeMode: true,   // Allow smooth swiping
+            breakpoints: {
+                640: { slidesPerView: 5 },
+                1024: { slidesPerView: 7 }
+            }
+        });
+
     } catch (error) { console.error("Error loading home categories"); }
 }
 
-function createProductCardHTML(id, product, discountVal = null) {
+/**
+ * HELPER: NEW CLEAN CARD DESIGN (Reference Image)
+ */
+function createCleanProductCard(id, product, discountVal = null) {
     const img = optimizeImage(product.images?.[0] || '', 300, 80);
-    let discountTag = '';
+    
+    // Determine Offer Text
+    let offerText = "";
     if (discountVal) {
-        discountTag = `<div class="discount-circle"><span>${discountVal}%</span><span>OFF</span></div>`;
+        offerText = `Up to ${discountVal}% Off`;
+    } else if (product.mrp > product.price) {
+        const d = Math.round(((product.mrp - product.price) / product.mrp) * 100);
+        offerText = `Min ${d}% Off`;
+    } else {
+        offerText = `From ₹${product.price}`;
     }
-
-    const isInCart = isItemInCart(id);
-    const btnText = isInCart ? "Done" : "Add";
-    const btnClass = isInCart ? "btn-sm-primary btn-add-to-cart added" : "btn-sm-primary btn-add-to-cart";
-    const btnStyle = isInCart ? "background:#2ecc71;" : "";
 
     return `
         <div class="swiper-slide">
-            <a href="product.html?id=${id}" class="deal-card">
-                ${discountTag}
-                <div class="deal-img-box">
-                    <img src="${img}" class="deal-img" loading="lazy" alt="${product.name}">
+            <a href="product.html?id=${id}" class="clean-card-wrapper">
+                <div class="clean-card-box">
+                    <img src="${img}" class="clean-card-img" loading="lazy" alt="${product.name}">
+                    <div class="clean-card-offer-bar">${offerText}</div>
                 </div>
-                <div class="deal-info">
-                    <div class="deal-title">${product.name}</div>
-                    <div class="deal-price-box">
-                        <span class="deal-price">₹${product.price}</span>
-                    </div>
-                    <div class="deal-btn-row">
-                        <button class="${btnClass}" style="${btnStyle}" data-id="${id}" 
-                            data-name="${product.name}" data-price="${product.price}" 
-                            data-mrp="${product.mrp}" data-image="${img}">
-                            ${btnText}
-                        </button>
-                    </div>
-                </div>
+                <div class="clean-card-title">${product.name}</div>
             </a>
         </div>
     `;
 }
-
-document.addEventListener('click', (e) => {
-    const button = e.target.closest('.btn-add-to-cart');
-    if (button) {
-        e.preventDefault();
-        e.stopPropagation();
-        const id = button.dataset.id;
-        
-        if (button.classList.contains('added')) {
-            removeFromCart(id);
-            button.classList.remove('added');
-            button.textContent = 'Add';
-            button.style.background = 'var(--primary-gold)';
-        } else {
-            const product = {
-                id: id, name: button.dataset.name, price: parseFloat(button.dataset.price),
-                mrp: parseFloat(button.dataset.mrp), image: button.dataset.image, size: ''
-            };
-            addToCart(id, product);
-            button.classList.add('added');
-            button.textContent = 'Done';
-            button.style.background = '#2ecc71';
-        }
-    }
-});
