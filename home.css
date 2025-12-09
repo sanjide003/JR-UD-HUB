@@ -1,4 +1,4 @@
-/* home.css - 3:4 Ratio Cards & Single Line Headings */
+/* home.css - Added Under 799 Section Styling */
 
 /* === 1. Top Banner === */
 .home-top-banner {
@@ -45,7 +45,7 @@
     padding-left: 10px; padding-right: 10px;
 }
 
-/* Special Offer Header (Full Width) */
+/* Special Offer Header */
 .special-offer-wrapper { margin-bottom: 2rem; padding: 0; }
 .special-offer-header { width: 100%; margin-bottom: 10px; }
 .special-offer-banner-img { width: 100%; height: auto; display: block; }
@@ -59,9 +59,13 @@
     display: flex; align-items: center; justify-content: space-between;
 }
 
+/* Color Themes */
 .blue-card-bg { background: linear-gradient(90deg, #2874f0, #5baaf9); }
 .orange-card-bg { background: linear-gradient(90deg, #fb641b, #ff8e3c); }
 .dark-card-bg { background: linear-gradient(90deg, #6c5ce7, #a29bfe); }
+
+/* *** New: Green Theme for Under 799 *** */
+.green-card-bg { background: linear-gradient(90deg, #00b894, #55efc4); }
 
 .section-title-card {
     color: #fff; 
@@ -69,7 +73,7 @@
     font-weight: 700; 
     margin: 0; 
     text-transform: capitalize;
-    white-space: nowrap; /* Single Line Force */
+    white-space: nowrap; 
     overflow: hidden;
     text-overflow: ellipsis;
 }
@@ -79,7 +83,10 @@
 .blue-container { background-color: #111; border: 1px solid #333; border-top: none; }
 .orange-container { background-color: #111; border: 1px solid #333; border-top: none; }
 
-/* === 4. Product Cards (3:4 Ratio) === */
+/* *** New: Green Container *** */
+.green-container { background-color: #111; border: 1px solid #333; border-top: none; }
+
+/* === 4. Product Cards === */
 .swiper-slide { height: auto; display: flex; }
 
 .clean-card-wrapper {
@@ -88,7 +95,7 @@
     text-decoration: none;
     width: 100%;
     height: 100%;
-    min-height: 360px; /* Increased height for 3:4 ratio */
+    min-height: 360px; 
     background-color: #1a1a1a;
     border-radius: 8px;
     overflow: hidden;
@@ -97,10 +104,9 @@
     transition: transform 0.2s;
 }
 
-/* Image Area (3:4 Aspect Ratio) */
 .clean-card-box {
     width: 100%;
-    aspect-ratio: 3/4; /* *** 3:4 Ratio *** */
+    aspect-ratio: 3/4; 
     position: relative;
     background-color: #fff;
     display: flex; align-items: center; justify-content: center;
@@ -111,12 +117,32 @@
 .clean-card-img {
     width: 100%;
     height: 100%;
-    object-fit: contain; /* Shows full product within 3:4 box */
+    object-fit: contain;
     transition: transform 0.3s;
 }
 .clean-card-wrapper:hover .clean-card-img { transform: scale(1.05); }
 
-/* Discount Badge */
+/* Offer Bar */
+.clean-card-offer-bar {
+    width: 100%;
+    height: 28px;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 0.3px;
+    text-transform: uppercase;
+}
+
+/* Bar Colors */
+.orange-container .clean-card-offer-bar { background-color: #fb641b; }
+.blue-container .clean-card-offer-bar { background-color: #2874f0; }
+/* *** New: Green Bar *** */
+.green-container .clean-card-offer-bar { background-color: #00b894; }
+
+/* Badge */
 .card-discount-badge {
     position: absolute; top: 0; left: 0;
     background-color: #388e3c; color: #fff;
@@ -127,7 +153,7 @@
 }
 .card-discount-badge.red { background-color: #ff4d4d; }
 
-/* Content Area */
+/* Details */
 .clean-card-details {
     padding: 12px;
     display: flex; flex-direction: column;
