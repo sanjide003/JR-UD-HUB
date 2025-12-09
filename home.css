@@ -1,215 +1,148 @@
-/* home.css - Premium & Attractive Design */
+/* home.css - Matching the Screenshot Design */
 
 /* === 1. Top Banner === */
 .home-top-banner {
-    width: 100%;
-    height: auto;
-    background-color: #000;
-    border-bottom: 1px solid rgba(212, 175, 55, 0.3);
-    margin-bottom: 0;
-    box-shadow: 0 5px 20px rgba(0,0,0,0.5);
-    position: relative; z-index: 2;
+    width: 100%; height: auto; background: #000;
+    margin-bottom: 0; display: block;
 }
-.home-top-banner img {
-    width: 100%; height: auto; display: block; max-height: 120px; object-fit: cover;
-}
+.home-top-banner img { width: 100%; height: auto; max-height: 100px; object-fit: cover; }
 
-/* === 2. Hero Slider (PREMIUM LOOK) === */
+/* === 2. Hero Slider (Preserved as requested) === */
 .hero-section-new {
-    width: 100%;
-    height: 75vh;
-    position: relative;
-    background-color: #000;
-    margin-bottom: 3rem;
-    
-    /* Glow Shadow around the slider */
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 30px rgba(212, 175, 55, 0.05);
+    width: 100%; height: auto; aspect-ratio: 16/9; /* Responsive Height */
+    background-color: #f0f0f0; margin-bottom: 10px;
 }
-
-/* Gradient Fade at Bottom (Seamless blending) */
-.hero-section-new::after {
-    content: '';
-    position: absolute;
-    bottom: 0; left: 0; width: 100%; height: 150px;
-    background: linear-gradient(to top, var(--bg-color), transparent);
-    z-index: 2;
-    pointer-events: none;
-}
-
-@media (max-width: 768px) {
-    .hero-section-new { height: 55vh; }
-}
+@media (min-width: 768px) { .hero-section-new { height: 400px; aspect-ratio: auto; } }
 
 .hero-slider-new, .hero-slider-new .swiper-slide { width: 100%; height: 100%; }
-.hero-slider-new .swiper-slide img,
-.hero-slider-new .swiper-slide video {
-    width: 100%; height: 100%; object-fit: cover;
-    transition: transform 6s ease; /* Subtle zoom effect */
-}
-.hero-slider-new .swiper-slide-active img { transform: scale(1.05); }
+.hero-slider-new .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
+.hero-pagination-dots .swiper-pagination-bullet-active { background: #fff; }
 
-.hero-pagination-dots { bottom: 30px !important; z-index: 10; }
-.hero-pagination-dots .swiper-pagination-bullet {
-    background: rgba(255, 255, 255, 0.5); opacity: 1; width: 8px; height: 8px; margin: 0 5px;
-    transition: all 0.3s;
-}
-.hero-pagination-dots .swiper-pagination-bullet-active {
-    background: var(--primary-gold); width: 25px; border-radius: 4px;
-    box-shadow: 0 0 10px var(--primary-gold);
-}
-
-/* === 3. Section Containers (GLASSMORPHISM) === */
+/* === 3. Section Styling (Colorful Headers) === */
 .home-section {
-    margin-bottom: 4rem;
-    padding-left: 15px; padding-right: 15px;
-    opacity: 0; /* For animation */
-}
-
-/* Glass Header Card */
-.section-header-card {
-    border-radius: 16px;
-    padding: 20px;
-    position: relative;
-    overflow: hidden;
+    margin: 10px; /* Gap around sections */
     margin-bottom: 15px;
-    
-    /* Glass Effect */
-    background: rgba(255, 255, 255, 0.03);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.3);
-    
-    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    background: #fff;
+    border-radius: 8px; /* Slightly rounded corners like screenshot */
+    overflow: hidden;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
 }
 
-/* Header Themes (Subtle Gradients) */
+/* Header Container */
+.section-header-card {
+    padding: 12px 15px;
+    display: flex; justify-content: space-between; align-items: center;
+    position: relative;
+}
+
+/* Blue Header (Tech) */
 .blue-card-bg {
-    background: linear-gradient(135deg, rgba(40, 116, 240, 0.15), rgba(0, 0, 0, 0));
-    border-color: rgba(40, 116, 240, 0.3);
+    background: #4a8bf5; /* Brighter Blue */
+    background-image: linear-gradient(135deg, #4a8bf5 0%, #2874f0 100%);
 }
+
+/* Orange Header (Trendy) */
 .orange-card-bg {
-    background: linear-gradient(135deg, rgba(255, 94, 98, 0.15), rgba(0, 0, 0, 0));
-    border-color: rgba(255, 94, 98, 0.3);
-}
-.dark-card-bg {
-    background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(0, 0, 0, 0));
-    border-color: rgba(255, 215, 0, 0.2);
+    background: #ff8e3c; /* Brighter Orange */
+    background-image: linear-gradient(135deg, #ff8e3c 0%, #fb641b 100%);
 }
 
+/* Section Title */
 .section-title-card {
-    font-size: 1.3rem; font-weight: 800; margin: 0;
-    text-transform: uppercase; letter-spacing: 1.5px;
-    background: linear-gradient(to right, #fff, #ccc);
-    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    color: #fff; font-size: 1.1rem; font-weight: 600; margin: 0;
+    text-transform: none; /* Not uppercase as per screenshot */
+    letter-spacing: 0.3px; text-shadow: none;
 }
 
-.section-banner-inside img {
-    width: 100%; border-radius: 8px; margin-top: 15px; display: block;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    transition: transform 0.3s;
-}
-.section-banner-inside img:hover { transform: scale(1.02); }
+/* Banner inside section (if any) */
+.section-banner-inside img { width: 100%; border-radius: 4px; margin-top: 10px; }
 
-/* Slider Container */
 .product-slider-container {
-    padding: 10px 0;
-    /* Removed solid background for cleaner look */
+    padding: 10px;
+    background-color: #fff; /* White background for products */
 }
 
-/* === 4. 3D Product Cards (FLOATING EFFECT) === */
+/* Specific background colors for containers if needed to match screenshot full blocks */
+.blue-container { background-color: #eaf2ff; }
+.orange-container { background-color: #fff0e0; }
+
+
+/* === 4. Product Cards (Screenshot Style) === */
+/* White Card with Image + Orange Offer Bar */
+.swiper-slide { height: auto; } /* Ensure consistent height */
+
 .clean-card-wrapper {
-    display: flex; flex-direction: column; align-items: center;
-    text-decoration: none; width: 100%; gap: 10px; cursor: pointer;
-    perspective: 1000px; /* For 3D */
+    display: flex; flex-direction: column;
+    text-decoration: none; width: 100%; height: 100%;
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #f0f0f0;
 }
 
+/* Image Box */
 .clean-card-box {
     width: 100%; aspect-ratio: 1/1;
-    background-color: #161616; /* Slightly lighter than bg */
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    overflow: hidden; position: relative;
-    display: flex; flex-direction: column;
-    
-    /* 3D Shadow */
-    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-
-/* Hover Effect: Float Up & Glow */
-.clean-card-wrapper:hover .clean-card-box {
-    transform: translateY(-8px) scale(1.02);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 15px rgba(255, 255, 255, 0.05);
-    border-color: var(--primary-gold);
+    position: relative;
+    background: #fff;
+    display: flex; align-items: center; justify-content: center;
 }
 
 .clean-card-img {
-    width: 100%; height: 100%; object-fit: contain;
-    padding: 12px; flex-grow: 1;
-    transition: transform 0.4s ease;
+    max-width: 80%; max-height: 80%; 
+    object-fit: contain;
+    transition: transform 0.3s;
 }
-.clean-card-wrapper:hover .clean-card-img { transform: scale(1.1); }
+.clean-card-wrapper:hover .clean-card-img { transform: scale(1.05); }
 
-/* Offer Bar */
+/* Orange Offer Bar (Bottom of image) */
 .clean-card-offer-bar {
     width: 100%;
-    background: linear-gradient(90deg, #10ac84, #2ecc71); /* Gradient Green */
-    color: #fff; font-size: 0.7rem; font-weight: 700; text-align: center;
-    padding: 6px 0; margin-top: auto; letter-spacing: 0.5px;
-    box-shadow: 0 -2px 10px rgba(0,0,0,0.2);
-}
-
-.orange-container .clean-card-offer-bar {
-    background: linear-gradient(90deg, #e67e22, #f39c12); /* Gradient Orange */
+    background-color: #fb641b; /* The offer orange */
     color: #fff;
+    font-size: 0.75rem; font-weight: 500;
+    text-align: center; padding: 4px 0;
+    margin-top: auto; /* Push to bottom if flex */
 }
 
-/* Title */
+/* Product Title (Below the card) */
 .clean-card-title {
-    font-size: 0.85rem; color: var(--text-muted); font-weight: 500;
-    text-align: center; width: 100%; white-space: nowrap;
-    overflow: hidden; text-overflow: ellipsis;
-    transition: color 0.3s;
+    font-size: 0.85rem; color: #212121; font-weight: 500;
+    text-align: center; padding: 8px 4px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    background: #fff;
 }
-.clean-card-wrapper:hover .clean-card-title { color: var(--primary-gold); }
 
-/* === 5. Category Circles (Neumorphism Style) === */
+/* === 5. Catalogue (Circular Items) === */
 .category-swiper {
-    width: 100%; padding-bottom: 30px; padding-left: 5px; padding-right: 5px;
+    padding: 15px 10px;
+    background: #fff;
 }
 
 .category-circle-item {
-    display: flex; flex-direction: column; align-items: center; gap: 10px;
-    text-decoration: none; cursor: pointer; width: 100%;
-    transition: transform 0.3s ease;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+    text-decoration: none; cursor: pointer;
 }
-.category-circle-item:hover { transform: translateY(-5px); }
 
 .category-circle-img-box {
-    width: 75px; height: 75px; border-radius: 50%;
-    background: linear-gradient(145deg, #1e1e1e, #141414); /* Subtle gradient */
-    border: 2px solid rgba(255, 255, 255, 0.1);
-    overflow: hidden; display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-    transition: all 0.3s ease;
+    width: 64px; height: 64px; border-radius: 50%;
+    background: #f1f2f4;
+    overflow: hidden;
+    display: flex; align-items: center; justify-content: center;
 }
-
-.category-circle-item:hover .category-circle-img-box {
-    border-color: var(--primary-gold);
-    box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-}
-
 .category-circle-img { width: 100%; height: 100%; object-fit: cover; }
 
 .category-circle-title {
-    color: var(--text-muted); font-size: 0.8rem; font-weight: 600;
-    text-align: center; width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    transition: color 0.3s;
+    font-size: 0.75rem; color: #212121; font-weight: 500;
+    text-align: center; max-width: 70px;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
-.category-circle-item:hover .category-circle-title { color: var(--primary-gold); }
 
-/* Responsive */
-@media (min-width: 768px) {
-    .category-circle-img-box { width: 95px; height: 95px; }
+/* Catalogue Section Header */
+.catalogue-header {
+    text-align: center; padding: 15px 0 5px;
+    background: #fff; margin: 10px 10px 0 10px;
+    border-top-left-radius: 8px; border-top-right-radius: 8px;
+    border-bottom: 1px solid #f0f0f0;
 }
+.catalogue-header h2 { color: #333; font-size: 1.1rem; margin: 0; }
