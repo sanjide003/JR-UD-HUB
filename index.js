@@ -1,4 +1,4 @@
-// index.js - Matches New Home CSS
+// index.js - Updated Card Design & Logic
 
 import { db } from './firebase-config.js';
 import { 
@@ -121,11 +121,11 @@ function playActiveSlideVideo(swiper) {
 }
 
 /**
- * 3. SPECIAL OFFER (Blue)
+ * 3. SPECIAL OFFER (Full Width Banner)
  */
 async function loadTopDeals() {
     const section = document.getElementById('top-deals-section');
-    const bannerContainer = document.getElementById('top-deals-banner-container');
+    const bannerContainer = document.getElementById('top-deals-banner-img');
     const grid = document.getElementById('top-deals-grid');
     if (!section) return;
 
@@ -135,7 +135,8 @@ async function loadTopDeals() {
         
         if (settingsSnap.exists() && settingsSnap.data().topDealsBanner) {
             const bannerUrl = optimizeImage(settingsSnap.data().topDealsBanner, 1000, 85);
-            bannerContainer.innerHTML = `<img src="${bannerUrl}" alt="Offer">`;
+            // Image tag directly in container
+            if(bannerContainer) bannerContainer.src = bannerUrl;
             section.style.display = 'block'; 
         }
 
@@ -150,14 +151,14 @@ async function loadTopDeals() {
         section.style.display = 'block';
         let slidesHTML = '';
         snapshot.forEach(doc => {
-            slidesHTML += createCleanProductCard(doc.id, doc.data());
+            slidesHTML += createNewStyleProductCard(doc.id, doc.data());
         });
         grid.innerHTML = slidesHTML;
 
         new Swiper('.top-deals-swiper', {
-            slidesPerView: 3.2,
+            slidesPerView: 2.2, // Show more cards
             spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 4.2 }, 1024: { slidesPerView: 5.2 } }
+            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
         });
 
     } catch (e) { console.error(e); }
@@ -178,14 +179,14 @@ async function loadTopTrendyDeals() {
         
         let slidesHTML = '';
         querySnapshot.forEach((doc) => {
-            slidesHTML += createCleanProductCard(doc.id, doc.data());
+            slidesHTML += createNewStyleProductCard(doc.id, doc.data());
         });
         grid.innerHTML = slidesHTML;
 
         new Swiper('.top-sellers-swiper-new', {
-            slidesPerView: 3.2,
+            slidesPerView: 2.2,
             spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 4.2 }, 1024: { slidesPerView: 5.2 } }
+            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
         });
         
     } catch (error) { console.error("Error loading trendy deals"); }
@@ -222,14 +223,14 @@ async function loadTopDiscounts() {
 
         let html = '';
         topDiscounts.forEach(p => {
-            html += createCleanProductCard(p.id, p, p.discount);
+            html += createNewStyleProductCard(p.id, p, p.discount);
         });
         grid.innerHTML = html;
 
         new Swiper('.discount-swiper', {
-            slidesPerView: 3.2,
+            slidesPerView: 2.2,
             spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 4.2 }, 1024: { slidesPerView: 5.2 } }
+            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
         });
 
     } catch(e) {}
@@ -277,30 +278,32 @@ async function loadHomeCategories() {
 }
 
 /**
- * HELPER: CARD GENERATOR (Screenshot Style)
+ * HELPER: NEW CARD GENERATOR (Square Image + Shop Now + Discount Badge)
  */
-function createCleanProductCard(id, product, discountVal = null) {
-    const img = optimizeImage(product.images?.[0] || '', 300, 80);
+function createNewStyleProductCard(id, product, discountVal = null) {
+    const img = optimizeImage(product.images?.[0] || '', 400, 80);
     
-    // Logic for Offer Text
-    let offerText = "";
+    // Calculate Discount for Badge
+    let badgeHTML = "";
     if (discountVal) {
-        offerText = `Up to ${discountVal}% Off`;
+        badgeHTML = `<div class="card-discount-badge red">${discountVal}% OFF</div>`;
     } else if (product.mrp > product.price) {
         const d = Math.round(((product.mrp - product.price) / product.mrp) * 100);
-        offerText = `Min ${d}% Off`;
-    } else {
-        offerText = `From ₹${product.price}`;
+        badgeHTML = `<div class="card-discount-badge">${d}% OFF</div>`;
     }
 
     return `
         <div class="swiper-slide">
             <a href="product.html?id=${id}" class="clean-card-wrapper">
+                ${badgeHTML}
                 <div class="clean-card-box">
                     <img src="${img}" class="clean-card-img" loading="lazy" alt="${product.name}">
                 </div>
-                <div class="clean-card-offer-bar">${offerText}</div>
-                <div class="clean-card-title">${product.name}</div>
+                <div class="clean-card-details">
+                    <h3 class="clean-card-title">${product.name}</h3>
+                    <div class="clean-card-price-row">₹${product.price}</div>
+                    <button class="shop-now-btn">Shop Now</button>
+                </div>
             </a>
         </div>
     `;
