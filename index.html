@@ -5,9 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JR-UD-HUB</title>
     
-    <!-- Old Public CSS -->
     <link rel="stylesheet" href="public.css">
-    <!-- Updated Home CSS -->
     <link rel="stylesheet" href="home.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
@@ -28,12 +26,12 @@
     <div class="nav-overlay" id="nav-overlay"></div>
 
     <!-- 3. Main Content -->
-    <main style="background-color: #f1f3f6; min-height: 100vh;"> 
+    <main>
         
-        <!-- Home Top Banner -->
+        <!-- Home Top Banner (Original) -->
         <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
 
-        <!-- 3.1. Hero Slider -->
+        <!-- 3.1. Hero Slider (Original) -->
         <section class="hero-section-new">
             <div class="swiper hero-slider-new" id="hero-slider-container">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
@@ -43,15 +41,13 @@
             </div>
         </section>
 
-        <!-- 3.2. SPECIAL OFFER (Full Width Banner Style) -->
-        <section class="home-section special-offer-wrapper" id="top-deals-section" style="display:none; padding: 0;">
+        <!-- 3.2. SPECIAL OFFER (Full Width Banner) -->
+        <section class="home-section special-offer-wrapper" id="top-deals-section" style="display:none;">
             <div class="special-offer-header">
-                <!-- Banner Image fills width, no extra padding -->
                 <img id="top-deals-banner-img" class="special-offer-banner-img" src="" alt="Special Offers">
-                <div class="special-offer-title-overlay">Special Offers</div>
             </div>
             
-            <div class="product-slider-container blue-container" style="background: #000; border: none; border-radius: 0;">
+            <div class="product-slider-container blue-container">
                 <div class="swiper top-deals-swiper">
                     <div class="swiper-wrapper" id="top-deals-grid">
                         <!-- Products JS -->
@@ -60,7 +56,7 @@
             </div>
         </section>
 
-        <!-- 3.3. TOP TRENDY DEALS (Orange Section) -->
+        <!-- 3.3. TOP TRENDY DEALS -->
         <section class="home-section container">
             <div class="section-header-card orange-card-bg">
                 <h2 class="section-title-card">Top Trendy Deals</h2>
@@ -90,7 +86,7 @@
         </section>
 
         <!-- 3.5. CATALOGUE (Bottom) -->
-        <section class="home-section container" style="background: transparent; box-shadow: none;">
+        <section class="home-section container">
             <div class="catalogue-header">
                 <h2 class="section-title-new" style="color:var(--primary-gold); margin-bottom:0;">CATALOGUE</h2>
             </div>
