@@ -1,4 +1,4 @@
-// index.js - Added Under 799 Section Logic
+// index.js - Updated Under 799 Sorting (High to Low)
 
 import { db } from './firebase-config.js';
 import { 
@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadTopDeals();         
     loadTopTrendyDeals();   
     loadTopDiscounts();
-    loadUnder799Products(); // *** പുതിയ ഫംഗ്‌ഷൻ വിളിക്കുന്നു ***
+    loadUnder799Products(); 
     loadHomeCategories(); 
 });
 
@@ -237,18 +237,24 @@ async function loadTopDiscounts() {
 }
 
 /**
- * 5.5. UNDER 799 STORE (Green Section)
+ * 5.5. UNDER 799 STORE (Green Section - Sorted High to Low)
  */
 async function loadUnder799Products() {
     const grid = document.getElementById("under-799-grid");
     if (!grid) return;
 
     try {
-        // Fetch products priced below 799
-        const q = query(collection(db, "products"), where("price", "<", 799), limit(15));
+        // Query: Price <= 799, Sorted by Price Descending (Highest First)
+        const q = query(
+            collection(db, "products"), 
+            where("price", "<=", 799), 
+            orderBy("price", "desc"), 
+            limit(15)
+        );
+        
         const snapshot = await getDocs(q);
         
-        if (snapshot.empty) return; // Hide section if no products
+        if (snapshot.empty) return; 
 
         let slidesHTML = '';
         snapshot.forEach(doc => {
@@ -262,7 +268,7 @@ async function loadUnder799Products() {
             breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
         });
 
-    } catch (e) { console.error(e); }
+    } catch (e) { console.error("Error loading Under 799:", e); }
 }
 
 /**
