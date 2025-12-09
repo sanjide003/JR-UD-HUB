@@ -1,4 +1,4 @@
-// index.js - 1:1 Image Loading for 3:4 Cards
+// index.js - 1:1 Image Loading for 3:4 Cards & 2 Row Grid
 
 import { db } from './firebase-config.js';
 import { 
@@ -193,7 +193,7 @@ async function loadTopTrendyDeals() {
 }
 
 /**
- * 5. TOP DISCOUNT (Purple/Blue)
+ * 5. TOP DISCOUNT (Purple/Blue) - 2 ROWS
  */
 async function loadTopDiscounts() {
     const grid = document.getElementById("top-discount-grid");
@@ -214,7 +214,7 @@ async function loadTopDiscounts() {
         });
 
         products.sort((a, b) => b.discount - a.discount);
-        const topDiscounts = products.slice(0, 8);
+        const topDiscounts = products.slice(0, 16); // Load enough for 2 rows
 
         if (topDiscounts.length === 0) {
             document.querySelector('.orange-section').style.display = 'none';
@@ -229,8 +229,15 @@ async function loadTopDiscounts() {
 
         new Swiper('.discount-swiper', {
             slidesPerView: 2.2,
+            grid: {
+                rows: 2, // Enable 2 Rows
+                fill: 'row'
+            },
             spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
+            breakpoints: { 
+                640: { slidesPerView: 3.2, grid: { rows: 2 } }, 
+                1024: { slidesPerView: 5.2, grid: { rows: 2 } } 
+            }
         });
 
     } catch(e) {}
