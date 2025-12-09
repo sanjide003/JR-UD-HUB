@@ -82,7 +82,19 @@
 .green-container { background-color: #111; border: 1px solid #333; border-top: none; }
 
 /* === 4. Product Cards (3:4 Ratio Card, 1:1 Image) === */
-.swiper-slide { height: auto; display: flex; }
+.swiper-slide { 
+    height: auto; 
+    display: flex; 
+    box-sizing: border-box;
+}
+
+/* *** New: 2-Row Layout Height Adjustment *** */
+.discount-swiper {
+    width: 100%;
+    /* Aspect ratio calculation roughly: 2 cards * height + gap */
+    height: auto;
+    padding-bottom: 10px;
+}
 
 .clean-card-wrapper {
     display: flex;
@@ -134,13 +146,13 @@
 
 /* Content Area (Fills remaining space) */
 .clean-card-details {
-    padding: 10px;
+    padding: 8px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: space-between;
     flex-grow: 1;
-    gap: 5px;
+    gap: 4px;
     background-color: #1a1a1a;
 }
 
