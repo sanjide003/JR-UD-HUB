@@ -1,22 +1,200 @@
-/* home.css - 3:4 Cards with 1:1 Images - Fixed Version */
+/* home.css - 3:4 Cards with Optimized Spacing & New Banner Design */
 
-/* === 1. Top Banner === */
+/* === 1. New Banner Design === */
 .home-top-banner {
     width: 100%;
-    height: auto;
-    position: relative;
-    background-color: #000;
+    background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0a0a0a 100%);
     border-bottom: 2px solid var(--primary-gold);
-    margin-bottom: 0;
+    margin-bottom: 2rem;
     display: block;
+    position: relative;
+    overflow: hidden;
+    padding: 25px 0;
+}
+
+.home-top-banner-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+}
+
+.home-top-banner h1 {
+    color: var(--primary-gold);
+    font-size: 2.8rem;
+    font-weight: 900;
+    margin: 0 0 8px 0;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.7);
+    line-height: 1;
+}
+
+.home-top-banner-subtitle {
+    color: #ffffff;
+    font-size: 1.3rem;
+    font-weight: 400;
+    margin-bottom: 25px;
+    opacity: 0.9;
+    letter-spacing: 1px;
+}
+
+.sale-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, #ff4d4d, #ff6b6b);
+    color: white;
+    padding: 14px 35px;
+    border-radius: 35px;
+    font-size: 1.8rem;
+    font-weight: 800;
+    margin-bottom: 30px;
+    box-shadow: 0 6px 20px rgba(255, 77, 77, 0.4);
+    animation: pulseBadge 2s infinite ease-in-out;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+@keyframes pulseBadge {
+    0% { transform: scale(1); box-shadow: 0 6px 20px rgba(255, 77, 77, 0.4); }
+    50% { transform: scale(1.05); box-shadow: 0 8px 25px rgba(255, 77, 77, 0.6); }
+    100% { transform: scale(1); box-shadow: 0 6px 20px rgba(255, 77, 77, 0.4); }
+}
+
+.home-top-banner-stats {
+    display: flex;
+    justify-content: center;
+    gap: 40px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.banner-stat {
+    background: rgba(212, 175, 55, 0.1);
+    backdrop-filter: blur(15px);
+    border: 2px solid rgba(212, 175, 55, 0.3);
+    border-radius: 18px;
+    padding: 20px 30px;
+    min-width: 180px;
+    transition: all 0.3s ease;
+    position: relative;
     overflow: hidden;
 }
-.home-top-banner img {
+
+.banner-stat:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-gold);
+    box-shadow: 0 10px 30px rgba(212, 175, 55, 0.3);
+}
+
+.banner-stat::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
     width: 100%;
-    height: auto;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(212, 175, 55, 0.1), transparent);
+    transition: left 0.7s ease;
+}
+
+.banner-stat:hover::before {
+    left: 100%;
+}
+
+.banner-stat-name {
+    color: var(--primary-gold);
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.banner-stat-price {
+    color: #ffffff;
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1.3;
+}
+
+.banner-stat-price span {
     display: block;
-    max-height: 120px;
-    object-fit: cover;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: rgba(255, 255, 255, 0.9);
+    margin-top: 5px;
+}
+
+.home-top-banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 15% 20%, rgba(212, 175, 55, 0.15) 0%, transparent 60%),
+        radial-gradient(circle at 85% 80%, rgba(40, 116, 240, 0.15) 0%, transparent 60%),
+        linear-gradient(135deg, transparent 30%, rgba(255, 77, 77, 0.05) 50%, transparent 70%);
+    z-index: 1;
+}
+
+.home-top-banner::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--primary-gold), transparent);
+    z-index: 1;
+}
+
+@media (max-width: 768px) {
+    .home-top-banner {
+        padding: 20px 0;
+        margin-bottom: 1.5rem;
+    }
+    
+    .home-top-banner h1 {
+        font-size: 2rem;
+        letter-spacing: 2px;
+    }
+    
+    .home-top-banner-subtitle {
+        font-size: 1rem;
+        margin-bottom: 20px;
+    }
+    
+    .sale-badge {
+        font-size: 1.4rem;
+        padding: 12px 25px;
+        margin-bottom: 25px;
+    }
+    
+    .home-top-banner-stats {
+        gap: 20px;
+    }
+    
+    .banner-stat {
+        padding: 15px 20px;
+        min-width: 140px;
+    }
+    
+    .banner-stat-name {
+        font-size: 1rem;
+    }
+    
+    .banner-stat-price {
+        font-size: 1.8rem;
+    }
+    
+    .banner-stat-price span {
+        font-size: 1.2rem;
+    }
 }
 
 /* === 2. Hero Slider === */
@@ -122,7 +300,7 @@
 .section-header-card {
     border-top-left-radius: 12px;
     border-top-right-radius: 12px;
-    padding: 14px 20px;
+    padding: 16px 20px;
     position: relative;
     overflow: hidden;
     display: flex;
@@ -188,7 +366,7 @@
     margin: -5px;
 }
 
-/* === 4. Product Cards (3:4 Ratio Card, 1:1 Image) === */
+/* === 4. Product Cards (3:4 Ratio Card, 1:1 Image) - OPTIMIZED SPACING === */
 .swiper-slide {
     height: auto;
     display: flex;
@@ -196,25 +374,19 @@
     padding: 5px;
 }
 
-/* *** മാറ്റം: പ്രോഡക്റ്റ് തൊടുമ്പോൾ വലുതാകുന്ന എഫക്ട് ഒഴിവാക്കി *** */
 .clean-card-wrapper {
     display: flex;
     flex-direction: column;
     text-decoration: none;
     width: 100%;
-    
-    /* *** 3:4 Aspect Ratio for the whole card *** */
     aspect-ratio: 3 / 4;
-    
     background: #1a1a1a;
     border-radius: 10px;
     overflow: hidden;
     border: 1px solid #333;
     position: relative;
-    /* No hover transform */
 }
 
-/* *** മാറ്റം: Image hover effect removed *** */
 .clean-card-box {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -223,7 +395,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 12px;
+    padding: 8px;
     overflow: hidden;
     flex-shrink: 0;
 }
@@ -232,83 +404,110 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
-    /* No transition */
 }
 
-/* Discount Badge */
-.card-discount-badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: #388e3c;
-    color: #fff;
-    font-size: 0.7rem;
-    font-weight: 700;
-    padding: 4px 8px;
-    border-radius: 4px;
-    z-index: 10;
-}
-
-.card-discount-badge.red {
-    background: #ff4d4d;
-}
-
-/* Content Area (Fills remaining space) */
+/* Content Area - OPTIMIZED SPACING */
 .clean-card-details {
-    padding: 12px 10px 8px 10px; /* Reduced bottom padding */
+    padding: 6px 4px 4px 4px;
     display: flex;
     flex-direction: column;
     align-items: center;
     flex-grow: 1;
-    gap: 6px; /* Reduced gap */
     background: #1a1a1a;
+    justify-content: flex-start;
 }
 
+/* Product Title - Compact */
 .clean-card-title {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     color: #fff;
     font-weight: 500;
     text-align: center;
-    line-height: 1.3;
+    line-height: 1.1;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     margin: 0;
-    min-height: 2.2em; /* Reduced min-height */
+    min-height: 1.6em;
+    width: 100%;
+    padding: 0 2px;
 }
 
-/* *** മാറ്റം: വില കൂടുതൽ താഴെ, സ്പേസ് കുറച്ചു *** */
+/* Price Section - Compact & Below Title */
 .clean-card-price-row {
-    font-size: 1rem; /* Slightly smaller */
-    font-weight: 700;
-    color: var(--primary-gold);
-    text-align: center;
-    margin: 2px 0; /* Reduced margin */
-    flex-grow: 1; /* Pushes button to bottom */
+    width: 100%;
+    margin: 2px 0 8px 0;
     display: flex;
-    align-items: flex-end;
-    min-height: 24px;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+    min-height: 28px;
+    justify-content: center;
 }
 
+.current-price {
+    font-size: 1rem;
+    font-weight: 800;
+    color: #24a66e;
+    text-align: center;
+    line-height: 1;
+}
+
+.original-price {
+    font-size: 0.7rem;
+    color: #999;
+    text-decoration: line-through;
+    text-align: center;
+    line-height: 1;
+}
+
+.discount-percent {
+    font-size: 0.65rem;
+    color: #ff4d4d;
+    background: rgba(255, 77, 77, 0.1);
+    padding: 1px 4px;
+    border-radius: 3px;
+    margin-top: 2px;
+    text-align: center;
+    display: inline-block;
+}
+
+/* Shop Now Button - Always at Bottom */
 .shop-now-btn {
     width: 100%;
     background: transparent;
     color: #fff;
     border: 1px solid var(--primary-gold);
-    padding: 8px 0; /* Reduced padding */
-    border-radius: 6px;
-    font-size: 0.75rem; /* Smaller font */
+    padding: 5px 0;
+    border-radius: 5px;
+    font-size: 0.65rem;
     font-weight: 600;
     text-transform: uppercase;
     cursor: pointer;
-    margin-top: auto; /* Pushed to bottom */
-    /* No hover transform */
+    margin-top: auto;
+    transition: all 0.2s ease;
+    letter-spacing: 0.5px;
 }
 
 .shop-now-btn:hover {
     background-color: var(--primary-gold);
     color: #000;
+}
+
+/* Discount Badge */
+.card-discount-badge {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    background: #ff4d4d;
+    color: #fff;
+    font-size: 0.6rem;
+    font-weight: 800;
+    padding: 2px 5px;
+    border-radius: 3px;
+    z-index: 10;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 /* === 5. Catalogue === */
@@ -318,9 +517,13 @@
     position: relative;
 }
 
-/* *** മാറ്റം: CATALOGUE താഴെയുള്ള അണ്ടർലൈൻ ഒഴിവാക്കി *** */
-.catalogue-header::after {
-    content: none; /* Underline removed */
+.catalogue-header h2 {
+    color: var(--primary-gold);
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .category-swiper {
@@ -336,7 +539,6 @@
     gap: 10px;
     width: 100%;
     text-decoration: none;
-    /* No hover transform */
 }
 
 .category-circle-img-box {
@@ -349,7 +551,6 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    /* No hover transform */
 }
 
 .category-circle-img {
@@ -403,16 +604,27 @@
     }
     
     .clean-card-title {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
+        line-height: 1;
+        min-height: 1.5em;
     }
     
-    .clean-card-price-row {
-        font-size: 0.95rem;
+    .current-price {
+        font-size: 0.9rem;
+    }
+    
+    .original-price {
+        font-size: 0.65rem;
     }
     
     .shop-now-btn {
-        padding: 7px 0;
-        font-size: 0.7rem;
+        padding: 4px 0;
+        font-size: 0.6rem;
+    }
+    
+    .card-discount-badge {
+        font-size: 0.55rem;
+        padding: 1px 4px;
     }
     
     .category-circle-img-box {
@@ -436,7 +648,7 @@
     }
     
     .clean-card-title {
-        font-size: 0.9rem;
+        font-size: 0.85rem;
     }
     
     .category-circle-img-box {
