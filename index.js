@@ -1,4 +1,4 @@
-// index.js - Card with Shop Now Button & Badge
+// index.js - 3:4 Ratio Image Loading
 
 import { db } from './firebase-config.js';
 import { 
@@ -155,7 +155,7 @@ async function loadTopDeals() {
         grid.innerHTML = slidesHTML;
 
         new Swiper('.top-deals-swiper', {
-            slidesPerView: 2.2, // Show more cards
+            slidesPerView: 2.2, 
             spaceBetween: 10,
             breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
         });
@@ -277,10 +277,11 @@ async function loadHomeCategories() {
 }
 
 /**
- * HELPER: CARD GENERATOR (Square + Shop Button + Badge)
+ * HELPER: NEW CARD GENERATOR (3:4 Ratio Image Loading)
  */
 function createNewStyleProductCard(id, product, discountVal = null) {
-    const img = optimizeImage(product.images?.[0] || '', 400, 80);
+    // *** മാറ്റം: 3:4 റേഷ്യോ ലഭിക്കാൻ ഉയരം (600px) കൂട്ടി ***
+    const img = optimizeImage(product.images?.[0] || '', 450, 600);
     
     // Calculate Discount for Badge
     let badgeHTML = "";
