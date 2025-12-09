@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JR-UD-HUB</title>
     
-    <!-- Old Public CSS (As requested) -->
+    <!-- Old Public CSS -->
     <link rel="stylesheet" href="public.css">
     <!-- Updated Home CSS -->
     <link rel="stylesheet" href="home.css">
@@ -28,7 +28,7 @@
     <div class="nav-overlay" id="nav-overlay"></div>
 
     <!-- 3. Main Content -->
-    <main style="background-color: #f1f3f6; min-height: 100vh;"> <!-- Light Grey BG for Sections to pop -->
+    <main style="background-color: #f1f3f6; min-height: 100vh;"> 
         
         <!-- Home Top Banner -->
         <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
@@ -43,14 +43,15 @@
             </div>
         </section>
 
-        <!-- 3.2. SPECIAL OFFER (Blue Section) -->
-        <section class="home-section container" id="top-deals-section" style="display:none;">
-            <div class="section-header-card blue-card-bg">
-                <h2 class="section-title-card">Special Offers</h2>
-                <div id="top-deals-banner-container" class="section-banner-inside"></div>
+        <!-- 3.2. SPECIAL OFFER (Full Width Banner Style) -->
+        <section class="home-section special-offer-wrapper" id="top-deals-section" style="display:none; padding: 0;">
+            <div class="special-offer-header">
+                <!-- Banner Image fills width, no extra padding -->
+                <img id="top-deals-banner-img" class="special-offer-banner-img" src="" alt="Special Offers">
+                <div class="special-offer-title-overlay">Special Offers</div>
             </div>
             
-            <div class="product-slider-container blue-container">
+            <div class="product-slider-container blue-container" style="background: #000; border: none; border-radius: 0;">
                 <div class="swiper top-deals-swiper">
                     <div class="swiper-wrapper" id="top-deals-grid">
                         <!-- Products JS -->
@@ -74,7 +75,7 @@
             </div>
         </section>
 
-        <!-- 3.4. TOP DISCOUNT OF THE SALE (Two Lines) -->
+        <!-- 3.4. TOP DISCOUNT OF THE SALE -->
         <section class="home-section container orange-section">
              <div class="section-header-card dark-card-bg">
                 <h2 class="section-title-card">Top Discount<br>of the Sale</h2>
