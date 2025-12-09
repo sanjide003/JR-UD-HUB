@@ -1,4 +1,4 @@
-/* home.css - 3:4 Cards & 1:1 Images */
+/* home.css - Two Rows for Top Discount */
 
 /* === 1. Top Banner === */
 .home-top-banner {
@@ -78,18 +78,31 @@
 .orange-container { background-color: #111; border: 1px solid #333; border-top: none; }
 .green-container { background-color: #111; border: 1px solid #333; border-top: none; }
 
-/* === 4. Product Cards (3:4 Ratio Card, 1:1 Image) === */
-.swiper-slide { height: auto; display: flex; }
+/* === 4. Product Cards === */
+/* Adjust Swiper Slide for Grid View */
+.swiper-slide {
+    height: auto;
+    display: flex;
+    /* Important for grid calculation */
+    box-sizing: border-box; 
+}
+
+/* Specific Tweak for 2-Row Layout */
+.discount-swiper {
+    height: 740px; /* Approximately 2 cards height + gaps */
+    padding-bottom: 20px;
+}
+@media (min-width: 768px) {
+    .discount-swiper { height: 820px; }
+}
 
 .clean-card-wrapper {
     display: flex;
     flex-direction: column;
     text-decoration: none;
     width: 100%;
-    
-    /* *** 3:4 Aspect Ratio for the whole card *** */
-    aspect-ratio: 3 / 4; 
-    
+    height: 100%;
+    min-height: 360px; 
     background-color: #1a1a1a;
     border-radius: 8px;
     overflow: hidden;
@@ -98,27 +111,24 @@
     transition: transform 0.2s;
 }
 
-/* *** Image Area (1:1 Square) *** */
 .clean-card-box {
     width: 100%;
-    aspect-ratio: 1 / 1; /* Square */
+    aspect-ratio: 3/4; 
     position: relative;
     background-color: #fff;
     display: flex; align-items: center; justify-content: center;
     padding: 10px;
     overflow: hidden;
-    flex-shrink: 0; /* Prevent shrinking */
 }
 
 .clean-card-img {
     width: 100%;
     height: 100%;
-    object-fit: contain; 
+    object-fit: contain;
     transition: transform 0.3s;
 }
 .clean-card-wrapper:hover .clean-card-img { transform: scale(1.05); }
 
-/* Discount Badge */
 .card-discount-badge {
     position: absolute; top: 0; left: 0;
     background-color: #388e3c; color: #fff;
@@ -129,26 +139,25 @@
 }
 .card-discount-badge.red { background-color: #ff4d4d; }
 
-/* Content Area (Fills remaining space) */
 .clean-card-details {
-    padding: 10px;
+    padding: 12px;
     display: flex; flex-direction: column;
     align-items: center;
     justify-content: space-between;
     flex-grow: 1;
-    gap: 5px;
+    gap: 8px;
     background-color: #1a1a1a;
 }
 
 .clean-card-title {
-    font-size: 0.85rem; color: #fff; font-weight: 500;
+    font-size: 0.9rem; color: #fff; font-weight: 500;
     text-align: center; line-height: 1.3;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
     overflow: hidden; margin: 0;
 }
 
 .clean-card-price-row {
-    font-size: 0.95rem; font-weight: 700; color: var(--primary-gold);
+    font-size: 1rem; font-weight: 700; color: var(--primary-gold);
 }
 
 .shop-now-btn {
@@ -156,9 +165,9 @@
     background-color: transparent;
     color: #fff;
     border: 1px solid var(--primary-gold);
-    padding: 6px 0;
+    padding: 8px 0;
     border-radius: 4px;
-    font-size: 0.75rem; font-weight: 600;
+    font-size: 0.8rem; font-weight: 600;
     text-transform: uppercase;
     cursor: pointer;
     margin-top: auto;
@@ -181,6 +190,6 @@
 .catalogue-header { text-align: center; margin-bottom: 15px; }
 
 @media (min-width: 768px) {
-    /* Adjust width slightly on desktop if needed, ratio handles height */
+    .clean-card-wrapper { min-height: 400px; }
     .category-circle-img-box { width: 90px; height: 90px; }
 }
