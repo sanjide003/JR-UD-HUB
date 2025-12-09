@@ -1,4 +1,4 @@
-// index.js - New Card Style (No Buttons) & Swipeable Categories
+// index.js - Matches New Home CSS
 
 import { db } from './firebase-config.js';
 import { 
@@ -42,7 +42,7 @@ async function loadHomeBanner() {
 }
 
 /**
- * 2. Hero Slider (Autoplay OFF)
+ * 2. Hero Slider
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -121,7 +121,7 @@ function playActiveSlideVideo(swiper) {
 }
 
 /**
- * 3. SPECIAL OFFER (Blue Style)
+ * 3. SPECIAL OFFER (Blue)
  */
 async function loadTopDeals() {
     const section = document.getElementById('top-deals-section');
@@ -135,7 +135,7 @@ async function loadTopDeals() {
         
         if (settingsSnap.exists() && settingsSnap.data().topDealsBanner) {
             const bannerUrl = optimizeImage(settingsSnap.data().topDealsBanner, 1000, 85);
-            bannerContainer.innerHTML = `<img src="${bannerUrl}" alt="Special Offer">`;
+            bannerContainer.innerHTML = `<img src="${bannerUrl}" alt="Offer">`;
             section.style.display = 'block'; 
         }
 
@@ -164,7 +164,7 @@ async function loadTopDeals() {
 }
 
 /**
- * 4. TOP TRENDY DEALS (Orange Style)
+ * 4. TOP TRENDY DEALS (Orange)
  */
 async function loadTopTrendyDeals() {
     const grid = document.getElementById("top-sellers-grid");
@@ -192,7 +192,7 @@ async function loadTopTrendyDeals() {
 }
 
 /**
- * 5. TOP DISCOUNT (Exclusive & Auto)
+ * 5. TOP DISCOUNT (Purple/Blue)
  */
 async function loadTopDiscounts() {
     const grid = document.getElementById("top-discount-grid");
@@ -205,12 +205,7 @@ async function loadTopDiscounts() {
         let products = [];
         snapshot.forEach(doc => {
             const p = doc.data();
-            
-            // Exclude manually featured items
-            if (p.isTopDeal === true || p.featured === true) {
-                return; 
-            }
-
+            if (p.isTopDeal === true || p.featured === true) { return; }
             if (p.mrp && p.price && p.mrp > p.price) {
                 const discount = Math.round(((p.mrp - p.price) / p.mrp) * 100);
                 products.push({ id: doc.id, ...p, discount });
@@ -241,13 +236,13 @@ async function loadTopDiscounts() {
 }
 
 /**
- * 6. SHOP BY CATEGORY (Swiper with 4 visible)
+ * 6. CATEGORIES
  */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
     try {
-        const catQuery = query(collection(db, "categories"), orderBy("name")); // Load ALL categories
+        const catQuery = query(collection(db, "categories"), orderBy("name")); 
         const catSnapshot = await getDocs(catQuery); 
         if (catSnapshot.empty) { container.innerHTML = ''; return; }
         
@@ -268,7 +263,6 @@ async function loadHomeCategories() {
         });
         container.innerHTML = html;
 
-        // Initialize Swiper for Categories - 4 per view
         new Swiper('.category-swiper', {
             slidesPerView: 4, 
             spaceBetween: 10,
@@ -283,12 +277,12 @@ async function loadHomeCategories() {
 }
 
 /**
- * HELPER: CLEAN CARD DESIGN (No Buttons, Flutter Style)
+ * HELPER: CARD GENERATOR (Screenshot Style)
  */
 function createCleanProductCard(id, product, discountVal = null) {
     const img = optimizeImage(product.images?.[0] || '', 300, 80);
     
-    // Determine Offer Text
+    // Logic for Offer Text
     let offerText = "";
     if (discountVal) {
         offerText = `Up to ${discountVal}% Off`;
@@ -304,8 +298,8 @@ function createCleanProductCard(id, product, discountVal = null) {
             <a href="product.html?id=${id}" class="clean-card-wrapper">
                 <div class="clean-card-box">
                     <img src="${img}" class="clean-card-img" loading="lazy" alt="${product.name}">
-                    <div class="clean-card-offer-bar">${offerText}</div>
                 </div>
+                <div class="clean-card-offer-bar">${offerText}</div>
                 <div class="clean-card-title">${product.name}</div>
             </a>
         </div>
