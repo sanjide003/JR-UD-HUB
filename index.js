@@ -1,4 +1,4 @@
-// index.js - 1:1 Image Loading for 3:4 Cards
+// index.js - Top Discount with 2 Rows Grid
 
 import { db } from './firebase-config.js';
 import { 
@@ -122,7 +122,7 @@ function playActiveSlideVideo(swiper) {
 }
 
 /**
- * 3. SPECIAL OFFER (Full Width Banner)
+ * 3. SPECIAL OFFER
  */
 async function loadTopDeals() {
     const section = document.getElementById('top-deals-section');
@@ -165,7 +165,7 @@ async function loadTopDeals() {
 }
 
 /**
- * 4. TOP TRENDY DEALS (Orange)
+ * 4. TOP TRENDY DEALS
  */
 async function loadTopTrendyDeals() {
     const grid = document.getElementById("top-sellers-grid");
@@ -193,7 +193,7 @@ async function loadTopTrendyDeals() {
 }
 
 /**
- * 5. TOP DISCOUNT (Purple/Blue)
+ * 5. TOP DISCOUNT (2 Rows Grid)
  */
 async function loadTopDiscounts() {
     const grid = document.getElementById("top-discount-grid");
@@ -214,7 +214,7 @@ async function loadTopDiscounts() {
         });
 
         products.sort((a, b) => b.discount - a.discount);
-        const topDiscounts = products.slice(0, 8);
+        const topDiscounts = products.slice(0, 16); // Increased limit for 2 rows
 
         if (topDiscounts.length === 0) {
             document.querySelector('.orange-section').style.display = 'none';
@@ -227,24 +227,31 @@ async function loadTopDiscounts() {
         });
         grid.innerHTML = html;
 
+        // *** മാറ്റം: 2 വരികൾ (Rows) ***
         new Swiper('.discount-swiper', {
-            slidesPerView: 2.2,
+            slidesPerView: 2.2, // ഓരോ വരിയിലും 2.2 കാർഡുകൾ
+            grid: {
+                rows: 2, // രണ്ട് വരികൾ
+                fill: 'row'
+            },
             spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
+            breakpoints: { 
+                640: { slidesPerView: 3.2, grid: { rows: 2 } }, 
+                1024: { slidesPerView: 5.2, grid: { rows: 2 } } 
+            }
         });
 
     } catch(e) {}
 }
 
 /**
- * 5.5. UNDER 799 STORE (Green Section - Sorted High to Low)
+ * 5.5. UNDER 799 STORE
  */
 async function loadUnder799Products() {
     const grid = document.getElementById("under-799-grid");
     if (!grid) return;
 
     try {
-        // Query: Price <= 799, Sorted by Price Descending (Highest First)
         const q = query(
             collection(db, "products"), 
             where("price", "<=", 799), 
@@ -313,13 +320,11 @@ async function loadHomeCategories() {
 }
 
 /**
- * HELPER: NEW CARD GENERATOR (Square Image + Green/Red Badges)
+ * HELPER: CARD GENERATOR
  */
 function createNewStyleProductCard(id, product, discountVal = null) {
-    // *** മാറ്റം: 1:1 റേഷ്യോ (Square) ഇമേജ് ലോഡിംഗ് (500x500 for quality) ***
-    const img = optimizeImage(product.images?.[0] || '', 500, 500);
+    const img = optimizeImage(product.images?.[0] || '', 450, 600);
     
-    // Calculate Discount for Badge
     let badgeHTML = "";
     if (discountVal) {
         badgeHTML = `<div class="card-discount-badge red">${discountVal}% OFF</div>`;
