@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JR-UD-HUB | Premium Shopping</title>
+    <title>JR-UD-HUB</title>
     
     <!-- CSS Files -->
     <link rel="stylesheet" href="public.css">
@@ -27,13 +27,13 @@
     <div class="nav-overlay" id="nav-overlay"></div>
 
     <!-- 3. Main Content -->
-    <main>
+    <main style="background-color: #f1f2f4;"> <!-- Light Grey BG for main -->
         
         <!-- Home Top Banner -->
-        <section id="home-top-banner" class="home-top-banner animate-entry" style="display: none; animation-delay: 0.1s;"></section>
+        <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
 
-        <!-- 3.1. Hero Slider -->
-        <section class="hero-section-new animate-entry" style="animation-delay: 0.2s;">
+        <!-- 3.1. Hero Slider (Preserved) -->
+        <section class="hero-section-new">
             <div class="swiper hero-slider-new" id="hero-slider-container">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
                     <!-- Slides loaded via JS -->
@@ -42,36 +42,28 @@
             </div>
         </section>
 
-        <!-- 3.5. CATALOGUE (Circular Swiper) - Moved Up for Better UX -->
-        <section class="home-section container animate-entry" style="animation-delay: 0.3s;">
-            <h2 class="section-title-new" style="color:var(--primary-gold); text-align:center; margin-bottom:25px; letter-spacing: 2px;">CATALOGUE</h2>
-            <div class="swiper category-swiper">
-                <div class="swiper-wrapper" id="category-grid-home">
-                    <!-- Categories loaded via JS -->
-                </div>
-            </div>
-        </section>
-
-        <!-- 3.2. SPECIAL OFFER -->
-        <section class="home-section container animate-entry" id="top-deals-section" style="display:none; animation-delay: 0.4s;">
+        <!-- 3.2. SPECIAL OFFER (Top Deals - Blue) -->
+        <section class="home-section container" id="top-deals-section" style="display:none;">
+            <!-- Blue Header -->
             <div class="section-header-card blue-card-bg">
-                <h2 class="section-title-card">Special Offers</h2>
+                <h2 class="section-title-card">Top deals on tech</h2>
                 <div id="top-deals-banner-container" class="section-banner-inside"></div>
             </div>
             
             <div class="product-slider-container blue-container">
                 <div class="swiper top-deals-swiper">
                     <div class="swiper-wrapper" id="top-deals-grid">
-                        <!-- Products loaded via JS -->
+                        <!-- Products loaded via JS (with blue/orange bars) -->
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 3.3. TOP TRENDY DEALS -->
-        <section class="home-section container animate-entry" style="animation-delay: 0.5s;">
+        <!-- 3.3. TOP TRENDY DEALS (Orange) -->
+        <section class="home-section container">
+            <!-- Orange Header -->
             <div class="section-header-card orange-card-bg">
-                <h2 class="section-title-card">Trending Now</h2>
+                <h2 class="section-title-card">Top trendy deals</h2>
             </div>
             
             <div class="product-slider-container orange-container">
@@ -83,16 +75,28 @@
             </div>
         </section>
 
-        <!-- 3.4. TOP DISCOUNT OF THE SALE -->
-        <section class="home-section container orange-section animate-entry" style="animation-delay: 0.6s;">
-             <div class="section-header-card dark-card-bg">
-                <h2 class="section-title-card">Mega Discounts</h2>
+        <!-- 3.4. TOP DISCOUNT (Sponsored/Mixed) -->
+        <section class="home-section container orange-section">
+             <div class="section-header-card orange-card-bg"> <!-- Matching trendy orange theme -->
+                <h2 class="section-title-card">Top Discount of the Sale</h2>
             </div>
             <div class="product-slider-container">
                 <div class="swiper discount-swiper">
                     <div class="swiper-wrapper" id="top-discount-grid">
                         <!-- Products loaded via JS -->
                     </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3.5. CATALOGUE (Circular Swiper) - MOVED TO BOTTOM -->
+        <section class="home-section container" style="padding-bottom: 0;">
+            <div class="catalogue-header">
+                <h2 class="section-title-new">Browse by Category</h2>
+            </div>
+            <div class="swiper category-swiper">
+                <div class="swiper-wrapper" id="category-grid-home">
+                    <!-- Circular Categories JS -->
                 </div>
             </div>
         </section>
