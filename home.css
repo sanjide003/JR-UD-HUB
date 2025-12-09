@@ -1,148 +1,221 @@
-/* home.css - Matching the Screenshot Design */
+/* home.css - Colorful Cards & Dark Theme Adaptation */
 
 /* === 1. Top Banner === */
 .home-top-banner {
-    width: 100%; height: auto; background: #000;
-    margin-bottom: 0; display: block;
+    width: 100%;
+    height: auto;
+    position: relative;
+    background-color: #000;
+    border-bottom: 2px solid var(--primary-gold);
+    margin-bottom: 0;
 }
-.home-top-banner img { width: 100%; height: auto; max-height: 100px; object-fit: cover; }
+.home-top-banner img {
+    width: 100%; height: auto; display: block; max-height: 120px; object-fit: cover;
+}
 
-/* === 2. Hero Slider (Preserved as requested) === */
+/* === 2. Hero Slider (No Changes) === */
 .hero-section-new {
-    width: 100%; height: auto; aspect-ratio: 16/9; /* Responsive Height */
-    background-color: #f0f0f0; margin-bottom: 10px;
+    width: 100%;
+    height: 75vh;
+    position: relative;
+    background-color: #000;
+    margin-bottom: 2rem;
 }
-@media (min-width: 768px) { .hero-section-new { height: 400px; aspect-ratio: auto; } }
+@media (max-width: 768px) {
+    .hero-section-new { height: 60vh; }
+}
 
 .hero-slider-new, .hero-slider-new .swiper-slide { width: 100%; height: 100%; }
-.hero-slider-new .swiper-slide img { width: 100%; height: 100%; object-fit: cover; }
-.hero-pagination-dots .swiper-pagination-bullet-active { background: #fff; }
+.hero-slider-new .swiper-slide { position: relative; overflow: hidden; }
 
-/* === 3. Section Styling (Colorful Headers) === */
+.hero-slider-new .swiper-slide img,
+.hero-slider-new .swiper-slide video {
+    width: 100%; height: 100%; object-fit: cover;
+}
+.hero-slider-new .swiper-slide iframe {
+    width: 100%; height: 100%; object-fit: cover; pointer-events: none;
+}
+
+.hero-pagination-dots { bottom: 20px; }
+.hero-pagination-dots .swiper-pagination-bullet {
+    background: rgba(255, 255, 255, 0.5); opacity: 1; width: 8px; height: 8px;
+}
+.hero-pagination-dots .swiper-pagination-bullet-active {
+    background: var(--primary-gold); width: 20px; border-radius: 4px;
+}
+
+/* === 3. Colorful Section Headers (Screenshot Style) === */
 .home-section {
-    margin: 10px; /* Gap around sections */
-    margin-bottom: 15px;
-    background: #fff;
-    border-radius: 8px; /* Slightly rounded corners like screenshot */
-    overflow: hidden;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    margin-bottom: 3rem;
+    padding-left: 10px; padding-right: 10px;
 }
 
-/* Header Container */
+/* Base Card Style */
 .section-header-card {
-    padding: 12px 15px;
-    display: flex; justify-content: space-between; align-items: center;
-    position: relative;
+    border-top-left-radius: 8px; border-top-right-radius: 8px;
+    padding: 15px; position: relative; overflow: hidden;
+    display: flex; align-items: center; justify-content: space-between;
 }
 
-/* Blue Header (Tech) */
+/* Tech/Offers (Blue) */
 .blue-card-bg {
-    background: #4a8bf5; /* Brighter Blue */
-    background-image: linear-gradient(135deg, #4a8bf5 0%, #2874f0 100%);
+    background: linear-gradient(135deg, #4a8bf5 0%, #2874f0 100%);
+}
+.blue-container { 
+    background-color: rgba(40, 116, 240, 0.1); /* Light Blue Tint for Dark Theme */
+    padding: 12px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; 
 }
 
-/* Orange Header (Trendy) */
+/* Trendy (Orange) */
 .orange-card-bg {
-    background: #ff8e3c; /* Brighter Orange */
-    background-image: linear-gradient(135deg, #ff8e3c 0%, #fb641b 100%);
+    background: linear-gradient(135deg, #ff8e3c 0%, #fb641b 100%);
+}
+.orange-container { 
+    background-color: rgba(251, 100, 27, 0.1); /* Light Orange Tint */
+    padding: 12px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; 
 }
 
-/* Section Title */
+/* Special Sales (Darker Blue/Purple) */
+.dark-card-bg { 
+    background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
+}
+
 .section-title-card {
-    color: #fff; font-size: 1.1rem; font-weight: 600; margin: 0;
-    text-transform: none; /* Not uppercase as per screenshot */
-    letter-spacing: 0.3px; text-shadow: none;
+    color: #fff; font-size: 1.1rem; font-weight: 700; margin: 0;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.2);
 }
 
-/* Banner inside section (if any) */
-.section-banner-inside img { width: 100%; border-radius: 4px; margin-top: 10px; }
-
-.product-slider-container {
-    padding: 10px;
-    background-color: #fff; /* White background for products */
+.section-banner-inside img {
+    width: 100%; border-radius: 4px; margin-top: 10px; display: block;
 }
 
-/* Specific background colors for containers if needed to match screenshot full blocks */
-.blue-container { background-color: #eaf2ff; }
-.orange-container { background-color: #fff0e0; }
-
-
-/* === 4. Product Cards (Screenshot Style) === */
-/* White Card with Image + Orange Offer Bar */
-.swiper-slide { height: auto; } /* Ensure consistent height */
-
+/* === 4. Clean Product Cards (Screenshot Style with Colors) === */
 .clean-card-wrapper {
-    display: flex; flex-direction: column;
-    text-decoration: none; width: 100%; height: 100%;
-    background: #fff;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+    transition: transform 0.2s;
+    background-color: #1a1a1a; /* Dark card background */
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid #f0f0f0;
+    border: 1px solid #333;
 }
+.clean-card-wrapper:active { transform: scale(0.98); }
 
-/* Image Box */
+/* The Image Box */
 .clean-card-box {
-    width: 100%; aspect-ratio: 1/1;
+    width: 100%;
+    aspect-ratio: 1/1; 
+    background-color: #fff; /* White background for image specifically */
     position: relative;
-    background: #fff;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    flex-direction: column;
 }
 
 .clean-card-img {
-    max-width: 80%; max-height: 80%; 
-    object-fit: contain;
-    transition: transform 0.3s;
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+    padding: 10px; 
+    flex-grow: 1; 
 }
-.clean-card-wrapper:hover .clean-card-img { transform: scale(1.05); }
 
-/* Orange Offer Bar (Bottom of image) */
+/* Colored Offer Bar (Orange/Green/Blue based on context) */
 .clean-card-offer-bar {
     width: 100%;
-    background-color: #fb641b; /* The offer orange */
+    background-color: #388e3c; /* Green Default */
     color: #fff;
-    font-size: 0.75rem; font-weight: 500;
-    text-align: center; padding: 4px 0;
-    margin-top: auto; /* Push to bottom if flex */
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+    padding: 6px 0;
+    margin-top: auto; 
+    white-space: nowrap;
 }
 
-/* Product Title (Below the card) */
+/* Orange Section Override */
+.orange-container .clean-card-offer-bar {
+    background-color: #fb641b; /* Orange */
+    color: #fff;
+}
+
+/* Blue Section Override */
+.blue-container .clean-card-offer-bar {
+    background-color: #2874f0; /* Blue */
+    color: #fff;
+}
+
+/* Title Outside Box */
 .clean-card-title {
-    font-size: 0.85rem; color: #212121; font-weight: 500;
-    text-align: center; padding: 8px 4px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-    background: #fff;
+    font-size: 0.85rem;
+    color: #fff; /* White text for dark theme */
+    font-weight: 500;
+    text-align: center;
+    width: 100%;
+    padding: 8px 4px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* === 5. Catalogue (Circular Items) === */
+/* === 5. Category Circles === */
 .category-swiper {
-    padding: 15px 10px;
-    background: #fff;
+    width: 100%;
+    padding-bottom: 20px;
+    padding-left: 5px; padding-right: 5px;
 }
 
 .category-circle-item {
-    display: flex; flex-direction: column; align-items: center; gap: 6px;
-    text-decoration: none; cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    width: 100%;
 }
 
 .category-circle-img-box {
-    width: 64px; height: 64px; border-radius: 50%;
-    background: #f1f2f4;
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #1a1a1a;
+    border: 2px solid var(--border-color);
     overflow: hidden;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
-.category-circle-img { width: 100%; height: 100%; object-fit: cover; }
+
+.category-circle-img {
+    width: 100%; height: 100%; object-fit: cover;
+}
 
 .category-circle-title {
-    font-size: 0.75rem; color: #212121; font-weight: 500;
-    text-align: center; max-width: 70px;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 500;
+    text-align: center;
+    width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
-/* Catalogue Section Header */
+/* Catalogue Header */
 .catalogue-header {
-    text-align: center; padding: 15px 0 5px;
-    background: #fff; margin: 10px 10px 0 10px;
-    border-top-left-radius: 8px; border-top-right-radius: 8px;
-    border-bottom: 1px solid #f0f0f0;
+    text-align: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
 }
-.catalogue-header h2 { color: #333; font-size: 1.1rem; margin: 0; }
+
+@media (min-width: 768px) {
+    .category-circle-img-box { width: 90px; height: 90px; }
+}
