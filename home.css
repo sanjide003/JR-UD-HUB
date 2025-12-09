@@ -1,4 +1,4 @@
-/* home.css - Colorful Cards & Dark Theme Adaptation */
+/* home.css - Fixed Size Cards & Colorful Design */
 
 /* === 1. Top Banner === */
 .home-top-banner {
@@ -6,28 +6,25 @@
     height: auto;
     position: relative;
     background-color: #000;
-    border-bottom: 2px solid var(--primary-gold);
     margin-bottom: 0;
 }
 .home-top-banner img {
     width: 100%; height: auto; display: block; max-height: 120px; object-fit: cover;
 }
 
-/* === 2. Hero Slider (No Changes) === */
+/* === 2. Hero Slider === */
 .hero-section-new {
     width: 100%;
     height: 75vh;
     position: relative;
     background-color: #000;
-    margin-bottom: 2rem;
+    margin-bottom: 15px;
 }
 @media (max-width: 768px) {
     .hero-section-new { height: 60vh; }
 }
 
 .hero-slider-new, .hero-slider-new .swiper-slide { width: 100%; height: 100%; }
-.hero-slider-new .swiper-slide { position: relative; overflow: hidden; }
-
 .hero-slider-new .swiper-slide img,
 .hero-slider-new .swiper-slide video {
     width: 100%; height: 100%; object-fit: cover;
@@ -44,178 +41,164 @@
     background: var(--primary-gold); width: 20px; border-radius: 4px;
 }
 
-/* === 3. Colorful Section Headers (Screenshot Style) === */
+/* === 3. Section Containers === */
 .home-section {
-    margin-bottom: 3rem;
+    margin-bottom: 2rem;
     padding-left: 10px; padding-right: 10px;
 }
 
-/* Base Card Style */
+/* Header Styles */
 .section-header-card {
     border-top-left-radius: 8px; border-top-right-radius: 8px;
     padding: 15px; position: relative; overflow: hidden;
     display: flex; align-items: center; justify-content: space-between;
 }
 
-/* Tech/Offers (Blue) */
+/* Blue Header (Special Offers) */
 .blue-card-bg {
     background: linear-gradient(135deg, #4a8bf5 0%, #2874f0 100%);
 }
 .blue-container { 
-    background-color: rgba(40, 116, 240, 0.1); /* Light Blue Tint for Dark Theme */
-    padding: 12px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; 
+    background-color: #eaf2ff; /* Light Blue BG for slider */
+    padding: 10px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; 
 }
 
-/* Trendy (Orange) */
+/* Orange Header (Trendy) */
 .orange-card-bg {
     background: linear-gradient(135deg, #ff8e3c 0%, #fb641b 100%);
 }
 .orange-container { 
-    background-color: rgba(251, 100, 27, 0.1); /* Light Orange Tint */
-    padding: 12px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; 
+    background-color: #fff0e0; /* Light Orange BG for slider */
+    padding: 10px; border-bottom-left-radius: 8px; border-bottom-right-radius: 8px; 
 }
 
-/* Special Sales (Darker Blue/Purple) */
-.dark-card-bg { 
+/* Dark Header (Top Discount) */
+.dark-card-bg {
     background: linear-gradient(135deg, #6c5ce7 0%, #a29bfe 100%);
 }
 
 .section-title-card {
     color: #fff; font-size: 1.1rem; font-weight: 700; margin: 0;
     text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    line-height: 1.3; /* Better spacing for multi-line titles */
 }
 
+/* Banner inside section */
 .section-banner-inside img {
     width: 100%; border-radius: 4px; margin-top: 10px; display: block;
 }
 
-/* === 4. Clean Product Cards (Screenshot Style with Colors) === */
+/* === 4. Fixed Size Product Cards === */
+.swiper-slide {
+    height: auto; /* Allow flex to control height */
+    display: flex; /* Ensures cards stretch equally */
+}
+
 .clean-card-wrapper {
     display: flex;
     flex-direction: column;
-    align-items: center;
     text-decoration: none;
     width: 100%;
-    height: 100%;
-    cursor: pointer;
-    transition: transform 0.2s;
-    background-color: #1a1a1a; /* Dark card background */
+    height: 260px; /* *** FIXED HEIGHT FOR ALL CARDS *** */
+    background-color: #ffffff; /* White Card */
     border-radius: 8px;
     overflow: hidden;
-    border: 1px solid #333;
+    border: 1px solid #e0e0e0;
+    transition: transform 0.2s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
+
 .clean-card-wrapper:active { transform: scale(0.98); }
 
-/* The Image Box */
+/* Image Area */
 .clean-card-box {
     width: 100%;
-    aspect-ratio: 1/1; 
-    background-color: #fff; /* White background for image specifically */
+    flex-grow: 1; /* Takes up remaining space */
     position: relative;
     display: flex;
-    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px;
+    background-color: #fff;
+    overflow: hidden;
 }
 
 .clean-card-img {
     width: 100%;
     height: 100%;
-    object-fit: contain; 
-    padding: 10px; 
-    flex-grow: 1; 
+    object-fit: contain; /* Keeps image aspect ratio */
 }
 
-/* Colored Offer Bar (Orange/Green/Blue based on context) */
+/* Colored Offer Bar */
 .clean-card-offer-bar {
     width: 100%;
+    height: 24px; /* Fixed Height */
     background-color: #388e3c; /* Green Default */
     color: #fff;
     font-size: 0.75rem;
     font-weight: 700;
-    text-align: center;
-    padding: 6px 0;
-    margin-top: auto; 
-    white-space: nowrap;
-}
-
-/* Orange Section Override */
-.orange-container .clean-card-offer-bar {
-    background-color: #fb641b; /* Orange */
-    color: #fff;
-}
-
-/* Blue Section Override */
-.blue-container .clean-card-offer-bar {
-    background-color: #2874f0; /* Blue */
-    color: #fff;
-}
-
-/* Title Outside Box */
-.clean-card-title {
-    font-size: 0.85rem;
-    color: #fff; /* White text for dark theme */
-    font-weight: 500;
-    text-align: center;
-    width: 100%;
-    padding: 8px 4px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* === 5. Category Circles === */
-.category-swiper {
-    width: 100%;
-    padding-bottom: 20px;
-    padding-left: 5px; padding-right: 5px;
-}
-
-.category-circle-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    text-decoration: none;
-    transition: transform 0.3s ease;
-    cursor: pointer;
-    width: 100%;
-}
-
-.category-circle-img-box {
-    width: 70px;
-    height: 70px;
-    border-radius: 50%;
-    background-color: #1a1a1a;
-    border: 2px solid var(--border-color);
-    overflow: hidden;
     display: flex;
     align-items: center;
     justify-content: center;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-.category-circle-img {
-    width: 100%; height: 100%; object-fit: cover;
-}
+/* Color Variants for Offer Bar */
+.orange-container .clean-card-offer-bar { background-color: #fb641b; }
+.blue-container .clean-card-offer-bar { background-color: #2874f0; }
 
-.category-circle-title {
-    color: #fff;
+/* Title Area */
+.clean-card-title {
+    height: 35px; /* Fixed Height for Title */
     font-size: 0.8rem;
+    color: #333;
     font-weight: 500;
     text-align: center;
     width: 100%;
+    padding: 0 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    background-color: #fff;
+    border-top: 1px solid #f0f0f0;
 }
 
-/* Catalogue Header */
+/* === 5. Category Circles (Bottom) === */
+.category-swiper {
+    width: 100%;
+    padding: 15px 5px;
+    background-color: #fff; /* White background for catalog strip */
+    border-radius: 8px;
+}
+
+.category-circle-item {
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    text-decoration: none; cursor: pointer; width: 100%;
+}
+
+.category-circle-img-box {
+    width: 70px; height: 70px; border-radius: 50%;
+    background-color: #f1f2f4;
+    border: 1px solid #ddd;
+    overflow: hidden; display: flex; align-items: center; justify-content: center;
+}
+
+.category-circle-img { width: 100%; height: 100%; object-fit: cover; }
+
+.category-circle-title {
+    color: #333; font-size: 0.75rem; font-weight: 500;
+    text-align: center; width: 100%;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
 .catalogue-header {
-    text-align: center;
-    margin-bottom: 15px;
-    border-bottom: 1px solid #333;
-    padding-bottom: 10px;
+    text-align: center; margin-bottom: 10px;
+    padding-top: 10px;
 }
 
 @media (min-width: 768px) {
+    .clean-card-wrapper { height: 280px; }
     .category-circle-img-box { width: 90px; height: 90px; }
 }
