@@ -1,4 +1,4 @@
-// index.js - Updated Under 799 Sorting (High to Low)
+// index.js - 1:1 Image Loading for 3:4 Cards
 
 import { db } from './firebase-config.js';
 import { 
@@ -313,10 +313,11 @@ async function loadHomeCategories() {
 }
 
 /**
- * HELPER: NEW CARD GENERATOR (3:4 Ratio + Green/Red Badges)
+ * HELPER: NEW CARD GENERATOR (Square Image + Green/Red Badges)
  */
 function createNewStyleProductCard(id, product, discountVal = null) {
-    const img = optimizeImage(product.images?.[0] || '', 450, 600);
+    // *** മാറ്റം: 1:1 റേഷ്യോ (Square) ഇമേജ് ലോഡിംഗ് (500x500 for quality) ***
+    const img = optimizeImage(product.images?.[0] || '', 500, 500);
     
     // Calculate Discount for Badge
     let badgeHTML = "";
