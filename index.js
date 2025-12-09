@@ -1,4 +1,4 @@
-// index.js - 3:4 Ratio Image Loading
+// index.js - Added Under 799 Section Logic
 
 import { db } from './firebase-config.js';
 import { 
@@ -22,7 +22,8 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHeroSlider();
     loadTopDeals();         
     loadTopTrendyDeals();   
-    loadTopDiscounts();     
+    loadTopDiscounts();
+    loadUnder799Products(); // *** പുതിയ ഫംഗ്‌ഷൻ വിളിക്കുന്നു ***
     loadHomeCategories(); 
 });
 
@@ -236,6 +237,35 @@ async function loadTopDiscounts() {
 }
 
 /**
+ * 5.5. UNDER 799 STORE (Green Section)
+ */
+async function loadUnder799Products() {
+    const grid = document.getElementById("under-799-grid");
+    if (!grid) return;
+
+    try {
+        // Fetch products priced below 799
+        const q = query(collection(db, "products"), where("price", "<", 799), limit(15));
+        const snapshot = await getDocs(q);
+        
+        if (snapshot.empty) return; // Hide section if no products
+
+        let slidesHTML = '';
+        snapshot.forEach(doc => {
+            slidesHTML += createNewStyleProductCard(doc.id, doc.data());
+        });
+        grid.innerHTML = slidesHTML;
+
+        new Swiper('.under-799-swiper', {
+            slidesPerView: 2.2,
+            spaceBetween: 10,
+            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
+        });
+
+    } catch (e) { console.error(e); }
+}
+
+/**
  * 6. CATEGORIES
  */
 async function loadHomeCategories() {
@@ -277,10 +307,9 @@ async function loadHomeCategories() {
 }
 
 /**
- * HELPER: NEW CARD GENERATOR (3:4 Ratio Image Loading)
+ * HELPER: NEW CARD GENERATOR (3:4 Ratio + Green/Red Badges)
  */
 function createNewStyleProductCard(id, product, discountVal = null) {
-    // *** മാറ്റം: 3:4 റേഷ്യോ ലഭിക്കാൻ ഉയരം (600px) കൂട്ടി ***
     const img = optimizeImage(product.images?.[0] || '', 450, 600);
     
     // Calculate Discount for Badge
