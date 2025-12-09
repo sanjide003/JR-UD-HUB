@@ -5,13 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JR-UD-HUB</title>
     
+    <!-- Old Public CSS (As requested) -->
     <link rel="stylesheet" href="public.css">
+    <!-- Updated Home CSS -->
     <link rel="stylesheet" href="home.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body>
 
-    <!-- 0. പേജ് ലോഡർ -->
+    <!-- 0. Page Loader -->
     <div id="preloader">
         <div class="loader-logo-container">
             <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
@@ -19,23 +21,23 @@
         </div>
     </div>
 
-    <!-- 1. ഹെഡർ -->
+    <!-- 1. Header -->
     <header class="main-header" id="main-header"></header>
     
-    <!-- 2. സൈഡ് മെനു -->
+    <!-- 2. Nav Overlay -->
     <div class="nav-overlay" id="nav-overlay"></div>
 
-    <!-- 3. പ്രധാന ഉള്ളടക്കം -->
+    <!-- 3. Main Content -->
     <main>
         
-        <!-- ഹോം പേജ് ടോപ്പ് ബാനർ -->
+        <!-- Home Top Banner -->
         <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
 
-        <!-- 3.1. ഹീറോ സ്ലൈഡർ -->
+        <!-- 3.1. Hero Slider -->
         <section class="hero-section-new">
             <div class="swiper hero-slider-new" id="hero-slider-container">
                 <div class="swiper-wrapper" id="hero-slider-wrapper">
-                    <!-- Slides JS വഴി വരും -->
+                    <!-- Slides loaded via JS -->
                 </div>
                 <div class="swiper-pagination hero-pagination-dots"></div>
             </div>
@@ -44,14 +46,15 @@
         <!-- 3.2. SPECIAL OFFER (Blue Section) -->
         <section class="home-section container" id="top-deals-section" style="display:none;">
             <div class="section-header-card blue-card-bg">
-                <h2 class="section-title-card">Top Deals</h2>
+                <!-- *** മാറ്റം: Top Deals -> Special Offers *** -->
+                <h2 class="section-title-card">Special Offers</h2>
                 <div id="top-deals-banner-container" class="section-banner-inside"></div>
             </div>
             
             <div class="product-slider-container blue-container">
                 <div class="swiper top-deals-swiper">
                     <div class="swiper-wrapper" id="top-deals-grid">
-                        <!-- Products JS വഴി വരും -->
+                        <!-- Products JS -->
                     </div>
                 </div>
             </div>
@@ -60,54 +63,55 @@
         <!-- 3.3. TOP TRENDY DEALS (Orange Section) -->
         <section class="home-section container">
             <div class="section-header-card orange-card-bg">
-                <h2 class="section-title-card">Top Trendy Deals</h2>
+                <h2 class="section-title-card">Top trendy deals</h2>
             </div>
             
             <div class="product-slider-container orange-container">
                 <div class="swiper top-sellers-swiper-new">
                     <div class="swiper-wrapper" id="top-sellers-grid">
-                        <!-- Products JS വഴി വരും -->
+                        <!-- Products JS -->
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 3.4. TOP DISCOUNT OF THE SALE -->
+        <!-- 3.4. TOP DISCOUNT OF THE SALE (Multi-line Title) -->
         <section class="home-section container orange-section">
              <div class="section-header-card dark-card-bg">
-                <h2 class="section-title-card">Top Discount of the Sale</h2>
+                <!-- *** മാറ്റം: രണ്ട് വരികളിലായി ക്രമീകരിച്ചു *** -->
+                <h2 class="section-title-card">Top Discount<br>of the Sale</h2>
             </div>
-            <div class="product-slider-container blue-container"> <!-- Using blue container style for variety -->
+            <div class="product-slider-container blue-container"> 
                 <div class="swiper discount-swiper">
                     <div class="swiper-wrapper" id="top-discount-grid">
-                        <!-- Products JS വഴി വരും -->
+                        <!-- Products JS -->
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 3.5. CATALOGUE (Circular Swiper) - MOVED TO BOTTOM -->
-        <section class="home-section container">
+        <!-- 3.5. CATALOGUE (Moved to Bottom) -->
+        <section class="home-section container" style="background: transparent; box-shadow: none;">
             <div class="catalogue-header">
                 <h2 class="section-title-new" style="color:var(--primary-gold); margin-bottom:0;">CATALOGUE</h2>
             </div>
             
             <div class="swiper category-swiper">
                 <div class="swiper-wrapper" id="category-grid-home">
-                    <!-- Circular Categories JS വഴി വരും -->
+                    <!-- Categories JS -->
                 </div>
             </div>
         </section>
         
     </main>
 
-    <!-- 4. ഫൂട്ടർ -->
+    <!-- 4. Footer -->
     <footer class="main-footer-new" id="main-footer"></footer>
 
-    <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ -->
+    <!-- 5. Floating Icons -->
     <div id="floating-action-buttons"></div>
 
-    <!-- JS ഫയലുകൾ -->
+    <!-- JS Files -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="cart.js"></script>
