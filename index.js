@@ -1,4 +1,4 @@
-// index.js - 1:1 Image Loading for 3:4 Cards & 2 Row Grid
+// index.js - Updated loadHomeBanner function
 
 import { db } from './firebase-config.js';
 import { 
@@ -27,21 +27,47 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHomeCategories(); 
 });
 
-// Banner
+// === 1. NEW BANNER DESIGN ===
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
     if (!bannerContainer) return;
+    
     try {
-        const docRef = doc(db, "settings", "global");
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().homeBannerUrl) {
-            const optimizedUrl = optimizeImage(docSnap.data().homeBannerUrl, 800, 80);
-            bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Banner" loading="lazy">`;
-            bannerContainer.style.display = 'block';
-        }
-    } catch (error) {}
+        // Static banner - no Firebase dependency
+        bannerContainer.innerHTML = `
+            <div class="home-top-banner-content">
+                <h1>JR UD HUB</h1>
+                <div class="home-top-banner-subtitle">Muhammad sanjide p</div>
+                <div class="sale-badge">SALE IS LIVE</div>
+                <div class="home-top-banner-stats">
+                    <div class="banner-stat">
+                        <div class="banner-stat-name">30% OFF</div>
+                        <div class="banner-stat-price">Green forest<br><span>¥350</span></div>
+                    </div>
+                    <div class="banner-stat">
+                        <div class="banner-stat-name">Hot Deal</div>
+                        <div class="banner-stat-price">DRIVE<br><span>¥115</span></div>
+                    </div>
+                </div>
+            </div>
+        `;
+        bannerContainer.style.display = 'block';
+        
+    } catch (error) {
+        console.error("Error loading home banner:", error);
+        // Fallback banner
+        bannerContainer.innerHTML = `
+            <div class="home-top-banner-content">
+                <h1>JR UD HUB</h1>
+                <div class="sale-badge">SALE IS LIVE</div>
+            </div>
+        `;
+        bannerContainer.style.display = 'block';
+    }
 }
 
+// Rest of your existing functions remain exactly the same...
+// [Keep all your existing functions: loadHeroSlider, loadTopDeals, etc.]
 /**
  * 2. Hero Slider
  */
