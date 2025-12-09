@@ -1,4 +1,4 @@
-// index.js - Updated Card Design & Logic
+// index.js - Card with Shop Now Button & Badge
 
 import { db } from './firebase-config.js';
 import { 
@@ -135,7 +135,6 @@ async function loadTopDeals() {
         
         if (settingsSnap.exists() && settingsSnap.data().topDealsBanner) {
             const bannerUrl = optimizeImage(settingsSnap.data().topDealsBanner, 1000, 85);
-            // Image tag directly in container
             if(bannerContainer) bannerContainer.src = bannerUrl;
             section.style.display = 'block'; 
         }
@@ -278,7 +277,7 @@ async function loadHomeCategories() {
 }
 
 /**
- * HELPER: NEW CARD GENERATOR (Square Image + Shop Now + Discount Badge)
+ * HELPER: CARD GENERATOR (Square + Shop Button + Badge)
  */
 function createNewStyleProductCard(id, product, discountVal = null) {
     const img = optimizeImage(product.images?.[0] || '', 400, 80);
