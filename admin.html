@@ -65,16 +65,25 @@
             </div>
             
             <div class="admin-nav-links">
-                <!-- New Menu Item -->
-                <button class="nav-link active" data-page="page-manage-home">Manage Home Layout</button>
-                
-                <button class="nav-link" data-page="page-add-product">Add New Product</button>
+                <!-- Group 1: Home & Hero Management -->
+                <div class="nav-section-title">Home & Hero Management</div>
+                <button class="nav-link" data-page="page-manage-hero">Manage Hero</button>
+                <button class="nav-link" data-page="page-manage-home">Manage Home Layout</button>
+                <button class="nav-link" data-page="page-featured-products">Top Trendy</button>
+
+                <!-- Group 2: Products -->
+                <div class="nav-section-title">Products</div>
+                <button class="nav-link active" data-page="page-add-product">Add New Product</button>
                 <button class="nav-link" data-page="page-existing-products">Existing Products</button>
-                <button class="nav-link" data-page="page-featured-products">Top Trendy (Featured)</button>
+
+                <!-- Group 3: Categories -->
+                <div class="nav-section-title">Categories</div>
                 <button class="nav-link" data-page="page-add-category">Add New Category</button>
                 <button class="nav-link" data-page="page-existing-categories">Existing Categories</button>
-                <button class="nav-link" data-page="page-manage-hero">Manage Hero</button>
-                <button class="nav-link" data-page="page-general-settings">General Site Settings</button>
+
+                <!-- Group 4: Site Settings -->
+                <div class="nav-section-title">Site Settings</div>
+                <button class="nav-link" data-page="page-general-settings">General Settings</button>
                 <button class="nav-link" data-page="page-contact-details">Contact Details</button>
                 <button class="nav-link" data-page="page-follow-us">"Follow Us" Links</button>
             </div>
@@ -82,9 +91,28 @@
         <div class="admin-nav-overlay" id="admin-nav-overlay"></div>
 
         <div class="container">
+
+            <!-- *** DEFAULT PAGE: Add Product (Now Active by Default) *** -->
+            <div id="page-add-product" class="page-content active">
+                <form id="add-product-form" class="form-section">
+                    <h2>Add New Product</h2>
+                    <div class="form-grid">
+                        <div class="form-group"><label>Product Name <span class="required-star">*</span></label><input type="text" id="product-name" required></div>
+                        <div class="form-group"><label>Category <span class="required-star">*</span></label><select id="product-category" required><option value="">Loading...</option></select></div>
+                        <div class="form-group"><label>MRP (₹)</label><input type="number" id="product-mrp" placeholder="500"></div>
+                        <div class="form-group"><label>Retail Price (₹) <span class="required-star">*</span></label><input type="number" id="product-price" placeholder="350" required></div>
+                        <div class="form-group checkbox-group"><input type="checkbox" id="product-featured"><label>Featured? (Top Trendy)</label></div>
+                        <div class="form-group full-width"><label>Specification</label><textarea id="product-specification" rows="4"></textarea></div>
+                        <div class="form-group full-width"><label>Description</label><textarea id="product-description" rows="4"></textarea></div>
+                        <div class="form-group full-width"><label>Product Images <span class="required-star">*</span></label><div id="product-image-list-container" class="image-url-list"></div><button type="button" id="add-image-url-btn" class="btn btn-secondary">Add Image URL</button></div>
+                        <div class="form-group full-width"><label>More Links</label><div id="product-more-links-container" class="link-url-list"></div><button type="button" id="add-more-link-btn" class="btn btn-secondary">Add Link</button></div>
+                    </div>
+                    <button type="submit" class="btn btn-save mt-large" id="add-product-button"><span class="btn-text">Add Product</span><div class="btn-loader loader-small" style="display: none;"></div></button>
+                </form>
+            </div>
             
-            <!-- *** 1. Manage Home Layout (New Page) *** -->
-            <div id="page-manage-home" class="page-content active">
+            <!-- *** 1. Manage Home Layout *** -->
+            <div id="page-manage-home" class="page-content">
                 <!-- Top Deals Banner -->
                 <form id="top-deals-banner-form" class="form-section">
                     <h2>Top Deals Section</h2>
@@ -117,25 +145,6 @@
                         </table>
                     </div>
                 </div>
-            </div>
-
-            <!-- Add Product -->
-            <div id="page-add-product" class="page-content">
-                <form id="add-product-form" class="form-section">
-                    <h2>Add New Product</h2>
-                    <div class="form-grid">
-                        <div class="form-group"><label>Product Name <span class="required-star">*</span></label><input type="text" id="product-name" required></div>
-                        <div class="form-group"><label>Category <span class="required-star">*</span></label><select id="product-category" required><option value="">Loading...</option></select></div>
-                        <div class="form-group"><label>MRP (₹)</label><input type="number" id="product-mrp" placeholder="500"></div>
-                        <div class="form-group"><label>Retail Price (₹) <span class="required-star">*</span></label><input type="number" id="product-price" placeholder="350" required></div>
-                        <div class="form-group checkbox-group"><input type="checkbox" id="product-featured"><label>Featured? (Top Trendy)</label></div>
-                        <div class="form-group full-width"><label>Specification</label><textarea id="product-specification" rows="4"></textarea></div>
-                        <div class="form-group full-width"><label>Description</label><textarea id="product-description" rows="4"></textarea></div>
-                        <div class="form-group full-width"><label>Product Images <span class="required-star">*</span></label><div id="product-image-list-container" class="image-url-list"></div><button type="button" id="add-image-url-btn" class="btn btn-secondary">Add Image URL</button></div>
-                        <div class="form-group full-width"><label>More Links</label><div id="product-more-links-container" class="link-url-list"></div><button type="button" id="add-more-link-btn" class="btn btn-secondary">Add Link</button></div>
-                    </div>
-                    <button type="submit" class="btn btn-save mt-large" id="add-product-button"><span class="btn-text">Add Product</span><div class="btn-loader loader-small" style="display: none;"></div></button>
-                </form>
             </div>
 
             <!-- Existing Products -->
