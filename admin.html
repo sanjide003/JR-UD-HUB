@@ -65,21 +65,22 @@
             </div>
             
             <div class="admin-nav-links">
-                <!-- Group 1: Home & Hero Management -->
-                <div class="nav-section-title">Home & Hero Management</div>
-                <button class="nav-link" data-page="page-manage-hero">Manage Hero</button>
-                <button class="nav-link" data-page="page-manage-home">Manage Home Layout</button>
-                <button class="nav-link" data-page="page-featured-products">Top Trendy</button>
-
-                <!-- Group 2: Products -->
+                
+                <!-- Group 1: Products (Active Page Here) -->
                 <div class="nav-section-title">Products</div>
                 <button class="nav-link active" data-page="page-add-product">Add New Product</button>
                 <button class="nav-link" data-page="page-existing-products">Existing Products</button>
 
-                <!-- Group 3: Categories -->
+                <!-- Group 2: Categories -->
                 <div class="nav-section-title">Categories</div>
                 <button class="nav-link" data-page="page-add-category">Add New Category</button>
                 <button class="nav-link" data-page="page-existing-categories">Existing Categories</button>
+
+                <!-- Group 3: Home & Hero Management -->
+                <div class="nav-section-title">Home & Hero Management</div>
+                <button class="nav-link" data-page="page-manage-hero">Manage Hero</button>
+                <button class="nav-link" data-page="page-manage-home">Special Offer</button>
+                <button class="nav-link" data-page="page-featured-products">Top Trendy</button>
 
                 <!-- Group 4: Site Settings -->
                 <div class="nav-section-title">Site Settings</div>
@@ -111,13 +112,13 @@
                 </form>
             </div>
             
-            <!-- *** 1. Manage Home Layout *** -->
+            <!-- *** Manage Home / Special Offer *** -->
             <div id="page-manage-home" class="page-content">
                 <!-- Top Deals Banner -->
                 <form id="top-deals-banner-form" class="form-section">
-                    <h2>Top Deals Section</h2>
+                    <h2>Special Offer Section</h2>
                     <div class="form-group">
-                        <label>Top Deals Banner Image</label>
+                        <label>Special Offer Banner Image</label>
                         <div class="inline-image-input-container">
                             <div class="image-preview-small" id="top-deals-banner-preview"></div>
                             <input type="text" id="top-deals-banner-input" placeholder="Image URL">
@@ -128,9 +129,9 @@
 
                 <!-- Top Deals Product Selector -->
                 <div class="data-list-section" style="margin-top: 2rem;">
-                    <h3>Manage Top Deal Products</h3>
+                    <h3>Manage Special Offer Products</h3>
                     <div class="featured-search-container">
-                        <label>Search & Add to Top Deals</label>
+                        <label>Search & Add to Special Offer</label>
                         <div class="search-wrapper">
                             <input type="text" id="top-deal-search-input" placeholder="Search product to add...">
                             <div id="top-deal-search-results" class="search-results-dropdown"></div>
