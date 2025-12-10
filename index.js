@@ -200,6 +200,7 @@ async function loadTopDiscounts() {
     if (!grid) return;
 
     try {
+        // Load more items to fill 2 rows
         const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(50));
         const snapshot = await getDocs(q);
         
@@ -214,7 +215,7 @@ async function loadTopDiscounts() {
         });
 
         products.sort((a, b) => b.discount - a.discount);
-        const topDiscounts = products.slice(0, 16); // Load enough for 2 rows
+        const topDiscounts = products.slice(0, 20); // Load enough for 2 rows
 
         if (topDiscounts.length === 0) {
             document.querySelector('.orange-section').style.display = 'none';
@@ -227,10 +228,11 @@ async function loadTopDiscounts() {
         });
         grid.innerHTML = html;
 
+        // *** SWIPER WITH 2 ROWS (GRID) ***
         new Swiper('.discount-swiper', {
             slidesPerView: 2.2,
             grid: {
-                rows: 2, // Enable 2 Rows
+                rows: 2, 
                 fill: 'row'
             },
             spaceBetween: 10,
@@ -320,10 +322,10 @@ async function loadHomeCategories() {
 }
 
 /**
- * HELPER: NEW CARD GENERATOR (Square Image + Green/Red Badges)
+ * HELPER: NEW CARD GENERATOR (Fixed Aspect Ratio & Fitted Image)
  */
 function createNewStyleProductCard(id, product, discountVal = null) {
-    // *** മാറ്റം: 1:1 റേഷ്യോ (Square) ഇമേജ് ലോഡിംഗ് (500x500 for quality) ***
+    // Load high quality image
     const img = optimizeImage(product.images?.[0] || '', 500, 500);
     
     // Calculate Discount for Badge
@@ -335,6 +337,7 @@ function createNewStyleProductCard(id, product, discountVal = null) {
         badgeHTML = `<div class="card-discount-badge">${d}% OFF</div>`;
     }
 
+    // Swiper Slide -> Clean Card Wrapper -> Details
     return `
         <div class="swiper-slide">
             <a href="product.html?id=${id}" class="clean-card-wrapper">
