@@ -1,4 +1,4 @@
-/* home.css - Updated: Screenshot Style for Trendy & Discount */
+/* home.css - Final: Standard Cards for Special Offers & Under 799 */
 
 /* === 1. Top Banner === */
 .home-top-banner {
@@ -99,7 +99,6 @@
     background-color: #000;
 }
 
-/* Banner Badge */
 .special-offer-header::before {
     content: 'LIMITED TIME';
     position: absolute;
@@ -129,21 +128,10 @@
     margin-bottom: 0;
 }
 
-.blue-card-bg {
-    background: linear-gradient(135deg, #2874f0 0%, #1e5fc4 100%);
-}
-
-.orange-card-bg {
-    background: linear-gradient(135deg, #fb641b 0%, #e55a17 100%);
-}
-
-.dark-card-bg {
-    background: linear-gradient(135deg, #6c5ce7 0%, #5a4bd1 100%);
-}
-
-.green-card-bg {
-    background: linear-gradient(135deg, #00b894 0%, #00a085 100%);
-}
+.blue-card-bg { background: linear-gradient(135deg, #2874f0 0%, #1e5fc4 100%); }
+.orange-card-bg { background: linear-gradient(135deg, #fb641b 0%, #e55a17 100%); }
+.dark-card-bg { background: linear-gradient(135deg, #6c5ce7 0%, #5a4bd1 100%); }
+.green-card-bg { background: linear-gradient(135deg, #00b894 0%, #00a085 100%); }
 
 .section-title-card {
     color: #fff;
@@ -167,7 +155,7 @@
     position: relative;
 }
 
-/* === 6. STANDARD CARD STYLES (For Catalogue/Under 799) === */
+/* === 6. STANDARD CARD STYLES (Special Offers & Under 799) === */
 .swiper-slide { 
     height: auto; 
     display: flex; 
@@ -175,6 +163,7 @@
     padding: 0 4px;
 }
 
+/* Standard Vertical Card */
 .clean-card-wrapper {
     display: flex;
     flex-direction: column;
@@ -190,6 +179,13 @@
     box-shadow: 0 3px 6px rgba(0, 0, 0, 0.2);
 }
 
+.clean-card-wrapper:hover {
+    transform: translateY(-5px);
+    border-color: var(--primary-gold);
+    box-shadow: 0 8px 16px rgba(212, 175, 55, 0.2);
+}
+
+/* Image Box */
 .clean-card-box {
     width: 100%;
     height: 60%; 
@@ -210,6 +206,9 @@
     transition: transform 0.3s ease;
 }
 
+.clean-card-wrapper:hover .clean-card-img { transform: scale(1.05); }
+
+/* Details */
 .clean-card-details {
     padding: 6px 8px; 
     display: flex;
@@ -259,9 +258,15 @@
     cursor: pointer;
     margin-top: auto; 
     transition: all 0.2s ease;
+    display: block; 
 }
 
-/* Discount Badge Standard */
+.shop-now-btn:hover {
+    background: var(--secondary-gold);
+    transform: translateY(-1px);
+}
+
+/* Badge */
 .card-discount-badge {
     position: absolute;
     top: 8px;
@@ -279,24 +284,28 @@
 
 
 /* =============================================================
-   *** SCREENSHOT STYLE FOR TRENDY (Orange) & DISCOUNT (Blue) ***
+   *** SCREENSHOT STYLE (Only for Trendy & Discount) ***
+   Triggered by "screenshot-mode" class
    ============================================================= */
-.orange-container .clean-card-wrapper,
-.blue-container .clean-card-wrapper {
+.screenshot-mode .clean-card-wrapper {
     background: transparent;
     border: none;
     box-shadow: none;
     padding: 0;
     min-height: auto;
-    aspect-ratio: auto; /* Let content height dictate size */
+    aspect-ratio: auto;
 }
 
-/* 1. Image Box - White & Rounded */
-.orange-container .clean-card-box,
-.blue-container .clean-card-box {
+.screenshot-mode .clean-card-wrapper:hover {
+    transform: none;
+    box-shadow: none;
+}
+
+/* Rounded White Box for Image */
+.screenshot-mode .clean-card-box {
     background-color: #ffffff;
-    border-radius: 16px; /* Rounded corners like screenshot */
-    aspect-ratio: 1 / 1; /* Perfectly square */
+    border-radius: 16px;
+    aspect-ratio: 1 / 1;
     height: auto;
     width: 100%;
     margin-bottom: 8px;
@@ -304,14 +313,12 @@
     box-shadow: 0 2px 8px rgba(0,0,0,0.2);
 }
 
-.orange-container .clean-card-img,
-.blue-container .clean-card-img {
-    mix-blend-mode: multiply; /* Helps blend if image has white bg */
+.screenshot-mode .clean-card-img {
+    mix-blend-mode: multiply;
 }
 
-/* 2. Details - Transparent & Reordered */
-.orange-container .clean-card-details,
-.blue-container .clean-card-details {
+/* Details Outside */
+.screenshot-mode .clean-card-details {
     background: transparent;
     padding: 0 4px;
     display: flex;
@@ -320,37 +327,34 @@
     justify-content: flex-start;
 }
 
-/* 3. Price FIRST (Big & White) */
-.orange-container .clean-card-price-row,
-.blue-container .clean-card-price-row {
+/* Price Big & White */
+.screenshot-mode .clean-card-price-row {
     color: #ffffff;
     font-size: 1.1rem;
     font-weight: 700;
-    order: -1; /* Move above title */
+    order: -1; 
     margin-bottom: 2px;
     text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+    text-align: center;
 }
 
-/* 4. Title SECOND (Small & Grey/White) */
-.orange-container .clean-card-title,
-.blue-container .clean-card-title {
+/* Title Small */
+.screenshot-mode .clean-card-title {
     color: #cccccc;
     font-size: 0.8rem;
     font-weight: 400;
     line-height: 1.2;
     max-height: 2.4em;
     min-height: auto;
+    text-align: center;
 }
 
-/* 5. Hide Shop Button for Clean Look */
-.orange-container .shop-now-btn,
-.blue-container .shop-now-btn {
+/* No Button */
+.screenshot-mode .shop-now-btn {
     display: none;
 }
 
-/* 6. Badge Adjustments */
-.orange-container .card-discount-badge,
-.blue-container .card-discount-badge {
+.screenshot-mode .card-discount-badge {
     top: 8px;
     left: 8px;
     font-size: 0.6rem;
@@ -427,15 +431,9 @@
     .clean-card-price-row { font-size: 0.9rem; padding: 1px 0; }
     .shop-now-btn { padding: 6px 0; font-size: 0.7rem; }
     
-    /* Specific overrides for screenshot style on mobile */
-    .orange-container .clean-card-price-row,
-    .blue-container .clean-card-price-row {
-        font-size: 1rem;
-    }
-    .orange-container .clean-card-title,
-    .blue-container .clean-card-title {
-        font-size: 0.7rem;
-    }
+    /* Overrides ONLY for Screenshot Style on Mobile */
+    .screenshot-mode .clean-card-price-row { font-size: 1rem; }
+    .screenshot-mode .clean-card-title { font-size: 0.7rem; }
 }
 
 .clean-card-wrapper { min-height: 280px; }
