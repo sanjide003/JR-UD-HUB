@@ -304,6 +304,18 @@ body.light-mode .icon-moon { opacity: 0; }
     padding: 1rem 0; 
 }
 
+/* NEW: Menu Section Headers */
+.nav-section-title {
+    padding: 15px 20px 8px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-secondary);
+    font-weight: 700;
+    opacity: 0.7;
+    pointer-events: none;
+}
+
 .nav-link {
     display: block; 
     width: 92%; 
