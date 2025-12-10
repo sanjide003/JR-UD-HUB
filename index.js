@@ -1,4 +1,4 @@
-// index.js - 1:1 Image Loading for 3:4 Cards & 2 Row Grid
+// index.js - 2 Rows & Screenshot Style Support
 
 import { db } from './firebase-config.js';
 import { 
@@ -165,7 +165,7 @@ async function loadTopDeals() {
 }
 
 /**
- * 4. TOP TRENDY DEALS (Orange)
+ * 4. TOP TRENDY DEALS (Orange - Screenshot Style)
  */
 async function loadTopTrendyDeals() {
     const grid = document.getElementById("top-sellers-grid");
@@ -193,14 +193,13 @@ async function loadTopTrendyDeals() {
 }
 
 /**
- * 5. TOP DISCOUNT (Purple/Blue) - 2 ROWS
+ * 5. TOP DISCOUNT (Blue - Screenshot Style - 2 ROWS)
  */
 async function loadTopDiscounts() {
     const grid = document.getElementById("top-discount-grid");
     if (!grid) return;
 
     try {
-        // Load more items to fill 2 rows
         const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(50));
         const snapshot = await getDocs(q);
         
@@ -215,7 +214,7 @@ async function loadTopDiscounts() {
         });
 
         products.sort((a, b) => b.discount - a.discount);
-        const topDiscounts = products.slice(0, 20); // Load enough for 2 rows
+        const topDiscounts = products.slice(0, 20); 
 
         if (topDiscounts.length === 0) {
             document.querySelector('.orange-section').style.display = 'none';
@@ -228,7 +227,7 @@ async function loadTopDiscounts() {
         });
         grid.innerHTML = html;
 
-        // *** SWIPER WITH 2 ROWS (GRID) ***
+        // 2 Row Grid Config
         new Swiper('.discount-swiper', {
             slidesPerView: 2.2,
             grid: {
@@ -246,14 +245,13 @@ async function loadTopDiscounts() {
 }
 
 /**
- * 5.5. UNDER 799 STORE (Green Section - Sorted High to Low)
+ * 5.5. UNDER 799 STORE (Standard Style)
  */
 async function loadUnder799Products() {
     const grid = document.getElementById("under-799-grid");
     if (!grid) return;
 
     try {
-        // Query: Price <= 799, Sorted by Price Descending (Highest First)
         const q = query(
             collection(db, "products"), 
             where("price", "<=", 799), 
@@ -262,7 +260,6 @@ async function loadUnder799Products() {
         );
         
         const snapshot = await getDocs(q);
-        
         if (snapshot.empty) return; 
 
         let slidesHTML = '';
@@ -322,13 +319,11 @@ async function loadHomeCategories() {
 }
 
 /**
- * HELPER: NEW CARD GENERATOR (Fixed Aspect Ratio & Fitted Image)
+ * HELPER: CARD GENERATOR
  */
 function createNewStyleProductCard(id, product, discountVal = null) {
-    // Load high quality image
     const img = optimizeImage(product.images?.[0] || '', 500, 500);
     
-    // Calculate Discount for Badge
     let badgeHTML = "";
     if (discountVal) {
         badgeHTML = `<div class="card-discount-badge red">${discountVal}% OFF</div>`;
@@ -337,7 +332,6 @@ function createNewStyleProductCard(id, product, discountVal = null) {
         badgeHTML = `<div class="card-discount-badge">${d}% OFF</div>`;
     }
 
-    // Swiper Slide -> Clean Card Wrapper -> Details
     return `
         <div class="swiper-slide">
             <a href="product.html?id=${id}" class="clean-card-wrapper">
