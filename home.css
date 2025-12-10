@@ -1,4 +1,4 @@
-/* home.css - FIXED: Reduced gap between title and price, better card structure */
+/* home.css - FIXED: Top Discount 2 Rows & Catalogue Fit */
 
 /* === 1. Top Banner === */
 .home-top-banner {
@@ -167,7 +167,7 @@
     position: relative;
 }
 
-/* === 6. Product Cards - FIXED: Reduced gap issue === */
+/* === 6. Product Cards (Clean Design - Fixed Size) === */
 .swiper-slide { 
     height: auto; 
     display: flex; 
@@ -175,13 +175,14 @@
     padding: 0 4px;
 }
 
+/* Standard Card Wrapper - Fixed Aspect Ratio ensures no growing */
 .clean-card-wrapper {
     display: flex;
     flex-direction: column;
     text-decoration: none;
     width: 100%;
     
-    /* 3:4 Aspect Ratio */
+    /* 3:4 Aspect Ratio (Fixed Proportion) */
     aspect-ratio: 3 / 4; 
     
     background-color: #1a1a1a;
@@ -199,10 +200,10 @@
     box-shadow: 0 8px 16px rgba(212, 175, 55, 0.2);
 }
 
-/* Image Area - 60% height for better visibility */
+/* Image Area - FIXED SIZE */
 .clean-card-box {
     width: 100%;
-    height: 60%; /* Reduced to give more space for content */
+    height: 60%; /* Fixed percentage height */
     position: relative;
     background: #111;
     display: flex;
@@ -210,13 +211,14 @@
     justify-content: center;
     overflow: hidden;
     flex-shrink: 0;
-    padding: 10px; /* Added padding for image */
+    padding: 10px; 
 }
 
+/* Image Fit - Contain (No Cropping, Full Visible) */
 .clean-card-img {
-    width: 90%; 
-    height: 90%;
-    object-fit: contain;
+    width: 100%; 
+    height: 100%;
+    object-fit: contain; /* Ensures image fits perfectly inside box */
     transition: transform 0.3s ease;
 }
 
@@ -243,58 +245,58 @@
     background: linear-gradient(45deg, #ff4d4d, #ff6b6b);
 }
 
-/* *** FIXED: Content Area - Reduced gaps *** */
+/* Content Area */
 .clean-card-details {
-    padding: 6px 8px; /* Reduced vertical padding */
+    padding: 6px 8px; 
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: flex-start; /* Changed from space-between */
+    justify-content: flex-start; 
     flex-grow: 1;
-    height: 40%; /* Increased for more content space */
-    gap: 2px; /* DRAMATICALLY REDUCED GAP */
+    height: 40%;
+    gap: 2px;
 }
 
-/* *** FIXED: Title with minimal bottom margin *** */
+/* Title */
 .clean-card-title {
-    font-size: 0.82rem; /* Slightly smaller */
+    font-size: 0.82rem; 
     color: #fff;
     font-weight: 600;
     text-align: center;
-    line-height: 1.2; /* Tighter line height */
+    line-height: 1.2; 
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    margin: 0 0 3px 0; /* Reduced bottom margin */
-    min-height: 2.2em; /* Smaller min-height */
+    margin: 0 0 3px 0; 
+    min-height: 2.2em; 
     width: 100%;
 }
 
-/* *** FIXED: Price closer to title *** */
+/* Price */
 .clean-card-price-row {
-    font-size: 0.95rem; /* Slightly smaller */
+    font-size: 0.95rem; 
     font-weight: 800;
     color: var(--primary-gold);
     text-align: center;
-    margin: 0; /* REMOVED all margins */
-    padding: 2px 0; /* Minimal padding */
+    margin: 0; 
+    padding: 2px 0; 
     width: 100%;
 }
 
-/* *** FIXED: Shop Now Button - positioned at bottom *** */
+/* Shop Now Button */
 .shop-now-btn {
     width: 100%;
     background: var(--primary-gold);
     color: #000;
     border: none;
-    padding: 7px 0; /* Slightly smaller */
+    padding: 7px 0; 
     border-radius: 4px;
-    font-size: 0.72rem; /* Smaller font */
+    font-size: 0.72rem; 
     font-weight: 700;
     text-transform: uppercase;
     cursor: pointer;
-    margin-top: auto; /* Pushes to bottom */
+    margin-top: auto; 
     transition: all 0.2s ease;
 }
 
@@ -303,7 +305,7 @@
     transform: translateY(-1px);
 }
 
-/* === 7. Catalogue Section === */
+/* === 7. Catalogue Section (UPDATED) === */
 .category-swiper {
     width: 100%;
     padding: 10px 5px;
@@ -318,6 +320,7 @@
     text-decoration: none;
 }
 
+/* Circle Box */
 .category-circle-img-box {
     width: 70px;
     height: 70px;
@@ -329,6 +332,7 @@
     align-items: center;
     justify-content: center;
     transition: all 0.2s ease;
+    padding: 5px; /* Added padding to ensure image doesn't touch edges */
 }
 
 .category-circle-item:hover .category-circle-img-box {
@@ -336,10 +340,11 @@
     transform: scale(1.05);
 }
 
+/* Circle Image - Fitted Perfectly */
 .category-circle-img {
-    width: 70%;
-    height: 70%;
-    object-fit: contain;
+    width: 100%;  /* Full width of the padded box */
+    height: 100%; /* Full height of the padded box */
+    object-fit: contain; /* Ensures the whole icon is visible inside the circle */
 }
 
 .category-circle-title {
@@ -361,6 +366,7 @@
     padding: 0 4px !important;
 }
 
+/* Base Card Widths */
 .top-deals-swiper .swiper-slide,
 .top-sellers-swiper-new .swiper-slide,
 .under-799-swiper .swiper-slide {
@@ -368,28 +374,27 @@
     margin-right: 4px !important;
 }
 
-/* Fix for 2-row layout in Discount section */
+/* *** DISCOUNT SWIPER (2 ROWS LAYOUT) *** */
 .discount-swiper {
     height: auto !important;
+    /* Grid layout height managed by swiper-grid */
 }
 
 .discount-swiper .swiper-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    height: auto !important;
-    align-items: stretch;
+    /* Flex wrap handling done by Swiper Grid mode */
 }
 
 .discount-swiper .swiper-slide {
-    flex: 0 0 calc(50% - 8px) !important;
-    margin-bottom: 8px !important;
     height: auto !important;
+    /* Margin handled by Grid spacing */
+    margin-top: 0 !important;
 }
 
-/* Ensure all cards have consistent height */
 .discount-swiper .clean-card-wrapper {
     height: 100%;
+    /* Aspect ratio maintains the shape */
 }
+
 
 /* === 9. Responsive Adjustments === */
 @media (min-width: 640px) {
@@ -409,15 +414,11 @@
         font-size: 0.75rem;
     }
     
-    /* Tablet: 3 cards per row */
+    /* Tablet */
     .top-deals-swiper .swiper-slide,
     .top-sellers-swiper-new .swiper-slide,
     .under-799-swiper .swiper-slide {
         width: 32% !important;
-    }
-    
-    .discount-swiper .swiper-slide {
-        flex: 0 0 calc(33.333% - 8px) !important;
     }
 }
 
@@ -438,27 +439,23 @@
         padding: 4px 0;
     }
     
-    /* Desktop: 5 cards per row */
+    /* Desktop */
     .top-deals-swiper .swiper-slide,
     .top-sellers-swiper-new .swiper-slide,
     .under-799-swiper .swiper-slide {
         width: 19% !important;
     }
-    
-    .discount-swiper .swiper-slide {
-        flex: 0 0 calc(20% - 8px) !important;
-    }
 }
 
 @media (max-width: 480px) {
     .clean-card-box {
-        height: 62%; /* More image space on mobile */
+        height: 62%;
     }
     
     .clean-card-details {
         height: 38%;
         padding: 5px 6px;
-        gap: 1px; /* Minimal gap on mobile */
+        gap: 1px; 
     }
     
     .clean-card-title {
@@ -481,7 +478,7 @@
 
 /* === 10. Fix for content overflow === */
 .clean-card-wrapper {
-    min-height: 280px; /* Minimum height to prevent too small cards */
+    min-height: 280px; 
 }
 
 /* Ensure text doesn't overflow */
@@ -491,23 +488,6 @@
     word-break: break-word;
 }
 
-/* Fix for very long product names */
 .clean-card-title {
     max-height: 2.8em;
 }
-
-/* === 11. DEBUG: Visual guide for spacing (remove in production) === */
-/* Uncomment to see spacing issues */
-/*
-.clean-card-title {
-    background-color: rgba(255, 0, 0, 0.1);
-}
-
-.clean-card-price-row {
-    background-color: rgba(0, 255, 0, 0.1);
-}
-
-.clean-card-details {
-    background-color: rgba(0, 0, 255, 0.1);
-}
-*/
