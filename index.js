@@ -1,4 +1,4 @@
-// index.js - 2 Rows & Screenshot Style Support
+// index.js - Merged: Old Hero Logic + New Product Card Logic
 
 import { db } from './firebase-config.js';
 import { 
@@ -20,14 +20,40 @@ document.addEventListener("DOMContentLoaded", () => {
     loadSiteSettings();
     loadHomeBanner(); 
     loadHeroSlider();
+    
+    // Product Loaders (From Previous Turn - Screenshot Style)
     loadTopDeals();         
     loadTopTrendyDeals();   
     loadTopDiscounts();
     loadUnder799Products(); 
     loadHomeCategories(); 
+    
+    setupScrollReveal();
 });
 
-// Banner
+/**
+ * Scroll Reveal Animation Setup (From Old Model)
+ */
+function setupScrollReveal() {
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    const sections = document.querySelectorAll('.home-section, .hero-text-section');
+    sections.forEach(section => {
+        section.classList.add('scroll-reveal');
+        observer.observe(section);
+    });
+}
+
+/**
+ * 1. HOME BANNER (From Old Model)
+ */
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
     if (!bannerContainer) return;
@@ -35,15 +61,21 @@ async function loadHomeBanner() {
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists() && docSnap.data().homeBannerUrl) {
-            const optimizedUrl = optimizeImage(docSnap.data().homeBannerUrl, 800, 80);
-            bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Banner" loading="lazy">`;
+            const bannerUrl = docSnap.data().homeBannerUrl;
+            const optimizedUrl = optimizeImage(bannerUrl, 1200, 85);
+            bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Special Offer Banner" loading="lazy">`;
             bannerContainer.style.display = 'block';
+        } else {
+            bannerContainer.style.display = 'none';
         }
-    } catch (error) {}
+    } catch (error) {
+        console.error("Error loading home banner: ", error);
+        bannerContainer.style.display = 'none';
+    }
 }
 
 /**
- * 2. Hero Slider
+ * 2. HERO SLIDER (From Old Model - Supports YouTube Shorts & Parallax)
  */
 async function loadHeroSlider() {
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -54,7 +86,7 @@ async function loadHeroSlider() {
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-            sliderWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/800x450/000/fff?text=No+Slides" alt="Placeholder"></div>`;
+            sliderWrapper.innerHTML = `<div class="swiper-slide"><img src="https://placehold.co/600x800/000000/D4AF37?text=JR+UD+HUB" alt="Placeholder"></div>`;
         } else {
             sliderWrapper.innerHTML = '';
             querySnapshot.forEach((doc) => {
@@ -65,64 +97,97 @@ async function loadHeroSlider() {
                 let isVideo = slide.type === 'video';
                 let videoId = '', embedUrl = '', finalUrl = slide.url;
 
-                if (isVideo) {
-                    if (slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
-                        try { const id = slide.url.split('/d/')[1].split('/')[0]; finalUrl = `https://drive.google.com/uc?export=download&id=${id}`; } catch(e) {}
-                    } 
-                    else if (slide.url.includes('youtube.com') || slide.url.includes('youtu.be')) {
-                        if (slide.url.includes('v=')) videoId = new URL(slide.url).searchParams.get('v');
-                        else if (slide.url.includes('shorts')) videoId = new URL(slide.url).pathname.split('/shorts/')[1];
-                        else videoId = slide.url.split('youtu.be/')[1];
-                        if (videoId) embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&autoplay=1&playsinline=1`;
-                    }
+                if (isVideo && slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
+                    try {
+                        const id = slide.url.split('/d/')[1].split('/')[0];
+                        finalUrl = `https://drive.google.com/uc?export=download&id=${id}`;
+                    } catch(e) {}
+                } 
+                else if (slide.url.includes('youtube.com/watch?v=')) {
+                    videoId = new URL(slide.url).searchParams.get('v');
+                    isVideo = true;
+                }
+                else if (slide.url.includes('youtube.com/shorts/')) {
+                    videoId = new URL(slide.url).pathname.split('/shorts/')[1];
+                    isVideo = true;
+                }
+
+                if (videoId) {
+                    embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1&autoplay=1`;
                 }
 
                 if (slide.type === 'image') {
-                    const img = optimizeImage(slide.url, 1000, 90);
-                    slideEl.innerHTML = `<img src="${img}" alt="Hero" loading="lazy">`;
-                } else if (isVideo && embedUrl) {
-                    slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
-                } else if (isVideo) {
-                    slideEl.innerHTML = `<video class="hero-video-element" src="${finalUrl}" autoplay muted loop playsinline></video>`;
+                    const optimizedHeroImg = optimizeImage(slide.url, 1000, 90);
+                    slideEl.innerHTML = `<img src="${optimizedHeroImg}" alt="Hero Image" loading="lazy">`;
                 }
+                else if (isVideo && embedUrl) {
+                    slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+                }
+                else if (isVideo) {
+                    slideEl.innerHTML = `<video class="hero-video-element" src="${finalUrl}" autoplay muted loop playsinline preload="auto"></video>`;
+                }
+                
                 sliderWrapper.appendChild(slideEl);
             });
         }
 
         const heroSwiper = new Swiper('.hero-slider-new', {
-            loop: true,
-            speed: 600,
-            autoplay: false, 
+            loop: false, 
+            effect: 'fade',
+            fadeEffect: { crossFade: true },
+            allowTouchMove: true,
+            speed: 1200,
+            autoplay: { delay: 5000, disableOnInteraction: false },
             pagination: { el: '.hero-pagination-dots', clickable: true },
             on: {
-                slideChangeTransitionEnd: function () {
-                    playActiveSlideVideo(this);
-                }
+                slideChange: function() { pauseInactiveVideos(); }
             }
         });
 
-        playActiveSlideVideo(heroSwiper);
+        const firstSlideVideo = document.querySelector('.hero-video-element');
+        if (firstSlideVideo) {
+            firstSlideVideo.muted = true; 
+            firstSlideVideo.play().catch(e => console.log("Initial play failed:", e));
+        }
 
-    } catch (error) { console.error("Error loading hero slider"); }
+        setupSmartVideoAutoplay();
+
+    } catch (error) { console.error("Error loading hero slider: ", error); }
 }
 
-function playActiveSlideVideo(swiper) {
-    const slides = document.querySelectorAll('.hero-slider-new .swiper-slide');
-    slides.forEach((slide) => {
-        const video = slide.querySelector('video');
-        if (video) {
-            if (slide.classList.contains('swiper-slide-active')) {
-                video.currentTime = 0;
-                video.play().catch(e => {});
-            } else {
-                video.pause();
-            }
+function pauseInactiveVideos() {
+    const videos = document.querySelectorAll('.hero-video-element');
+    videos.forEach(video => {
+        const slide = video.closest('.swiper-slide');
+        if (!slide.classList.contains('swiper-slide-active')) {
+            video.pause();
+        } else {
+            video.play().catch(e => console.log("Play failed:", e));
         }
     });
 }
 
+function setupSmartVideoAutoplay() {
+    const videos = document.querySelectorAll('.hero-video-element, .hero-video-iframe');
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.25 };
+    const videoObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            const element = entry.target;
+            const isYouTube = element.tagName === 'IFRAME';
+            if (entry.isIntersecting) {
+                if (isYouTube) element.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
+                else element.play().catch(e => console.log("Autoplay prevented:", e));
+            } else {
+                if (isYouTube) element.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
+                else element.pause();
+            }
+        });
+    }, observerOptions);
+    videos.forEach(video => { videoObserver.observe(video); });
+}
+
 /**
- * 3. SPECIAL OFFER (Full Width Banner)
+ * 3. SPECIAL OFFER (Standard Card)
  */
 async function loadTopDeals() {
     const section = document.getElementById('top-deals-section');
@@ -150,63 +215,51 @@ async function loadTopDeals() {
 
         section.style.display = 'block';
         let slidesHTML = '';
-        snapshot.forEach(doc => {
-            slidesHTML += createNewStyleProductCard(doc.id, doc.data());
-        });
+        snapshot.forEach(doc => { slidesHTML += createNewStyleProductCard(doc.id, doc.data()); });
         grid.innerHTML = slidesHTML;
 
         new Swiper('.top-deals-swiper', {
-            slidesPerView: 2.2, 
-            spaceBetween: 10,
+            slidesPerView: 2.2, spaceBetween: 10,
             breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
         });
-
     } catch (e) { console.error(e); }
 }
 
 /**
- * 4. TOP TRENDY DEALS (Orange - Screenshot Style)
+ * 4. TOP TRENDY DEALS (Screenshot Style)
  */
 async function loadTopTrendyDeals() {
     const grid = document.getElementById("top-sellers-grid");
     if (!grid) return;
-    
     try {
         const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
         const querySnapshot = await getDocs(q);
-        
         if (querySnapshot.empty) { grid.innerHTML = ''; return; }
         
         let slidesHTML = '';
-        querySnapshot.forEach((doc) => {
-            slidesHTML += createNewStyleProductCard(doc.id, doc.data());
-        });
+        querySnapshot.forEach((doc) => { slidesHTML += createNewStyleProductCard(doc.id, doc.data()); });
         grid.innerHTML = slidesHTML;
 
         new Swiper('.top-sellers-swiper-new', {
-            slidesPerView: 2.2,
-            spaceBetween: 10,
+            slidesPerView: 2.2, spaceBetween: 10,
             breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
         });
-        
     } catch (error) { console.error("Error loading trendy deals"); }
 }
 
 /**
- * 5. TOP DISCOUNT (Blue - Screenshot Style - 2 ROWS)
+ * 5. TOP DISCOUNT (Screenshot Style - 2 ROWS)
  */
 async function loadTopDiscounts() {
     const grid = document.getElementById("top-discount-grid");
     if (!grid) return;
-
     try {
         const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(50));
         const snapshot = await getDocs(q);
-        
         let products = [];
         snapshot.forEach(doc => {
             const p = doc.data();
-            if (p.isTopDeal === true || p.featured === true) { return; }
+            if (p.isTopDeal === true || p.featured === true) return;
             if (p.mrp && p.price && p.mrp > p.price) {
                 const discount = Math.round(((p.mrp - p.price) / p.mrp) * 100);
                 products.push({ id: doc.id, ...p, discount });
@@ -222,63 +275,45 @@ async function loadTopDiscounts() {
         }
 
         let html = '';
-        topDiscounts.forEach(p => {
-            html += createNewStyleProductCard(p.id, p, p.discount);
-        });
+        topDiscounts.forEach(p => { html += createNewStyleProductCard(p.id, p, p.discount); });
         grid.innerHTML = html;
 
-        // 2 Row Grid Config
         new Swiper('.discount-swiper', {
             slidesPerView: 2.2,
-            grid: {
-                rows: 2, 
-                fill: 'row'
-            },
+            grid: { rows: 2, fill: 'row' },
             spaceBetween: 10,
             breakpoints: { 
                 640: { slidesPerView: 3.2, grid: { rows: 2 } }, 
                 1024: { slidesPerView: 5.2, grid: { rows: 2 } } 
             }
         });
-
     } catch(e) {}
 }
 
 /**
- * 5.5. UNDER 799 STORE (Standard Style)
+ * 6. UNDER 799 (Standard Style)
  */
 async function loadUnder799Products() {
     const grid = document.getElementById("under-799-grid");
     if (!grid) return;
-
     try {
-        const q = query(
-            collection(db, "products"), 
-            where("price", "<=", 799), 
-            orderBy("price", "desc"), 
-            limit(15)
-        );
-        
+        const q = query(collection(db, "products"), where("price", "<=", 799), orderBy("price", "desc"), limit(15));
         const snapshot = await getDocs(q);
         if (snapshot.empty) return; 
 
         let slidesHTML = '';
-        snapshot.forEach(doc => {
-            slidesHTML += createNewStyleProductCard(doc.id, doc.data());
-        });
+        snapshot.forEach(doc => { slidesHTML += createNewStyleProductCard(doc.id, doc.data()); });
         grid.innerHTML = slidesHTML;
 
         new Swiper('.under-799-swiper', {
-            slidesPerView: 2.2,
-            spaceBetween: 10,
+            slidesPerView: 2.2, spaceBetween: 10,
             breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
         });
-
     } catch (e) { console.error("Error loading Under 799:", e); }
 }
 
 /**
- * 6. CATEGORIES
+ * 7. CATEGORIES
  */
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
@@ -306,15 +341,9 @@ async function loadHomeCategories() {
         container.innerHTML = html;
 
         new Swiper('.category-swiper', {
-            slidesPerView: 4, 
-            spaceBetween: 10,
-            freeMode: true,   
-            breakpoints: {
-                640: { slidesPerView: 5 },
-                1024: { slidesPerView: 7 }
-            }
+            slidesPerView: 4, spaceBetween: 10, freeMode: true,
+            breakpoints: { 640: { slidesPerView: 5 }, 1024: { slidesPerView: 7 } }
         });
-
     } catch (error) { console.error("Error loading home categories"); }
 }
 
