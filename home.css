@@ -1,4 +1,4 @@
-/* home.css - Final: Catalogue Heading Color Fixed */
+/* home.css - Updated: Countdown Overlay */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -197,6 +197,49 @@ body.light-mode .special-offer-banner-img {
     background: linear-gradient(45deg, #ff3f6c, #ff6b6b);
     color: white; font-size: 0.65rem; font-weight: 800;
     padding: 5px 10px; border-radius: 20px; z-index: 2;
+}
+
+/* *** COUNTDOWN TIMER OVERLAY *** */
+.countdown-overlay {
+    position: absolute;
+    bottom: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    padding: 6px 12px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #fff;
+    border: 1px solid var(--primary-gold);
+    z-index: 5;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+}
+
+.countdown-label {
+    font-size: 0.75rem;
+    color: var(--primary-gold);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.countdown-timer {
+    font-family: monospace;
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #fff;
+}
+
+/* Expired State */
+.countdown-overlay.expired {
+    border-color: #ff4d4d;
+}
+.countdown-overlay.expired .countdown-label {
+    color: #ff4d4d;
 }
 
 .section-header-card {
