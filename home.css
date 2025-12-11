@@ -1,7 +1,7 @@
-/* home.css - Final Update: Images Cropped to Fit Design */
+/* home.css - Fixed: Compact Cards (No Gaps) for Special Offers & Under 799 */
 
 /* =========================================
-   1. HOME TOP BANNER (Professional & Clean)
+   1. HOME TOP BANNER
    ========================================= */
 .home-top-banner {
     width: 100%;
@@ -19,7 +19,7 @@
     height: auto;
     display: block;
     max-height: 140px; 
-    object-fit: cover; /* Images will crop to fit height */
+    object-fit: cover;
     opacity: 0.95;
     transition: opacity 0.3s ease;
 }
@@ -29,7 +29,7 @@
 }
 
 /* =========================================
-   2. HERO SLIDER (Professional Standard)
+   2. HERO SLIDER
    ========================================= */
 .hero-section-new {
     width: 100%;
@@ -65,7 +65,7 @@
 .hero-slider-new .swiper-slide video {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Ensures full slide coverage */
+    object-fit: cover;
     transition: transform 0.5s ease;
 }
 
@@ -114,7 +114,7 @@
 }
 
 /* =========================================
-   3. HERO TEXT SECTION (Plain Style)
+   3. HERO TEXT SECTION
    ========================================= */
 .hero-text-section {
     text-align: center;
@@ -136,7 +136,7 @@
 }
 
 /* =============================================================
-   4. PRODUCT CARDS & SECTIONS (Crop to Fit Updates)
+   4. PRODUCT CARDS & SECTIONS
    ============================================================= */
 
 /* Special Offer Wrapper */
@@ -166,7 +166,7 @@
     height: auto;
     display: block;
     max-height: 150px;
-    object-fit: cover; /* Crop banner to fit */
+    object-fit: cover;
     padding: 3px;
     border-radius: 10px;
     background-color: #000;
@@ -209,7 +209,7 @@
     background-color: #111;
 }
 
-/* --- STANDARD CARD STYLES --- */
+/* --- STANDARD CARD STYLES (COMPACT UPDATE) --- */
 .swiper-slide { height: auto; display: flex; box-sizing: border-box; padding: 0 4px; }
 
 .clean-card-wrapper {
@@ -222,30 +222,59 @@
     display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 10px;
 }
 .clean-card-img {
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; /* *** CHANGED: Crop image to fill box *** */
-    transition: transform 0.3s ease;
-    border-radius: 4px;
+    width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; border-radius: 4px;
 }
+/* *** COMPACT DETAILS SECTION *** */
 .clean-card-details {
-    padding: 6px 8px; display: flex; flex-direction: column; align-items: center;
-    justify-content: flex-start; flex-grow: 1; height: 40%; gap: 2px;
+    padding: 5px 6px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    justify-content: center; /* Center content, remove space-between */
+    flex-grow: 1; 
+    height: 40%; 
+    gap: 0; /* Remove gap */
 }
+
 .clean-card-title {
-    font-size: 0.82rem; color: #fff; font-weight: 600; text-align: center;
-    line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-    overflow: hidden; margin: 0 0 3px 0; min-height: 2.2em; width: 100%;
+    font-size: 0.82rem; 
+    color: #fff; 
+    font-weight: 600; 
+    text-align: center;
+    line-height: 1.1; 
+    display: -webkit-box; 
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;
+    overflow: hidden; 
+    margin: 0 0 2px 0; /* Minimal margin */
+    min-height: 2.2em; 
+    width: 100%;
 }
+
 .clean-card-price-row {
-    font-size: 0.95rem; font-weight: 800; color: var(--primary-gold);
-    text-align: center; margin: 0; padding: 2px 0; width: 100%;
+    font-size: 0.95rem; 
+    font-weight: 800; 
+    color: var(--primary-gold);
+    text-align: center; 
+    margin: 0 0 4px 0; /* Small space before button */
+    padding: 0; 
+    width: 100%;
 }
+
 .shop-now-btn {
-    width: 100%; background: var(--primary-gold); color: #000; border: none;
-    padding: 7px 0; border-radius: 4px; font-size: 0.72rem; font-weight: 700;
-    text-transform: uppercase; margin-top: auto; display: block;
+    width: 100%; 
+    background: var(--primary-gold); 
+    color: #000; 
+    border: none;
+    padding: 5px 0; /* Compact button */
+    border-radius: 4px; 
+    font-size: 0.72rem; 
+    font-weight: 700;
+    text-transform: uppercase; 
+    margin-top: 0; /* Remove auto margin to pull it up */
+    display: block;
 }
+
 .card-discount-badge {
     position: absolute; top: 8px; left: 8px; background: linear-gradient(45deg, #388e3c, #4caf50);
     color: #fff; font-size: 0.7rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; z-index: 10;
@@ -262,11 +291,13 @@
     height: auto; width: 100%; margin-bottom: 8px; padding: 10px;
 }
 .screenshot-mode .clean-card-img { 
-    mix-blend-mode: normal; /* Removed multiply to ensure crop looks good */
-    object-fit: cover; /* *** CHANGED: Crop image to fill square box *** */
+    mix-blend-mode: normal; 
+    object-fit: cover; 
 }
+/* Revert details for screenshot mode to allow proper text flow */
 .screenshot-mode .clean-card-details {
     background: transparent; padding: 0 4px; display: flex; flex-direction: column; height: auto;
+    justify-content: flex-start; gap: 2px;
 }
 .screenshot-mode .clean-card-price-row {
     color: #ffffff; font-size: 1.1rem; font-weight: 700; order: -1; 
@@ -274,7 +305,7 @@
 }
 .screenshot-mode .clean-card-title {
     color: #cccccc; font-size: 0.8rem; font-weight: 400; line-height: 1.2;
-    max-height: 2.4em; min-height: auto; text-align: center;
+    max-height: 2.4em; min-height: auto; text-align: center; margin-bottom: 0;
 }
 .screenshot-mode .shop-now-btn { display: none; }
 .screenshot-mode .card-discount-badge { top: 8px; left: 8px; font-size: 0.6rem; padding: 3px 6px; border-radius: 6px; }
@@ -289,10 +320,7 @@
     justify-content: center; padding: 5px;
 }
 .category-circle-img { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; /* *** CHANGED: Crop category image to fit circle *** */
-    border-radius: 50%;
+    width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
 }
 .category-circle-title { color: #ccc; font-size: 0.75rem; font-weight: 600; text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; }
 
