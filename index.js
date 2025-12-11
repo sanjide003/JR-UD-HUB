@@ -1,4 +1,4 @@
-// index.js - Hero Slider, Products & Countdown Logic
+// index.js - Hero Slider, Products & Unique Box Countdown Logic
 
 import { db } from './firebase-config.js';
 import { 
@@ -222,10 +222,10 @@ function setupScrollVideoObserver() {
 
 // *** Product Sections ***
 
-// 1. TOP DEALS (Special Offer) with Countdown
+// 1. TOP DEALS (Special Offer) with Box Countdown
 async function loadTopDeals() {
     const section = document.getElementById('top-deals-section');
-    const bannerContainer = document.querySelector('.special-offer-header'); // Wrapper for img + timer
+    const bannerContainer = document.querySelector('.special-offer-header'); 
     const bannerImg = document.getElementById('top-deals-banner-img');
     const grid = document.getElementById('top-deals-grid');
     if (!section) return;
@@ -234,7 +234,6 @@ async function loadTopDeals() {
         const settingsRef = doc(db, "settings", "homeLayout");
         const settingsSnap = await getDoc(settingsRef);
         
-        // Load Banner
         if (settingsSnap.exists() && settingsSnap.data().topDealsBanner) {
             const bannerUrl = optimizeImage(settingsSnap.data().topDealsBanner, 1000, 85);
             if(bannerImg) bannerImg.src = bannerUrl;
@@ -243,7 +242,6 @@ async function loadTopDeals() {
             if (settingsSnap.data().offerEndTime) {
                 const endTime = settingsSnap.data().offerEndTime;
                 if (endTime) {
-                    // Create/Update Timer Overlay
                     let timerOverlay = document.getElementById('offer-countdown');
                     if (!timerOverlay) {
                         timerOverlay = document.createElement('div');
@@ -254,7 +252,6 @@ async function loadTopDeals() {
                     startCountdown(endTime, timerOverlay);
                 }
             } else {
-                // Remove timer if not set
                 const existing = document.getElementById('offer-countdown');
                 if(existing) existing.remove();
             }
@@ -262,11 +259,9 @@ async function loadTopDeals() {
             section.style.display = 'block'; 
         }
         
-        // Load Products
         const q = query(collection(db, "products"), where("isTopDeal", "==", true), limit(10));
         const snapshot = await getDocs(q);
         if (snapshot.empty) {
-            // Hide section if no products AND no banner
             if (!settingsSnap.exists() || !settingsSnap.data().topDealsBanner) section.style.display = 'none';
             return;
         }
@@ -282,11 +277,10 @@ async function loadTopDeals() {
     } catch (e) { console.error(e); }
 }
 
-// Timer Function
+// *** UPDATED TIMER FUNCTION: Separate Boxes ***
 function startCountdown(endTimeStr, displayElement) {
     const endDate = new Date(endTimeStr).getTime();
     
-    // Initial call
     update();
     const timerInterval = setInterval(update, 1000);
 
@@ -296,7 +290,7 @@ function startCountdown(endTimeStr, displayElement) {
 
         if (distance < 0) {
             clearInterval(timerInterval);
-            displayElement.innerHTML = `<span class="countdown-label">Offer Expired</span>`;
+            displayElement.innerHTML = `<div class="countdown-box" style="background-color:#555; padding:6px 12px;"><span class="countdown-val">Expired</span></div>`;
             displayElement.classList.add('expired');
             return;
         }
@@ -306,12 +300,15 @@ function startCountdown(endTimeStr, displayElement) {
         const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
-        // Format: 01d 05h 30m 12s
-        const dStr = days > 0 ? `${days}d ` : '';
-        displayElement.innerHTML = `
-            <span class="countdown-label">Ends In:</span>
-            <span class="countdown-timer">${dStr}${hours}h ${minutes}m ${seconds}s</span>
-        `;
+        let html = '';
+        if (days > 0) {
+             html += `<div class="countdown-box"><span class="countdown-val">${days}</span><span class="countdown-unit">Day</span></div>`;
+        }
+        html += `<div class="countdown-box"><span class="countdown-val">${hours.toString().padStart(2, '0')}</span><span class="countdown-unit">Hr</span></div>`;
+        html += `<div class="countdown-box"><span class="countdown-val">${minutes.toString().padStart(2, '0')}</span><span class="countdown-unit">Min</span></div>`;
+        html += `<div class="countdown-box"><span class="countdown-val">${seconds.toString().padStart(2, '0')}</span><span class="countdown-unit">Sec</span></div>`;
+        
+        displayElement.innerHTML = html;
     }
 }
 
