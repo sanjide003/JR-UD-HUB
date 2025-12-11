@@ -1,4 +1,4 @@
-// explore.js - Optimized for Speed
+// explore.js - Optimized for Speed & Theme Compatible
 
 import {
     collection,
@@ -66,7 +66,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 function loadExploreBanner(bannerUrl) {
     const bannerContainer = document.getElementById('explore-top-banner');
     if (!bannerContainer || !bannerUrl) return;
-    // ഒപ്റ്റിമൈസേഷൻ: 1200px width
     const optimizedUrl = optimizeImage(bannerUrl, 1200, 85);
     bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Special Offer Banner" loading="lazy">`;
     bannerContainer.style.display = 'block';
@@ -204,7 +203,6 @@ function buildCategoryHeader(categoryId) {
     if (!category) return ''; 
     const categoryLink = `categories.html?filter=${categoryId}`;
     const rawImg = category.imageUrl || 'https://placehold.co/40x40/333/D4AF37?text=C';
-    // വളരെ ചെറിയ ഐക്കൺ (50px)
     const categoryImg = optimizeImage(rawImg, 50);
     return `
         <a href="${categoryLink}" class="explore-card-header">
@@ -219,7 +217,6 @@ function buildImageSlider(productId, images, productName) {
     let slidesHTML = '';
     if (images && images.length > 0) {
         images.forEach(imgUrl => {
-            // ഒപ്റ്റിമൈസ് ചെയ്ത ഇമേജ് (600px width)
             const optimizedUrl = optimizeImage(imgUrl, 600, 85);
             slidesHTML += `<div class="swiper-slide"><a href="${productLink}"><img src="${optimizedUrl}" alt="${productName}" loading="lazy"></a></div>`;
         });
@@ -250,7 +247,8 @@ function buildCardContent(productId, product) {
     const imageUrl = optimizeImage(rawImage, 400);
     const isInCart = isItemInCart(productId);
     const activeClass = isInCart ? 'added-to-cart' : '';
-    const svgFill = isInCart ? 'style="fill: #ffffff; stroke: #ffffff;"' : '';
+    
+    // *** മാറ്റം: ഇവിടെ ഇൻലൈൻ സ്റ്റൈൽ (style="fill:...") ഒഴിവാക്കി. CSS-ൽ ഇത് നിയന്ത്രിക്കും ***
     const buttonTitle = isInCart ? 'Remove from Cart' : 'Add to Cart';
 
     const likeCount = product.likeCount || 0;
@@ -274,7 +272,7 @@ function buildCardContent(productId, product) {
                 </div>
 
                 <button title="Share" class="share-btn" data-id="${productId}" data-name="${product.name}" data-price="${price}"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
-                <button title="${buttonTitle}" class="bookmark-btn ${activeClass}" data-id="${productId}" data-name="${product.name}" data-price="${price}" data-mrp="${mrp}" data-image="${imageUrl}" data-size="${product.size || ''}"><svg viewBox="0 0 24 24" ${svgFill}><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
+                <button title="${buttonTitle}" class="bookmark-btn ${activeClass}" data-id="${productId}" data-name="${product.name}" data-price="${price}" data-mrp="${mrp}" data-image="${imageUrl}" data-size="${product.size || ''}"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
             </div>
             
             <div class="rating-box" id="rating-box-${productId}" style="display: none;">
@@ -406,11 +404,10 @@ feedContainer.addEventListener('click', async (e) => {
     if (bookmarkButton) {
         e.preventDefault();
         const id = bookmarkButton.dataset.id;
-        const svg = bookmarkButton.querySelector('svg');
+        // *** മാറ്റം: നേരിട്ട് നിറം മാറ്റുന്നത് ഒഴിവാക്കി, ക്ലാസ്സ് മാത്രം മാറ്റുന്നു ***
         if (bookmarkButton.classList.contains('added-to-cart')) {
             removeFromCart(id);
             bookmarkButton.classList.remove('added-to-cart');
-            if (svg) { svg.style.fill = 'none'; svg.style.stroke = 'currentColor'; }
             bookmarkButton.title = 'Add to Cart';
         } else {
             const product = {
@@ -423,7 +420,6 @@ feedContainer.addEventListener('click', async (e) => {
             };
             addToCart(id, product);
             bookmarkButton.classList.add('added-to-cart');
-            if (svg) { svg.style.fill = '#ffffff'; svg.style.stroke = '#ffffff'; }
             bookmarkButton.title = 'Remove from Cart';
         }
     }
