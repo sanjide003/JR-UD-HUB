@@ -36,7 +36,7 @@ body.light-mode {
     --shadow-soft: 0 4px 15px rgba(0,0,0,0.08);
     
     /* *** മാറ്റം: ലൈറ്റ് മോഡിൽ കടും ഗോൾഡ് (Dark Gold) *** */
-    --primary-gold: #FFC000; 
+    --primary-gold: #F5C542; 
     --secondary-gold: #8B6508; 
 }
 
