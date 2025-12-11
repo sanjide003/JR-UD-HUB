@@ -1,4 +1,4 @@
-/* ഇത് categories.CSS with Light Mode Support */
+/* categories.css - Updated: Icon Fit & Light Mode Active Chip Color */
 
 /* --- 1. പേജ് ലേഔട്ട് --- */
 .category-page-layout {
@@ -70,7 +70,10 @@ body.light-mode .sticky-header-container {
     border-radius: 16px; 
     background-color: rgba(255, 255, 255, 0.05); 
     border: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 10px;
+    
+    /* *** മാറ്റം: പാഡിംഗ് കുറച്ചു (10px -> 5px) *** ഇതോടെ ഐക്കൺ വലുതായി ഫിറ്റായി കാണിക്കും. */
+    padding: 5px;
+    
     display: flex;
     align-items: center;
     justify-content: center;
@@ -258,11 +261,19 @@ body.light-mode .discount-chip {
     color: #555;
 }
 
+/* Active State (Common) */
 .discount-chip.active {
     background-color: #24a66e;
     border-color: #24a66e;
     color: #fff;
     font-weight: 600;
+}
+
+/* *** മാറ്റം: ലൈറ്റ് മോഡിൽ Active ആകുമ്പോൾ പച്ച കളർ നിർബന്ധമാക്കുന്നു *** */
+body.light-mode .discount-chip.active {
+    background-color: #24a66e !important;
+    border-color: #24a66e !important;
+    color: #fff !important;
 }
 
 
