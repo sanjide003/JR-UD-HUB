@@ -1,7 +1,7 @@
 // ഇതാണ് 'cart-page.js' ഫയൽ.
 // മാറ്റങ്ങൾ: 
-// 1. WhatsApp Number ലോഡ് ചെയ്യുന്നു.
-// 2. ബട്ടൺ ഫ്ലോട്ടിംഗ്/ഡോക്കിംഗ് ലോജിക് (IntersectionObserver) ചേർത്തു.
+// 1. Discount Percentage displayed above price.
+// 2. Header Savings Message Logic Updated.
 
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -15,6 +15,8 @@ const priceLabelEl = document.getElementById('cart-price-label');
 const mrpTotalEl = document.getElementById('cart-mrp-total');
 const discountEl = document.getElementById('cart-discount');
 const savingsMessageEl = document.getElementById('cart-savings-message');
+const headerSavingsBox = document.getElementById('header-savings-box'); // New Header Box
+const headerSavingsText = document.getElementById('header-savings-text'); // New Header Text
 const totalEl = document.getElementById('cart-total');
 const fullCheckoutButton = document.getElementById('full-checkout-button');
 const checkoutLoader = document.getElementById('checkout-loader');
@@ -45,33 +47,19 @@ async function loadWhatsappNumber() {
 function setupButtonObserver() {
     if (!checkoutMarker || !fullCheckoutButton) return;
 
-    // ബട്ടൺ ഇരിക്കേണ്ട സ്ഥലം (Marker) സ്ക്രീനിൽ കാണുന്നുണ്ടോ എന്ന് നോക്കുന്നു
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                // Marker സ്ക്രീനിൽ ഉണ്ട് -> ബട്ടൺ അതിന്റെ സ്ഥാനത്ത് (Docked) ഇരിക്കണം
                 fullCheckoutButton.classList.remove('floating');
             } else {
-                // Marker സ്ക്രീനിന് പുറത്താണ് -> ബട്ടൺ ഫ്ലോട്ട് ചെയ്യണം
-                // എന്നാൽ, ബട്ടൺ മുകളിലേക്ക് പോയാൽ ഫ്ലോട്ട് ചെയ്യേണ്ട, താഴേക്ക് സ്ക്രോൾ ചെയ്യുമ്പോൾ മാത്രം മതി
-                // ഇവിടെ ലളിതമായി: Marker കാണുന്നില്ലെങ്കിൽ Floating ആക്കുന്നു.
-                
-                // ചെറിയൊരു തിരുത്ത്: Marker മുകളിലേക്ക് പോയാൽ (Already passed), ബട്ടൺ താഴെ ഫിക്സഡ് ആകേണ്ട കാര്യമില്ല.
-                // എന്നാൽ ഇവിടെ ആവശ്യം Price Details എത്തുമ്പോൾ വികസിക്കണം എന്നാണ്.
-                // Price Details-ന് താഴെയാണ് Marker.
-                // അതിനാൽ Marker താഴെ ആണെങ്കിൽ (നമ്മൾ മുകളിൽ സ്ക്രോൾ ചെയ്യുമ്പോൾ) -> Floating Button.
-                // Marker എത്തിയാൽ -> Docked Button.
-                
                 if (entry.boundingClientRect.top > 0) {
-                    // Marker സ്ക്രീനിന്റെ താഴെയാണ് (നമ്മൾ മുകളിലാണ്)
                     fullCheckoutButton.classList.add('floating');
                 } else {
-                    // Marker മുകളിലേക്ക് പോയി (നമ്മൾ താഴെ എത്തി) -> ഇവിടെയും Docked ആയിരിക്കണം
                     fullCheckoutButton.classList.remove('floating');
                 }
             }
         });
-    }, { threshold: 0.1 }); // 10% കണ്ടാൽ മതി
+    }, { threshold: 0.1 }); 
 
     observer.observe(checkoutMarker);
 }
@@ -91,6 +79,7 @@ function renderCartPage() {
             </div>
         `;
         summaryContainer.style.display = 'none'; 
+        if(headerSavingsBox) headerSavingsBox.style.display = 'none'; // Hide header savings if empty
         return;
     }
 
@@ -109,6 +98,13 @@ function renderCartPage() {
         const rawImage = item.image || 'https://placehold.co/150x150/1e1e1e/D4AF37?text=No+Image';
         const optimizedImage = optimizeImage(rawImage, 150);
 
+        // *** Discount Calculation ***
+        let discountBadge = '';
+        if (item.mrp && item.mrp > item.price) {
+            const discountPercent = Math.round(((item.mrp - item.price) / item.mrp) * 100);
+            discountBadge = `<span class="item-discount-badge">${discountPercent}% OFF</span>`;
+        }
+
         // *** കാർഡ് HTML ***
         itemElement.innerHTML = `
             <div class="cart-item-main">
@@ -119,8 +115,11 @@ function renderCartPage() {
                     <div>
                         <a href="${productLink}" class="cart-item-title">${item.name}</a>
                         <div class="cart-item-meta">
-                            <span class="cart-item-price">₹${item.price.toFixed(2)}</span>
-                            ${sizeHTML}
+                            ${discountBadge} <!-- Discount displayed above price -->
+                            <div class="price-row-wrapper">
+                                <span class="cart-item-price">₹${item.price.toFixed(2)}</span>
+                                ${sizeHTML}
+                            </div>
                         </div>
                     </div>
                     
@@ -159,17 +158,29 @@ function updateCartSummary() {
     if (totalEl) totalEl.textContent = `₹${subtotal.toFixed(2)}`;
     
     if (discount > 0) {
+        const savingsText = `You'll save ₹${discount.toFixed(2)} on this order!`;
+        
+        // Update Bottom Summary Message (Keep original logic)
         if (discountEl) {
             discountEl.textContent = `- ₹${discount.toFixed(2)}`;
             discountEl.parentElement.style.display = 'flex';
         }
         if (savingsMessageEl) {
-            savingsMessageEl.textContent = `You will save ₹${discount.toFixed(2)} on this order!`;
+            savingsMessageEl.textContent = savingsText;
             savingsMessageEl.style.display = 'block';
         }
+
+        // *** Update Top Header Savings Box ***
+        if (headerSavingsBox && headerSavingsText) {
+            headerSavingsText.textContent = savingsText;
+            headerSavingsBox.style.display = 'inline-flex';
+        }
+
     } else {
+        // No discount
         if (discountEl) discountEl.parentElement.style.display = 'none';
         if (savingsMessageEl) savingsMessageEl.style.display = 'none';
+        if (headerSavingsBox) headerSavingsBox.style.display = 'none';
     }
 }
 
