@@ -1,8 +1,4 @@
-/* ഇത് cart.css
-   മാറ്റങ്ങൾ: 
-   1. Floating Button Logic (വലതുവശത്ത് വാട്സാപ്പ് ഐക്കൺ).
-   2. Docked Mode (സാധാരണ ബട്ടൺ).
-*/
+/* ഇത് cart.css - With Light Mode Support */
 
 /* --- 1. കാർട്ട് പേജ് ലേഔട്ട് --- */
 .cart-page-layout-new {
@@ -29,8 +25,19 @@
     flex-direction: column;
 }
 
+/* Light Mode Override */
+body.light-mode .cart-item-card {
+    background-color: #fff;
+    border-color: #eee;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
 .cart-item-card:hover {
     border-color: rgba(255, 255, 255, 0.2);
+}
+
+body.light-mode .cart-item-card:hover {
+    border-color: #ddd;
 }
 
 /* കാർഡിന്റെ മുകൾ ഭാഗം */
@@ -39,6 +46,10 @@
     padding: 1rem;
     gap: 1rem;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+body.light-mode .cart-item-main {
+    border-bottom: 1px solid #eee;
 }
 
 .cart-item-image-link {
@@ -74,6 +85,11 @@
     overflow: hidden;
 }
 
+/* Light Mode Override */
+body.light-mode .cart-item-title {
+    color: #000;
+}
+
 .cart-item-title:hover {
     color: var(--primary-gold);
 }
@@ -101,6 +117,11 @@
     font-size: 0.8rem;
 }
 
+/* Light Mode Override */
+body.light-mode .cart-item-size {
+    background-color: #f0f0f0;
+}
+
 /* ക്വാണ്ടിറ്റി കൺട്രോൾ */
 .quantity-control {
     display: flex;
@@ -110,6 +131,12 @@
     border-radius: 6px;
     width: fit-content;
     height: 32px;
+}
+
+/* Light Mode Override */
+body.light-mode .quantity-control {
+    background-color: #f8f8f8;
+    border-color: #ddd;
 }
 
 .quantity-btn {
@@ -126,8 +153,17 @@
     transition: background-color 0.2s;
 }
 
+/* Light Mode Override */
+body.light-mode .quantity-btn {
+    color: #333;
+}
+
 .quantity-btn:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+body.light-mode .quantity-btn:hover {
+    background-color: #e0e0e0;
 }
 
 .quantity-input {
@@ -141,6 +177,12 @@
     font-size: 0.95rem;
     -moz-appearance: textfield;
 }
+
+/* Light Mode Override */
+body.light-mode .quantity-input {
+    color: #000;
+}
+
 .quantity-input::-webkit-outer-spin-button,
 .quantity-input::-webkit-inner-spin-button {
     -webkit-appearance: none;
@@ -169,6 +211,11 @@
 
 .cart-action-btn:first-child {
     border-right: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Light Mode Override */
+body.light-mode .cart-action-btn:first-child {
+    border-right: 1px solid #eee;
 }
 
 .btn-remove {
@@ -204,7 +251,13 @@
     border: 1px solid var(--border-color);
     border-radius: 12px;
     padding: 1.5rem;
-    /* Sticky Position Removed for better mobile flow */
+}
+
+/* Light Mode Override */
+body.light-mode .cart-summary-card {
+    background-color: #fff;
+    border-color: #eee;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 .cart-summary-card h2 {
@@ -213,6 +266,12 @@
     padding-bottom: 0.5rem;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-color);
+}
+
+/* Light Mode Override */
+body.light-mode .cart-summary-card h2 {
+    color: #000;
+    border-bottom: 1px solid #eee;
 }
 
 .summary-row {
@@ -226,6 +285,11 @@
 .summary-row span:last-child {
     color: var(--text-color);
     font-weight: 500;
+}
+
+/* Light Mode Override */
+body.light-mode .summary-row span:last-child {
+    color: #000;
 }
 
 .summary-row.discount {
@@ -244,6 +308,13 @@
     margin-top: 1rem;
     margin-bottom: 0;
 }
+
+/* Light Mode Override */
+body.light-mode .summary-row.total {
+    color: #000;
+    border-top: 1px dashed #ddd;
+}
+
 .summary-row.total span:last-child {
     color: var(--primary-gold);
 }
@@ -263,9 +334,9 @@
 
 /* *** CHECKOUT BUTTON STYLES (Floating & Docked) *** */
 
-/* 1. Normal (Docked) State - പേജിൽ കാണുന്നത് */
+/* 1. Normal (Docked) State */
 .btn-checkout-full {
-    width: 100%; /* Full width in docked mode */
+    width: 100%; 
     padding: 1rem;
     font-size: 1.1rem;
     background-color: #24a66e !important;
@@ -282,7 +353,6 @@
     box-shadow: 0 4px 10px rgba(36, 166, 110, 0.3);
     transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     
-    /* Position Reset */
     position: relative; 
     bottom: auto;
     right: auto;
@@ -293,10 +363,10 @@
     background-color: #1e8c5b !important;
 }
 
-/* 2. Floating State - സ്ക്രോൾ ചെയ്ത് താഴെ എത്തുന്നതിന് മുൻപ് */
+/* 2. Floating State */
 .btn-checkout-full.floating {
     position: fixed;
-    bottom: 85px; /* നാവിഗേഷന് മുകളിൽ */
+    bottom: 85px; 
     right: 20px;
     width: 60px;
     height: 60px;
@@ -304,11 +374,10 @@
     border-radius: 50%;
     z-index: 1000;
     box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
-    font-size: 0; /* ടെക്സ്റ്റ് മറയ്ക്കുന്നു */
+    font-size: 0; 
     margin-top: 0;
 }
 
-/* ഐക്കൺ വലിപ്പം */
 .btn-checkout-full .btn-icon svg {
     width: 24px;
     height: 24px;
@@ -316,13 +385,11 @@
     transition: all 0.3s ease;
 }
 
-/* ഫ്ലോട്ടിംഗ് ആകുമ്പോൾ ഐക്കൺ വലുതാക്കുന്നു */
 .btn-checkout-full.floating .btn-icon svg {
     width: 32px;
     height: 32px;
 }
 
-/* ടെക്സ്റ്റ് കൺട്രോൾ */
 .btn-checkout-full .btn-text {
     display: inline-block;
     opacity: 1;
@@ -344,10 +411,22 @@
     border-radius: 12px;
     border: 1px solid var(--border-color);
 }
+
+/* Light Mode Override */
+body.light-mode .empty-cart-message {
+    background-color: #fff;
+    border-color: #eee;
+}
+
 .empty-cart-message h2 {
     color: var(--text-color);
     margin-bottom: 0.5rem;
 }
+
+body.light-mode .empty-cart-message h2 {
+    color: #000;
+}
+
 .empty-cart-message p {
     color: var(--text-muted);
     margin-bottom: 1.5rem;
