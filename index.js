@@ -1,4 +1,4 @@
-// index.js - Smart Content Loading & Aspect Ratio Handling
+// index.js - Smart 3:4 Portrait Logic for Hero Slider
 
 import { db } from './firebase-config.js';
 import { 
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadSiteSettings();
     loadHomeBanner(); 
     loadHeroSlider();
-    loadHeroText(); // New dedicated function
+    loadHeroText();
     
     // Product Loaders
     loadTopDeals();         
@@ -84,9 +84,6 @@ async function loadHomeBanner() {
 async function loadHeroText() {
     const section = document.querySelector('.hero-text-section');
     if(!section) return;
-    
-    // Check if it has content (from static HTML) or load from DB if needed
-    // Assuming static for now as per previous code, but hiding if empty
     const text = section.innerText.trim();
     if(text.length < 5) {
         section.style.display = 'none';
@@ -96,7 +93,7 @@ async function loadHeroText() {
 }
 
 /**
- * 3. HERO SLIDER - Smart Aspect Ratio & Auto Hide
+ * 3. HERO SLIDER - Smart Aspect Ratio (3:4) & Auto Hide
  */
 async function loadHeroSlider() {
     const sliderContainer = document.querySelector('.hero-section-new');
@@ -115,22 +112,22 @@ async function loadHeroSlider() {
         sliderContainer.style.display = 'block'; // Show if slides exist
         sliderWrapper.innerHTML = '';
         
-        let hasShorts = false;
+        let hasPortraitContent = false;
 
-        // Pre-scan to detect aspect ratio mode
+        // Pre-scan: Check for Shorts or indicate portrait preference
         querySnapshot.forEach((doc) => {
             const s = doc.data();
+            // Check for YouTube Shorts
             if(s.type === 'video' && s.url.includes('shorts')) {
-                hasShorts = true;
+                hasPortraitContent = true;
             }
+            // Optional: If you had a field for 'isPortrait', check that too
         });
 
-        // Apply Aspect Ratio Class
-        if(hasShorts) {
+        // Apply 3:4 Aspect Ratio if portrait content exists
+        if(hasPortraitContent) {
             sliderContainer.classList.add('aspect-portrait');
-            sliderContainer.classList.remove('aspect-landscape');
         } else {
-            sliderContainer.classList.add('aspect-landscape');
             sliderContainer.classList.remove('aspect-portrait');
         }
 
@@ -164,7 +161,6 @@ async function loadHeroSlider() {
             }
 
             if (slide.type === 'image') {
-                // Use original aspect ratio or force cover
                 const imgUrl = optimizeImage(slide.url, 1200, 90);
                 slideEl.innerHTML = `<img src="${imgUrl}" alt="Hero" loading="lazy">`;
             }
@@ -178,7 +174,6 @@ async function loadHeroSlider() {
             sliderWrapper.appendChild(slideEl);
         });
 
-        // Initialize Swiper
         const heroSwiper = new Swiper('.hero-slider-new', {
             loop: true, 
             allowTouchMove: true,
@@ -201,7 +196,7 @@ async function loadHeroSlider() {
     }
 }
 
-// Video Controls (Same as before)
+// Video Controls
 function playActiveSlideVideo(swiper) {
     const slides = document.querySelectorAll('.hero-slider-new .swiper-slide');
     slides.forEach((slide) => {
