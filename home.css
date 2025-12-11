@@ -1,72 +1,50 @@
-/* home.css - Merged: Old Header/Hero Style + New Product Card Styles */
+/* home.css - Professional Design & Plain Text Update */
 
 /* =========================================
-   1. HOME TOP BANNER (From Old Model)
+   1. HOME TOP BANNER (Professional & Clean)
    ========================================= */
 .home-top-banner {
     width: 100%;
     height: auto;
     line-height: 0;
     position: relative;
-    margin-bottom: 0;
     background-color: #000;
+    margin-bottom: 0;
     overflow: hidden;
-}
-
-/* Animated Gold Border Bottom */
-.home-top-banner::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: -100%;
-    width: 200%;
-    height: 3px;
-    background: linear-gradient(90deg, 
-        transparent 0%,
-        var(--primary-gold) 20%,
-        var(--primary-gold) 80%,
-        transparent 100%
-    );
-    animation: borderSlide 4s ease-in-out infinite;
-}
-
-@keyframes borderSlide {
-    0%, 100% { left: -100%; }
-    50% { left: 0%; }
+    border-bottom: 1px solid #222; /* Subtle separation */
 }
 
 .home-top-banner img {
     width: 100%;
     height: auto;
     display: block;
-    max-height: 120px;
+    max-height: 140px; /* Controlled height */
     object-fit: cover;
-    animation: fadeInScale 1.2s cubic-bezier(0.4, 0, 0.2, 1);
-    filter: brightness(0.95);
-    transition: filter 0.5s ease;
+    opacity: 0.95; /* Slight dim for premium look */
+    transition: opacity 0.3s ease;
 }
 
 .home-top-banner:hover img {
-    filter: brightness(1.05);
-}
-
-@keyframes fadeInScale {
-    from { opacity: 0; transform: scale(0.95); }
-    to { opacity: 1; transform: scale(1); }
+    opacity: 1;
 }
 
 /* =========================================
-   2. HERO SLIDER (From Old Model - Premium)
+   2. HERO SLIDER (Professional Standard)
    ========================================= */
 .hero-section-new {
     width: 100%;
-    height: 75vh; /* Restored Height */
-    overflow: hidden;
     position: relative;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-    margin: 0; /* Remove margin to fit old style */
-    border: none; /* Remove border from previous turn */
-    border-radius: 0; /* Full width */
+    background-color: #000;
+    margin: 0;
+    overflow: hidden;
+    /* Responsive Height for Professional Look */
+    height: 65vh; 
+}
+
+@media (max-width: 768px) {
+    .hero-section-new {
+        height: 50vh; /* Better fit for mobile screens */
+    }
 }
 
 .hero-slider-new {
@@ -77,64 +55,46 @@
 .hero-slider-new .swiper-slide {
     width: 100%;
     height: 100%;
-    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
     overflow: hidden;
 }
 
-/* Parallax Effect on Images */
+/* Clean Image/Video Fit */
 .hero-slider-new .swiper-slide img,
 .hero-slider-new .swiper-slide video {
     width: 100%;
-    height: 110%;
-    object-fit: cover;
-    transform: scale(1.1);
-    transition: transform 10s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.hero-slider-new .swiper-slide-active img,
-.hero-slider-new .swiper-slide-active video {
-    animation: smoothZoom 10s ease-out forwards;
-}
-
-@keyframes smoothZoom {
-    0% { transform: scale(1.1) translateY(0); }
-    100% { transform: scale(1.15) translateY(-10px); }
+    height: 100%;
+    object-fit: cover; /* Fills area perfectly */
+    transition: transform 0.5s ease;
 }
 
 .hero-slider-new .swiper-slide iframe {
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    border: none;
+    pointer-events: none;
+    transform: scale(1.1); /* Slight zoom to remove black bars */
+}
+
+/* Gradient Overlay for Text Readability (Optional) */
+.hero-slider-new .swiper-slide::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 30%;
+    background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
     pointer-events: none;
 }
 
-/* Dynamic Gradient Overlay */
-.hero-slider-new .swiper-slide::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(
-        135deg,
-        rgba(0, 0, 0, 0.4) 0%,
-        rgba(212, 175, 55, 0.1) 50%,
-        rgba(0, 0, 0, 0.6) 100%
-    );
-    z-index: 1;
-    animation: gradientShift 8s ease-in-out infinite;
-}
-
-@keyframes gradientShift {
-    0%, 100% { opacity: 0.6; }
-    50% { opacity: 0.8; }
-}
-
-/* Premium Pagination Dots */
+/* Professional Pagination Dots */
 .hero-slider-new .hero-pagination-dots {
     position: absolute;
-    bottom: 30px;
+    bottom: 20px;
     left: 0;
     width: 100%;
     text-align: center;
@@ -142,84 +102,48 @@
 }
 
 .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet {
-    background-color: rgba(255, 255, 255, 0.3);
-    width: 10px;
-    height: 10px;
+    background: rgba(255, 255, 255, 0.5);
+    width: 8px;
+    height: 8px;
     opacity: 1;
-    margin: 0 8px !important;
-    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 2px solid transparent;
-    position: relative;
-}
-
-.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet::before {
-    content: '';
-    position: absolute;
-    top: -5px; left: -5px; right: -5px; bottom: -5px;
-    border-radius: 50%;
-    border: 2px solid var(--primary-gold);
-    opacity: 0;
-    transform: scale(0.8);
-    transition: all 0.4s ease;
+    margin: 0 6px !important;
+    transition: all 0.3s ease;
+    border-radius: 4px; /* Soft rounded square or circle */
 }
 
 .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active {
-    background-color: var(--primary-gold);
-    width: 36px;
-    border-radius: 12px;
-    box-shadow: 0 0 20px rgba(212, 175, 55, 0.8);
-    transform: scale(1.1);
-}
-
-.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active::before {
+    background: var(--primary-gold);
+    width: 24px; /* Elongated active dot */
     opacity: 1;
-    transform: scale(1.2);
-    animation: pulse 2s ease-in-out infinite;
 }
 
-@keyframes pulse {
-    0%, 100% { opacity: 1; transform: scale(1.2); }
-    50% { opacity: 0.5; transform: scale(1.5); }
-}
-
-/* Hero Text Section (From Old Model) */
+/* =========================================
+   3. HERO TEXT SECTION (Plain Style)
+   ========================================= */
 .hero-text-section {
     text-align: center;
-    padding: 3rem 1.5rem;
-    color: var(--text-muted);
-    font-size: 1.05rem;
-    line-height: 1.8;
-    max-width: 900px;
+    padding: 2.5rem 1.5rem;
+    color: #cccccc; /* Soft Grey for readability */
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 800px;
     margin: 0 auto;
-    opacity: 0;
-    animation: fadeInUp 1.2s ease-out 0.4s forwards;
-    background: linear-gradient(180deg, 
-        rgba(0, 0, 0, 0) 0%,
-        rgba(212, 175, 55, 0.03) 50%,
-        rgba(0, 0, 0, 0) 100%
-    );
-    position: relative;
+    
+    /* Removing all fancy effects for "Plain" look */
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    font-family: inherit; /* Use default font, no special serif */
 }
 
+/* Removed the big quote marks (::before, ::after) */
 .hero-text-section::before,
 .hero-text-section::after {
-    content: '"';
-    position: absolute;
-    font-size: 4rem;
-    color: var(--primary-gold);
-    opacity: 0.2;
-    font-family: Georgia, serif;
-}
-.hero-text-section::before { top: 10px; left: 10px; }
-.hero-text-section::after { bottom: 10px; right: 10px; }
-
-@keyframes fadeInUp {
-    from { opacity: 0; transform: translateY(40px); }
-    to { opacity: 1; transform: translateY(0); }
+    display: none;
 }
 
 /* =============================================================
-   3. PRODUCT CARDS & SECTIONS (Preserving New Screenshot Style)
+   4. PRODUCT CARDS & SECTIONS (Preserved from Previous Design)
    ============================================================= */
 
 /* Special Offer Wrapper */
@@ -238,6 +162,12 @@
     background-size: 200% 200%;
     animation: gradientShift 3s ease infinite;
 }
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
 .special-offer-banner-img {
     width: 100%;
     height: auto;
@@ -247,6 +177,14 @@
     padding: 3px;
     border-radius: 10px;
     background-color: #000;
+}
+
+.special-offer-header::before {
+    content: 'LIMITED TIME';
+    position: absolute; top: 8px; left: 8px;
+    background: linear-gradient(45deg, #ff3f6c, #ff6b6b);
+    color: white; font-size: 0.65rem; font-weight: 800;
+    padding: 5px 10px; border-radius: 20px; z-index: 2;
 }
 
 /* Section Headers */
@@ -342,7 +280,7 @@
 .screenshot-mode .card-discount-badge { top: 8px; left: 8px; font-size: 0.6rem; padding: 3px 6px; border-radius: 6px; }
 
 
-/* === 4. CATEGORIES === */
+/* === 5. CATEGORIES === */
 .category-swiper { width: 100%; padding: 10px 5px; }
 .category-circle-item { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; text-decoration: none; }
 .category-circle-img-box {
@@ -367,13 +305,7 @@
     .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 19% !important; }
 }
 @media (max-width: 768px) {
-    .hero-section-new { height: 65vh; }
-    .hero-text-section { padding: 2rem 1rem; font-size: 0.95rem; }
-    .clean-card-box { height: 60%; }
-    .clean-card-details { height: 40%; }
+    /* Mobile styles overrides */
     .screenshot-mode .clean-card-price-row { font-size: 1rem; }
     .screenshot-mode .clean-card-title { font-size: 0.7rem; }
-}
-@media (min-width: 1200px) {
-    .hero-section-new { height: 85vh; }
 }
