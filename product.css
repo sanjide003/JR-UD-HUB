@@ -705,6 +705,7 @@ body.light-mode .related-products-section .btn-secondary-new {
     .product-detail-grid { grid-template-columns: 1fr 1fr; }
     .product-actions-grid { max-width: 400px; }
     
+    /* Desktop Fixed Height */
     .product-gallery-swiper {
         height: 550px; 
     }
