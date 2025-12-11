@@ -1,5 +1,4 @@
-/* ഇത് contact.CSS
-*/
+/* ഇത് contact.CSS with Light Mode Support */
 
 .contact-page-grid-single {
     max-width: 700px; 
@@ -11,10 +10,18 @@
     border-radius: 8px;
 }
 
+/* Light Mode Override */
+body.light-mode .contact-page-info {
+    background-color: #fff;
+    border: 1px solid #eee;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
 .contact-page-subtitle {
     color: var(--text-muted);
     margin-bottom: 2.5rem;
 }
+
 .contact-item-main {
     display: flex;
     align-items: flex-start;
@@ -37,15 +44,28 @@
     color: var(--text-color);
     margin-bottom: 0.25rem;
 }
+
+/* Light Mode Override */
+body.light-mode .contact-item-main strong {
+    color: #000;
+}
+
 .contact-item-main a, .contact-item-main span {
     color: var(--text-muted);
     font-size: 1rem;
 }
+
 .contact-social-section {
     margin-top: 3rem;
     padding-top: 2rem;
     border-top: 1px solid var(--border-color);
 }
+
+/* Light Mode Override */
+body.light-mode .contact-social-section {
+    border-top: 1px solid #eee;
+}
+
 .contact-social-section h2 {
     text-align: center;
     margin-bottom: 1.5rem;
