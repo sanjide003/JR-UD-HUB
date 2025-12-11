@@ -1,8 +1,4 @@
-/* ഇത് categories.CSS
-   മാറ്റം: 
-   1. കോംപാക്ട് ഹെഡറിൽ ടെക്സ്റ്റ് ഒൺലി സ്റ്റൈൽ (Underline).
-   2. വിലയുടെ നിറം പച്ച (Green).
-*/
+/* ഇത് categories.CSS with Light Mode Support */
 
 /* --- 1. പേജ് ലേഔട്ട് --- */
 .category-page-layout {
@@ -30,6 +26,12 @@
     flex-shrink: 0;
     padding-bottom: 10px;
     width: 100%;
+}
+
+/* Light Mode Override */
+body.light-mode .sticky-header-container {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-bottom: 1px solid #e0e0e0;
 }
 
 /* --- 1.1 കാറ്റഗറി ഗ്രിഡ് --- */
@@ -75,6 +77,12 @@
     transition: all 0.3s ease;
 }
 
+/* Light Mode Override */
+body.light-mode .category-grid-image-box {
+    background-color: #f5f5f5;
+    border: 1px solid #e0e0e0;
+}
+
 .category-grid-image {
     width: 100%;
     height: 100%;
@@ -91,6 +99,11 @@
     transition: all 0.3s ease;
     padding: 4px 8px;
     border-radius: 12px;
+}
+
+/* Light Mode Override */
+body.light-mode .category-grid-name {
+    color: #555;
 }
 
 /* Active State (Normal View) */
@@ -133,6 +146,13 @@
     width: 100%;
 }
 
+/* Light Mode Override */
+body.light-mode .search-input-wrapper {
+    background-color: #fff;
+    border-color: #ddd;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
 .search-icon {
     width: 20px;
     height: 20px;
@@ -148,6 +168,11 @@
     width: 100%;
     outline: none;
     margin-left: 10px;
+}
+
+/* Light Mode Override */
+body.light-mode #product-search-input {
+    color: #333;
 }
 
 /* Filter Section */
@@ -185,6 +210,13 @@
     background-size: 1em;
 }
 
+/* Light Mode Override */
+body.light-mode .filter-select {
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
 /* Discount Chips */
 .filter-row-discount {
     display: flex;
@@ -219,6 +251,13 @@
     transition: all 0.3s ease;
 }
 
+/* Light Mode Override */
+body.light-mode .discount-chip {
+    background-color: #f0f0f0;
+    border-color: #e0e0e0;
+    color: #555;
+}
+
 .discount-chip.active {
     background-color: #24a66e;
     border-color: #24a66e;
@@ -230,15 +269,21 @@
 /* --- COMPACT MODE (Text Only with Underline) --- */
 
 .sticky-header-container.compact {
-    background-color: rgba(0, 0, 0, 0.95); /* കുറച്ചുകൂടി ഡാർക്ക് ആക്കി */
+    background-color: rgba(0, 0, 0, 0.95); 
     backdrop-filter: blur(12px);
     padding-bottom: 5px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
+/* Light Mode Override for Compact Header */
+body.light-mode .sticky-header-container.compact {
+    background-color: rgba(255, 255, 255, 0.98);
+    border-bottom: 1px solid #e0e0e0;
+}
+
 .sticky-header-container.compact .category-grid-section {
-    padding: 12px 15px; /* സ്പേസ് കൂട്ടി */
-    gap: 20px; /* ഐറ്റങ്ങൾ തമ്മിലുള്ള അകലം കൂട്ടി */
+    padding: 12px 15px; 
+    gap: 20px; 
     border-bottom: none;
     align-items: center;
 }
@@ -246,23 +291,21 @@
 .sticky-header-container.compact .category-grid-image-box { display: none; }
 .sticky-header-container.compact .category-grid-item { min-width: auto; gap: 0; }
 
-/* *** മാറ്റം: ബട്ടൺ രൂപം മാറ്റി ടെക്സ്റ്റ് മാത്രമാക്കി *** */
 .sticky-header-container.compact .category-grid-name {
-    font-size: 0.9rem; /* ഫോണ്ട് വലിപ്പം കൂട്ടി */
-    background-color: transparent; /* ബാക്ക്ഗ്രൗണ്ട് കളഞ്ഞു */
+    font-size: 0.9rem; 
+    background-color: transparent; 
     border: none;
-    padding: 5px 0; /* പാഡിംഗ് കുറച്ചു */
+    padding: 5px 0; 
     color: var(--text-muted);
     border-radius: 0;
     transition: all 0.3s ease;
 }
 
-/* *** മാറ്റം: ആക്ടീവ് ആകുമ്പോൾ അണ്ടർലൈൻ *** */
 .sticky-header-container.compact .category-grid-item.active .category-grid-name {
     background-color: transparent;
     color: var(--primary-gold);
     box-shadow: none;
-    border-bottom: 2px solid var(--primary-gold); /* അണ്ടർലൈൻ */
+    border-bottom: 2px solid var(--primary-gold); 
     font-weight: 600;
 }
 
@@ -283,6 +326,13 @@
     border-color: rgba(255, 255, 255, 0.1);
     border-radius: 50%; 
 }
+
+/* Light Mode Override for Compact Search Icon */
+body.light-mode .sticky-header-container.compact .search-input-wrapper {
+    background-color: #f0f0f0;
+    border-color: #ddd;
+}
+
 .sticky-header-container.compact #product-search-input { width: 0; padding: 0; opacity: 0; margin: 0; }
 .sticky-header-container.compact .search-icon { color: var(--primary-gold); }
 
@@ -332,6 +382,13 @@
     display: flex;
     flex-direction: column;
     height: auto; 
+}
+
+/* Light Mode Override */
+body.light-mode .category-product-card {
+    background-color: #fff;
+    border-color: #eee;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
 
 /* Dummy Card Style */
@@ -388,6 +445,12 @@
     object-fit: cover;
     background-color: #222;
 }
+
+/* Light Mode Override */
+body.light-mode .cat-product-image {
+    background-color: #f0f0f0;
+}
+
 .cat-product-content {
     padding: 0.7rem; 
     display: flex;
@@ -407,6 +470,12 @@
     overflow: hidden;
     min-height: 36px;
 }
+
+/* Light Mode Override */
+body.light-mode .cat-product-title {
+    color: #333;
+}
+
 .cat-product-content .price-container {
     margin: 0; 
     gap: 0.5rem;
@@ -414,7 +483,6 @@
     align-items: center;
 }
 
-/* *** മാറ്റം: പ്രൈസ് കളർ പച്ചയാക്കി *** */
 .cat-product-content .price-main {
     font-size: 1rem;
     font-weight: 700;
@@ -454,6 +522,14 @@
     color: #fff !important;
     border: 1px solid #fff !important;
 }
+
+/* Light Mode Override for Secondary Button */
+body.light-mode .cat-product-buttons .btn-secondary-new {
+    background-color: #fff !important;
+    color: #000 !important;
+    border: 1px solid #000 !important;
+}
+
 .cat-product-buttons .btn-secondary-new.added-to-cart {
     color: var(--primary-gold) !important;
     border-color: var(--primary-gold) !important;
@@ -461,6 +537,12 @@
 .cat-product-buttons .btn-secondary-new svg.icon-btn {
     width: 14px; height: 14px; fill: none !important; stroke: #fff !important;
 }
+
+/* Light Mode Override for Icon */
+body.light-mode .cat-product-buttons .btn-secondary-new svg.icon-btn {
+    stroke: #000 !important;
+}
+
 .cat-product-buttons .btn-secondary-new.added-to-cart svg.icon-btn {
     stroke: var(--primary-gold) !important;
 }
