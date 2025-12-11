@@ -1,4 +1,4 @@
-/* product.css - Final Version with Light Mode */
+/* product.css - Updated: Delivery Details Styles & Light Mode */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
 .product-detail-grid {
@@ -10,7 +10,7 @@
     box-sizing: border-box;
 }
 
-/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി (Fixed Height) --- */
+/* --- 2. പ്രൊഡക്റ്റ് ഗാലറി --- */
 .product-gallery-swiper {
     width: 100%;
     height: 400px; 
@@ -23,7 +23,6 @@
     flex-shrink: 0;
 }
 
-/* Light Mode Override */
 body.light-mode .product-gallery-swiper {
     background-color: #f0f0f0;
     border-color: #ddd;
@@ -40,7 +39,6 @@ body.light-mode .product-gallery-swiper {
     object-fit: cover;
 }
 
-/* Pagination Dots */
 .product-gallery-swiper .swiper-pagination {
     position: absolute;
     bottom: 15px;
@@ -125,7 +123,6 @@ body.light-mode .product-gallery-swiper {
     box-sizing: border-box;
 }
 
-/* ആക്ഷൻ ബാർ */
 .product-action-bar {
     display: flex;
     align-items: center;
@@ -177,7 +174,6 @@ body.light-mode .product-gallery-swiper {
     margin-bottom: 1.5rem;
 }
 
-/* Light Mode Override */
 body.light-mode .rating-box {
     background-color: #fff;
     border-color: #eee;
@@ -202,7 +198,6 @@ body.light-mode .rating-box {
     margin-bottom: 6px; 
 }
 
-/* ബാർ കട്ടി (8px) */
 .bar-bg { 
     flex-grow: 1; 
     height: 8px; 
@@ -211,10 +206,7 @@ body.light-mode .rating-box {
     overflow: hidden;
 }
 
-/* Light Mode Override */
-body.light-mode .bar-bg {
-    background-color: #e0e0e0;
-}
+body.light-mode .bar-bg { background-color: #e0e0e0; }
 
 .bar-fill { 
     height: 100%; 
@@ -229,12 +221,8 @@ body.light-mode .bar-bg {
     margin: 1.2rem 0; 
 }
 
-/* Light Mode Override */
-body.light-mode .rating-divider {
-    background-color: #eee;
-}
+body.light-mode .rating-divider { background-color: #eee; }
 
-/* Star Rating */
 .star-rating { 
     font-size: 2rem; 
     color: #444; 
@@ -245,15 +233,9 @@ body.light-mode .rating-divider {
     gap: 8px;
 }
 
-body.light-mode .star-rating {
-    color: #ddd;
-}
+body.light-mode .star-rating { color: #ddd; }
 
-.star {
-    transition: color 0.2s ease;
-}
-
-/* Star Colors (Red -> Green) */
+.star { transition: color 0.2s ease; }
 .star.filled-1 { color: #ff4d4d; }
 .star.filled-2 { color: #ff9f43; }
 .star.filled-3 { color: #feca57; }
@@ -267,7 +249,6 @@ body.light-mode .star-rating {
     min-height: 1.2em;
 }
 
-/* പ്രൊഡക്റ്റ് ടൈറ്റിൽ */
 .product-title {
     font-size: 1.5rem; 
     margin-bottom: 0.5rem;
@@ -276,16 +257,10 @@ body.light-mode .star-rating {
     line-height: 1.3;
 }
 
-/* Light Mode Override */
-body.light-mode .product-title {
-    color: #000;
-}
+body.light-mode .product-title { color: #000; }
 
-.product-info .price-container.large { 
-    margin-bottom: 1.5rem; 
-}
+.product-info .price-container.large { margin-bottom: 1.5rem; }
 
-/* Price Color (Green) */
 .product-info .price-container.large .price-main { 
     font-size: 1.8rem;
     color: #2ecc71; 
@@ -297,7 +272,6 @@ body.light-mode .product-title {
     text-decoration: line-through;
 }
 
-/* --- സെക്ഷൻ ഹെഡിംഗ് സ്റ്റൈൽ --- */
 .product-section-heading {
     font-size: 1rem;
     font-weight: 600;
@@ -308,12 +282,8 @@ body.light-mode .product-title {
     padding-left: 1.5rem; 
 }
 
-/* Light Mode Override */
-body.light-mode .product-section-heading {
-    color: #666;
-}
+body.light-mode .product-section-heading { color: #666; }
 
-/* --- ഡിസ്ക്രിപ്ഷൻ ബോക്സ് സ്റ്റൈലിംഗ് --- */
 .product-description {
     margin-bottom: 1.5rem;
     color: #ffffff; 
@@ -327,16 +297,12 @@ body.light-mode .product-section-heading {
     box-sizing: border-box;
     overflow-wrap: break-word; 
     word-wrap: break-word;     
-    word-break: break-word;    
     white-space: pre-wrap;     
     height: auto; 
     min-height: 0;
 }
 
-/* Light Mode Override */
-body.light-mode .product-description {
-    color: #333;
-}
+body.light-mode .product-description { color: #333; }
 
 .product-description a { 
     color: #3498db !important; 
@@ -344,11 +310,159 @@ body.light-mode .product-description {
     word-break: break-all;
 }
 
-.description-content {
-    display: block;
+/* *** DELIVERY DETAILS STYLES (New) *** */
+.delivery-details-section {
+    margin-bottom: 2rem;
+    padding: 0 1.5rem; 
 }
 
-/* --- സ്പെസിഫിക്കേഷൻ ബോക്സ് സ്റ്റൈലിംഗ് --- */
+.delivery-heading {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+body.light-mode .delivery-heading { color: #000; }
+
+.delivery-card-list {
+    background-color: rgba(255, 255, 255, 0.03); 
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+body.light-mode .delivery-card-list {
+    background-color: #f9f9f9;
+    border-color: #e0e0e0;
+}
+
+.delivery-row {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    gap: 12px;
+}
+
+body.light-mode .delivery-row { border-bottom: 1px solid #eee; }
+
+.delivery-row:last-child { border-bottom: none; }
+
+.del-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: var(--text-muted);
+}
+
+.del-content {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.del-label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    width: fit-content;
+    margin-bottom: 4px;
+}
+
+body.light-mode .del-label {
+    background-color: #e0e0e0;
+    color: #555;
+}
+
+.del-value {
+    font-size: 0.95rem;
+    color: var(--text-color);
+    line-height: 1.3;
+}
+
+body.light-mode .del-value { color: #222; }
+
+.del-text-muted {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.del-action svg {
+    width: 16px;
+    height: 16px;
+    stroke: var(--text-muted);
+}
+
+.warranty-badge {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-top: 1rem;
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+}
+
+body.light-mode .warranty-badge {
+    background-color: #f9f9f9;
+    border-color: #e0e0e0;
+}
+
+.warranty-icon { font-size: 1.5rem; }
+
+.warranty-text {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    line-height: 1.5;
+}
+
+body.light-mode .warranty-text { color: #333; }
+
+.warranty-text small { color: var(--text-muted); display: block; margin-top: 4px; }
+
+.trust-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    margin-top: 1.5rem;
+    text-align: center;
+}
+
+.trust-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.trust-icon-circle {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background-color: rgba(36, 166, 110, 0.1); 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.trust-icon-circle svg {
+    width: 24px;
+    height: 24px;
+    stroke: #24a66e; 
+    stroke-width: 1.5;
+}
+
+.trust-item span {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.2;
+}
+
+/* --- 5. Specification --- */
 .product-specification-section {
     margin-bottom: 1.5rem;
     background-color: transparent;
@@ -374,10 +488,7 @@ body.light-mode .product-description {
     overflow-wrap: break-word;
 }
 
-/* Light Mode Override */
-body.light-mode .product-specs-list li {
-    color: #333;
-}
+body.light-mode .product-specs-list li { color: #333; }
 
 .product-specs-list li::before {
     content: "•"; color: var(--primary-gold); font-weight: bold; font-size: 1.2rem; position: absolute; left: 0; top: -2px;
@@ -423,7 +534,6 @@ body.light-mode .product-specs-list li {
     gap: 6px;
 }
 
-/* Light Mode Override */
 body.light-mode .product-actions-grid .btn-secondary-new {
     background-color: #fff !important;
     color: #000 !important;
@@ -435,7 +545,6 @@ body.light-mode .product-actions-grid .btn-secondary-new {
     height: 18px;
 }
 
-/* Light Mode Override for Icon */
 body.light-mode .product-actions-grid .btn-secondary-new svg.icon-btn {
     stroke: #000 !important;
 }
@@ -453,7 +562,7 @@ body.light-mode .product-actions-grid .btn-secondary-new svg.icon-btn {
     margin-top: 1rem; color: var(--success-green); font-weight: 500; display: none; 
 }
 
-/* --- 5. 'You May Also Like' --- */
+/* --- 6. 'You May Also Like' --- */
 .related-products-section {
     margin-top: 3rem;
     padding-top: 2rem;
@@ -470,7 +579,6 @@ body.light-mode .product-actions-grid .btn-secondary-new svg.icon-btn {
     height: auto;
 }
 
-/* Light Mode Override */
 body.light-mode .related-products-section .swiper-slide {
     background-color: #fff !important;
     border-color: #eee !important;
@@ -526,10 +634,7 @@ body.light-mode .related-products-section .swiper-slide {
     text-overflow: ellipsis;
 }
 
-/* Light Mode Override */
-body.light-mode .related-products-section .cat-product-title {
-    color: #000;
-}
+body.light-mode .related-products-section .cat-product-title { color: #000; }
 
 .related-products-section .cat-product-content .price-container {
     margin-bottom: 0.5rem;
@@ -578,7 +683,6 @@ body.light-mode .related-products-section .cat-product-title {
     border: 1px solid #fff !important;
 }
 
-/* Light Mode Override */
 body.light-mode .related-products-section .btn-secondary-new {
     background-color: #fff !important;
     color: #000 !important;
@@ -601,7 +705,6 @@ body.light-mode .related-products-section .btn-secondary-new {
     .product-detail-grid { grid-template-columns: 1fr 1fr; }
     .product-actions-grid { max-width: 400px; }
     
-    /* Desktop Fixed Height */
     .product-gallery-swiper {
         height: 550px; 
     }
