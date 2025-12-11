@@ -1,4 +1,4 @@
-// common.js - Universal Image Loader (Drive, Blogspot, Direct Links)
+// common.js - Universal Image Loader (Drive, Blogspot, Direct Links) & Theme Management
 
 import { db, auth } from './firebase-config.js';
 import { 
@@ -16,6 +16,14 @@ import { getCartItemCount } from './cart.js';
 
 let siteSettings = null;
 let authPromise = null;
+
+// *** Theme Initialization ***
+(function initTheme() {
+    const savedTheme = localStorage.getItem('app-theme') || 'dark'; // Default to dark
+    if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+    }
+})();
 
 /**
  * Universal Image Optimizer
@@ -42,17 +50,13 @@ export function optimizeImage(url, width = 800, quality = 80) {
     }
 
     // 2. Blogger/Blogspot Images (Direct Load - No Proxy)
-    // ബ്ലോഗ്‌സ്പോട്ട് ഇമേജുകൾക്ക് പ്രോക്സി ആവശ്യമില്ല, അവ നേരിട്ട് ലോഡ് ചെയ്യുന്നതാണ് നല്ലത്.
     if (url.includes('blogger.googleusercontent.com') || url.includes('bp.blogspot.com')) {
         return url; 
     }
 
     // 3. Other HTTP/HTTPS Links
     if (url.startsWith('http')) {
-        // Already proxied or placeholder? -> Return as is
         if (url.includes('wsrv.nl') || url.includes('placehold.co')) return url;
-        
-        // Proxy others for resizing & webp conversion
         return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${width}&q=${quality}&output=webp`;
     }
 
@@ -232,6 +236,14 @@ function buildUserMenuHTML(settings) {
     if (settings && settings.dealerChatNumber) {
         dealerChatHTML = `<li><a href="https://wa.me/${settings.dealerChatNumber}" target="_blank" class="user-menu-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg><span>Chat with Dealer</span></a></li>`;
     }
+    
+    // Theme Switcher Button Text
+    const isLight = document.body.classList.contains('light-mode');
+    const themeText = isLight ? "Switch to Dark Mode" : "Switch to Light Mode";
+    const themeIcon = isLight 
+        ? `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>` // Moon
+        : `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`; // Sun
+
     return `
     <div class="user-menu-overlay" id="user-menu-overlay">
         <div class="user-menu-content">
@@ -240,6 +252,10 @@ function buildUserMenuHTML(settings) {
                 ${chatbotHTML}
                 ${dealerChatHTML}
                 <li><a href="cart.html" class="user-menu-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span>Your Orders</span></a></li>
+                <li><button class="user-menu-action-btn" id="theme-switch-btn">
+                    ${themeIcon}
+                    <span id="theme-btn-text">${themeText}</span>
+                </button></li>
                 <li><a href="contact.html" class="user-menu-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg><span>Contact Us</span></a></li>
                 <li><a href="about.html" class="user-menu-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg><span>About Us</span></a></li>
             </ul>
@@ -271,11 +287,42 @@ function setupNavEvents() {
     const desktopAccountBtn = document.getElementById('desktop-account-btn');
     const overlay = document.getElementById('user-menu-overlay');
     const closeBtn = document.getElementById('user-menu-close-btn');
+    const themeBtn = document.getElementById('theme-switch-btn'); // New Theme Btn
+
     const toggleMenu = (e) => { e.preventDefault(); if (overlay) overlay.classList.add('open'); };
     const closeMenu = () => { if (overlay) overlay.classList.remove('open'); };
+
+    // --- Theme Switch Logic ---
+    const toggleTheme = () => {
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        
+        // Save to LocalStorage
+        localStorage.setItem('app-theme', isLight ? 'light' : 'dark');
+        
+        // Update UI Text & Icon immediately
+        const btnText = document.getElementById('theme-btn-text');
+        const btnIconContainer = document.getElementById('theme-switch-btn');
+        
+        if (btnText && btnIconContainer) {
+            if (isLight) {
+                btnText.textContent = "Switch to Dark Mode";
+                // Update Icon to Moon
+                const icon = btnIconContainer.querySelector('svg');
+                if(icon) icon.innerHTML = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
+            } else {
+                btnText.textContent = "Switch to Light Mode";
+                // Update Icon to Sun
+                const icon = btnIconContainer.querySelector('svg');
+                if(icon) icon.innerHTML = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
+            }
+        }
+    };
+
     if (mobileAccountBtn) mobileAccountBtn.addEventListener('click', toggleMenu);
     if (desktopAccountBtn) desktopAccountBtn.addEventListener('click', toggleMenu);
     if (closeBtn) closeBtn.addEventListener('click', closeMenu);
+    if (themeBtn) themeBtn.addEventListener('click', toggleTheme); // Bind Click
     if (overlay) { overlay.addEventListener('click', (e) => { if (e.target === overlay) closeMenu(); }); }
 }
 
@@ -306,6 +353,10 @@ export async function loadSiteSettings() {
         try { await buildFloatingButtons(); } catch (e) { console.error("Error building floating buttons:", e); }
         try { 
             const menuHTML = buildUserMenuHTML(settings);
+            // Remove existing menu if present to avoid duplicates on re-renders
+            const existingMenu = document.getElementById('user-menu-overlay');
+            if (existingMenu) existingMenu.remove();
+            
             document.body.insertAdjacentHTML('beforeend', menuHTML);
             buildBottomNav(settings); 
             setupNavEvents();
