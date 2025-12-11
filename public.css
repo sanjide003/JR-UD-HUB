@@ -1,11 +1,11 @@
-/* public.css - Performance & UX Updates with Theme Switching */
+/* public.css - Updated: Dark Gold in Light Mode */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
     /* --- Default Dark Theme Variables --- */
     --bg-color: #000000;
-    --primary-gold: #D4AF37;
+    --primary-gold: #D4AF37; /* Standard Gold for Dark Mode */
     --secondary-gold: #B8860B;
     --text-color: #FFFFFF;
     --text-muted: #aaa;
@@ -13,7 +13,7 @@
     --border-color: #333;
     --error-red: #e74c3c;
     --success-green: #2ecc71;
-    --nav-bg: rgba(0, 0, 0, 0.8); /* Glass effect bg */
+    --nav-bg: rgba(0, 0, 0, 0.8); 
     --input-bg: #1a1a1a;
     
     --font-main: 'Inter', sans-serif;
@@ -34,13 +34,16 @@ body.light-mode {
     --nav-bg: rgba(255, 255, 255, 0.9);
     --input-bg: #ffffff;
     --shadow-soft: 0 4px 15px rgba(0,0,0,0.08);
-    /* Primary Gold remains same for brand identity, or slightly darker if needed */
+    
+    /* *** മാറ്റം: ലൈറ്റ് മോഡിൽ കടും ഗോൾഡ് (Dark Gold) *** */
+    --primary-gold: #B8860B; 
+    --secondary-gold: #8B6508; 
 }
 
 /* *** New: Smooth Scrolling Global *** */
 html {
     scroll-behavior: smooth;
-    -webkit-tap-highlight-color: transparent; /* Remove blue highlight on tap */
+    -webkit-tap-highlight-color: transparent; 
 }
 
 /* --- 0. പേജ് ലോഡർ --- */
@@ -97,7 +100,7 @@ body {
     margin: 0;
     padding: 0;
     padding-top: var(--header-height);
-    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth Theme Transition */
+    transition: background-color 0.3s ease, color 0.3s ease; 
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -241,7 +244,7 @@ img { max-width: 100%; height: auto; display: block; }
     top: -5px;
     right: -10px;
     background-color: var(--primary-gold);
-    color: #000; /* Always black text for contrast on gold */
+    color: #000; 
     font-size: 0.75rem;
     font-weight: 700;
     border-radius: 50%;
@@ -340,7 +343,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 body.light-mode .user-menu-link, 
 body.light-mode .user-menu-action-btn {
-    background-color: rgba(0, 0, 0, 0.05); /* Slight dark bg for links in light mode */
+    background-color: rgba(0, 0, 0, 0.05); 
 }
 
 .user-menu-link:hover, .user-menu-action-btn:hover { 
@@ -524,7 +527,7 @@ body.light-mode .user-menu-action-btn {
 
 .btn-primary-new {
     background-color: var(--primary-gold);
-    border: 2px solid var(--primary-gold); color: #000000; /* Black text for contrast */
+    border: 2px solid var(--primary-gold); color: #000000; 
 }
 .btn-primary-new:hover { background-color: var(--secondary-gold); border-color: var(--secondary-gold); }
 
