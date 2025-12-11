@@ -141,10 +141,11 @@ async function loadHeroSlider() {
             loop: true, 
             allowTouchMove: true,
             speed: 600,
-            autoplay: {
+            autoplay:fales,
+            /*{
                 delay: 6000,
                 disableOnInteraction: false,
-            },
+            },*/
             pagination: {
                 el: '.hero-pagination-dots',
                 clickable: true,
