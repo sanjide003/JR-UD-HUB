@@ -1,8 +1,9 @@
-/* public.css - Performance & UX Updates */
+/* public.css - Performance & UX Updates with Theme Switching */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
+    /* --- Default Dark Theme Variables --- */
     --bg-color: #000000;
     --primary-gold: #D4AF37;
     --secondary-gold: #B8860B;
@@ -12,12 +13,28 @@
     --border-color: #333;
     --error-red: #e74c3c;
     --success-green: #2ecc71;
+    --nav-bg: rgba(0, 0, 0, 0.8); /* Glass effect bg */
+    --input-bg: #1a1a1a;
     
     --font-main: 'Inter', sans-serif;
     --font-heading: 'Inter', sans-serif; 
     
     --header-height: 70px;
     --bottom-nav-height: 65px;
+    --shadow-soft: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* --- Light Mode Overrides --- */
+body.light-mode {
+    --bg-color: #f4f6f8;
+    --text-color: #1a1a1a;
+    --text-muted: #555;
+    --card-bg: #ffffff;
+    --border-color: #e0e0e0;
+    --nav-bg: rgba(255, 255, 255, 0.9);
+    --input-bg: #ffffff;
+    --shadow-soft: 0 4px 15px rgba(0,0,0,0.08);
+    /* Primary Gold remains same for brand identity, or slightly darker if needed */
 }
 
 /* *** New: Smooth Scrolling Global *** */
@@ -80,6 +97,7 @@ body {
     margin: 0;
     padding: 0;
     padding-top: var(--header-height);
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth Theme Transition */
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -127,6 +145,7 @@ img { max-width: 100%; height: auto; display: block; }
     left: 0;
     width: 100%;
     z-index: 1000;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 /* ലോഗോ */
@@ -222,7 +241,7 @@ img { max-width: 100%; height: auto; display: block; }
     top: -5px;
     right: -10px;
     background-color: var(--primary-gold);
-    color: var(--bg-color);
+    color: #000; /* Always black text for contrast on gold */
     font-size: 0.75rem;
     font-weight: 700;
     border-radius: 50%;
@@ -241,6 +260,7 @@ img { max-width: 100%; height: auto; display: block; }
     padding: 3rem 1.5rem;
     margin-top: 3rem;
     border-top: 1px solid var(--border-color);
+    transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 .footer-container-new { max-width: 1200px; margin: 0 auto; }
 .footer-accordion-item { border-bottom: 1px solid var(--border-color); }
@@ -290,6 +310,7 @@ img { max-width: 100%; height: auto; display: block; }
     padding: 1.5rem; border-top: 1px solid var(--primary-gold);
     transition: transform 0.3s ease;
     max-height: 70vh; overflow-y: auto;
+    color: var(--text-color);
 }
 
 .user-menu-header {
@@ -301,14 +322,46 @@ img { max-width: 100%; height: auto; display: block; }
 .user-menu-close-btn svg { width: 24px; height: 24px; stroke: currentColor; }
 .user-menu-list { list-style: none; padding: 0; margin: 0; }
 .user-menu-list li { margin-bottom: 0.8rem; }
-.user-menu-link {
+
+/* Menu Link / Button Style */
+.user-menu-link, .user-menu-action-btn {
     display: flex; align-items: center; gap: 1rem; padding: 1rem;
     color: var(--text-color); text-decoration: none; border-radius: 8px;
-    background-color: rgba(255, 255, 255, 0.03); transition: background-color 0.3s ease;
+    background-color: rgba(255, 255, 255, 0.03); 
+    transition: background-color 0.3s ease;
     font-weight: 500;
+    width: 100%;
+    border: none;
+    cursor: pointer;
+    font-family: var(--font-main);
+    font-size: 1rem;
+    text-align: left;
 }
-.user-menu-link:hover { background-color: rgba(212, 175, 55, 0.1); color: var(--primary-gold); }
-.user-menu-link svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
+
+body.light-mode .user-menu-link, 
+body.light-mode .user-menu-action-btn {
+    background-color: rgba(0, 0, 0, 0.05); /* Slight dark bg for links in light mode */
+}
+
+.user-menu-link:hover, .user-menu-action-btn:hover { 
+    background-color: rgba(212, 175, 55, 0.1); 
+    color: var(--primary-gold); 
+}
+.user-menu-link svg, .user-menu-action-btn svg { 
+    width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; 
+}
+
+/* Theme Switcher Toggle UI inside menu */
+.theme-switch-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+}
+.theme-status-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+}
 
 /* --- 6. റെസ്പോൺസീവ് (മൊബൈൽ) --- */
 @media (max-width: 768px) {
@@ -326,24 +379,26 @@ img { max-width: 100%; height: auto; display: block; }
     .bottom-nav {
         display: flex; justify-content: space-around; align-items: center;
         position: fixed; bottom: 0; left: 0; width: 100%; height: var(--bottom-nav-height);
-        background-color: rgba(10, 10, 10, 0.98); border-top: 1px solid var(--border-color);
-        backdrop-filter: blur(10px); z-index: 1001; box-shadow: 0 -2px 10px rgba(0,0,0,0.5);
+        background-color: var(--nav-bg); 
+        border-top: 1px solid var(--border-color);
+        backdrop-filter: blur(10px); z-index: 1001; box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+        transition: background-color 0.3s ease;
     }
     .bottom-nav-item {
         display: flex; flex-direction: column; align-items: center; justify-content: center;
         text-decoration: none;
-        color: #FFFFFF; 
+        color: var(--text-muted); 
         font-size: 0.7rem; font-weight: 500;
         flex: 1; height: 100%; gap: 4px; transition: all 0.3s ease;
         background: none; border: none; cursor: pointer; padding: 0;
     }
-    .bottom-nav-item svg {
-        width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2;
-        stroke-linecap: round; stroke-linejoin: round; transition: all 0.3s ease;
-    }
     
     .bottom-nav-item.active { 
         color: var(--primary-gold) !important; 
+    }
+    .bottom-nav-item svg {
+        width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2;
+        stroke-linecap: round; stroke-linejoin: round; transition: all 0.3s ease;
     }
     .bottom-nav-item.active svg { 
         stroke: var(--primary-gold) !important; 
@@ -469,7 +524,7 @@ img { max-width: 100%; height: auto; display: block; }
 
 .btn-primary-new {
     background-color: var(--primary-gold);
-    border: 2px solid var(--primary-gold); color: var(--bg-color);
+    border: 2px solid var(--primary-gold); color: #000000; /* Black text for contrast */
 }
 .btn-primary-new:hover { background-color: var(--secondary-gold); border-color: var(--secondary-gold); }
 
@@ -477,12 +532,12 @@ img { max-width: 100%; height: auto; display: block; }
     background-color: transparent;
     border: 2px solid var(--primary-gold); color: var(--primary-gold);
 }
-.btn-secondary-new:hover { background-color: var(--primary-gold); color: var(--bg-color); }
+.btn-secondary-new:hover { background-color: var(--primary-gold); color: #000000; }
 .btn-primary-new svg.icon-btn, .btn-secondary-new svg.icon-btn {
     width: 16px; height: 16px; fill: currentColor; stroke: currentColor; stroke-width: 2;
 }
 .btn-secondary-new svg.icon-btn { stroke: var(--text-color); fill: none; }
-.btn-secondary-new:hover svg.icon-btn { stroke: var(--bg-color); }
+.btn-secondary-new:hover svg.icon-btn { stroke: #000000; }
 
 /* ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ */
 #floating-action-buttons {
