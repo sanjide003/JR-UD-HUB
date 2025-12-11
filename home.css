@@ -1,4 +1,4 @@
-/* home.css - Updated with Light Mode Support */
+/* home.css - Updated: Black Text/Price in Light Mode */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -146,7 +146,7 @@ body.light-mode .hero-slider-new .swiper-slide {
 
 /* Light Mode Override */
 body.light-mode .hero-text-section {
-    color: #555555;
+    color: #000000; /* Black Text */
 }
 
 /* =============================================================
@@ -313,9 +313,9 @@ body.light-mode .clean-card-box {
     width: 100%;
 }
 
-/* Light Mode Override */
+/* *** Light Mode Override: Black Title *** */
 body.light-mode .clean-card-title {
-    color: #333;
+    color: #000000;
 }
 
 .clean-card-price-row {
@@ -326,6 +326,11 @@ body.light-mode .clean-card-title {
     margin: 0; 
     padding: 0; 
     width: 100%;
+}
+
+/* *** Light Mode Override: Black Price *** */
+body.light-mode .clean-card-price-row {
+    color: #000000;
 }
 
 .shop-now-btn {
@@ -375,9 +380,13 @@ body.light-mode .clean-card-title {
     max-height: 2.4em; min-height: auto; text-align: center; margin-bottom: 0;
 }
 
-/* Light Mode Override for Screenshot Mode Titles */
+/* *** Light Mode Override for Screenshot Mode: Black Title & Price *** */
 body.light-mode .screenshot-mode .clean-card-title {
-    color: #eee; /* Keep light text on dark container backgrounds even in light mode */
+    color: #000000;
+}
+body.light-mode .screenshot-mode .clean-card-price-row {
+    color: #000000;
+    text-shadow: none; /* Remove shadow to make black clear */
 }
 
 .screenshot-mode .shop-now-btn { display: none; }
@@ -405,9 +414,9 @@ body.light-mode .category-circle-img-box {
 }
 .category-circle-title { color: #ccc; font-size: 0.75rem; font-weight: 600; text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; }
 
-/* Light Mode Override */
+/* *** Light Mode Override: Black Category Title *** */
 body.light-mode .category-circle-title {
-    color: #333;
+    color: #000000;
 }
 
 /* Swiper Config */
