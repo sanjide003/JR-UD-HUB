@@ -1,4 +1,4 @@
-/* home.css - Professional Design & Plain Text Update */
+/* home.css - Final Update: Images Cropped to Fit Design */
 
 /* =========================================
    1. HOME TOP BANNER (Professional & Clean)
@@ -11,16 +11,16 @@
     background-color: #000;
     margin-bottom: 0;
     overflow: hidden;
-    border-bottom: 1px solid #222; /* Subtle separation */
+    border-bottom: 1px solid #222;
 }
 
 .home-top-banner img {
     width: 100%;
     height: auto;
     display: block;
-    max-height: 140px; /* Controlled height */
-    object-fit: cover;
-    opacity: 0.95; /* Slight dim for premium look */
+    max-height: 140px; 
+    object-fit: cover; /* Images will crop to fit height */
+    opacity: 0.95;
     transition: opacity 0.3s ease;
 }
 
@@ -37,13 +37,12 @@
     background-color: #000;
     margin: 0;
     overflow: hidden;
-    /* Responsive Height for Professional Look */
     height: 65vh; 
 }
 
 @media (max-width: 768px) {
     .hero-section-new {
-        height: 50vh; /* Better fit for mobile screens */
+        height: 50vh;
     }
 }
 
@@ -62,12 +61,11 @@
     overflow: hidden;
 }
 
-/* Clean Image/Video Fit */
 .hero-slider-new .swiper-slide img,
 .hero-slider-new .swiper-slide video {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Fills area perfectly */
+    object-fit: cover; /* Ensures full slide coverage */
     transition: transform 0.5s ease;
 }
 
@@ -76,10 +74,9 @@
     height: 100%;
     border: none;
     pointer-events: none;
-    transform: scale(1.1); /* Slight zoom to remove black bars */
+    transform: scale(1.1);
 }
 
-/* Gradient Overlay for Text Readability (Optional) */
 .hero-slider-new .swiper-slide::after {
     content: '';
     position: absolute;
@@ -91,7 +88,6 @@
     pointer-events: none;
 }
 
-/* Professional Pagination Dots */
 .hero-slider-new .hero-pagination-dots {
     position: absolute;
     bottom: 20px;
@@ -108,12 +104,12 @@
     opacity: 1;
     margin: 0 6px !important;
     transition: all 0.3s ease;
-    border-radius: 4px; /* Soft rounded square or circle */
+    border-radius: 4px;
 }
 
 .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active {
     background: var(--primary-gold);
-    width: 24px; /* Elongated active dot */
+    width: 24px;
     opacity: 1;
 }
 
@@ -123,27 +119,24 @@
 .hero-text-section {
     text-align: center;
     padding: 2.5rem 1.5rem;
-    color: #cccccc; /* Soft Grey for readability */
+    color: #cccccc;
     font-size: 1rem;
     line-height: 1.6;
     max-width: 800px;
     margin: 0 auto;
-    
-    /* Removing all fancy effects for "Plain" look */
     background: transparent;
     border: none;
     box-shadow: none;
-    font-family: inherit; /* Use default font, no special serif */
+    font-family: inherit;
 }
 
-/* Removed the big quote marks (::before, ::after) */
 .hero-text-section::before,
 .hero-text-section::after {
     display: none;
 }
 
 /* =============================================================
-   4. PRODUCT CARDS & SECTIONS (Preserved from Previous Design)
+   4. PRODUCT CARDS & SECTIONS (Crop to Fit Updates)
    ============================================================= */
 
 /* Special Offer Wrapper */
@@ -173,7 +166,7 @@
     height: auto;
     display: block;
     max-height: 150px;
-    object-fit: cover;
+    object-fit: cover; /* Crop banner to fit */
     padding: 3px;
     border-radius: 10px;
     background-color: #000;
@@ -216,7 +209,7 @@
     background-color: #111;
 }
 
-/* --- STANDARD CARD STYLES (Special Offers & Under 799) --- */
+/* --- STANDARD CARD STYLES --- */
 .swiper-slide { height: auto; display: flex; box-sizing: border-box; padding: 0 4px; }
 
 .clean-card-wrapper {
@@ -229,7 +222,11 @@
     display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 10px;
 }
 .clean-card-img {
-    width: 100%; height: 100%; object-fit: contain; transition: transform 0.3s ease;
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; /* *** CHANGED: Crop image to fill box *** */
+    transition: transform 0.3s ease;
+    border-radius: 4px;
 }
 .clean-card-details {
     padding: 6px 8px; display: flex; flex-direction: column; align-items: center;
@@ -264,7 +261,10 @@
     background-color: #ffffff; border-radius: 16px; aspect-ratio: 1 / 1;
     height: auto; width: 100%; margin-bottom: 8px; padding: 10px;
 }
-.screenshot-mode .clean-card-img { mix-blend-mode: multiply; }
+.screenshot-mode .clean-card-img { 
+    mix-blend-mode: normal; /* Removed multiply to ensure crop looks good */
+    object-fit: cover; /* *** CHANGED: Crop image to fill square box *** */
+}
 .screenshot-mode .clean-card-details {
     background: transparent; padding: 0 4px; display: flex; flex-direction: column; height: auto;
 }
@@ -288,7 +288,12 @@
     border: 2px solid #333; overflow: hidden; display: flex; align-items: center;
     justify-content: center; padding: 5px;
 }
-.category-circle-img { width: 100%; height: 100%; object-fit: contain; }
+.category-circle-img { 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; /* *** CHANGED: Crop category image to fit circle *** */
+    border-radius: 50%;
+}
 .category-circle-title { color: #ccc; font-size: 0.75rem; font-weight: 600; text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; }
 
 /* Swiper Config */
@@ -305,7 +310,6 @@
     .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 19% !important; }
 }
 @media (max-width: 768px) {
-    /* Mobile styles overrides */
     .screenshot-mode .clean-card-price-row { font-size: 1rem; }
     .screenshot-mode .clean-card-title { font-size: 0.7rem; }
 }
