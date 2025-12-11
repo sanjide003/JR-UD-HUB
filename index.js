@@ -32,6 +32,26 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 /**
+ * Scroll Reveal Animation Setup
+ */
+function setupScrollReveal() {
+    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('revealed');
+                observer.unobserve(entry.target);
+            }
+        });
+    }, observerOptions);
+    const sections = document.querySelectorAll('.home-section, .hero-text-section');
+    sections.forEach(section => {
+        section.classList.add('scroll-reveal');
+        observer.observe(section);
+    });
+}
+
+/**
  * ഹോം പേജ് ബാനർ
  */
 async function loadHomeBanner() {
@@ -141,10 +161,7 @@ async function loadHeroSlider() {
             loop: true, 
             allowTouchMove: true,
             speed: 600,
-            autoplay:{
-                delay: 6000,
-                disableOnInteraction: false,
-            },
+            autoplay: false, // *** മാറ്റം: ഓട്ടോപ്ലേ ഓഫ് ചെയ്തു ***
             pagination: {
                 el: '.hero-pagination-dots',
                 clickable: true,
