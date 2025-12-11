@@ -1,7 +1,4 @@
-/* ഇതാണ് 'explore.css' 
-   മാറ്റങ്ങൾ:
-   1. ഡിസ്ക്രിപ്ഷനിലെ ലിങ്കുകൾ ബ്രേക്ക് ആവാനുള്ള സ്റ്റൈൽ (word-break).
-*/
+/* ഇതാണ് 'explore.css' with Light Mode Support */
 
 /* --- 1. ഫീഡ് കണ്ടെയ്നർ --- */
 .explore-feed-container {
@@ -13,6 +10,12 @@
     background-color: #000;
 }
 
+/* Light Mode Override */
+body.light-mode .explore-feed-container {
+    background-color: #f4f6f8;
+    gap: 15px; /* Add gap in light mode to show separation */
+}
+
 /* --- എക്സ്പ്ലോർ പേജ് ബാനർ --- */
 .explore-top-banner {
     width: 100%;
@@ -22,6 +25,12 @@
     overflow: hidden;
     margin-bottom: 0;
     border: none;
+}
+
+/* Light Mode Override */
+body.light-mode .explore-top-banner {
+    background-color: #fff;
+    margin-bottom: 10px;
 }
 
 .explore-top-banner img {
@@ -44,6 +53,14 @@
     flex-direction: column;
 }
 
+/* Light Mode Override */
+body.light-mode .explore-card {
+    background-color: #fff;
+    border-bottom: 1px solid #e0e0e0;
+    border-radius: 0; 
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
 .explore-card:last-child {
     border-bottom: none;
 }
@@ -56,6 +73,11 @@
     padding: 10px 12px;
     text-decoration: none;
     background-color: #000;
+}
+
+/* Light Mode Override */
+body.light-mode .explore-card-header {
+    background-color: #fff;
 }
 
 .explore-category-img {
@@ -73,6 +95,11 @@
     font-size: 0.9rem;
 }
 
+/* Light Mode Override */
+body.light-mode .explore-category-name {
+    color: #000;
+}
+
 /* 2.2 പ്രൊഡക്റ്റ് ഇമേജ് (Edge-to-Edge) */
 .explore-image-swiper {
     width: 100%;
@@ -81,6 +108,11 @@
     border-radius: 0;
     overflow: hidden;
     margin: 0;
+}
+
+/* Light Mode Override */
+body.light-mode .explore-image-swiper {
+    background-color: #f0f0f0;
 }
 
 .explore-image-swiper .swiper-slide img {
@@ -116,6 +148,11 @@
     color: var(--text-color);
 }
 
+/* Light Mode Override */
+body.light-mode .action-count {
+    color: #333;
+}
+
 .explore-action-icons button {
     background: none;
     border: none;
@@ -126,6 +163,11 @@
     align-items: center;
     justify-content: center;
     transition: transform 0.2s ease; 
+}
+
+/* Light Mode Override */
+body.light-mode .explore-action-icons button {
+    color: #333;
 }
 
 .explore-action-icons button svg {
@@ -150,6 +192,15 @@
     stroke: var(--text-color);
 }
 
+/* Light Mode Override for Added Cart Icon */
+body.light-mode .explore-action-icons button.bookmark-btn.added-to-cart {
+    color: #000;
+}
+body.light-mode .explore-action-icons button.bookmark-btn.added-to-cart svg {
+    fill: #000;
+    stroke: #000;
+}
+
 /* 2.5 പ്രൊഡക്റ്റ് പേരും വിലയും */
 .explore-product-title {
     font-size: 0.95rem;
@@ -158,6 +209,11 @@
     margin-bottom: 2px;
     display: inline;
     margin-right: 8px;
+}
+
+/* Light Mode Override */
+body.light-mode .explore-product-title {
+    color: #000;
 }
 
 .explore-card-content .price-container {
@@ -184,17 +240,18 @@
     font-size: 0.9rem;
     line-height: 1.4;
     margin-top: 4px;
-    
-    /* *** മാറ്റം: ടെക്സ്റ്റ് റാപ്പിംഗ് *** */
     overflow-wrap: break-word; 
     word-wrap: break-word;
 }
 
-/* *** മാറ്റം: ലിങ്കിന്റെ സ്റ്റൈൽ *** */
+/* Light Mode Override */
+body.light-mode .explore-product-description {
+    color: #333;
+}
+
 .explore-desc-link {
-    color: #3498db !important; /* നീല നിറം */
+    color: #3498db !important; 
     text-decoration: none;
-    /* നീളമുള്ള ലിങ്കുകൾ മുറിയാൻ */
     word-break: break-all; 
 }
 
@@ -244,6 +301,12 @@
     margin-top: 8px;
 }
 
+/* Light Mode Override */
+body.light-mode .rating-box {
+    background-color: #f8f8f8;
+    border-color: #ddd;
+}
+
 .rating-title {
     font-size: 0.9rem;
     color: var(--text-muted);
@@ -271,6 +334,11 @@
     overflow: hidden;
 }
 
+/* Light Mode Override */
+body.light-mode .bar-bg {
+    background-color: #e0e0e0;
+}
+
 .bar-fill { 
     height: 100%; 
     width: 0%; 
@@ -284,6 +352,11 @@
     margin: 15px 0;
 }
 
+/* Light Mode Override */
+body.light-mode .rating-divider {
+    background-color: #ddd;
+}
+
 /* --- നക്ഷത്രങ്ങൾ --- */
 .star-rating { 
     font-size: 2rem; 
@@ -293,6 +366,11 @@
     justify-content: center;
     gap: 10px;
     margin-bottom: 5px;
+}
+
+/* Light Mode Override */
+body.light-mode .star-rating {
+    color: #ddd;
 }
 
 .star {
