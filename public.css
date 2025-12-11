@@ -5,7 +5,7 @@
 :root {
     /* --- Default Dark Theme Variables --- */
     --bg-color: #000000;
-    --primary-gold: #D4AF37; /* Standard Gold for Dark Mode */
+    --primary-gold: #FFC000; /* Standard Gold for Dark Mode */
     --secondary-gold: #B8860B;
     --text-color: #FFFFFF;
     --text-muted: #aaa;
