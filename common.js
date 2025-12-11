@@ -1,4 +1,4 @@
-// common.js - Universal Image Loader (Drive, Blogspot, Direct Links) & Theme Management
+// common.js - Universal Image Loader & Theme Management with Instagram-style Explore Icon
 
 import { db, auth } from './firebase-config.js';
 import { 
@@ -19,20 +19,14 @@ let authPromise = null;
 
 // *** Theme Initialization ***
 (function initTheme() {
-    const savedTheme = localStorage.getItem('app-theme') || 'dark'; // Default to dark
+    const savedTheme = localStorage.getItem('app-theme') || 'dark'; 
     if (savedTheme === 'light') {
         document.body.classList.add('light-mode');
     }
 })();
 
-/**
- * Universal Image Optimizer
- * Google Drive, Blogspot, Direct Links എന്നിവയെല്ലാം സപ്പോർട്ട് ചെയ്യുന്നു.
- */
 export function optimizeImage(url, width = 800, quality = 80) {
     if (!url) return 'https://placehold.co/100x100/1e1e1e/D4AF37?text=No+Image';
-
-    // 1. Google Drive Links -> Direct View Link
     if (url.includes('drive.google.com') || url.includes('docs.google.com')) {
         try {
             let id = null;
@@ -42,28 +36,21 @@ export function optimizeImage(url, width = 800, quality = 80) {
                 id = url.split('id=')[1].split('&')[0];
             }
             if (id) {
-                // Drive images are proxied for speed
                 const directLink = `https://drive.google.com/uc?export=view&id=${id}`;
                 return `https://wsrv.nl/?url=${encodeURIComponent(directLink)}&w=${width}&q=${quality}&output=webp`;
             }
         } catch (e) { console.error("Drive Link Error", e); }
     }
-
-    // 2. Blogger/Blogspot Images (Direct Load - No Proxy)
     if (url.includes('blogger.googleusercontent.com') || url.includes('bp.blogspot.com')) {
         return url; 
     }
-
-    // 3. Other HTTP/HTTPS Links
     if (url.startsWith('http')) {
         if (url.includes('wsrv.nl') || url.includes('placehold.co')) return url;
         return `https://wsrv.nl/?url=${encodeURIComponent(url)}&w=${width}&q=${quality}&output=webp`;
     }
-
     return url; 
 }
 
-// User Authentication
 function authenticateUser() {
     if (authPromise) return authPromise;
     authPromise = new Promise(async (resolve, reject) => {
@@ -82,7 +69,6 @@ function authenticateUser() {
     return authPromise;
 }
 
-// Settings with Caching
 export async function fetchSiteSettings() {
     if (siteSettings) return siteSettings;
     const cachedSettings = localStorage.getItem('siteSettings');
@@ -108,7 +94,6 @@ async function refreshSettingsBackground() {
     return siteSettings || {};
 }
 
-// Header Builder
 async function buildHeader() {
     const settings = await fetchSiteSettings();
     const headerElement = document.getElementById('main-header');
@@ -147,7 +132,6 @@ async function buildHeader() {
     updateCartIcon();
 }
 
-// Footer Builder
 async function buildFooter() {
     const settings = await fetchSiteSettings();
     const footerElement = document.getElementById('main-footer');
@@ -276,7 +260,8 @@ function buildBottomNav(settings) {
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item ${homeActive}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
         <a href="categories.html" class="bottom-nav-item catalog-anim ${catalogActive}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg><span>Catalog</span></a>
-        <a href="explore.html" class="bottom-nav-item ${exploreActive}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 10h4"/><path d="M19 7V4a1 1 0 0 0-1-1h-2a1 1 0 0 0-1 1v3"/><path d="M5 7V4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3"/><rect x="4" y="7" width="6" height="8" rx="2"/><rect x="14" y="7" width="6" height="8" rx="2"/><path d="M6 15v4a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4"/><path d="M16 15v4a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2v-4"/></svg><span>Explore</span></a>
+        <!-- *** UPDATE: Explore Icon changed to Search/Compass *** -->
+        <a href="explore.html" class="bottom-nav-item ${exploreActive}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Explore</span></a>
         <button class="bottom-nav-item ${accountActive}" id="bottom-nav-account-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Account</span></button>
     </nav>`;
     document.body.insertAdjacentHTML('beforeend', navHTML);
