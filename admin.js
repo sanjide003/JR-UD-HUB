@@ -156,7 +156,7 @@ function loadInitialData() {
     loadFeaturedProducts();
     loadHeroSlides();
     loadAllSettings();
-    loadTopDealsConfig(); // New
+    loadTopDealsConfig(); 
     cacheAllProductsForSearch();
     setupImageUploader('product-image-list-container', 'add-image-url-btn');
     setupMoreLinksUploader('product-more-links-container', 'add-more-link-btn');
@@ -239,14 +239,20 @@ bindSave("follow-settings-form", "save-follow-settings-button", "Save Links", ()
     youtubeUrl: document.getElementById("setting-youtube-url").value,
 }));
 
-// *** NEW: MANAGE HOME (TOP DEALS) ***
+// *** MANAGE HOME (TOP DEALS) ***
 async function loadTopDealsConfig() {
     try {
-        // Load Banner
         const snap = await getDoc(doc(db, "settings", "homeLayout"));
         if(snap.exists()) {
-            document.getElementById("top-deals-banner-input").value = snap.data().topDealsBanner || '';
+            const data = snap.data();
+            // Banner
+            document.getElementById("top-deals-banner-input").value = data.topDealsBanner || '';
             document.getElementById("top-deals-banner-input").dispatchEvent(new Event('input'));
+            
+            // *** NEW: Load End Time ***
+            if (data.offerEndTime) {
+                document.getElementById("top-deals-end-time").value = data.offerEndTime;
+            }
         }
         
         // Load Products
@@ -273,11 +279,13 @@ topDealsBannerForm.addEventListener("submit", async(e) => {
     disableButton(btn, "Saving...");
     try {
         await setDoc(doc(db, "settings", "homeLayout"), {
-            topDealsBanner: document.getElementById("top-deals-banner-input").value
+            topDealsBanner: document.getElementById("top-deals-banner-input").value,
+            // *** NEW: Save End Time ***
+            offerEndTime: document.getElementById("top-deals-end-time").value
         }, { merge: true });
-        showStatus(null, "Banner Saved", false);
+        showStatus(null, "Banner & Timer Saved", false);
     } catch(e){ showStatus(null, e.message); }
-    finally { enableButton(btn, "Save Banner"); }
+    finally { enableButton(btn, "Save Banner & Timer"); }
 });
 
 // Search to Add to Top Deals
@@ -479,7 +487,7 @@ function setupImagePreview(id, pid) {
 setupImagePreview('category-image-url', 'category-image-preview');
 setupImagePreview('setting-logo-image-url', 'logo-preview');
 setupImagePreview('setting-home-banner-url', 'banner-preview');
-setupImagePreview('top-deals-banner-input', 'top-deals-banner-preview'); // New
+setupImagePreview('top-deals-banner-input', 'top-deals-banner-preview'); 
 
 function setupImageUploader(cid, bid) {
     const btn = document.getElementById(bid);
