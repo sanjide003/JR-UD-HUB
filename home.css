@@ -1,7 +1,7 @@
-/* home.css - Smart Hero Section & Auto Aspect Ratio */
+/* home.css - Fixed: 3:4 Portrait Logic & No Distortion */
 
 /* =========================================
-   1. HOME TOP BANNER (Auto Hide/Show)
+   1. HOME TOP BANNER
    ========================================= */
 .home-top-banner {
     width: 100%;
@@ -12,24 +12,22 @@
     margin-bottom: 0;
     overflow: hidden;
     border-bottom: 1px solid #222;
-    display: none; /* Hidden by default, JS enables it */
+    display: none; 
 }
 
 .home-top-banner img {
     width: 100%;
-    height: auto; /* Height adapts to image */
+    height: auto;
     display: block;
     object-fit: cover;
     opacity: 0.95;
     transition: opacity 0.3s ease;
 }
 
-.home-top-banner:hover img {
-    opacity: 1;
-}
+.home-top-banner:hover img { opacity: 1; }
 
 /* =========================================
-   2. HERO SLIDER (Smart Aspect Ratio)
+   2. HERO SLIDER (Smart Aspect Ratio 3:4)
    ========================================= */
 .hero-section-new {
     width: 100%;
@@ -37,25 +35,29 @@
     background-color: #000;
     margin: 0;
     overflow: hidden;
-    display: none; /* Hidden by default */
+    display: none;
     
-    /* Default Landscape Aspect Ratio */
+    /* Default Landscape Aspect Ratio (16:9) */
     aspect-ratio: 16 / 9; 
+    transition: aspect-ratio 0.3s ease;
 }
 
-/* Portrait Mode (Triggered by JS if Shorts detected) */
+/* *** PORTRAIT MODE (3:4) *** Triggered if ANY slide is a Short/Portrait */
 .hero-section-new.aspect-portrait {
-    aspect-ratio: 4 / 5;
+    aspect-ratio: 3 / 4; /* Mobile-friendly Portrait */
 }
 
 @media (max-width: 768px) {
-    /* On mobile, default to taller standard or keep aspect ratio */
     .hero-section-new {
         width: 100%;
     }
-    /* Make portrait even taller on mobile if needed, or stick to 4:5 */
+    /* On mobile, standard becomes slightly taller for better UX */
+    .hero-section-new:not(.aspect-portrait) {
+        aspect-ratio: 4 / 3; 
+    }
+    /* Portrait stays 3:4 */
     .hero-section-new.aspect-portrait {
-        aspect-ratio: 9 / 16; /* Full mobile screen height style */
+        aspect-ratio: 3 / 4;
     }
 }
 
@@ -74,17 +76,18 @@
     overflow: hidden;
 }
 
-/* Ensure content covers the determined area */
+/* NO STRETCHING RULES */
 .hero-slider-new .swiper-slide img,
 .hero-slider-new .swiper-slide video,
 .hero-slider-new .swiper-slide iframe {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* This ensures no black bars, it crops to fill */
+    /* 'cover' ensures it fills the box without stretching/distortion.
+       It crops edges if aspect ratios don't match exactly. */
+    object-fit: cover; 
     border: none;
 }
 
-/* Overlay for text readability */
 .hero-slider-new .swiper-slide::after {
     content: '';
     position: absolute;
@@ -96,7 +99,7 @@
     pointer-events: none;
 }
 
-/* Pagination Dots */
+/* Dots */
 .hero-slider-new .hero-pagination-dots {
     position: absolute;
     bottom: 20px;
@@ -134,7 +137,7 @@
     max-width: 800px;
     margin: 0 auto;
     background: transparent;
-    display: none; /* Hidden by default */
+    display: none;
 }
 
 /* =============================================================
@@ -211,12 +214,12 @@
     background-color: #111;
 }
 
-/* --- STANDARD CARD STYLES (Ultra Compact) --- */
+/* --- STANDARD CARD STYLES --- */
 .swiper-slide { height: auto; display: flex; box-sizing: border-box; padding: 0 4px; }
 
 .clean-card-wrapper {
     display: flex; flex-direction: column; text-decoration: none; width: 100%;
-    aspect-ratio: 3 / 4; background-color: #1a1a1a; border-radius: 10px;
+    background-color: #1a1a1a; border-radius: 10px;
     overflow: hidden; border: 1px solid #333; position: relative; transition: all 0.2s;
 }
 .clean-card-box {
@@ -252,7 +255,7 @@
 .card-discount-badge.red { background: linear-gradient(45deg, #ff4d4d, #ff6b6b); }
 
 
-/* --- SCREENSHOT STYLE (Square Image) --- */
+/* --- SCREENSHOT STYLE --- */
 .screenshot-mode .clean-card-wrapper {
     background: transparent; border: none; box-shadow: none; padding: 0; min-height: auto; aspect-ratio: auto;
 }
