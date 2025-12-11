@@ -1,4 +1,4 @@
-/* home.css - Updated: Countdown Overlay */
+/* home.css - Updated: Unique Red Box Countdown (Top-Left) */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -197,49 +197,59 @@ body.light-mode .special-offer-banner-img {
     background: linear-gradient(45deg, #ff3f6c, #ff6b6b);
     color: white; font-size: 0.65rem; font-weight: 800;
     padding: 5px 10px; border-radius: 20px; z-index: 2;
+    display: none; /* Removed as per request to simplify, or keep if needed */
 }
 
-/* *** COUNTDOWN TIMER OVERLAY *** */
+/* *** UNIQUE COUNTDOWN TIMER STYLES (Red Boxes, Top-Left) *** */
 .countdown-overlay {
     position: absolute;
-    bottom: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(4px);
-    padding: 6px 12px;
-    border-radius: 20px;
+    top: 10px; /* Top Position */
+    left: 10px; /* Left Position */
+    bottom: auto; /* Remove Bottom */
+    transform: none; /* Remove Center Transform */
+    background: transparent; /* No container background */
+    backdrop-filter: none;
+    padding: 0;
+    border: none;
+    box-shadow: none;
     display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #fff;
-    border: 1px solid var(--primary-gold);
+    gap: 6px;
     z-index: 5;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
-.countdown-label {
-    font-size: 0.75rem;
-    color: var(--primary-gold);
-    font-weight: 700;
+/* Individual Red Box */
+.countdown-box {
+    background-color: #d32f2f; /* Red Background */
+    color: #ffffff; /* White Text */
+    padding: 4px 6px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.countdown-val {
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1;
+    font-family: monospace; /* For uniform width */
+}
+
+.countdown-unit {
+    font-size: 0.55rem;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.countdown-timer {
-    font-family: monospace;
-    font-size: 1rem;
-    font-weight: 700;
-    letter-spacing: 1px;
-    color: #fff;
+    font-weight: 600;
+    margin-top: 2px;
+    opacity: 0.9;
 }
 
 /* Expired State */
-.countdown-overlay.expired {
-    border-color: #ff4d4d;
-}
-.countdown-overlay.expired .countdown-label {
-    color: #ff4d4d;
+.countdown-overlay.expired .countdown-box {
+    background-color: #555;
 }
 
 .section-header-card {
