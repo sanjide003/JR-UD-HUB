@@ -1,6 +1,4 @@
-/* ഇത് about.css
-   About, Policies, Store Locator പേജുകൾക്കുള്ള സ്റ്റൈലുകൾ
-*/
+/* ഇത് about.css with Light Mode Support */
 
 .about-page-layout {
     max-width: 800px;
@@ -11,9 +9,15 @@
     padding: 2rem;
 }
 
+/* Light Mode Override */
+body.light-mode .about-page-layout {
+    background-color: #fff;
+    border-color: #eee;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
 .policy-section {
     padding: 1rem 0;
-    /* ഐഡി വെച്ച് ലിങ്ക് ചെയ്യുമ്പോൾ ഹെഡർ മറയാതിരിക്കാൻ (Scroll Margin) */
     scroll-margin-top: calc(var(--header-height) + 20px);
 }
 
@@ -29,6 +33,11 @@
     color: var(--text-muted);
     font-size: 1rem;
     line-height: 1.7;
+}
+
+/* Light Mode Override */
+body.light-mode .policy-content {
+    color: #333;
 }
 
 .policy-content ul {
@@ -48,6 +57,11 @@
     margin: 2rem 0;
 }
 
+/* Light Mode Override */
+body.light-mode .policy-divider {
+    background-color: #eee;
+}
+
 /* --- Store Locator Card --- */
 .store-card {
     background-color: rgba(255, 255, 255, 0.03);
@@ -59,10 +73,21 @@
     gap: 1.5rem;
 }
 
+/* Light Mode Override */
+body.light-mode .store-card {
+    background-color: #f9f9f9;
+    border-color: #eee;
+}
+
 .store-info h3 {
     color: var(--text-color);
     margin-bottom: 0.5rem;
     font-size: 1.2rem;
+}
+
+/* Light Mode Override */
+body.light-mode .store-info h3 {
+    color: #000;
 }
 
 .store-info p {
@@ -81,6 +106,12 @@
     font-size: 0.9rem;
     min-height: 150px;
     border: 1px dashed var(--border-color);
+}
+
+/* Light Mode Override */
+body.light-mode .store-map-placeholder {
+    background-color: #f0f0f0;
+    border-color: #ddd;
 }
 
 .btn-sm {
