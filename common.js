@@ -1,4 +1,4 @@
-// common.js - Universal Image Loader & Theme Management with Instagram-style Explore Icon
+// common.js - Universal Image Loader & Theme Management with Compass Explore Icon
 
 import { db, auth } from './firebase-config.js';
 import { 
@@ -260,8 +260,8 @@ function buildBottomNav(settings) {
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item ${homeActive}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
         <a href="categories.html" class="bottom-nav-item catalog-anim ${catalogActive}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg><span>Catalog</span></a>
-        <!-- *** UPDATE: Explore Icon changed to Search/Compass *** -->
-        <a href="explore.html" class="bottom-nav-item ${exploreActive}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span>Explore</span></a>
+        <!-- *** UPDATE: Explore Icon changed to Compass *** -->
+        <a href="explore.html" class="bottom-nav-item ${exploreActive}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg><span>Explore</span></a>
         <button class="bottom-nav-item ${accountActive}" id="bottom-nav-account-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Account</span></button>
     </nav>`;
     document.body.insertAdjacentHTML('beforeend', navHTML);
