@@ -1,4 +1,4 @@
-/* home.css - Fixed: 3:4 Portrait Logic & No Distortion */
+/* home.css - Reverted Special Offer & Under 799 to Classic 3:4 Style */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -27,7 +27,7 @@
 .home-top-banner:hover img { opacity: 1; }
 
 /* =========================================
-   2. HERO SLIDER (Smart Aspect Ratio 3:4)
+   2. HERO SLIDER
    ========================================= */
 .hero-section-new {
     width: 100%;
@@ -36,129 +36,74 @@
     margin: 0;
     overflow: hidden;
     display: none;
-    
-    /* Default Landscape Aspect Ratio (16:9) */
     aspect-ratio: 16 / 9; 
     transition: aspect-ratio 0.3s ease;
 }
 
-/* *** PORTRAIT MODE (3:4) *** Triggered if ANY slide is a Short/Portrait */
 .hero-section-new.aspect-portrait {
-    aspect-ratio: 3 / 4; /* Mobile-friendly Portrait */
+    aspect-ratio: 3 / 4; 
 }
 
 @media (max-width: 768px) {
-    .hero-section-new {
-        width: 100%;
-    }
-    /* On mobile, standard becomes slightly taller for better UX */
-    .hero-section-new:not(.aspect-portrait) {
-        aspect-ratio: 4 / 3; 
-    }
-    /* Portrait stays 3:4 */
-    .hero-section-new.aspect-portrait {
-        aspect-ratio: 3 / 4;
-    }
+    .hero-section-new { width: 100%; }
+    .hero-section-new:not(.aspect-portrait) { aspect-ratio: 4 / 3; }
+    .hero-section-new.aspect-portrait { aspect-ratio: 3 / 4; }
 }
 
-.hero-slider-new {
-    width: 100%;
-    height: 100%;
-}
+.hero-slider-new { width: 100%; height: 100%; position: relative; }
 
 .hero-slider-new .swiper-slide {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #000;
-    overflow: hidden;
+    width: 100%; height: 100%; display: flex;
+    justify-content: center; align-items: center;
+    background: #000; overflow: hidden;
 }
 
-/* NO STRETCHING RULES */
 .hero-slider-new .swiper-slide img,
 .hero-slider-new .swiper-slide video,
 .hero-slider-new .swiper-slide iframe {
-    width: 100%;
-    height: 100%;
-    /* 'cover' ensures it fills the box without stretching/distortion.
-       It crops edges if aspect ratios don't match exactly. */
-    object-fit: cover; 
-    border: none;
+    width: 100%; height: 100%; object-fit: cover; border: none;
 }
 
 .hero-slider-new .swiper-slide::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    height: 25%;
+    content: ''; position: absolute; bottom: 0; left: 0;
+    width: 100%; height: 25%;
     background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
     pointer-events: none;
 }
 
-/* Dots */
 .hero-slider-new .hero-pagination-dots {
-    position: absolute;
-    bottom: 20px;
-    left: 0;
-    width: 100%;
-    text-align: center;
-    z-index: 10;
+    position: absolute; bottom: 20px; left: 0;
+    width: 100%; text-align: center; z-index: 10;
 }
 
 .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet {
-    background: rgba(255, 255, 255, 0.5);
-    width: 8px;
-    height: 8px;
-    opacity: 1;
-    margin: 0 6px !important;
-    transition: all 0.3s ease;
-    border-radius: 4px;
+    background: rgba(255, 255, 255, 0.5); width: 8px; height: 8px;
+    opacity: 1; margin: 0 6px !important; transition: all 0.3s ease; border-radius: 4px;
 }
 
 .hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active {
-    background: var(--primary-gold);
-    width: 24px;
-    opacity: 1;
+    background: var(--primary-gold); width: 24px; opacity: 1;
 }
 
 /* =========================================
    3. HERO TEXT SECTION
    ========================================= */
 .hero-text-section {
-    text-align: center;
-    padding: 2.5rem 1.5rem;
-    color: #cccccc;
-    font-size: 1rem;
-    line-height: 1.6;
-    max-width: 800px;
-    margin: 0 auto;
-    background: transparent;
-    display: none;
+    text-align: center; padding: 2.5rem 1.5rem; color: #cccccc;
+    font-size: 1rem; line-height: 1.6; max-width: 800px;
+    margin: 0 auto; background: transparent; display: none;
 }
 
 /* =============================================================
    4. PRODUCT CARDS & SECTIONS
    ============================================================= */
 
-/* Special Offer Wrapper */
-.special-offer-wrapper {
-    margin-bottom: 2rem;
-    padding: 0 10px;
-}
+.special-offer-wrapper { margin-bottom: 2rem; padding: 0 10px; }
 .special-offer-header {
-    width: 100%;
-    margin-bottom: 15px;
-    position: relative;
-    border-radius: 12px;
-    overflow: hidden;
-    border: 2px solid transparent;
+    width: 100%; margin-bottom: 15px; position: relative;
+    border-radius: 12px; overflow: hidden; border: 2px solid transparent;
     background: linear-gradient(45deg, #2874f0, #ff3f6c, #2874f0);
-    background-size: 200% 200%;
-    animation: gradientShift 3s ease infinite;
+    background-size: 200% 200%; animation: gradientShift 3s ease infinite;
 }
 @keyframes gradientShift {
     0% { background-position: 0% 50%; }
@@ -167,34 +112,21 @@
 }
 
 .special-offer-banner-img {
-    width: 100%;
-    height: auto;
-    display: block;
-    max-height: 150px;
-    object-fit: cover;
-    padding: 3px;
-    border-radius: 10px;
-    background-color: #000;
+    width: 100%; height: auto; display: block;
+    max-height: 150px; object-fit: cover; padding: 3px;
+    border-radius: 10px; background-color: #000;
 }
 
 .special-offer-header::before {
-    content: 'LIMITED TIME';
-    position: absolute; top: 8px; left: 8px;
+    content: 'LIMITED TIME'; position: absolute; top: 8px; left: 8px;
     background: linear-gradient(45deg, #ff3f6c, #ff6b6b);
     color: white; font-size: 0.65rem; font-weight: 800;
     padding: 5px 10px; border-radius: 20px; z-index: 2;
 }
 
-/* Section Headers */
 .section-header-card {
-    border-radius: 10px 10px 0 0;
-    padding: 14px 16px;
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 0;
+    border-radius: 10px 10px 0 0; padding: 14px 16px; position: relative;
+    overflow: hidden; display: flex; align-items: center; justify-content: space-between; margin-bottom: 0;
 }
 .blue-card-bg { background: linear-gradient(135deg, #2874f0 0%, #1e5fc4 100%); }
 .orange-card-bg { background: linear-gradient(135deg, #fb641b 0%, #e55a17 100%); }
@@ -205,49 +137,63 @@
     color: #fff; font-size: 1.1rem; font-weight: 700; margin: 0; text-transform: uppercase;
 }
 
-/* Product Containers */
 .product-slider-container {
-    padding: 12px 8px;
-    border-radius: 0 0 10px 10px;
-    border: 1px solid #333;
-    border-top: none;
-    background-color: #111;
+    padding: 12px 8px; border-radius: 0 0 10px 10px;
+    border: 1px solid #333; border-top: none; background-color: #111;
 }
 
-/* --- STANDARD CARD STYLES --- */
+/* --- STANDARD CARD STYLES (RESTORED TO 3:4 ASPECT RATIO) --- */
 .swiper-slide { height: auto; display: flex; box-sizing: border-box; padding: 0 4px; }
 
 .clean-card-wrapper {
     display: flex; flex-direction: column; text-decoration: none; width: 100%;
+    aspect-ratio: 3 / 4; /* RESTORED: Classic Vertical Ratio */
     background-color: #1a1a1a; border-radius: 10px;
     overflow: hidden; border: 1px solid #333; position: relative; transition: all 0.2s;
 }
+
 .clean-card-box {
-    width: 100%; height: 60%; position: relative; background: #111;
+    width: 100%; 
+    height: 60%; /* RESTORED: Image takes top 60% */
+    position: relative; background: #111;
     display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 10px;
-}
-.clean-card-img {
-    width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; border-radius: 4px;
+    aspect-ratio: auto; /* Reset explicit square ratio */
 }
 
+.clean-card-img {
+    width: 100%; height: 100%; 
+    object-fit: contain; /* RESTORED: Show full image inside box */
+    transition: transform 0.3s ease; border-radius: 0;
+}
+
+/* Restored Details with Spacing */
 .clean-card-details {
-    padding: 4px; display: flex; flex-direction: column; align-items: center;
-    justify-content: center; flex-grow: 1; height: 40%; gap: 0;
+    padding: 8px 10px; /* Increased padding */
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: space-between; /* Space out elements */
+    flex-grow: 1; height: 40%; 
+    gap: 4px; /* Restored gap */
 }
+
 .clean-card-title {
-    font-size: 0.82rem; color: #fff; font-weight: 600; text-align: center;
-    line-height: 1.1; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
-    overflow: hidden; margin: 0 0 1px 0; min-height: 2.2em; width: 100%;
+    font-size: 0.85rem; color: #fff; font-weight: 600; text-align: center;
+    line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; margin: 0; min-height: auto; width: 100%;
 }
+
 .clean-card-price-row {
-    font-size: 0.95rem; font-weight: 800; color: var(--primary-gold);
-    text-align: center; margin: 0 0 2px 0; padding: 0; width: 100%; line-height: 1;
+    font-size: 1rem; font-weight: 800; color: var(--primary-gold);
+    text-align: center; margin: 0; padding: 0; width: 100%;
 }
+
 .shop-now-btn {
     width: 100%; background: var(--primary-gold); color: #000; border: none;
-    padding: 4px 0; border-radius: 4px; font-size: 0.72rem; font-weight: 700;
-    text-transform: uppercase; margin-top: 0; display: block; line-height: 1.2;
+    padding: 6px 0; border-radius: 4px; font-size: 0.75rem; font-weight: 700;
+    text-transform: uppercase; 
+    margin-top: auto; /* Push to bottom */
+    display: block;
 }
+
 .card-discount-badge {
     position: absolute; top: 8px; left: 8px; background: linear-gradient(45deg, #388e3c, #4caf50);
     color: #fff; font-size: 0.7rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; z-index: 10;
@@ -255,7 +201,7 @@
 .card-discount-badge.red { background: linear-gradient(45deg, #ff4d4d, #ff6b6b); }
 
 
-/* --- SCREENSHOT STYLE --- */
+/* --- SCREENSHOT STYLE (Remains for Trendy & Discount) --- */
 .screenshot-mode .clean-card-wrapper {
     background: transparent; border: none; box-shadow: none; padding: 0; min-height: auto; aspect-ratio: auto;
 }
@@ -309,6 +255,10 @@
     .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 19% !important; }
 }
 @media (max-width: 768px) {
+    .clean-card-details { padding: 6px 5px; }
+    .clean-card-title { font-size: 0.8rem; }
+    .shop-now-btn { padding: 5px 0; font-size: 0.7rem; }
+    
     .screenshot-mode .clean-card-price-row { font-size: 1rem; }
     .screenshot-mode .clean-card-title { font-size: 0.7rem; }
 }
