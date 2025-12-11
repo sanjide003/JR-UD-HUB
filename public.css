@@ -1,11 +1,11 @@
-/* public.css - Updated: Dark Gold in Light Mode */
+/* public.css - Updated: Centered Title, Left Logo & Footer Layout */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
     /* --- Default Dark Theme Variables --- */
     --bg-color: #000000;
-    --primary-gold: #D4AF37; /* Standard Gold for Dark Mode */
+    --primary-gold: #D4AF37; 
     --secondary-gold: #B8860B;
     --text-color: #FFFFFF;
     --text-muted: #aaa;
@@ -35,12 +35,11 @@ body.light-mode {
     --input-bg: #ffffff;
     --shadow-soft: 0 4px 15px rgba(0,0,0,0.08);
     
-    /* *** മാറ്റം: ലൈറ്റ് മോഡിൽ കടും ഗോൾഡ് (Dark Gold) *** */
-    --primary-gold: #F5C542; 
+    /* Darker Gold for Light Mode Visibility */
+    --primary-gold: #B8860B; 
     --secondary-gold: #8B6508; 
 }
 
-/* *** New: Smooth Scrolling Global *** */
 html {
     scroll-behavior: smooth;
     -webkit-tap-highlight-color: transparent; 
@@ -151,24 +150,56 @@ img { max-width: 100%; height: auto; display: block; }
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* ലോഗോ */
+/* *** HEADER LAYOUT UPDATE *** Logo Image -> Left
+   Text -> Absolute Center 
+*/
+
 .header-left-section {
     justify-self: start;
+    display: flex;
+    align-items: center;
 }
+
 .header-logo {
     display: flex;
     align-items: center;
     text-decoration: none;
     gap: 10px;
+    position: relative; /* Default context */
 }
-.header-logo-img { height: 40px; width: auto; }
-.header-logo-content { display: flex; flex-direction: column; }
+
+/* Image stays in the flow (Left) */
+.header-logo-img { 
+    height: 40px; 
+    width: auto; 
+    display: block;
+}
+
+/* Text moves to Absolute Center */
+.header-logo-content { 
+    position: fixed; /* Fixed relative to viewport/header */
+    left: 50%;
+    top: 35px; /* Center of 70px header */
+    transform: translate(-50%, -50%);
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; /* Center alignment */
+    text-align: center;
+    line-height: 1.1;
+    width: max-content;
+    z-index: 10;
+    pointer-events: none; /* Let clicks pass through if overlapping, though <a> handles click usually */
+}
+
+.header-logo-text {
+    font-size: 1.1rem;
+}
 .header-logo-subtitle {
     font-family: var(--font-main);
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     color: var(--text-muted);
     letter-spacing: 1px;
-    margin-left: 2px;
+    text-transform: uppercase;
 }
 
 /* ഡെസ്ക്ടോപ്പ് നാവിഗേഷൻ */
@@ -244,7 +275,7 @@ img { max-width: 100%; height: auto; display: block; }
     top: -5px;
     right: -10px;
     background-color: var(--primary-gold);
-    color: #000; 
+    color: #000;
     font-size: 0.75rem;
     font-weight: 700;
     border-radius: 50%;
@@ -265,8 +296,21 @@ img { max-width: 100%; height: auto; display: block; }
     border-top: 1px solid var(--border-color);
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
-.footer-container-new { max-width: 1200px; margin: 0 auto; }
-.footer-accordion-item { border-bottom: 1px solid var(--border-color); }
+.footer-container-new { 
+    max-width: 1200px; 
+    margin: 0 auto; 
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* Desktop default */
+    gap: 2rem;
+    align-items: start;
+    justify-items: center; 
+}
+
+.footer-accordion-item { 
+    border-bottom: 1px solid var(--border-color); 
+    width: 100%;
+}
+
 .footer-accordion-toggle {
     display: flex; justify-content: space-between; align-items: center; width: 100%;
     background: none; border: none; color: var(--text-color);
@@ -288,17 +332,19 @@ img { max-width: 100%; height: auto; display: block; }
 .footer-accordion-content a { color: var(--text-muted); font-size: 0.95rem; }
 
 .footer-social-new {
-    display: flex; justify-content: center; gap: 2rem; padding: 2rem 0; border-bottom: 1px solid var(--border-color);
+    grid-column: 1 / -1; 
+    display: flex; justify-content: center; gap: 2rem; padding: 2rem 0; border-bottom: 1px solid var(--border-color); width: 100%;
 }
 .footer-social-new a { color: var(--text-color); }
 .footer-social-new a svg { width: 24px; height: 24px; fill: currentColor; }
-.footer-bottom-new { text-align: center; font-size: 0.9rem; padding-top: 1.5rem; }
+.footer-bottom-new { 
+    grid-column: 1 / -1;
+    text-align: center; font-size: 0.9rem; padding-top: 1.5rem; width: 100%;
+}
 .footer-powered-by { font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; margin-top: 0.5rem; }
 
 /* --- 5. മൊബൈൽ ബോട്ടം നാവിഗേഷൻ & യൂസർ മെനു --- */
-.bottom-nav {
-    display: none; 
-}
+.bottom-nav { display: none; }
 .user-menu-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background-color: rgba(0, 0, 0, 0.6); z-index: 2000;
@@ -326,7 +372,6 @@ img { max-width: 100%; height: auto; display: block; }
 .user-menu-list { list-style: none; padding: 0; margin: 0; }
 .user-menu-list li { margin-bottom: 0.8rem; }
 
-/* Menu Link / Button Style */
 .user-menu-link, .user-menu-action-btn {
     display: flex; align-items: center; gap: 1rem; padding: 1rem;
     color: var(--text-color); text-decoration: none; border-radius: 8px;
@@ -340,31 +385,14 @@ img { max-width: 100%; height: auto; display: block; }
     font-size: 1rem;
     text-align: left;
 }
-
 body.light-mode .user-menu-link, 
-body.light-mode .user-menu-action-btn {
-    background-color: rgba(0, 0, 0, 0.05); 
-}
-
-.user-menu-link:hover, .user-menu-action-btn:hover { 
-    background-color: rgba(212, 175, 55, 0.1); 
-    color: var(--primary-gold); 
-}
-.user-menu-link svg, .user-menu-action-btn svg { 
-    width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; 
-}
+body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
+.user-menu-link:hover, .user-menu-action-btn:hover { background-color: rgba(212, 175, 55, 0.1); color: var(--primary-gold); }
+.user-menu-link svg, .user-menu-action-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
 
 /* Theme Switcher Toggle UI inside menu */
-.theme-switch-wrapper {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-}
-.theme-status-text {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-}
+.theme-switch-wrapper { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+.theme-status-text { font-size: 0.9rem; color: var(--text-muted); }
 
 /* --- 6. റെസ്പോൺസീവ് (മൊബൈൽ) --- */
 @media (max-width: 768px) {
@@ -373,11 +401,35 @@ body.light-mode .user-menu-action-btn {
     .main-header { 
         padding: 0 1rem; 
         height: 60px; 
-        grid-template-columns: 1fr auto;
+        grid-template-columns: 1fr auto; 
     }
     .header-nav-desktop { display: none; }
+    
+    /* Center the title vertically on mobile */
+    .header-logo-content {
+        top: 30px; /* Center of 60px header */
+    }
+    .header-logo-img { height: 32px; } /* Slightly smaller on mobile */
+    
     .header-left-section { justify-self: start; }
     .header-right-section { justify-self: end; }
+    
+    /* *** FOOTER SIDE-BY-SIDE MOBILE *** */
+    .footer-container-new {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* 2 Columns */
+        gap: 1rem;
+        text-align: center;
+    }
+    .footer-accordion-item { border-bottom: none; }
+    .footer-accordion-toggle {
+        justify-content: center; 
+        padding: 1rem 0;
+        font-size: 0.9rem;
+        pointer-events: auto; /* Ensure clickable */
+    }
+    /* Mobile needs the chevron back to indicate functionality, or keep simple text */
+    .footer-accordion-toggle svg { display: inline-block; margin-left: 5px; width: 12px; height: 12px; }
     
     .bottom-nav {
         display: flex; justify-content: space-around; align-items: center;
@@ -396,9 +448,7 @@ body.light-mode .user-menu-action-btn {
         background: none; border: none; cursor: pointer; padding: 0;
     }
     
-    .bottom-nav-item.active { 
-        color: var(--primary-gold) !important; 
-    }
+    .bottom-nav-item.active { color: var(--primary-gold) !important; }
     .bottom-nav-item svg {
         width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2;
         stroke-linecap: round; stroke-linejoin: round; transition: all 0.3s ease;
@@ -437,20 +487,11 @@ body.light-mode .user-menu-action-btn {
         justify-content: center; 
         font-size: 1.1rem;
     }
-    .footer-accordion-toggle svg {
-        display: none; 
-    }
+    .footer-accordion-toggle svg { display: none; }
     .footer-accordion-content {
         max-height: none !important; 
         overflow: visible;
         text-align: center; 
-    }
-    .footer-container-new {
-        display: grid;
-        grid-template-columns: 1fr 1fr; 
-        gap: 2rem;
-        align-items: start;
-        justify-items: center; 
     }
     .footer-accordion-item {
         border-bottom: none;
@@ -458,16 +499,11 @@ body.light-mode .user-menu-action-btn {
         max-width: 300px; 
     }
     .footer-social-new {
-        grid-column: 1 / -1; 
-        width: 100%;
-        justify-content: center;
         border-bottom: none;
         padding-top: 3rem;
         padding-bottom: 1rem;
     }
     .footer-bottom-new {
-        grid-column: 1 / -1;
-        width: 100%;
         display: flex;
         justify-content: center;
         align-items: center;
@@ -485,9 +521,7 @@ body.light-mode .user-menu-action-btn {
         padding-right: 2rem; 
         pointer-events: none; 
     }
-    .user-menu-overlay.open {
-        pointer-events: auto;
-    }
+    .user-menu-overlay.open { pointer-events: auto; }
     .user-menu-content {
         width: 300px;
         border-radius: 10px;
@@ -506,24 +540,20 @@ body.light-mode .user-menu-action-btn {
     .user-menu-close-btn { display: none; }
 }
 
-/* പൊതുവായ പേജ് സ്റ്റൈലുകൾ */
+/* Price & Button Styles */
 .price-container { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5rem; margin-bottom: 1rem; min-height: 24px; }
 .price-main { font-size: 1.3rem; font-weight: 700; color: var(--primary-gold); }
 .price-mrp { font-size: 1rem; color: var(--text-muted); }
 .product-mrp-red del { color: var(--error-red); }
 .price-discount { font-size: 0.8rem; font-weight: 700; color: var(--success-green); background-color: rgba(46, 204, 113, 0.1); padding: 2px 6px; border-radius: 4px; }
 
-/* *** New: Button Active State & Touch Feedback *** */
 .btn-primary-new, .btn-primary-icon, .btn-secondary-new, .float-btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
     padding: 0.75rem 1rem; font-weight: 700; border-radius: 5px; text-decoration: none;
     cursor: pointer; font-size: 0.9rem; transition: all 0.2s ease;
     user-select: none;
 }
-
-.btn-primary-new:active, .btn-secondary-new:active, .float-btn:active {
-    transform: scale(0.96);
-}
+.btn-primary-new:active, .btn-secondary-new:active, .float-btn:active { transform: scale(0.96); }
 
 .btn-primary-new {
     background-color: var(--primary-gold);
@@ -542,7 +572,6 @@ body.light-mode .user-menu-action-btn {
 .btn-secondary-new svg.icon-btn { stroke: var(--text-color); fill: none; }
 .btn-secondary-new:hover svg.icon-btn { stroke: #000000; }
 
-/* ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ */
 #floating-action-buttons {
     position: fixed; bottom: 20px; right: 20px; z-index: 900;
     display: flex; justify-content: flex-end; pointer-events: none;
