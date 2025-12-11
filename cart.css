@@ -1,4 +1,4 @@
-/* ഇത് cart.css - With Light Mode Support */
+/* ഇത് cart.css - Updated with Header Savings Box & Green Prices */
 
 /* --- 1. കാർട്ട് പേജ് ലേഔട്ട് --- */
 .cart-page-layout-new {
@@ -6,6 +6,41 @@
     flex-direction: column;
     gap: 2rem;
     padding-bottom: 2rem; 
+}
+
+/* Header Styling */
+.center-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.cart-page-title {
+    color: #000000 !important; /* Black Heading Always */
+    font-size: 1.8rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+/* Header Savings Box (Light Green) */
+.header-savings-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background-color: rgba(46, 204, 113, 0.15); /* Light Green Bg */
+    color: #27ae60; /* Darker Green Text */
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 5px;
+    border: 1px solid rgba(46, 204, 113, 0.3);
+}
+
+.header-savings-box svg {
+    width: 16px;
+    height: 16px;
+    fill: currentColor;
 }
 
 /* --- 2. ഉൽപ്പന്നങ്ങളുടെ ലിസ്റ്റ് (ഇടതുവശം) --- */
@@ -96,18 +131,35 @@ body.light-mode .cart-item-title {
 
 .cart-item-meta {
     display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 10px;
-    font-size: 0.9rem;
-    color: var(--text-muted);
+    flex-direction: column; /* Stack discount above price */
+    align-items: flex-start;
+    gap: 2px;
     margin-bottom: 8px;
 }
 
+/* Discount Badge Above Price */
+.item-discount-badge {
+    font-size: 0.75rem;
+    color: var(--success-green);
+    font-weight: 700;
+    background-color: rgba(46, 204, 113, 0.1);
+    padding: 2px 6px;
+    border-radius: 4px;
+    display: inline-block;
+    margin-bottom: 2px;
+}
+
+.price-row-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* *** മാറ്റം: പ്രൈസ് പച്ച നിറത്തിൽ *** */
 .cart-item-price {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--primary-gold);
+    color: #2ecc71; /* Green Price */
 }
 
 .cart-item-size {
@@ -115,6 +167,7 @@ body.light-mode .cart-item-title {
     padding: 2px 6px;
     border-radius: 4px;
     font-size: 0.8rem;
+    color: var(--text-muted);
 }
 
 /* Light Mode Override */
@@ -131,6 +184,7 @@ body.light-mode .cart-item-size {
     border-radius: 6px;
     width: fit-content;
     height: 32px;
+    margin-top: auto; /* Push to bottom if needed */
 }
 
 /* Light Mode Override */
