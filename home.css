@@ -1,4 +1,4 @@
-/* home.css - Updated: Black Text/Price in Light Mode */
+/* home.css - Final: Catalogue Heading Color Fixed */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -395,6 +395,16 @@ body.light-mode .screenshot-mode .clean-card-price-row {
 
 /* === 5. CATEGORIES === */
 .category-swiper { width: 100%; padding: 10px 5px; }
+
+/* *** CATALOGUE Heading Colors Override *** */
+.catalogue-header .section-title-new {
+    color: #ffffff !important; /* White in Dark Mode */
+}
+
+body.light-mode .catalogue-header .section-title-new {
+    color: #000000 !important; /* Black in Light Mode */
+}
+
 .category-circle-item { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; text-decoration: none; }
 .category-circle-img-box {
     width: 70px; height: 70px; border-radius: 50%; background: #1a1a1a;
