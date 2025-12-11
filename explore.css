@@ -1,4 +1,4 @@
-/* ഇതാണ് 'explore.css' with Light Mode Support */
+/* ഇതാണ് 'explore.css' with Light Mode Support & Smart Bookmark Icon */
 
 /* --- 1. ഫീഡ് കണ്ടെയ്നർ --- */
 .explore-feed-container {
@@ -184,21 +184,22 @@ body.light-mode .explore-action-icons button {
     margin-left: auto; 
 }
 
+/* *** Dark Mode (Default) - Active State: White Fill *** */
 .explore-action-icons button.bookmark-btn.added-to-cart {
-    color: var(--text-color); 
+    color: #ffffff; 
 }
 .explore-action-icons button.bookmark-btn.added-to-cart svg {
-    fill: var(--text-color); 
-    stroke: var(--text-color);
+    fill: #ffffff; 
+    stroke: #ffffff;
 }
 
-/* Light Mode Override for Added Cart Icon */
+/* *** Light Mode - Active State: Black Fill *** */
 body.light-mode .explore-action-icons button.bookmark-btn.added-to-cart {
-    color: #000;
+    color: #000000;
 }
 body.light-mode .explore-action-icons button.bookmark-btn.added-to-cart svg {
-    fill: #000;
-    stroke: #000;
+    fill: #000000;
+    stroke: #000000;
 }
 
 /* 2.5 പ്രൊഡക്റ്റ് പേരും വിലയും */
