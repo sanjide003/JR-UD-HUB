@@ -1,4 +1,4 @@
-/* ഇത് cart.css - Updated with Header Savings Box & Green Prices */
+/* ഇത് cart.css - Updated: Heading Color Fix for Dark/Light Mode */
 
 /* --- 1. കാർട്ട് പേജ് ലേഔട്ട് --- */
 .cart-page-layout-new {
@@ -14,11 +14,17 @@
     margin-bottom: 1.5rem;
 }
 
+/* *** മാറ്റം: ഹെഡിംഗ് നിറം ഡാർക്ക് മോഡിൽ വെള്ളയും ലൈറ്റ് മോഡിൽ കറുപ്പും *** */
 .cart-page-title {
-    color: #000000 !important; /* Black Heading Always */
+    color: #ffffff; /* White in Default (Dark) Mode */
     font-size: 1.8rem;
     font-weight: 700;
     margin-bottom: 0.5rem;
+}
+
+/* Light Mode Override for Heading */
+body.light-mode .cart-page-title {
+    color: #000000; /* Black in Light Mode */
 }
 
 /* Header Savings Box (Light Green) */
@@ -155,7 +161,7 @@ body.light-mode .cart-item-title {
     gap: 10px;
 }
 
-/* *** മാറ്റം: പ്രൈസ് പച്ച നിറത്തിൽ *** */
+/* Price Green */
 .cart-item-price {
     font-size: 1.1rem;
     font-weight: 700;
@@ -184,7 +190,7 @@ body.light-mode .cart-item-size {
     border-radius: 6px;
     width: fit-content;
     height: 32px;
-    margin-top: auto; /* Push to bottom if needed */
+    margin-top: auto; 
 }
 
 /* Light Mode Override */
