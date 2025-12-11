@@ -1,4 +1,4 @@
-/* public.css - Updated: Centered Title, Left Logo & Footer Layout */
+/* public.css - Updated: Blue Nav in Light Mode & Logo Fix */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -35,7 +35,6 @@ body.light-mode {
     --input-bg: #ffffff;
     --shadow-soft: 0 4px 15px rgba(0,0,0,0.08);
     
-    /* Darker Gold for Light Mode Visibility */
     --primary-gold: #B8860B; 
     --secondary-gold: #8B6508; 
 }
@@ -150,10 +149,6 @@ img { max-width: 100%; height: auto; display: block; }
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
-/* *** HEADER LAYOUT UPDATE *** Logo Image -> Left
-   Text -> Absolute Center 
-*/
-
 .header-left-section {
     justify-self: start;
     display: flex;
@@ -165,30 +160,34 @@ img { max-width: 100%; height: auto; display: block; }
     align-items: center;
     text-decoration: none;
     gap: 10px;
-    position: relative; /* Default context */
+    position: relative; 
 }
 
-/* Image stays in the flow (Left) */
+/* *** ലോഗോ ഇമേജ് ഫിക്സ് *** Height: 40px (Fixed)
+   Width: auto (Adjusts based on image ratio)
+   object-fit: contain (Prevents stretching/cropping)
+*/
 .header-logo-img { 
     height: 40px; 
     width: auto; 
     display: block;
+    object-fit: contain; 
 }
 
-/* Text moves to Absolute Center */
+/* Center Text */
 .header-logo-content { 
-    position: fixed; /* Fixed relative to viewport/header */
+    position: fixed; 
     left: 50%;
-    top: 35px; /* Center of 70px header */
+    top: 35px; 
     transform: translate(-50%, -50%);
     display: flex; 
     flex-direction: column; 
-    align-items: center; /* Center alignment */
+    align-items: center; 
     text-align: center;
     line-height: 1.1;
     width: max-content;
     z-index: 10;
-    pointer-events: none; /* Let clicks pass through if overlapping, though <a> handles click usually */
+    pointer-events: none; 
 }
 
 .header-logo-text {
@@ -300,7 +299,7 @@ img { max-width: 100%; height: auto; display: block; }
     max-width: 1200px; 
     margin: 0 auto; 
     display: grid;
-    grid-template-columns: 1fr 1fr; /* Desktop default */
+    grid-template-columns: 1fr 1fr; 
     gap: 2rem;
     align-items: start;
     justify-items: center; 
@@ -405,19 +404,17 @@ body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
     }
     .header-nav-desktop { display: none; }
     
-    /* Center the title vertically on mobile */
     .header-logo-content {
-        top: 30px; /* Center of 60px header */
+        top: 30px; 
     }
-    .header-logo-img { height: 32px; } /* Slightly smaller on mobile */
+    .header-logo-img { height: 32px; } 
     
     .header-left-section { justify-self: start; }
     .header-right-section { justify-self: end; }
     
-    /* *** FOOTER SIDE-BY-SIDE MOBILE *** */
     .footer-container-new {
         display: grid;
-        grid-template-columns: 1fr 1fr; /* 2 Columns */
+        grid-template-columns: 1fr 1fr; 
         gap: 1rem;
         text-align: center;
     }
@@ -426,11 +423,11 @@ body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
         justify-content: center; 
         padding: 1rem 0;
         font-size: 0.9rem;
-        pointer-events: auto; /* Ensure clickable */
+        pointer-events: auto; 
     }
-    /* Mobile needs the chevron back to indicate functionality, or keep simple text */
     .footer-accordion-toggle svg { display: inline-block; margin-left: 5px; width: 12px; height: 12px; }
     
+    /* --- Bottom Nav Styles --- */
     .bottom-nav {
         display: flex; justify-content: space-around; align-items: center;
         position: fixed; bottom: 0; left: 0; width: 100%; height: var(--bottom-nav-height);
@@ -448,6 +445,7 @@ body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
         background: none; border: none; cursor: pointer; padding: 0;
     }
     
+    /* Active State - Dark Mode (Default) */
     .bottom-nav-item.active { color: var(--primary-gold) !important; }
     .bottom-nav-item svg {
         width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2;
@@ -458,6 +456,14 @@ body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
         transform: translateY(-2px); 
         fill: none; 
     }
+
+    /* *** Active State - Light Mode (BLUE COLOR) *** */
+    body.light-mode .bottom-nav-item.active { 
+        color: #2196f3 !important; /* Blue Text */
+    }
+    body.light-mode .bottom-nav-item.active svg { 
+        stroke: #2196f3 !important; /* Blue Icon */
+    }
     
     @keyframes bounce-subtle {
         0%, 100% { transform: translateY(0); }
@@ -466,6 +472,11 @@ body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
     .bottom-nav-item:not(.active).catalog-anim svg {
         animation: bounce-subtle 2s infinite;
         stroke: var(--primary-gold);
+    }
+    
+    /* Catalog Animation in Light Mode - Blue */
+    body.light-mode .bottom-nav-item:not(.active).catalog-anim svg {
+        stroke: #2196f3;
     }
 
     .user-menu-overlay { align-items: flex-end; }
