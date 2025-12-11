@@ -1,4 +1,5 @@
-// product.js - Single Read Architecture + Real-time Updates
+// product.js - Updated: Description First & New Delivery Details Section
+
 import { 
     collection, 
     getDocs, 
@@ -9,7 +10,7 @@ import {
     limit,
     setDoc,
     deleteDoc,
-    onSnapshot, // Real-time Listener
+    onSnapshot, 
     runTransaction,
     serverTimestamp,
     setLogLevel
@@ -30,7 +31,6 @@ let currentUser = null;
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        // പ്രോഡക്റ്റ് ലോഡ് ആയിട്ടുണ്ടെങ്കിൽ ചെക്ക് ചെയ്യുന്നു
         if (currentProduct) checkProductUserInteraction();
     } else {
         signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
@@ -72,7 +72,6 @@ async function loadProductDetails() {
 
         const docRef = doc(db, "products", productId);
         
-        // *** Real-time Listener on Product Document (Single Read per update) ***
         onSnapshot(docRef, (docSnap) => {
             if (!docSnap.exists()) {
                 productDetailContent.innerHTML = '<p class="error-message">Product not found.</p>';
@@ -82,7 +81,6 @@ async function loadProductDetails() {
             const product = docSnap.data();
             const productIdStr = docSnap.id;
             
-            // ആദ്യ തവണ മാത്രം പേജ് വരയ്ക്കുന്നു, പിന്നീട് കൗണ്ട് മാത്രം മാറ്റുന്നു
             if (!currentProduct || currentProduct.id !== productIdStr) {
                 renderProductUI(product, productIdStr);
                 setupProductActionButtons();
@@ -99,6 +97,13 @@ async function loadProductDetails() {
         console.error("Error loading product details: ", error);
         productDetailContent.innerHTML = '<p class="error-message">Error loading product details.</p>';
     }
+}
+
+function getDeliveryDate() {
+    const date = new Date();
+    date.setDate(date.getDate() + 5); // 5 Days from now
+    const options = { weekday: 'short', day: 'numeric', month: 'short' };
+    return date.toLocaleDateString('en-US', options);
 }
 
 function renderProductUI(product, productIdStr) {
@@ -132,12 +137,76 @@ function renderProductUI(product, productIdStr) {
     }
     galleryHTML = `<div class="product-gallery-swiper swiper-container"><div class="swiper-wrapper">${slidesHTML}</div><div class="swiper-pagination"></div>${moreLinksHTML}</div>`;
 
+    // 1. Description Section
     let descriptionHTML = '';
     if (product.description) {
         let linkifiedText = linkify(product.description);
         descriptionHTML = `<h3 class="product-section-heading">Description</h3><div class="product-description"><div class="description-content" id="desc-content">${linkifiedText.replace(/\n/g, '<br>')}</div></div>`;
     }
 
+    // 2. NEW: Delivery Details Section (Matches Image Layout)
+    const deliveryDate = getDeliveryDate();
+    const deliveryHTML = `
+        <div class="delivery-details-section">
+            <h3 class="delivery-heading">Delivery details</h3>
+            
+            <div class="delivery-card-list">
+                <!-- Address Row -->
+                <div class="delivery-row">
+                    <div class="del-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+                    <div class="del-content">
+                        <span class="del-label">HOME</span>
+                        <span class="del-value">Check availability at your location</span>
+                    </div>
+                    <div class="del-action"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
+                </div>
+
+                <!-- Delivery Date Row -->
+                <div class="delivery-row">
+                    <div class="del-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg></div>
+                    <div class="del-content">
+                        <span class="del-value">Delivery by ${deliveryDate}</span>
+                    </div>
+                </div>
+
+                <!-- Fulfilled By -->
+                <div class="delivery-row">
+                    <div class="del-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+                    <div class="del-content">
+                        <span class="del-text-muted">Fulfilled by</span>
+                        <span class="del-value">JR UD HUB</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Warranty Badge -->
+            <div class="warranty-badge">
+                <div class="warranty-icon">🛡️</div>
+                <div class="warranty-text">
+                    1 Year Warranty from the date of purchase. 
+                    <br><small>Mandatory registration required.</small>
+                </div>
+            </div>
+
+            <!-- Trust Grid -->
+            <div class="trust-grid">
+                <div class="trust-item">
+                    <div class="trust-icon-circle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 2v6h6M2.66 15.57a10 10 0 1 0 .57-8.38"/></svg></div>
+                    <span>7 Days Replacement</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon-circle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
+                    <span>Cash on Delivery</span>
+                </div>
+                <div class="trust-item">
+                    <div class="trust-icon-circle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+                    <span>Quality Assured</span>
+                </div>
+            </div>
+        </div>
+    `;
+
+    // 3. Specification Section (Moved After Delivery)
     let specificationHTML = '';
     if (product.specification) {
         const points = product.specification.split('\n').filter(line => line.trim() !== '');
@@ -153,7 +222,6 @@ function renderProductUI(product, productIdStr) {
     const cartButtonText = isInCart ? "Remove" : "Add to Cart";
     const cartButtonClass = isInCart ? "btn-secondary-new added-to-cart" : "btn-secondary-new";
 
-    // Initial Counts
     const likeCount = product.likeCount || 0;
     const ratingCount = product.ratingCount || 0;
 
@@ -191,13 +259,19 @@ function renderProductUI(product, productIdStr) {
         </div>
     `;
 
+    // *** ORDER CHANGED: Description -> Delivery -> Specification ***
     const infoHTML = `
         <div class="product-info">
             ${actionBarHTML}
             <h1 class="product-title">${product.name}</h1>
             <div class="price-container large">${priceHTML}</div>
-            ${specificationHTML ? specificationHTML : ''}
+            
             ${descriptionHTML ? descriptionHTML : ''}
+            
+            ${deliveryHTML} <!-- New Delivery Section -->
+            
+            ${specificationHTML ? specificationHTML : ''}
+            
             <div class="product-actions-grid">
                 <button class="btn ${cartButtonClass}" id="add-to-cart-btn">
                     <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
