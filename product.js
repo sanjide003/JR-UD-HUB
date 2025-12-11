@@ -1,4 +1,4 @@
-// product.js - Updated: Description First & New Delivery Details Section
+// product.js - Updated: Delivery Section (Online Payment, Dynamic Date, No Warranty)
 
 import { 
     collection, 
@@ -27,6 +27,7 @@ const relatedProductsGrid = document.getElementById('related-products-grid');
 let currentProduct = null;
 let whatsappNumber = ''; 
 let currentUser = null;
+let appTitle = "JR UD HUB"; // Default Title
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -47,9 +48,24 @@ function linkify(text) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
+    await loadAppTitle(); // Load title first
     await loadSiteSettings();
     loadProductDetails();
 });
+
+// Load App Title from Settings
+async function loadAppTitle() {
+    try {
+        const docRef = doc(db, "settings", "global");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists() && docSnap.data().logoText) {
+            appTitle = docSnap.data().logoText;
+        }
+        if (docSnap.exists() && docSnap.data().whatsapp) {
+            whatsappNumber = docSnap.data().whatsapp;
+        }
+    } catch (e) { console.error("Error loading settings:", e); }
+}
 
 async function loadProductDetails() {
     if (!productDetailContent) return;
@@ -62,13 +78,6 @@ async function loadProductDetails() {
             productDetailContent.innerHTML = '<p class="error-message">Product ID not found.</p>';
             return;
         }
-
-        try {
-            const settingsDoc = await getDoc(doc(db, "settings", "global"));
-            if (settingsDoc.exists() && settingsDoc.data().whatsapp) {
-                whatsappNumber = settingsDoc.data().whatsapp;
-            }
-        } catch (e) { }
 
         const docRef = doc(db, "products", productId);
         
@@ -99,10 +108,11 @@ async function loadProductDetails() {
     }
 }
 
+// *** Dynamic Date Function (+6 Days) ***
 function getDeliveryDate() {
     const date = new Date();
-    date.setDate(date.getDate() + 5); // 5 Days from now
-    const options = { weekday: 'short', day: 'numeric', month: 'short' };
+    date.setDate(date.getDate() + 6); // Current date + 6 days
+    const options = { weekday: 'short', month: 'short', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
 }
 
@@ -125,7 +135,6 @@ function renderProductUI(product, productIdStr) {
         moreLinksHTML += '</div>';
     }
 
-    let galleryHTML = '';
     let slidesHTML = '';
     if (product.images && product.images.length > 0) {
         product.images.forEach((imgUrl) => {
@@ -135,16 +144,16 @@ function renderProductUI(product, productIdStr) {
     } else {
         slidesHTML = `<div class="swiper-slide"><img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image" alt="${product.name}"></div>`;
     }
-    galleryHTML = `<div class="product-gallery-swiper swiper-container"><div class="swiper-wrapper">${slidesHTML}</div><div class="swiper-pagination"></div>${moreLinksHTML}</div>`;
+    const galleryHTML = `<div class="product-gallery-swiper swiper-container"><div class="swiper-wrapper">${slidesHTML}</div><div class="swiper-pagination"></div>${moreLinksHTML}</div>`;
 
-    // 1. Description Section
+    // 1. Description Section (First)
     let descriptionHTML = '';
     if (product.description) {
         let linkifiedText = linkify(product.description);
         descriptionHTML = `<h3 class="product-section-heading">Description</h3><div class="product-description"><div class="description-content" id="desc-content">${linkifiedText.replace(/\n/g, '<br>')}</div></div>`;
     }
 
-    // 2. NEW: Delivery Details Section (Matches Image Layout)
+    // 2. Delivery Details Section (Middle - Updated)
     const deliveryDate = getDeliveryDate();
     const deliveryHTML = `
         <div class="delivery-details-section">
@@ -161,52 +170,52 @@ function renderProductUI(product, productIdStr) {
                     <div class="del-action"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
                 </div>
 
-                <!-- Delivery Date Row -->
+                <!-- Delivery Date Row (+6 Days) -->
                 <div class="delivery-row">
                     <div class="del-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg></div>
                     <div class="del-content">
-                        <span class="del-value">Delivery by ${deliveryDate}</span>
+                        <span class="del-value" style="font-weight: 600;">Delivery by ${deliveryDate}</span>
                     </div>
                 </div>
 
-                <!-- Fulfilled By -->
+                <!-- Dealing with you by (App Title) -->
                 <div class="delivery-row">
-                    <div class="del-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
+                    <div class="del-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg></div>
                     <div class="del-content">
-                        <span class="del-text-muted">Fulfilled by</span>
-                        <span class="del-value">JR UD HUB</span>
+                        <span class="del-text-muted">Dealing with you by</span>
+                        <span class="del-value">${appTitle}</span>
                     </div>
                 </div>
             </div>
 
-            <!-- Warranty Badge -->
-            <div class="warranty-badge">
-                <div class="warranty-icon">🛡️</div>
-                <div class="warranty-text">
-                    1 Year Warranty from the date of purchase. 
-                    <br><small>Mandatory registration required.</small>
-                </div>
-            </div>
-
-            <!-- Trust Grid -->
+            <!-- Trust Grid (Updated: Online Payment) -->
             <div class="trust-grid">
                 <div class="trust-item">
-                    <div class="trust-icon-circle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.5 2v6h6M2.66 15.57a10 10 0 1 0 .57-8.38"/></svg></div>
-                    <span>7 Days Replacement</span>
+                    <div class="trust-icon-circle">
+                        <!-- Online Payment Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                    </div>
+                    <span>Online Payment</span>
                 </div>
                 <div class="trust-item">
-                    <div class="trust-icon-circle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div>
+                    <div class="trust-icon-circle">
+                        <!-- Cash Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </div>
                     <span>Cash on Delivery</span>
                 </div>
                 <div class="trust-item">
-                    <div class="trust-icon-circle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg></div>
+                    <div class="trust-icon-circle">
+                        <!-- Quality Icon -->
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
                     <span>Quality Assured</span>
                 </div>
             </div>
         </div>
     `;
 
-    // 3. Specification Section (Moved After Delivery)
+    // 3. Specification Section (Last)
     let specificationHTML = '';
     if (product.specification) {
         const points = product.specification.split('\n').filter(line => line.trim() !== '');
@@ -259,7 +268,7 @@ function renderProductUI(product, productIdStr) {
         </div>
     `;
 
-    // *** ORDER CHANGED: Description -> Delivery -> Specification ***
+    // Final Assembly: Desc -> Delivery -> Spec
     const infoHTML = `
         <div class="product-info">
             ${actionBarHTML}
@@ -268,7 +277,7 @@ function renderProductUI(product, productIdStr) {
             
             ${descriptionHTML ? descriptionHTML : ''}
             
-            ${deliveryHTML} <!-- New Delivery Section -->
+            ${deliveryHTML} 
             
             ${specificationHTML ? specificationHTML : ''}
             
@@ -309,7 +318,6 @@ function checkProductUserInteraction() {
     if (!currentUser || !currentProduct) return;
     const productId = currentProduct.id;
 
-    // My Like
     onSnapshot(doc(db, "products", productId, "likes", currentUser.uid), (docSnap) => {
         const likeBtn = document.querySelector('.like-btn');
         if(likeBtn) {
@@ -325,7 +333,6 @@ function checkProductUserInteraction() {
         }
     });
 
-    // My Rating
     onSnapshot(doc(db, "products", productId, "ratings", currentUser.uid), (docSnap) => {
         if(docSnap.exists()) {
             updateStarUI(docSnap.data().rating);
@@ -373,7 +380,6 @@ function setupProductActionButtons() {
     container.addEventListener('click', async (e) => {
         const target = e.target;
         
-        // Like (Transaction)
         const likeBtn = target.closest('.like-btn');
         if(likeBtn && currentUser && currentProduct) {
             e.preventDefault();
@@ -421,7 +427,6 @@ function setupProductActionButtons() {
             if(ratingBox.style.display === 'block') loadRatingBars(currentProduct.id);
         }
 
-        // Rating (Transaction)
         if(target.classList.contains('star') && currentUser && currentProduct) {
             const star = target;
             const productId = star.parentElement.dataset.id;
@@ -602,7 +607,6 @@ async function loadRatingBars(productId) {
     const summaryContainer = document.getElementById(`rating-summary-main`);
     if (!summaryContainer) return;
     
-    // Rating collection read (Only when user opens)
     const ratingsRef = collection(db, "products", productId, "ratings");
     const snapshot = await getDocs(ratingsRef);
     
@@ -620,7 +624,7 @@ async function loadRatingBars(productId) {
         const count = counts[starVal];
         const percentage = total > 0 ? (count / total) * 100 : 0;
         
-        let color = '#ff4d4d'; // Red
+        let color = '#ff4d4d'; 
         if (starVal === 2) color = '#ff9f43';
         if (starVal === 3) color = '#feca57';
         if (starVal === 4) color = '#1dd1a1';
