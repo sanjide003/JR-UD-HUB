@@ -1,16 +1,14 @@
 // ഇതാണ് ഷോപ്പിംഗ് കാർട്ടിന്റെ "തലച്ചോർ" (cart.js)
-// മാറ്റം: കാർട്ട് സേവ് ചെയ്യുന്ന കീ 'jrUdHubCart' എന്നാക്കി.
+// മാറ്റം: ഇമേജ് URL കൃത്യമായി സേവ് ചെയ്യുന്നുണ്ടെന്ന് ഉറപ്പുവരുത്തി.
 
 // കാർട്ട് ഡാറ്റ 'localStorage'-ൽ നിന്ന് എടുക്കുന്നു
 function getCart() {
-    // *** മാറ്റം: പേര് മാറ്റി ***
     const cartData = localStorage.getItem('jrUdHubCart');
     return cartData ? JSON.parse(cartData) : {};
 }
 
 // കാർട്ട് ഡാറ്റ 'localStorage'-ലേക്ക് സേവ് ചെയ്യുന്നു
 function saveCart(cart) {
-    // *** മാറ്റം: പേര് മാറ്റി ***
     localStorage.setItem('jrUdHubCart', JSON.stringify(cart));
     // കാർട്ടിൽ മാറ്റം വരുമ്പോൾ, ഹെഡറിലെ ഐക്കൺ അപ്ഡേറ്റ് ചെയ്യാൻ ഒരു ഇവന്റ് അയക്കുന്നു
     window.dispatchEvent(new CustomEvent('cartUpdated'));
@@ -29,14 +27,26 @@ export function isItemInCart(productId) {
 // ഒരു ഉൽപ്പന്നം കാർട്ടിലേക്ക് ചേർക്കുന്നു
 export function addToCart(productId, productDetails) {
     const cart = getCart();
-    
     const key = productId; 
+
+    // *** ഇമേജ് ചെക്ക് ***
+    let imageUrl = '';
+    if (productDetails.image) {
+        imageUrl = productDetails.image;
+    } else if (productDetails.images && productDetails.images.length > 0) {
+        imageUrl = productDetails.images[0];
+    }
 
     if (cart[key]) {
         cart[key].quantity += 1;
+        // Update details if changed
+        cart[key].name = productDetails.name;
+        cart[key].price = productDetails.price;
+        if(imageUrl) cart[key].image = imageUrl; // Update image if available
     } else {
         cart[key] = {
             ...productDetails,
+            image: imageUrl, // Ensure image is saved
             quantity: 1
         };
     }
@@ -68,7 +78,7 @@ export function removeFromCart(productId) {
     }
 }
 
-// കാർട്ടിലെ ഉൽപ്പന്നങ്ങളുടെ ആകെ എണ്ണം കണക്കാക്കുന്നു (ഹെഡറിലെ ഐക്കണിന് വേണ്ടി)
+// കാർട്ടിലെ ഉൽപ്പന്നങ്ങളുടെ ആകെ എണ്ണം കണക്കാക്കുന്നു
 export function getCartItemCount() {
     const cart = getCart();
     let totalCount = 0;
@@ -100,8 +110,7 @@ export function getCartTotalMRP() {
     return totalMRP;
 }
 
-
-// കാർട്ട് പൂർണ്ണമായും ക്ലിയർ ചെയ്യുന്നു (ഓർഡർ ചെയ്ത ശേഷം)
+// കാർട്ട് പൂർണ്ണമായും ക്ലിയർ ചെയ്യുന്നു
 export function clearCart() {
     saveCart({});
 }
