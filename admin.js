@@ -203,6 +203,14 @@ async function loadAllSettings() {
             document.getElementById("setting-logo-image-url").dispatchEvent(new Event('input'));
             document.getElementById("setting-home-banner-url").dispatchEvent(new Event('input'));
         }
+        
+        // *** LOAD ORDER SETTINGS ***
+        const orderSnap = await getDoc(doc(db, "settings", "orderConfig"));
+        if (orderSnap.exists()) {
+            const o = orderSnap.data();
+            document.getElementById("setting-cod-enabled").checked = o.codEnabled || false;
+            document.getElementById("setting-cod-fee").value = o.codFee || '';
+        }
     } catch (e) { console.error(e); }
 }
 
@@ -239,6 +247,23 @@ bindSave("follow-settings-form", "save-follow-settings-button", "Save Links", ()
     youtubeUrl: document.getElementById("setting-youtube-url").value,
 }));
 
+// *** SAVE ORDER SETTINGS ***
+document.getElementById("order-settings-form").addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const btn = document.getElementById("save-order-settings-button");
+    disableButton(btn, "Saving...");
+    try {
+        await setDoc(doc(db, "settings", "orderConfig"), {
+            codEnabled: document.getElementById("setting-cod-enabled").checked,
+            codFee: Number(document.getElementById("setting-cod-fee").value) || 0
+        }, { merge: true });
+        showStatus(null, "Order Settings Saved!", false);
+    } catch(err){ showStatus(null, err.message); }
+    finally { enableButton(btn, "Save Order Settings"); }
+});
+
+// ... [Existing Logic for Top Deals, Products, etc.] ...
+
 // *** MANAGE HOME (TOP DEALS) ***
 async function loadTopDealsConfig() {
     try {
@@ -249,7 +274,7 @@ async function loadTopDealsConfig() {
             document.getElementById("top-deals-banner-input").value = data.topDealsBanner || '';
             document.getElementById("top-deals-banner-input").dispatchEvent(new Event('input'));
             
-            // *** NEW: Load End Time ***
+            // Load End Time
             if (data.offerEndTime) {
                 document.getElementById("top-deals-end-time").value = data.offerEndTime;
             }
@@ -280,7 +305,6 @@ topDealsBannerForm.addEventListener("submit", async(e) => {
     try {
         await setDoc(doc(db, "settings", "homeLayout"), {
             topDealsBanner: document.getElementById("top-deals-banner-input").value,
-            // *** NEW: Save End Time ***
             offerEndTime: document.getElementById("top-deals-end-time").value
         }, { merge: true });
         showStatus(null, "Banner & Timer Saved", false);
