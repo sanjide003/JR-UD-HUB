@@ -353,11 +353,16 @@ async function loadTopDiscounts() {
         let html = '';
         topDiscounts.forEach(p => { html += createNewStyleProductCard(p.id, p, p.discount); });
         grid.innerHTML = html;
+        
+        // *** CHANGE: Zigzag Layout (Single Row config in JS, Zigzag via CSS) ***
         new Swiper('.discount-swiper', {
             slidesPerView: 2.2,
-            grid: { rows: 2, fill: 'row' },
+            // Removed Grid rows config here, handled by CSS margins
             spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 3.2, grid: { rows: 2 } }, 1024: { slidesPerView: 5.2, grid: { rows: 2 } } }
+            breakpoints: { 
+                640: { slidesPerView: 3.2 }, 
+                1024: { slidesPerView: 5.2 } 
+            }
         });
     } catch(e) {}
 }
