@@ -1,8 +1,5 @@
 // ഇതാണ് 'cart-page.js' ഫയൽ.
-// മാറ്റങ്ങൾ: 
-// 1. WhatsApp Number & Order Settings ലോഡ് ചെയ്യുന്നു.
-// 2. പേയ്മെന്റ് പോപ്പ്-അപ്പ് ലോജിക്.
-// 3. വാട്സ്ആപ്പ് മെസ്സേജിൽ COD Fee ചേർത്ത് 'Price Details' പോലെ ആക്കി.
+// മാറ്റങ്ങൾ: WhatsApp Message Format Updated to Match User Request Exactly.
 
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -31,16 +28,13 @@ const paymentRadios = document.getElementsByName('payment_mode');
 const codWarningBox = document.getElementById('cod-warning-box');
 const codWarningText = document.getElementById('cod-warning-text');
 
-// Dynamic Summary Elements in Modal
-const modalPriceDetails = document.getElementById('modal-price-details'); 
-
 let whatsappNumber = ''; 
-let orderConfig = { codEnabled: false, codFee: 0 }; // Default settings
+let orderConfig = { codEnabled: false, codFee: 0 }; 
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
     await loadWhatsappNumber(); 
-    await loadOrderSettings(); // Load COD config
+    await loadOrderSettings(); 
     renderCartPage();
     setupButtonObserver();
     setupModalListeners();
@@ -84,17 +78,9 @@ function setupButtonObserver() {
     observer.observe(checkoutMarker);
 }
 
-function updateModalSummary(paymentMode) {
-    if (!modalPriceDetails) return; // Ensure element exists in HTML (add later if needed)
-    
-    // This function can be used to show live price updates in the modal if you add HTML for it
-    // For now, the request is mainly about the WhatsApp message structure.
-}
-
 function setupModalListeners() {
     if(!paymentModal) return;
 
-    // Toggle COD Warning based on selection
     paymentRadios.forEach(radio => {
         radio.addEventListener('change', (e) => {
             if (e.target.value === 'cod' && orderConfig.codEnabled) {
@@ -106,14 +92,12 @@ function setupModalListeners() {
         });
     });
 
-    // Cancel Button
     if(cancelPaymentBtn) {
         cancelPaymentBtn.addEventListener('click', () => {
             paymentModal.style.display = 'none';
         });
     }
 
-    // Confirm Button
     if(confirmPaymentBtn) {
         confirmPaymentBtn.addEventListener('click', () => {
             let selectedMode = 'online';
@@ -250,43 +234,22 @@ itemsContainer.addEventListener('click', (e) => {
         }
     }
     if (target.closest('.btn-buy-single')) {
-        // Single buy also triggers the modal now, for consistent behavior
         const id = target.closest('.btn-buy-single').dataset.id;
-        const cart = getCartItems();
-        const item = cart[id];
-        
-        // Setup Modal for Single Item if needed, but for simplicity let's stick to full order flow via modal
-        // or redirect single item to a temporary cart logic. 
-        // **Current Logic:** Add to cart and open modal logic or just open modal with single item context.
-        // For now, let's keep the existing flow where 'Buy This Now' acts immediately or opens modal.
-        // Let's make it open the modal for consistency as requested ("product page... cart page... popup")
-        
-        // NOTE: To strictly follow "popup on product page buy", we need similar logic in product.js.
-        // Here in cart-page.js, we are handling the cart buttons.
-        
-        // Let's trigger the modal for single buy too.
-        // We'll store the 'singleBuyId' temporarily.
         window.singleBuyId = id; 
-        
         if (paymentModal) {
             paymentModal.style.display = 'flex';
             paymentRadios[0].checked = true; 
             codWarningBox.style.display = 'none';
-            // Change confirm button action to single buy
             confirmPaymentBtn.onclick = () => {
                 let selectedMode = 'online';
                 paymentRadios.forEach(r => { if(r.checked) selectedMode = r.value; });
                 handleSingleOrder(window.singleBuyId, selectedMode);
                 paymentModal.style.display = 'none';
-                // Reset onclick to full order for safety
-                confirmPaymentBtn.onclick = () => { /* ... full order logic ... */ }; 
-                // Better way: remove event listener and add new one, or use a state variable.
             };
         }
     }
 });
 
-// Main Checkout Button triggers Modal
 if (fullCheckoutButton) {
     fullCheckoutButton.addEventListener('click', () => {
         if (getCartItemCount() === 0) return showError("Cart is empty");
@@ -294,8 +257,6 @@ if (fullCheckoutButton) {
             paymentModal.style.display = 'flex'; 
             paymentRadios[0].checked = true; 
             codWarningBox.style.display = 'none';
-            
-            // Set Confirm Action for Full Cart
             confirmPaymentBtn.onclick = () => {
                 let selectedMode = 'online';
                 paymentRadios.forEach(r => { if(r.checked) selectedMode = r.value; });
@@ -317,8 +278,6 @@ function handleSingleOrder(itemId, paymentMode = 'online') {
         const itemMRP = ((item.mrp && item.mrp > item.price) ? item.mrp : item.price) * item.quantity;
         const itemTotal = item.price * item.quantity;
         const itemDiscount = itemMRP - itemTotal;
-        
-        // Pass single item as array
         const message = generateWhatsAppMessage([item], itemTotal, itemMRP, itemDiscount, paymentMode);
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
@@ -348,7 +307,7 @@ function handleFullOrder(paymentMode = 'online') {
     showLoader(false);
 }
 
-// *** WhatsApp Message Format - Updated to Match Price Details ***
+// *** WhatsApp Message Format - Exact Match to Requirement ***
 function generateWhatsAppMessage(items, totalAmount, totalMRP, discount, paymentMode) {
     let message = "ഹായ് 👋\n";
     message += "ഞാൻ താഴെയുള്ള പ്രോഡക്റ്റ് ഓർഡർ ചെയ്യാൻ ആഗ്രഹിക്കുന്നു.\n";
@@ -358,13 +317,11 @@ function generateWhatsAppMessage(items, totalAmount, totalMRP, discount, payment
         const itemId = item.id || Object.keys(getCartItems()).find(key => getCartItems()[key] === item);
         const productLink = `${window.location.origin}/product.html?id=${itemId}`;
         message += `🛍️ ${item.name}\n`;
-        if (item.size) message += `Size : ${item.size}\n`; 
         message += `Qty : ${item.quantity}\n`;
         message += `Price : ₹${item.price.toFixed(2)}\n\n`;
         message += `🔗 Product link :  ${productLink}\n\n`; 
     });
 
-    // *** Price Details Section in Message ***
     message += `*Price Details*\n`;
     message += `-------------------\n`;
     message += `Price (${items.length} items) : ₹${totalMRP.toFixed(2)}\n`;
@@ -374,21 +331,22 @@ function generateWhatsAppMessage(items, totalAmount, totalMRP, discount, payment
     }
 
     let finalPayable = totalAmount;
+    let deliveryLabel = "FREE";
 
-    // Add COD Fee if applicable
+    // COD Handling
     if (paymentMode === 'cod' && orderConfig.codEnabled) {
         const fee = Number(orderConfig.codFee) || 0;
-        finalPayable += fee;
-        message += `Delivery/Handling Fee : ₹${fee.toFixed(2)}\n`;
-    } else {
-        message += `Delivery Charges : FREE\n`;
+        if (fee > 0) {
+            finalPayable += fee;
+            deliveryLabel = `₹${fee.toFixed(2)}`;
+        }
     }
 
+    message += `Delivery Charges : ${deliveryLabel}\n`;
     message += `-------------------\n`;
     message += `*Total Amount : ₹${finalPayable.toFixed(2)}*\n`;
     message += `-------------------\n\n`;
 
-    // Payment Mode
     if (paymentMode === 'cod') {
         message += `💳 Payment Mode: *Cash on Delivery*\n`;
     } else {
