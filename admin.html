@@ -66,7 +66,7 @@
             
             <div class="admin-nav-links">
                 
-                <!-- Group 1: Products (Active Page Here) -->
+                <!-- Group 1: Products -->
                 <div class="nav-section-title">Products</div>
                 <button class="nav-link active" data-page="page-add-product">Add New Product</button>
                 <button class="nav-link" data-page="page-existing-products">Existing Products</button>
@@ -85,6 +85,7 @@
                 <!-- Group 4: Site Settings -->
                 <div class="nav-section-title">Site Settings</div>
                 <button class="nav-link" data-page="page-general-settings">General Settings</button>
+                <button class="nav-link" data-page="page-order-settings">Order/Product Settings</button> <!-- NEW -->
                 <button class="nav-link" data-page="page-contact-details">Contact Details</button>
                 <button class="nav-link" data-page="page-follow-us">"Follow Us" Links</button>
             </div>
@@ -93,7 +94,7 @@
 
         <div class="container">
 
-            <!-- *** DEFAULT PAGE: Add Product (Now Active by Default) *** -->
+            <!-- *** DEFAULT PAGE: Add Product *** -->
             <div id="page-add-product" class="page-content active">
                 <form id="add-product-form" class="form-section">
                     <h2>Add New Product</h2>
@@ -112,9 +113,8 @@
                 </form>
             </div>
             
-            <!-- *** Manage Home / Special Offer *** -->
+            <!-- *** Manage Home *** -->
             <div id="page-manage-home" class="page-content">
-                <!-- Top Deals Banner -->
                 <form id="top-deals-banner-form" class="form-section">
                     <h2>Special Offer Section</h2>
                     <div class="form-group">
@@ -124,18 +124,13 @@
                             <input type="text" id="top-deals-banner-input" placeholder="Image URL">
                         </div>
                     </div>
-                    
-                    <!-- *** NEW: Offer End Time Picker *** -->
                     <div class="form-group">
                         <label>Offer Ends At (For Countdown)</label>
                         <input type="datetime-local" id="top-deals-end-time">
                         <small style="color:var(--text-secondary);">Leave empty to remove countdown.</small>
                     </div>
-
                     <button type="submit" class="btn btn-save mt-large" id="save-top-deals-banner-btn">Save Banner & Timer</button>
                 </form>
-
-                <!-- Top Deals Product Selector -->
                 <div class="data-list-section" style="margin-top: 2rem;">
                     <h3>Manage Special Offer Products</h3>
                     <div class="featured-search-container">
@@ -145,8 +140,6 @@
                             <div id="top-deal-search-results" class="search-results-dropdown"></div>
                         </div>
                     </div>
-                    
-                    <!-- List of Top Deal Products -->
                     <div class="data-table-wrapper" style="margin-top:10px;">
                         <table class="data-table">
                             <thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Action</th></tr></thead>
@@ -165,7 +158,7 @@
                 </div>
             </div>
             
-            <!-- Featured Products (Trendy) -->
+            <!-- Featured Products -->
             <div id="page-featured-products" class="page-content">
                 <div class="data-list-section">
                     <h2>Top Trendy Products</h2>
@@ -197,6 +190,28 @@
                 <div class="data-list-section"><h2>Hero Slides</h2><div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Preview</th><th>Type</th><th>Order</th><th>URL</th><th>Actions</th></tr></thead><tbody id="hero-slides-list-body"></tbody></table></div></div>
             </div>
 
+            <!-- *** NEW: Order & Product Settings *** -->
+            <div id="page-order-settings" class="page-content">
+                <form id="order-settings-form" class="form-section">
+                    <h2>Product & Order Settings</h2>
+                    <div class="form-grid">
+                        <div class="form-group checkbox-group full-width">
+                            <input type="checkbox" id="setting-cod-enabled">
+                            <label>Enable Cash on Delivery (COD) Fee?</label>
+                        </div>
+                        <div class="form-group">
+                            <label>COD Handling Fee (₹)</label>
+                            <input type="number" id="setting-cod-fee" placeholder="e.g. 50">
+                            <small style="color:var(--text-secondary);">This fee will be shown in the WhatsApp message for COD orders.</small>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-save mt-large" id="save-order-settings-button">
+                        <span class="btn-text">Save Order Settings</span>
+                        <div class="btn-loader loader-small" style="display: none;"></div>
+                    </button>
+                </form>
+            </div>
+
             <!-- Settings Pages -->
             <div id="page-general-settings" class="page-content">
                 <form id="general-settings-form" class="form-section"><h2>General Site Settings</h2><div class="form-grid"><div class="form-group"><label>Logo Image URL</label><div class="inline-image-input-container"><div id="logo-preview" class="logo-preview-box"></div><input type="text" id="setting-logo-image-url"></div></div><div class="form-group"><label>Logo Text</label><input type="text" id="setting-logo-text"></div><div class="form-group"><label>Logo Subtitle</label><input type="text" id="setting-logo-subtitle"></div><div class="form-group"><label>Home Page Banner Image URL</label><div class="inline-image-input-container"><div class="image-preview-small" id="banner-preview"></div><input type="text" id="setting-home-banner-url"></div></div><div class="form-group"><label>ChatBot Number</label><input type="text" id="setting-chatbot-number" class="social-input-whatsapp"></div><div class="form-group"><label>Dealer Number</label><input type="text" id="setting-dealer-number" class="social-input-whatsapp"></div></div><button type="submit" class="btn btn-save mt-large" id="save-general-settings-button"><span class="btn-text">Save General Settings</span><div class="btn-loader loader-small" style="display: none;"></div></button></form>
@@ -206,7 +221,6 @@
 
         </div>
 
-        <!-- Edit/Delete Modals -->
         <div id="edit-modal" class="modal-overlay"><div class="modal-content"><div class="modal-header"><h2 id="modal-title">Edit Item</h2><button class="modal-close" id="modal-close-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div><form id="modal-form"></form></div></div>
         <div id="confirm-modal" class="modal-overlay"><div class="modal-content" style="max-width: 400px;"><div class="modal-header"><h2 id="confirm-title">Are you sure?</h2><button class="modal-close" id="confirm-close-button"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button></div><p id="confirm-message">This action cannot be undone.</p><div class="confirm-buttons"><button class="btn btn-secondary" id="confirm-btn-cancel">Cancel</button><button class="btn btn-delete" id="confirm-btn-delete"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span class="btn-text">Delete</span><div class="btn-loader loader-small" style="display: none;"></div></button></div></div></div>
         
