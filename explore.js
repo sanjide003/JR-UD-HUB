@@ -1,4 +1,4 @@
-// explore.js - Optimized for Speed & Theme Compatible
+// explore.js - Updated: Newest First & Infinite Scroll Fix
 
 import {
     collection,
@@ -28,11 +28,9 @@ const loader = document.getElementById("explore-scroll-loader");
 let categoriesMap = new Map(); 
 let lastVisible = null;
 let isLoading = false;
-const PRODUCTS_PER_PAGE = 10; 
+const PRODUCTS_PER_PAGE = 5; // Reduced for smoother infinite scroll testing
 let currentUser = null;
-
-// ലൈവ് അപ്ഡേറ്റുകൾ ട്രാക്ക് ചെയ്യാൻ
-const activeListeners = [];
+let hasMoreProducts = true; // To stop loading when end is reached
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -60,8 +58,20 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadExploreBanner(settings.homeBannerUrl);
     }
     await loadCategories();   
-    await loadProducts();     
+    await loadProducts(true); // Initial Load
+    
+    // Setup Scroll Listener
+    window.addEventListener('scroll', handleScroll);
 });
+
+function handleScroll() {
+    if (isLoading || !hasMoreProducts) return;
+    
+    // Check if scrolled near bottom
+    if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight - 500) {
+        loadProducts();
+    }
+}
 
 function loadExploreBanner(bannerUrl) {
     const bannerContainer = document.getElementById('explore-top-banner');
@@ -85,16 +95,22 @@ async function loadCategories() {
     } catch (error) { console.error("Error loading categories map: ", error); }
 }
 
-async function loadProducts() {
+async function loadProducts(isInitial = false) {
     if (isLoading) return;
     isLoading = true;
     if (loader) loader.style.display = 'flex';
-    if (lastVisible === null) feedContainer.innerHTML = ''; 
+    
+    if (isInitial) {
+        feedContainer.innerHTML = '';
+        lastVisible = null;
+        hasMoreProducts = true;
+    }
 
     try {
         const productsRef = collection(db, "products");
         let q;
         
+        // *** NEWEST FIRST LOGIC (createdAt desc) ***
         if (lastVisible) {
             q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(PRODUCTS_PER_PAGE));
         } else {
@@ -102,11 +118,14 @@ async function loadProducts() {
         }
 
         const documentSnapshots = await getDocs(q);
+        
         if (documentSnapshots.empty) {
-            if (feedContainer.innerHTML === '') {
+            hasMoreProducts = false;
+            if (isInitial) {
                 feedContainer.innerHTML = '<p class="loading-placeholder-full">No products found.</p>';
             }
             if (loader) loader.style.display = 'none';
+            isLoading = false;
             return;
         }
         
@@ -132,6 +151,7 @@ async function loadProducts() {
         
         if(currentUser) setupUserInteractionListeners();
 
+        // Initialize Swipers for new cards
         new Swiper('.explore-image-swiper', {
             loop: false,
             allowTouchMove: true,
@@ -139,20 +159,20 @@ async function loadProducts() {
 
     } catch (error) {
         console.error("Error loading products: ", error);
-        feedContainer.innerHTML = '<p class="loading-placeholder-full">Error loading products.</p>';
+        if (isInitial) feedContainer.innerHTML = '<p class="loading-placeholder-full">Error loading products.</p>';
     } finally {
         isLoading = false;
         if (loader) loader.style.display = 'none';
     }
 }
 
-// 1. PRODUCT LISTENER (Updates Counts Only)
 function setupProductListener(productId) {
     const card = document.getElementById(`product-card-${productId}`);
     if (!card) return;
 
     const productRef = doc(db, "products", productId);
     
+    // Only update live counts to avoid full re-render flickering
     const unsubscribe = onSnapshot(productRef, (docSnap) => {
         if (docSnap.exists()) {
             const data = docSnap.data();
@@ -162,10 +182,8 @@ function setupProductListener(productId) {
             if (ratingCountSpan) ratingCountSpan.textContent = data.ratingCount || 0;
         }
     });
-    activeListeners.push(unsubscribe);
 }
 
-// 2. USER STATUS LISTENER (My Like)
 function setupUserInteractionListeners() {
     if (!currentUser) return;
     const cards = document.querySelectorAll('.explore-card');
@@ -248,9 +266,7 @@ function buildCardContent(productId, product) {
     const isInCart = isItemInCart(productId);
     const activeClass = isInCart ? 'added-to-cart' : '';
     
-    // *** മാറ്റം: ഇവിടെ ഇൻലൈൻ സ്റ്റൈൽ (style="fill:...") ഒഴിവാക്കി. CSS-ൽ ഇത് നിയന്ത്രിക്കും ***
     const buttonTitle = isInCart ? 'Remove from Cart' : 'Add to Cart';
-
     const likeCount = product.likeCount || 0;
     const ratingCount = product.ratingCount || 0;
 
@@ -357,9 +373,7 @@ feedContainer.addEventListener('click', async (e) => {
                     setTimeout(() => likeButton.style.transform = 'scale(1)', 200);
                 }
             });
-        } catch (err) { 
-            console.error("Like Transaction Error:", err);
-        }
+        } catch (err) { console.error("Like Transaction Error:", err); }
     }
 
     const commentButton = target.closest('.comment-btn');
@@ -404,7 +418,7 @@ feedContainer.addEventListener('click', async (e) => {
     if (bookmarkButton) {
         e.preventDefault();
         const id = bookmarkButton.dataset.id;
-        // *** മാറ്റം: നേരിട്ട് നിറം മാറ്റുന്നത് ഒഴിവാക്കി, ക്ലാസ്സ് മാത്രം മാറ്റുന്നു ***
+        
         if (bookmarkButton.classList.contains('added-to-cart')) {
             removeFromCart(id);
             bookmarkButton.classList.remove('added-to-cart');
@@ -445,13 +459,13 @@ async function loadRatingBars(productId) {
     const snapshot = await getDocs(ratingsRef);
     
     const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    const total = snapshot.size;
     
     snapshot.forEach(doc => {
         const val = doc.data().rating;
         if (counts[val] !== undefined) counts[val]++;
     });
     
+    const total = snapshot.size;
     let html = '';
     const keys = [5, 4, 3, 2, 1];
     keys.forEach((starVal) => {
@@ -474,10 +488,3 @@ async function loadRatingBars(productId) {
     });
     summaryContainer.innerHTML = html;
 }
-
-const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && !isLoading && lastVisible) { 
-        loadProducts();
-    }
-}, { rootMargin: '400px' });
-if (loader) { observer.observe(loader); }
