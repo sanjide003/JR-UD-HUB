@@ -1,4 +1,4 @@
-// product.js - Updated with Payment Modal & COD Logic
+// product.js - Updated with Consistent WhatsApp Message Format
 
 import { 
     collection, 
@@ -28,7 +28,7 @@ let currentProduct = null;
 let whatsappNumber = ''; 
 let currentUser = null;
 let appTitle = "JR UD HUB"; 
-let orderConfig = { codEnabled: false, codFee: 0 }; // Default settings
+let orderConfig = { codEnabled: false, codFee: 0 }; 
 
 // Modal Elements
 const paymentModal = document.getElementById('payment-modal');
@@ -59,9 +59,9 @@ function linkify(text) {
 document.addEventListener("DOMContentLoaded", async () => {
     await loadAppTitle(); 
     await loadSiteSettings();
-    await loadOrderSettings(); // Load COD config
+    await loadOrderSettings(); 
     loadProductDetails();
-    setupModalListeners(); // Setup modal events
+    setupModalListeners(); 
 });
 
 async function loadAppTitle() {
@@ -484,22 +484,23 @@ function setupProductActionButtons() {
         const whatsappButton = target.closest('#buy-on-whatsapp-btn');
         if (whatsappButton) {
             e.preventDefault();
-            if(paymentModal) {
-                // Open Modal for WhatsApp Buy
-                paymentModal.style.display = 'flex';
-                paymentRadios[0].checked = true; 
-                codWarningBox.style.display = 'none';
-                
-                // Confirm Action for Single Buy
-                confirmPaymentBtn.onclick = () => {
-                    let selectedMode = 'online';
-                    paymentRadios.forEach(r => { if(r.checked) selectedMode = r.value; });
-                    handleSingleOrder(currentProduct, selectedMode);
-                    paymentModal.style.display = 'none';
-                };
-            } else {
-                // Fallback direct
-                handleSingleOrder(currentProduct, 'online');
+            if (whatsappNumber && currentProduct) {
+                // If payment modal exists, show it first
+                if (paymentModal) {
+                    paymentModal.style.display = 'flex';
+                    paymentRadios[0].checked = true; // Default Online
+                    codWarningBox.style.display = 'none';
+                    
+                    confirmPaymentBtn.onclick = () => {
+                        let selectedMode = 'online';
+                        paymentRadios.forEach(r => { if(r.checked) selectedMode = r.value; });
+                        handleSingleOrder(currentProduct, selectedMode);
+                        paymentModal.style.display = 'none';
+                    };
+                } else {
+                    // Fallback direct
+                    handleSingleOrder(currentProduct, 'online');
+                }
             }
         }
     });
@@ -519,6 +520,7 @@ function handleSingleOrder(product, paymentMode = 'online') {
     }
 }
 
+// *** Consistent Message Format ***
 function generateWhatsAppMessage(items, totalAmount, totalMRP, discount, paymentMode) {
     let message = "ഹായ് 👋\n";
     message += "ഞാൻ താഴെയുള്ള പ്രോഡക്റ്റ് ഓർഡർ ചെയ്യാൻ ആഗ്രഹിക്കുന്നു.\n";
@@ -541,16 +543,17 @@ function generateWhatsAppMessage(items, totalAmount, totalMRP, discount, payment
     if (discount > 0) message += `Discount : - ₹${discount.toFixed(2)}\n`;
 
     let finalPayable = totalAmount;
+    let deliveryLabel = "FREE";
 
-    // Add COD Fee
     if (paymentMode === 'cod' && orderConfig.codEnabled) {
         const fee = Number(orderConfig.codFee) || 0;
-        finalPayable += fee;
-        message += `Delivery/Handling Fee : ₹${fee.toFixed(2)}\n`;
-    } else {
-        message += `Delivery Charges : FREE\n`;
+        if (fee > 0) {
+            finalPayable += fee;
+            deliveryLabel = `₹${fee.toFixed(2)}`;
+        }
     }
 
+    message += `Delivery Charges : ${deliveryLabel}\n`;
     message += `-------------------\n`;
     message += `*Total Amount : ₹${finalPayable.toFixed(2)}*\n`;
     message += `-------------------\n\n`;
@@ -648,6 +651,44 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
         }
 
     } catch (error) { console.error("Error loading related products: ", error); }
+}
+
+async function loadRatingBars(productId) {
+    const summaryContainer = document.getElementById(`rating-summary-main`);
+    if (!summaryContainer) return;
+    
+    const ratingsRef = collection(db, "products", productId, "ratings");
+    const snapshot = await getDocs(ratingsRef);
+    
+    const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const total = snapshot.size;
+    
+    snapshot.forEach(doc => {
+        const val = doc.data().rating;
+        if (counts[val] !== undefined) counts[val]++;
+    });
+    
+    let html = '';
+    const keys = [5, 4, 3, 2, 1];
+    keys.forEach((starVal) => {
+        const count = counts[starVal];
+        const percentage = total > 0 ? (count / total) * 100 : 0;
+        
+        let color = '#ff4d4d'; 
+        if (starVal === 2) color = '#ff9f43';
+        if (starVal === 3) color = '#feca57';
+        if (starVal === 4) color = '#1dd1a1';
+        if (starVal === 5) color = '#10ac84';
+
+        html += `
+            <div class="rating-bar-row">
+                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
+                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
+                <span class="bar-count">${count}</span>
+            </div>
+        `;
+    });
+    summaryContainer.innerHTML = html;
 }
 
 relatedProductsGrid.addEventListener('click', (e) => {
