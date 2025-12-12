@@ -1,6 +1,6 @@
 <!-- 
   ഇതാണ് ഷോപ്പിംഗ് കാർട്ട് പേജ്. cart.html
-  മാറ്റം: 'My Cart' ഹെഡിംഗ്, സേവിംഗ്സ് ബോക്സ് എന്നിവ ചേർത്തു.
+  മാറ്റം: 'My Cart' ഹെഡിംഗ്, സേവിംഗ്സ് ബോക്സ്, പേയ്മെന്റ് പോപ്പ്-അപ്പ്.
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -82,6 +82,44 @@
 
             </div>
         </div>
+        
+        <!-- *** Payment Confirmation Popup *** -->
+        <div id="payment-modal" class="payment-modal-overlay">
+            <div class="payment-modal-content">
+                <h3 class="payment-modal-title">Select Payment Method</h3>
+                
+                <div class="payment-options">
+                    <label class="payment-option">
+                        <input type="radio" name="payment_mode" value="online" checked>
+                        <span class="radio-custom"></span>
+                        <div class="payment-text">
+                            <span class="payment-name">Online Payment</span>
+                            <span class="payment-desc">Pay via UPI / Bank (Fast & Free)</span>
+                        </div>
+                    </label>
+                    
+                    <label class="payment-option">
+                        <input type="radio" name="payment_mode" value="cod">
+                        <span class="radio-custom"></span>
+                        <div class="payment-text">
+                            <span class="payment-name">Cash on Delivery</span>
+                            <span class="payment-desc">Pay when delivered</span>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Warning Box for COD -->
+                <div id="cod-warning-box" class="cod-warning-box" style="display: none;">
+                    <p id="cod-warning-text"></p>
+                </div>
+
+                <div class="payment-actions">
+                    <button id="cancel-payment-btn" class="btn btn-secondary-new">Cancel</button>
+                    <button id="confirm-payment-btn" class="btn btn-primary-new">Confirm Order</button>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- 4. ഫൂട്ടർ -->
