@@ -1,4 +1,4 @@
-// product.js - Updated: Delivery Section (Online Payment, Dynamic Date, No Warranty)
+// product.js - Updated with Payment Modal & COD Logic
 
 import { 
     collection, 
@@ -27,7 +27,16 @@ const relatedProductsGrid = document.getElementById('related-products-grid');
 let currentProduct = null;
 let whatsappNumber = ''; 
 let currentUser = null;
-let appTitle = "JR UD HUB"; // Default Title
+let appTitle = "JR UD HUB"; 
+let orderConfig = { codEnabled: false, codFee: 0 }; // Default settings
+
+// Modal Elements
+const paymentModal = document.getElementById('payment-modal');
+const cancelPaymentBtn = document.getElementById('cancel-payment-btn');
+const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
+const paymentRadios = document.getElementsByName('payment_mode');
+const codWarningBox = document.getElementById('cod-warning-box');
+const codWarningText = document.getElementById('cod-warning-text');
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -48,12 +57,13 @@ function linkify(text) {
 }
 
 document.addEventListener("DOMContentLoaded", async () => {
-    await loadAppTitle(); // Load title first
+    await loadAppTitle(); 
     await loadSiteSettings();
+    await loadOrderSettings(); // Load COD config
     loadProductDetails();
+    setupModalListeners(); // Setup modal events
 });
 
-// Load App Title from Settings
 async function loadAppTitle() {
     try {
         const docRef = doc(db, "settings", "global");
@@ -65,6 +75,37 @@ async function loadAppTitle() {
             whatsappNumber = docSnap.data().whatsapp;
         }
     } catch (e) { console.error("Error loading settings:", e); }
+}
+
+async function loadOrderSettings() {
+    try {
+        const docRef = doc(db, "settings", "orderConfig");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            orderConfig = docSnap.data();
+        }
+    } catch (error) { console.error("Error fetching order config: ", error); }
+}
+
+function setupModalListeners() {
+    if(!paymentModal) return;
+
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.value === 'cod' && orderConfig.codEnabled) {
+                codWarningText.textContent = `Due to handling costs, a nominal fee of ₹${orderConfig.codFee} will be charged for orders placed using this option. Avoid this fee by paying online now.`;
+                codWarningBox.style.display = 'block';
+            } else {
+                codWarningBox.style.display = 'none';
+            }
+        });
+    });
+
+    if(cancelPaymentBtn) {
+        cancelPaymentBtn.addEventListener('click', () => {
+            paymentModal.style.display = 'none';
+        });
+    }
 }
 
 async function loadProductDetails() {
@@ -108,10 +149,9 @@ async function loadProductDetails() {
     }
 }
 
-// *** Dynamic Date Function (+6 Days) ***
 function getDeliveryDate() {
     const date = new Date();
-    date.setDate(date.getDate() + 6); // Current date + 6 days
+    date.setDate(date.getDate() + 6);
     const options = { weekday: 'short', month: 'short', day: 'numeric' };
     return date.toLocaleDateString('en-US', options);
 }
@@ -146,76 +186,39 @@ function renderProductUI(product, productIdStr) {
     }
     const galleryHTML = `<div class="product-gallery-swiper swiper-container"><div class="swiper-wrapper">${slidesHTML}</div><div class="swiper-pagination"></div>${moreLinksHTML}</div>`;
 
-    // 1. Description Section (First)
     let descriptionHTML = '';
     if (product.description) {
         let linkifiedText = linkify(product.description);
         descriptionHTML = `<h3 class="product-section-heading">Description</h3><div class="product-description"><div class="description-content" id="desc-content">${linkifiedText.replace(/\n/g, '<br>')}</div></div>`;
     }
 
-    // 2. Delivery Details Section (Middle - Updated)
     const deliveryDate = getDeliveryDate();
     const deliveryHTML = `
         <div class="delivery-details-section">
             <h3 class="delivery-heading">Delivery details</h3>
-            
             <div class="delivery-card-list">
-                <!-- Address Row -->
                 <div class="delivery-row">
                     <div class="del-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg></div>
-                    <div class="del-content">
-                        <span class="del-label">HOME</span>
-                        <span class="del-value">Check availability at your location</span>
-                    </div>
+                    <div class="del-content"><span class="del-label">HOME</span><span class="del-value">Check availability at your location</span></div>
                     <div class="del-action"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></div>
                 </div>
-
-                <!-- Delivery Date Row (+6 Days) -->
                 <div class="delivery-row">
                     <div class="del-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"></rect><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon><circle cx="5.5" cy="18.5" r="2.5"></circle><circle cx="18.5" cy="18.5" r="2.5"></circle></svg></div>
-                    <div class="del-content">
-                        <span class="del-value" style="font-weight: 600;">Delivery by ${deliveryDate}</span>
-                    </div>
+                    <div class="del-content"><span class="del-value" style="font-weight: 600;">Delivery by ${deliveryDate}</span></div>
                 </div>
-
-                <!-- Dealing with you by (App Title) -->
                 <div class="delivery-row">
                     <div class="del-icon"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg></div>
-                    <div class="del-content">
-                        <span class="del-text-muted">Dealing with you by</span>
-                        <span class="del-value">${appTitle}</span>
-                    </div>
+                    <div class="del-content"><span class="del-text-muted">Dealing with you by</span><span class="del-value">${appTitle}</span></div>
                 </div>
             </div>
-
-            <!-- Trust Grid (Updated: Online Payment) -->
             <div class="trust-grid">
-                <div class="trust-item">
-                    <div class="trust-icon-circle">
-                        <!-- Online Payment Icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-                    </div>
-                    <span>Online Payment</span>
-                </div>
-                <div class="trust-item">
-                    <div class="trust-icon-circle">
-                        <!-- Cash Icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                    </div>
-                    <span>Cash on Delivery</span>
-                </div>
-                <div class="trust-item">
-                    <div class="trust-icon-circle">
-                        <!-- Quality Icon -->
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                    </div>
-                    <span>Quality Assured</span>
-                </div>
+                <div class="trust-item"><div class="trust-icon-circle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg></div><span>Online Payment</span></div>
+                <div class="trust-item"><div class="trust-icon-circle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg></div><span>Cash on Delivery</span></div>
+                <div class="trust-item"><div class="trust-icon-circle"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div><span>Quality Assured</span></div>
             </div>
         </div>
     `;
 
-    // 3. Specification Section (Last)
     let specificationHTML = '';
     if (product.specification) {
         const points = product.specification.split('\n').filter(line => line.trim() !== '');
@@ -268,19 +271,14 @@ function renderProductUI(product, productIdStr) {
         </div>
     `;
 
-    // Final Assembly: Desc -> Delivery -> Spec
     const infoHTML = `
         <div class="product-info">
             ${actionBarHTML}
             <h1 class="product-title">${product.name}</h1>
             <div class="price-container large">${priceHTML}</div>
-            
             ${descriptionHTML ? descriptionHTML : ''}
-            
             ${deliveryHTML} 
-            
             ${specificationHTML ? specificationHTML : ''}
-            
             <div class="product-actions-grid">
                 <button class="btn ${cartButtonClass}" id="add-to-cart-btn">
                     <svg class="icon-btn" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
@@ -486,41 +484,90 @@ function setupProductActionButtons() {
         const whatsappButton = target.closest('#buy-on-whatsapp-btn');
         if (whatsappButton) {
             e.preventDefault();
-            if (whatsappNumber && currentProduct) {
-                const itemTotal = currentProduct.price;
-                const itemMRP = (currentProduct.mrp > currentProduct.price) ? currentProduct.mrp : currentProduct.price;
-                const itemDiscount = itemMRP - itemTotal;
-                const qty = 1; 
-                const finalTotal = itemTotal * qty;
-                const finalMRP = itemMRP * qty;
-                const finalDiscount = itemDiscount * qty;
-                const productForMsg = { ...currentProduct, quantity: qty };
-                const message = generateWhatsAppMessage([productForMsg], finalTotal, finalMRP, finalDiscount);
-                window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+            if(paymentModal) {
+                // Open Modal for WhatsApp Buy
+                paymentModal.style.display = 'flex';
+                paymentRadios[0].checked = true; 
+                codWarningBox.style.display = 'none';
+                
+                // Confirm Action for Single Buy
+                confirmPaymentBtn.onclick = () => {
+                    let selectedMode = 'online';
+                    paymentRadios.forEach(r => { if(r.checked) selectedMode = r.value; });
+                    handleSingleOrder(currentProduct, selectedMode);
+                    paymentModal.style.display = 'none';
+                };
+            } else {
+                // Fallback direct
+                handleSingleOrder(currentProduct, 'online');
             }
         }
     });
 }
 
-function generateWhatsAppMessage(items, totalAmount, totalMRP, discount) {
+function handleSingleOrder(product, paymentMode = 'online') {
+    if (!whatsappNumber) return;
+    if (product) {
+        const itemTotal = product.price;
+        const itemMRP = (product.mrp > product.price) ? product.mrp : product.price;
+        const itemDiscount = itemMRP - itemTotal;
+        const qty = 1; 
+        const productForMsg = { ...product, quantity: qty };
+        
+        const message = generateWhatsAppMessage([productForMsg], itemTotal, itemMRP, itemDiscount, paymentMode);
+        window.open(`https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`, '_blank');
+    }
+}
+
+function generateWhatsAppMessage(items, totalAmount, totalMRP, discount, paymentMode) {
     let message = "ഹായ് 👋\n";
     message += "ഞാൻ താഴെയുള്ള പ്രോഡക്റ്റ് ഓർഡർ ചെയ്യാൻ ആഗ്രഹിക്കുന്നു.\n";
     message += "____________________\n\n";
+
     items.forEach(item => {
         const itemId = item.id; 
         const productLink = `${window.location.origin}/product.html?id=${itemId}`;
         message += `🛍️ ${item.name}\n`;
-        if (item.size) { message += `Size : ${item.size}\n`; }
+        if (item.size) message += `Size : ${item.size}\n`; 
         message += `Qty : ${item.quantity}\n`;
         message += `Price : ₹${item.price.toFixed(2)}\n\n`;
         message += `🔗 Product link :  ${productLink}\n\n`; 
     });
-    message += `💰 *Total : ₹${totalMRP.toFixed(2)}*\n`;
-    if (discount > 0) { message += `🎁 Discount : ₹${discount.toFixed(2)}\n\n`; } else { message += `\n`; }
-    message += `✅ \`Payable amount : ₹${totalAmount.toFixed(2)}\`\n`;
+
+    message += `*Price Details*\n`;
+    message += `-------------------\n`;
+    message += `Price (${items.length} items) : ₹${totalMRP.toFixed(2)}\n`;
+    
+    if (discount > 0) message += `Discount : - ₹${discount.toFixed(2)}\n`;
+
+    let finalPayable = totalAmount;
+
+    // Add COD Fee
+    if (paymentMode === 'cod' && orderConfig.codEnabled) {
+        const fee = Number(orderConfig.codFee) || 0;
+        finalPayable += fee;
+        message += `Delivery/Handling Fee : ₹${fee.toFixed(2)}\n`;
+    } else {
+        message += `Delivery Charges : FREE\n`;
+    }
+
+    message += `-------------------\n`;
+    message += `*Total Amount : ₹${finalPayable.toFixed(2)}*\n`;
+    message += `-------------------\n\n`;
+
+    if (paymentMode === 'cod') {
+        message += `💳 Payment Mode: *Cash on Delivery*\n`;
+    } else {
+        message += `💳 Payment Mode: *Online Payment*\n`;
+    }
+
     message += "\n____________________\n\n";
     message += "ദയവായി എത്രയും പെട്ടെന്ന് പ്രോസസ് ചെയ്യുക.\n\n";
-    if (discount > 0) { message += `\`You saved ₹${discount.toFixed(2)} on this order!\``; }
+    
+    if (discount > 0) {
+        message += `\`You saved ₹${discount.toFixed(2)} on this order!\``;
+    }
+
     return message;
 }
 
@@ -601,44 +648,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
         }
 
     } catch (error) { console.error("Error loading related products: ", error); }
-}
-
-async function loadRatingBars(productId) {
-    const summaryContainer = document.getElementById(`rating-summary-main`);
-    if (!summaryContainer) return;
-    
-    const ratingsRef = collection(db, "products", productId, "ratings");
-    const snapshot = await getDocs(ratingsRef);
-    
-    const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    const total = snapshot.size;
-    
-    snapshot.forEach(doc => {
-        const val = doc.data().rating;
-        if (counts[val] !== undefined) counts[val]++;
-    });
-    
-    let html = '';
-    const keys = [5, 4, 3, 2, 1];
-    keys.forEach((starVal) => {
-        const count = counts[starVal];
-        const percentage = total > 0 ? (count / total) * 100 : 0;
-        
-        let color = '#ff4d4d'; 
-        if (starVal === 2) color = '#ff9f43';
-        if (starVal === 3) color = '#feca57';
-        if (starVal === 4) color = '#1dd1a1';
-        if (starVal === 5) color = '#10ac84';
-
-        html += `
-            <div class="rating-bar-row">
-                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
-                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
-                <span class="bar-count">${count}</span>
-            </div>
-        `;
-    });
-    summaryContainer.innerHTML = html;
 }
 
 relatedProductsGrid.addEventListener('click', (e) => {
