@@ -1,4 +1,6 @@
-/* home.css - Updated: Unique Red Box Countdown (Top-Left) */
+/* home.css - Updated: Zigzag Layout for Top Discount */
+
+/* ... (Previous Styles Remain Same) ... */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -197,17 +199,17 @@ body.light-mode .special-offer-banner-img {
     background: linear-gradient(45deg, #ff3f6c, #ff6b6b);
     color: white; font-size: 0.65rem; font-weight: 800;
     padding: 5px 10px; border-radius: 20px; z-index: 2;
-    display: none; /* Removed as per request to simplify, or keep if needed */
+    display: none; 
 }
 
 /* *** UNIQUE COUNTDOWN TIMER STYLES (Red Boxes, Top-Left) *** */
 .countdown-overlay {
     position: absolute;
-    top: 10px; /* Top Position */
-    left: 10px; /* Left Position */
-    bottom: auto; /* Remove Bottom */
-    transform: none; /* Remove Center Transform */
-    background: transparent; /* No container background */
+    top: 10px; 
+    left: 10px; 
+    bottom: auto; 
+    transform: none; 
+    background: transparent; 
     backdrop-filter: none;
     padding: 0;
     border: none;
@@ -236,7 +238,7 @@ body.light-mode .special-offer-banner-img {
     font-size: 0.9rem;
     font-weight: 800;
     line-height: 1;
-    font-family: monospace; /* For uniform width */
+    font-family: monospace; 
 }
 
 .countdown-unit {
@@ -439,7 +441,7 @@ body.light-mode .screenshot-mode .clean-card-title {
 }
 body.light-mode .screenshot-mode .clean-card-price-row {
     color: #000000;
-    text-shadow: none; /* Remove shadow to make black clear */
+    text-shadow: none; 
 }
 
 .screenshot-mode .shop-now-btn { display: none; }
@@ -451,11 +453,11 @@ body.light-mode .screenshot-mode .clean-card-price-row {
 
 /* *** CATALOGUE Heading Colors Override *** */
 .catalogue-header .section-title-new {
-    color: #ffffff !important; /* White in Dark Mode */
+    color: #ffffff !important; 
 }
 
 body.light-mode .catalogue-header .section-title-new {
-    color: #000000 !important; /* Black in Light Mode */
+    color: #000000 !important; 
 }
 
 .category-circle-item { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; text-decoration: none; }
@@ -483,17 +485,37 @@ body.light-mode .category-circle-title {
 }
 
 /* Swiper Config */
-.top-deals-swiper, .top-sellers-swiper-new, .discount-swiper, .under-799-swiper { padding: 0 4px !important; }
+.top-deals-swiper, .top-sellers-swiper-new, .under-799-swiper { padding: 0 4px !important; }
 .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 48% !important; margin-right: 4px !important; }
-.discount-swiper { height: auto !important; }
-.discount-swiper .swiper-slide { height: auto !important; margin-top: 0 !important; }
+
+/* *** UPDATED: Zigzag Layout (Vertical Shift) *** */
+.discount-swiper { 
+    height: auto !important; 
+    padding: 20px 4px 10px 4px !important; /* Extra top padding for offset */
+}
+.discount-swiper .swiper-slide { 
+    width: 48% !important; 
+    margin-right: 4px !important; 
+    height: auto !important; 
+}
+
+/* Even Slides (2nd, 4th, 6th...) moved DOWN */
+.discount-swiper .swiper-slide:nth-child(even) {
+    margin-top: 30px !important; 
+}
+
+/* Odd Slides (1st, 3rd, 5th...) moved UP (Default) */
+.discount-swiper .swiper-slide:nth-child(odd) {
+    margin-top: 0 !important; 
+}
+
 
 /* Responsive */
 @media (min-width: 640px) {
-    .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 32% !important; }
+    .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide, .discount-swiper .swiper-slide { width: 32% !important; }
 }
 @media (min-width: 1024px) {
-    .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 19% !important; }
+    .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide, .discount-swiper .swiper-slide { width: 19% !important; }
 }
 @media (max-width: 768px) {
     .clean-card-details { padding: 6px 5px; }
