@@ -1,52 +1,502 @@
-/* home.css - Final Zigzag Layout for Top Discount */
-
-/* ... (Previous styles unchanged) ... */
+/* home.css - Final: Fixed 2-Row Layout (Top-Bottom-Top-Bottom Order) */
 
 /* =========================================
-   3.4. TOP DISCOUNT (ZIGZAG LAYOUT)
+   1. HOME TOP BANNER
    ========================================= */
+.home-top-banner {
+    width: 100%;
+    height: auto;
+    line-height: 0;
+    position: relative;
+    background-color: #000;
+    margin-bottom: 0;
+    overflow: hidden;
+    border-bottom: 1px solid #222;
+    display: none; 
+}
 
-/* Discount Swiper Container */
+/* Light Mode Override */
+body.light-mode .home-top-banner {
+    background-color: #fff;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.home-top-banner img {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 140px; 
+    object-fit: cover;
+    opacity: 0.95;
+    transition: opacity 0.3s ease;
+}
+
+.home-top-banner:hover img {
+    opacity: 1;
+}
+
+/* =========================================
+   2. HERO SLIDER
+   ========================================= */
+.hero-section-new {
+    width: 100%;
+    position: relative;
+    background-color: #000;
+    margin: 0;
+    overflow: hidden;
+    display: none;
+    aspect-ratio: 16 / 9; 
+    transition: aspect-ratio 0.3s ease;
+}
+
+body.light-mode .hero-section-new {
+    background-color: #f0f0f0;
+}
+
+.hero-section-new.aspect-portrait {
+    aspect-ratio: 3 / 4; 
+}
+
+@media (max-width: 768px) {
+    .hero-section-new { width: 100%; }
+    .hero-section-new:not(.aspect-portrait) { aspect-ratio: 4 / 3; }
+    .hero-section-new.aspect-portrait { aspect-ratio: 3 / 4; }
+}
+
+.hero-slider-new {
+    width: 100%;
+    height: 100%;
+}
+
+.hero-slider-new .swiper-slide {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #000;
+    overflow: hidden;
+}
+
+body.light-mode .hero-slider-new .swiper-slide {
+    background: #e0e0e0;
+}
+
+.hero-slider-new .swiper-slide img,
+.hero-slider-new .swiper-slide video,
+.hero-slider-new .swiper-slide iframe {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border: none;
+}
+
+.hero-slider-new .swiper-slide::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 25%;
+    background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+    pointer-events: none;
+}
+
+.hero-slider-new .hero-pagination-dots {
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    width: 100%;
+    text-align: center;
+    z-index: 10;
+}
+
+.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet {
+    background: rgba(255, 255, 255, 0.5);
+    width: 8px;
+    height: 8px;
+    opacity: 1;
+    margin: 0 6px !important;
+    transition: all 0.3s ease;
+    border-radius: 4px;
+}
+
+.hero-slider-new .hero-pagination-dots .swiper-pagination-bullet-active {
+    background: var(--primary-gold);
+    width: 24px;
+    opacity: 1;
+}
+
+/* =========================================
+   3. HERO TEXT SECTION
+   ========================================= */
+.hero-text-section {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+    color: #cccccc;
+    font-size: 1rem;
+    line-height: 1.6;
+    max-width: 800px;
+    margin: 0 auto;
+    background: transparent;
+    display: none;
+}
+
+body.light-mode .hero-text-section {
+    color: #000000; 
+}
+
+/* =============================================================
+   4. PRODUCT CARDS & SECTIONS
+   ============================================================= */
+
+.special-offer-wrapper {
+    margin-bottom: 2rem;
+    padding: 0 10px;
+}
+.special-offer-header {
+    width: 100%;
+    margin-bottom: 15px;
+    position: relative;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 2px solid transparent;
+    background: linear-gradient(45deg, #2874f0, #ff3f6c, #2874f0);
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+}
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.special-offer-banner-img {
+    width: 100%;
+    height: auto;
+    display: block;
+    max-height: 150px;
+    object-fit: cover;
+    padding: 3px;
+    border-radius: 10px;
+    background-color: #000;
+}
+
+body.light-mode .special-offer-banner-img {
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
+.special-offer-header::before {
+    content: 'LIMITED TIME';
+    position: absolute; top: 8px; left: 8px;
+    background: linear-gradient(45deg, #ff3f6c, #ff6b6b);
+    color: white; font-size: 0.65rem; font-weight: 800;
+    padding: 5px 10px; border-radius: 20px; z-index: 2;
+    display: none; 
+}
+
+/* Countdown Overlay */
+.countdown-overlay {
+    position: absolute;
+    top: 10px; 
+    left: 10px; 
+    bottom: auto; 
+    transform: none; 
+    background: transparent; 
+    backdrop-filter: none;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    gap: 6px;
+    z-index: 5;
+}
+
+.countdown-box {
+    background-color: #d32f2f; 
+    color: #ffffff; 
+    padding: 4px 6px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.countdown-val {
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1;
+    font-family: monospace; 
+}
+
+.countdown-unit {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 2px;
+    opacity: 0.9;
+}
+
+.countdown-overlay.expired .countdown-box {
+    background-color: #555;
+}
+
+.section-header-card {
+    border-radius: 10px 10px 0 0;
+    padding: 14px 16px;
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0;
+}
+.blue-card-bg { background: linear-gradient(135deg, #2874f0 0%, #1e5fc4 100%); }
+.orange-card-bg { background: linear-gradient(135deg, #fb641b 0%, #e55a17 100%); }
+.dark-card-bg { background: linear-gradient(135deg, #6c5ce7 0%, #5a4bd1 100%); }
+.green-card-bg { background: linear-gradient(135deg, #00b894 0%, #00a085 100%); }
+
+.section-title-card {
+    color: #fff; font-size: 1.1rem; font-weight: 700; margin: 0; text-transform: uppercase;
+}
+
+.product-slider-container {
+    padding: 12px 8px;
+    border-radius: 0 0 10px 10px;
+    border: 1px solid #333;
+    border-top: none;
+    background-color: #111;
+}
+
+body.light-mode .product-slider-container {
+    background-color: #ffffff;
+    border-color: #e0e0e0;
+}
+
+/* --- STANDARD CARD STYLES --- */
+.swiper-slide { 
+    height: auto; 
+    display: flex; 
+    box-sizing: border-box; 
+    padding: 0 4px; 
+}
+
+.clean-card-wrapper {
+    display: flex; 
+    flex-direction: column; 
+    text-decoration: none; 
+    width: 100%;
+    height: 100%; 
+    background-color: #1a1a1a; 
+    border-radius: 10px;
+    overflow: hidden; 
+    border: 1px solid #333; 
+    position: relative; 
+    transition: all 0.2s;
+}
+
+body.light-mode .clean-card-wrapper {
+    background-color: #ffffff;
+    border-color: #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.clean-card-box {
+    width: 100%; 
+    aspect-ratio: 1 / 1; 
+    position: relative; 
+    background: #111;
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    overflow: hidden; 
+    padding: 10px;
+}
+
+body.light-mode .clean-card-box {
+    background: #f8f8f8;
+}
+
+.clean-card-img {
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    transition: transform 0.3s ease; 
+    border-radius: 4px;
+}
+
+.clean-card-details {
+    padding: 8px 10px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    justify-content: space-between; 
+    flex-grow: 1; 
+    gap: 4px;
+}
+
+.clean-card-title {
+    font-size: 0.85rem; 
+    color: #fff; 
+    font-weight: 600; 
+    text-align: center;
+    line-height: 1.3; 
+    display: -webkit-box; 
+    -webkit-line-clamp: 2; 
+    -webkit-box-orient: vertical;
+    overflow: hidden; 
+    margin: 0; 
+    min-height: auto; 
+    width: 100%;
+}
+
+body.light-mode .clean-card-title {
+    color: #000000;
+}
+
+.clean-card-price-row {
+    font-size: 1rem; 
+    font-weight: 800; 
+    color: var(--primary-gold);
+    text-align: center; 
+    margin: 0; 
+    padding: 0; 
+    width: 100%;
+}
+
+body.light-mode .clean-card-price-row {
+    color: #000000;
+}
+
+.shop-now-btn {
+    width: 100%; 
+    background: var(--primary-gold); 
+    color: #000; 
+    border: none;
+    padding: 6px 0; 
+    border-radius: 4px; 
+    font-size: 0.75rem; 
+    font-weight: 700;
+    text-transform: uppercase; 
+    margin-top: auto; 
+    display: block;
+}
+
+.card-discount-badge {
+    position: absolute; top: 8px; left: 8px; background: linear-gradient(45deg, #388e3c, #4caf50);
+    color: #fff; font-size: 0.7rem; font-weight: 700; padding: 4px 8px; border-radius: 4px; z-index: 10;
+}
+.card-discount-badge.red { background: linear-gradient(45deg, #ff4d4d, #ff6b6b); }
+
+
+/* --- SCREENSHOT STYLE (Also 1:1) --- */
+.screenshot-mode .clean-card-wrapper {
+    background: transparent; border: none; box-shadow: none; padding: 0; min-height: auto;
+}
+.screenshot-mode .clean-card-box {
+    background-color: #ffffff; border-radius: 16px; 
+    aspect-ratio: 1 / 1; 
+    height: auto; width: 100%; margin-bottom: 8px; padding: 10px;
+}
+.screenshot-mode .clean-card-img { 
+    mix-blend-mode: normal; 
+    object-fit: cover; 
+}
+.screenshot-mode .clean-card-details {
+    background: transparent; padding: 0 4px; display: flex; flex-direction: column; height: auto;
+    justify-content: flex-start; gap: 2px;
+}
+.screenshot-mode .clean-card-price-row {
+    color: #ffffff; font-size: 1.1rem; font-weight: 700; order: -1; 
+    margin-bottom: 2px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); text-align: center;
+}
+.screenshot-mode .clean-card-title {
+    color: #cccccc; font-size: 0.8rem; font-weight: 400; line-height: 1.2;
+    max-height: 2.4em; min-height: auto; text-align: center; margin-bottom: 0;
+}
+
+body.light-mode .screenshot-mode .clean-card-title {
+    color: #000000;
+}
+body.light-mode .screenshot-mode .clean-card-price-row {
+    color: #000000;
+    text-shadow: none; 
+}
+
+.screenshot-mode .shop-now-btn { display: none; }
+.screenshot-mode .card-discount-badge { top: 8px; left: 8px; font-size: 0.6rem; padding: 3px 6px; border-radius: 6px; }
+
+
+/* === 5. CATEGORIES === */
+.category-swiper { width: 100%; padding: 10px 5px; }
+
+.catalogue-header .section-title-new {
+    color: #ffffff !important; 
+}
+
+body.light-mode .catalogue-header .section-title-new {
+    color: #000000 !important; 
+}
+
+.category-circle-item { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; text-decoration: none; }
+.category-circle-img-box {
+    width: 70px; height: 70px; border-radius: 50%; background: #1a1a1a;
+    border: 2px solid #333; overflow: hidden; display: flex; align-items: center;
+    justify-content: center; padding: 5px;
+}
+
+body.light-mode .category-circle-img-box {
+    background: #ffffff;
+    border-color: #ddd;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.category-circle-img { 
+    width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
+}
+.category-circle-title { color: #ccc; font-size: 0.75rem; font-weight: 600; text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; }
+
+body.light-mode .category-circle-title {
+    color: #000000;
+}
+
+/* Swiper Config */
+.top-deals-swiper, .top-sellers-swiper-new, .under-799-swiper { padding: 0 4px !important; }
+.top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 48% !important; margin-right: 4px !important; }
+
+/* *** UPDATED: 2-Row Grid Layout (Column Fill) *** */
 .discount-swiper { 
-    height: auto !important; 
-    padding: 20px 4px 10px 4px !important; /* Top padding for offset */
+    height: 520px !important; /* Fixed Height required for Grid Column Fill */
+    padding: 10px 4px !important;
 }
 
-/* Base Slide Style */
 .discount-swiper .swiper-slide { 
-    width: 48% !important; 
-    margin-right: 4px !important; 
-    height: auto !important; 
-    /* Important: Remove Grid default behavior if any */
-    margin-top: 0 !important; 
+    /* Slide Size Calculation: (100% height - space) / 2 rows */
+    height: calc((100% - 10px) / 2) !important; 
+    margin-top: 0 !important; /* Reset any margin logic */
+    width: auto !important; /* Let Grid handle width */
 }
 
-/* Zigzag Pattern Logic:
-   Odd Slides (1, 3, 5...) -> Top (Default)
-   Even Slides (2, 4, 6...) -> Pushed Down
-*/
-
-/* 1st, 3rd, 5th... Items (Top Row) */
-.discount-swiper .swiper-slide:nth-child(odd) {
-    margin-top: 0 !important; 
-}
-
-/* 2nd, 4th, 6th... Items (Bottom Row - Offset) */
-.discount-swiper .swiper-slide:nth-child(even) {
-    margin-top: 50% !important; /* Push down by 50% of container or fixed value */
-    /* Alternatively, use a fixed pixel value if height is consistent */
-    /* margin-top: 160px !important; */ 
-}
-
-/* Responsive Adjustments */
+/* Responsive */
 @media (min-width: 640px) {
-    .discount-swiper .swiper-slide { width: 32% !important; }
-    /* Adjust offset for tablets */
-    .discount-swiper .swiper-slide:nth-child(even) { margin-top: 40% !important; }
+    .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 32% !important; }
 }
-
 @media (min-width: 1024px) {
-    .discount-swiper .swiper-slide { width: 19% !important; }
-    /* Adjust offset for desktop */
-    .discount-swiper .swiper-slide:nth-child(even) { margin-top: 30% !important; }
+    .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 19% !important; }
+}
+@media (max-width: 768px) {
+    .clean-card-details { padding: 6px 5px; }
+    .clean-card-title { font-size: 0.8rem; }
+    .shop-now-btn { padding: 5px 0; font-size: 0.7rem; }
+    
+    .screenshot-mode .clean-card-price-row { font-size: 1rem; }
+    .screenshot-mode .clean-card-title { font-size: 0.7rem; }
+    
+    /* Adjust grid height for mobile to fit content snugly */
+    .discount-swiper { height: 480px !important; }
 }
