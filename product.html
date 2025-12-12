@@ -9,17 +9,92 @@
     <title>Product Details - JR-UD-HUB</title>
     <!-- പൊതുവായ ഡിസൈൻ ഫയൽ -->
     <link rel="stylesheet" href="public.css">
-    <link rel="stylesheet" href="product.css"> <!-- *** പുതിയ ഫയൽ ഇവിടെ ചേർത്തു *** -->
+    <link rel="stylesheet" href="product.css"> 
     
-    <!-- *** പുതിയതായി ചേർത്തത്: Swiper CSS *** -->
+    <!-- Swiper CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    
+    <!-- *** പേയ്മെന്റ് പോപ്പ്-അപ്പ് സ്റ്റൈൽ Cart CSS-ൽ നിന്നാണ് വരുന്നത്, 
+         അല്ലെങ്കിൽ public.css ലേക്ക് മാറ്റാം. 
+         ഇവിടെ തൽക്കാലം cart.css ലിങ്ക് ചെയ്യുന്നില്ല, പകരം public.css-ൽ സ്റ്റൈൽ ചേർക്കണം 
+         അല്ലെങ്കിൽ ഇൻലൈൻ ആയി താഴെ കൊടുക്കാം. 
+         ഏറ്റവും നല്ലത് public.css ലേക്ക് മാറ്റുന്നതാണ്. *** -->
+         
+    <!-- For simplicity, including styles inline if not in public.css yet, 
+         BUT BEST PRACTICE: Ensure payment modal styles are in public.css since used globally. 
+         I will assume styles are available or added to public.css as requested. -->
+    <style>
+        /* Payment Modal Styles (Copied from cart.css for consistency if not in public.css) */
+        .payment-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+        .payment-modal-content {
+            background-color: var(--card-bg);
+            width: 100%;
+            max-width: 500px;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            padding: 1.5rem;
+            border-top: 1px solid var(--primary-gold);
+            box-shadow: 0 -5px 25px rgba(0,0,0,0.5);
+            animation: slideUp 0.3s ease-out;
+        }
+        body.light-mode .payment-modal-content {
+            background-color: #fff;
+            border-top: none;
+            color: #333;
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @media (min-width: 768px) {
+            .payment-modal-overlay { align-items: center; }
+            .payment-modal-content { border-radius: 12px; border: 1px solid var(--primary-gold); animation: fadeIn 0.2s ease-out; }
+            @keyframes fadeIn { from { opacity: 0; scale: 0.95; } to { opacity: 1; scale: 1; } }
+        }
+        .payment-modal-title { margin: 0 0 1.5rem; color: var(--primary-gold); text-align: center; font-size: 1.3rem; }
+        body.light-mode .payment-modal-title { color: var(--primary-gold); }
+        .payment-options { display: flex; flex-direction: column; gap: 1rem; }
+        .payment-option {
+            display: flex; align-items: center; gap: 12px; padding: 12px;
+            border: 1px solid var(--border-color); border-radius: 8px;
+            cursor: pointer; transition: all 0.2s; background-color: rgba(255, 255, 255, 0.03);
+        }
+        body.light-mode .payment-option { background-color: #f9f9f9; border-color: #ddd; }
+        .payment-option:hover { border-color: var(--primary-gold); }
+        .payment-option input { display: none; }
+        .radio-custom {
+            width: 20px; height: 20px; border: 2px solid var(--text-muted);
+            border-radius: 50%; position: relative;
+        }
+        .payment-option input:checked + .radio-custom { border-color: var(--primary-gold); }
+        .payment-option input:checked + .radio-custom::after {
+            content: ''; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 10px; height: 10px; background-color: var(--primary-gold); border-radius: 50%;
+        }
+        .payment-text { display: flex; flex-direction: column; }
+        .payment-name { font-weight: 600; color: var(--text-color); font-size: 1rem; }
+        body.light-mode .payment-name { color: #000; }
+        .payment-desc { font-size: 0.8rem; color: var(--text-muted); }
+        .cod-warning-box {
+            background-color: rgba(231, 76, 60, 0.1); border: 1px solid rgba(231, 76, 60, 0.3);
+            color: var(--error-red); padding: 10px; border-radius: 6px; margin-top: 1rem;
+            font-size: 0.85rem; text-align: center; line-height: 1.4;
+        }
+        .payment-actions { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .payment-actions .btn { flex: 1; }
+    </style>
 </head>
 <body>
 
     <!-- 0. പേജ് ലോഡർ -->
     <div id="preloader">
         <div class="loader-logo-container">
-            <!-- ലോഗോയും സ്പിന്നറും common.js & public.css വഴി വരും -->
             <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
             <div class="loader-ring"></div>
         </div>
@@ -42,11 +117,49 @@
         <!-- 4. ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ -->
         <section class="related-products-section">
             <h2 class="section-title-new">You May Also Like</h2>
-            <!-- *** ഗ്രിഡ് ക്ലാസ് മാറ്റി (സ്റ്റൈൽ ശരിയാക്കാൻ) *** -->
+            <!-- ഗ്രിഡ് ക്ലാസ് -->
             <div class="product-grid-new" id="related-products-grid">
-                <!-- ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ 'product.js' വഴി ഇവിടെ വരും -->
+                <!-- ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ JS വഴി വരും -->
             </div>
         </section>
+
+        <!-- *** PAYMENT MODAL (Added) *** -->
+        <div id="payment-modal" class="payment-modal-overlay">
+            <div class="payment-modal-content">
+                <h3 class="payment-modal-title">Select Payment Method</h3>
+                
+                <div class="payment-options">
+                    <label class="payment-option">
+                        <input type="radio" name="payment_mode" value="online" checked>
+                        <span class="radio-custom"></span>
+                        <div class="payment-text">
+                            <span class="payment-name">Online Payment</span>
+                            <span class="payment-desc">Pay via UPI / Bank (Fast & Free)</span>
+                        </div>
+                    </label>
+                    
+                    <label class="payment-option">
+                        <input type="radio" name="payment_mode" value="cod">
+                        <span class="radio-custom"></span>
+                        <div class="payment-text">
+                            <span class="payment-name">Cash on Delivery</span>
+                            <span class="payment-desc">Pay when delivered</span>
+                        </div>
+                    </label>
+                </div>
+
+                <!-- Warning Box for COD -->
+                <div id="cod-warning-box" class="cod-warning-box" style="display: none;">
+                    <p id="cod-warning-text"></p>
+                </div>
+
+                <div class="payment-actions">
+                    <button id="cancel-payment-btn" class="btn btn-secondary-new">Cancel</button>
+                    <button id="confirm-payment-btn" class="btn btn-primary-new">Confirm Order</button>
+                </div>
+            </div>
+        </div>
+
     </main>
 
     <!-- 5. ഫൂട്ടർ -->
@@ -56,7 +169,6 @@
     <div id="floating-action-buttons"></div>
 
     <!-- JS ഫയലുകൾ -->
-    <!-- *** പുതിയതായി ചേർത്തത്: Swiper JS *** -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="cart.js"></script>
