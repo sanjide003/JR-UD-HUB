@@ -1,7 +1,8 @@
 // ഇതാണ് 'cart-page.js' ഫയൽ.
 // മാറ്റങ്ങൾ: 
-// 1. Discount Percentage displayed above price.
-// 2. Header Savings Message Logic Updated.
+// 1. WhatsApp Number & Order Settings ലോഡ് ചെയ്യുന്നു.
+// 2. പേയ്മെന്റ് പോപ്പ്-അപ്പ് ലോജിക്.
+// 3. വാട്സ്ആപ്പ് മെസ്സേജിൽ COD Fee ചേർക്കുന്നു.
 
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -15,20 +16,31 @@ const priceLabelEl = document.getElementById('cart-price-label');
 const mrpTotalEl = document.getElementById('cart-mrp-total');
 const discountEl = document.getElementById('cart-discount');
 const savingsMessageEl = document.getElementById('cart-savings-message');
-const headerSavingsBox = document.getElementById('header-savings-box'); // New Header Box
-const headerSavingsText = document.getElementById('header-savings-text'); // New Header Text
+const headerSavingsBox = document.getElementById('header-savings-box');
+const headerSavingsText = document.getElementById('header-savings-text');
 const totalEl = document.getElementById('cart-total');
 const fullCheckoutButton = document.getElementById('full-checkout-button');
 const checkoutLoader = document.getElementById('checkout-loader');
 const checkoutMarker = document.getElementById('checkout-button-marker');
 
+// Modal Elements
+const paymentModal = document.getElementById('payment-modal');
+const cancelPaymentBtn = document.getElementById('cancel-payment-btn');
+const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
+const paymentRadios = document.getElementsByName('payment_mode');
+const codWarningBox = document.getElementById('cod-warning-box');
+const codWarningText = document.getElementById('cod-warning-text');
+
 let whatsappNumber = ''; 
+let orderConfig = { codEnabled: false, codFee: 0 }; // Default settings
 
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
     await loadWhatsappNumber(); 
+    await loadOrderSettings(); // Load COD config
     renderCartPage();
-    setupButtonObserver(); // ബട്ടൺ സ്ക്രോൾ ലോജിക്
+    setupButtonObserver();
+    setupModalListeners();
 });
 
 async function loadWhatsappNumber() {
@@ -38,15 +50,21 @@ async function loadWhatsappNumber() {
         if (docSnap.exists() && docSnap.data().whatsapp) {
             whatsappNumber = docSnap.data().whatsapp;
         }
-    } catch (error) {
-        console.error("Error fetching WhatsApp number: ", error);
-    }
+    } catch (error) { console.error("Error fetching WhatsApp number: ", error); }
 }
 
-// *** ബട്ടൺ ഫ്ലോട്ടിംഗ്/ഡോക്കിംഗ് ലോജിക് ***
+async function loadOrderSettings() {
+    try {
+        const docRef = doc(db, "settings", "orderConfig");
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+            orderConfig = docSnap.data();
+        }
+    } catch (error) { console.error("Error fetching order config: ", error); }
+}
+
 function setupButtonObserver() {
     if (!checkoutMarker || !fullCheckoutButton) return;
-
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
@@ -60,13 +78,44 @@ function setupButtonObserver() {
             }
         });
     }, { threshold: 0.1 }); 
-
     observer.observe(checkoutMarker);
+}
+
+function setupModalListeners() {
+    if(!paymentModal) return;
+
+    // Toggle COD Warning based on selection
+    paymentRadios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            if (e.target.value === 'cod' && orderConfig.codEnabled) {
+                codWarningText.textContent = `Due to handling costs, a nominal fee of ₹${orderConfig.codFee} will be charged for orders placed using this option. Avoid this fee by paying online now.`;
+                codWarningBox.style.display = 'block';
+            } else {
+                codWarningBox.style.display = 'none';
+            }
+        });
+    });
+
+    // Cancel Button
+    if(cancelPaymentBtn) {
+        cancelPaymentBtn.addEventListener('click', () => {
+            paymentModal.style.display = 'none';
+        });
+    }
+
+    // Confirm Button
+    if(confirmPaymentBtn) {
+        confirmPaymentBtn.addEventListener('click', () => {
+            let selectedMode = 'online';
+            paymentRadios.forEach(r => { if(r.checked) selectedMode = r.value; });
+            handleFullOrder(selectedMode);
+            paymentModal.style.display = 'none';
+        });
+    }
 }
 
 function renderCartPage() {
     if (!itemsContainer || !summaryContainer) return;
-
     const cart = getCartItems();
     const cartKeys = Object.keys(cart);
 
@@ -79,7 +128,7 @@ function renderCartPage() {
             </div>
         `;
         summaryContainer.style.display = 'none'; 
-        if(headerSavingsBox) headerSavingsBox.style.display = 'none'; // Hide header savings if empty
+        if(headerSavingsBox) headerSavingsBox.style.display = 'none'; 
         return;
     }
 
@@ -94,18 +143,15 @@ function renderCartPage() {
         
         const sizeHTML = item.size ? `<span class="cart-item-size">${item.size}</span>` : '';
         const productLink = `product.html?id=${itemId}`;
-        
         const rawImage = item.image || 'https://placehold.co/150x150/1e1e1e/D4AF37?text=No+Image';
         const optimizedImage = optimizeImage(rawImage, 150);
 
-        // *** Discount Calculation ***
         let discountBadge = '';
         if (item.mrp && item.mrp > item.price) {
             const discountPercent = Math.round(((item.mrp - item.price) / item.mrp) * 100);
             discountBadge = `<span class="item-discount-badge">${discountPercent}% OFF</span>`;
         }
 
-        // *** കാർഡ് HTML ***
         itemElement.innerHTML = `
             <div class="cart-item-main">
                 <a href="${productLink}" class="cart-item-image-link">
@@ -115,14 +161,13 @@ function renderCartPage() {
                     <div>
                         <a href="${productLink}" class="cart-item-title">${item.name}</a>
                         <div class="cart-item-meta">
-                            ${discountBadge} <!-- Discount displayed above price -->
+                            ${discountBadge}
                             <div class="price-row-wrapper">
                                 <span class="cart-item-price">₹${item.price.toFixed(2)}</span>
                                 ${sizeHTML}
                             </div>
                         </div>
                     </div>
-                    
                     <div class="quantity-control">
                         <button class="quantity-btn" data-id="${key}" data-change="-1">-</button>
                         <input type="number" class="quantity-input" value="${item.quantity}" readonly>
@@ -159,8 +204,6 @@ function updateCartSummary() {
     
     if (discount > 0) {
         const savingsText = `You'll save ₹${discount.toFixed(2)} on this order!`;
-        
-        // Update Bottom Summary Message (Keep original logic)
         if (discountEl) {
             discountEl.textContent = `- ₹${discount.toFixed(2)}`;
             discountEl.parentElement.style.display = 'flex';
@@ -169,79 +212,75 @@ function updateCartSummary() {
             savingsMessageEl.textContent = savingsText;
             savingsMessageEl.style.display = 'block';
         }
-
-        // *** Update Top Header Savings Box ***
         if (headerSavingsBox && headerSavingsText) {
             headerSavingsText.textContent = savingsText;
             headerSavingsBox.style.display = 'inline-flex';
         }
-
     } else {
-        // No discount
         if (discountEl) discountEl.parentElement.style.display = 'none';
         if (savingsMessageEl) savingsMessageEl.style.display = 'none';
         if (headerSavingsBox) headerSavingsBox.style.display = 'none';
     }
 }
 
-// Event Listeners for Cart Items
 itemsContainer.addEventListener('click', (e) => {
     const target = e.target;
-    
-    // Remove Button
     if (target.closest('.btn-remove')) {
         const btn = target.closest('.btn-remove');
-        const id = btn.dataset.id;
-        removeFromCart(id);
+        removeFromCart(btn.dataset.id);
         renderCartPage(); 
     }
-    
-    // Quantity Buttons
     if (target.classList.contains('quantity-btn')) {
         const id = target.dataset.id;
         const change = parseInt(target.dataset.change);
         const cart = getCartItems();
         if (cart[id]) { 
-            const newQuantity = cart[id].quantity + change;
-            updateQuantity(id, newQuantity);
+            updateQuantity(id, cart[id].quantity + change);
             renderCartPage();
         }
     }
-    
-    // Single Buy Button
     if (target.closest('.btn-buy-single')) {
-        const btn = target.closest('.btn-buy-single');
-        const id = btn.dataset.id;
-        handleSingleOrder(id);
+        const id = target.closest('.btn-buy-single').dataset.id;
+        // For single buy, we skip modal and go direct or you can add modal here too if needed
+        // Here defaulting to direct to keep flow simple or use same modal logic if preferred
+        // For now, let's keep it simple as user asked for "Order" context.
+        handleSingleOrder(id); 
     }
 });
 
+// Main Checkout Button triggers Modal
 if (fullCheckoutButton) {
     fullCheckoutButton.addEventListener('click', () => {
-        handleFullOrder();
+        if (getCartItemCount() === 0) return showError("Cart is empty");
+        if (paymentModal) {
+            paymentModal.style.display = 'flex'; // Show Modal
+            // Reset state
+            paymentRadios[0].checked = true; // Default Online
+            codWarningBox.style.display = 'none';
+        } else {
+            handleFullOrder('online'); // Fallback
+        }
     });
 }
 
 function handleSingleOrder(itemId) {
     if (!whatsappNumber) return showError("WhatsApp number not set by admin.");
-    
     const cart = getCartItems();
     const item = cart[itemId];
-    
     if (item) {
         showLoader(true);
         const itemMRP = ((item.mrp && item.mrp > item.price) ? item.mrp : item.price) * item.quantity;
         const itemTotal = item.price * item.quantity;
         const itemDiscount = itemMRP - itemTotal;
-
-        const message = generateWhatsAppMessage([item], itemTotal, itemMRP, itemDiscount);
+        // Single order defaults to online message format for now, or add modal logic here too
+        const message = generateWhatsAppMessage([item], itemTotal, itemMRP, itemDiscount, 'online');
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
         showLoader(false);
     }
 }
 
-function handleFullOrder() {
+function handleFullOrder(paymentMode = 'online') {
     if (!whatsappNumber) return showError("WhatsApp number not set by admin.");
     
     const cart = getCartItems();
@@ -256,15 +295,15 @@ function handleFullOrder() {
     const totalMRP = getCartTotalMRP();
     const discount = totalMRP - total;
     
-    const message = generateWhatsAppMessage(cartItems, total, totalMRP, discount);
+    const message = generateWhatsAppMessage(cartItems, total, totalMRP, discount, paymentMode);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     
     window.open(whatsappUrl, '_blank');
     showLoader(false);
 }
 
-// WhatsApp Message Format (Malayalam)
-function generateWhatsAppMessage(items, totalAmount, totalMRP, discount) {
+// WhatsApp Message Format
+function generateWhatsAppMessage(items, totalAmount, totalMRP, discount, paymentMode) {
     let message = "ഹായ് 👋\n";
     message += "ഞാൻ താഴെയുള്ള പ്രോഡക്റ്റ് ഓർഡർ ചെയ്യാൻ ആഗ്രഹിക്കുന്നു.\n";
     message += "____________________\n\n";
@@ -272,27 +311,27 @@ function generateWhatsAppMessage(items, totalAmount, totalMRP, discount) {
     items.forEach(item => {
         const itemId = item.id || Object.keys(getCartItems()).find(key => getCartItems()[key] === item);
         const productLink = `${window.location.origin}/product.html?id=${itemId}`;
-        
         message += `🛍️ ${item.name}\n`;
-        
-        if (item.size) {
-            message += `Size : ${item.size}\n`; 
-        }
-        
+        if (item.size) message += `Size : ${item.size}\n`; 
         message += `Qty : ${item.quantity}\n`;
         message += `Price : ₹${item.price.toFixed(2)}\n\n`;
         message += `🔗 Product link :  ${productLink}\n\n`; 
     });
 
     message += `💰 *Total : ₹${totalMRP.toFixed(2)}*\n`;
-    
-    if (discount > 0) {
-        message += `🎁 Discount : ₹${discount.toFixed(2)}\n\n`;
-    } else {
-        message += `\n`;
-    }
+    if (discount > 0) message += `🎁 Discount : ₹${discount.toFixed(2)}\n\n`;
+    else message += `\n`;
 
     message += `✅ \`Payable amount : ₹${totalAmount.toFixed(2)}\`\n`;
+    
+    // *** Payment Mode Info ***
+    if (paymentMode === 'cod' && orderConfig.codEnabled) {
+        message += `\n💳 Payment: *Cash on Delivery*\n`;
+        message += `⚠️ Note: Due to handling costs, a nominal fee of ₹${orderConfig.codFee} will be added to this order.\n`;
+    } else {
+        message += `\n💳 Payment: *Online Payment*\n`;
+    }
+
     message += "\n____________________\n\n";
     message += "ദയവായി എത്രയും പെട്ടെന്ന് പ്രോസസ് ചെയ്യുക.\n\n";
     
