@@ -1,4 +1,4 @@
-/* home.css - Final: Fixed 2-Row Layout (Top-Bottom-Top-Bottom Order) */
+/* home.css - Updated: Unique Red Box Countdown (Top-Left) */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -49,6 +49,7 @@ body.light-mode .home-top-banner {
     transition: aspect-ratio 0.3s ease;
 }
 
+/* Light Mode Override */
 body.light-mode .hero-section-new {
     background-color: #f0f0f0;
 }
@@ -78,6 +79,7 @@ body.light-mode .hero-section-new {
     overflow: hidden;
 }
 
+/* Light Mode Override for Slide Background */
 body.light-mode .hero-slider-new .swiper-slide {
     background: #e0e0e0;
 }
@@ -142,8 +144,9 @@ body.light-mode .hero-slider-new .swiper-slide {
     display: none;
 }
 
+/* Light Mode Override */
 body.light-mode .hero-text-section {
-    color: #000000; 
+    color: #000000; /* Black Text */
 }
 
 /* =============================================================
@@ -182,6 +185,7 @@ body.light-mode .hero-text-section {
     background-color: #000;
 }
 
+/* Light Mode Override */
 body.light-mode .special-offer-banner-img {
     background-color: #fff;
     border: 1px solid #ddd;
@@ -193,17 +197,17 @@ body.light-mode .special-offer-banner-img {
     background: linear-gradient(45deg, #ff3f6c, #ff6b6b);
     color: white; font-size: 0.65rem; font-weight: 800;
     padding: 5px 10px; border-radius: 20px; z-index: 2;
-    display: none; 
+    display: none; /* Removed as per request to simplify, or keep if needed */
 }
 
-/* Countdown Overlay */
+/* *** UNIQUE COUNTDOWN TIMER STYLES (Red Boxes, Top-Left) *** */
 .countdown-overlay {
     position: absolute;
-    top: 10px; 
-    left: 10px; 
-    bottom: auto; 
-    transform: none; 
-    background: transparent; 
+    top: 10px; /* Top Position */
+    left: 10px; /* Left Position */
+    bottom: auto; /* Remove Bottom */
+    transform: none; /* Remove Center Transform */
+    background: transparent; /* No container background */
     backdrop-filter: none;
     padding: 0;
     border: none;
@@ -213,9 +217,10 @@ body.light-mode .special-offer-banner-img {
     z-index: 5;
 }
 
+/* Individual Red Box */
 .countdown-box {
-    background-color: #d32f2f; 
-    color: #ffffff; 
+    background-color: #d32f2f; /* Red Background */
+    color: #ffffff; /* White Text */
     padding: 4px 6px;
     border-radius: 4px;
     display: flex;
@@ -231,7 +236,7 @@ body.light-mode .special-offer-banner-img {
     font-size: 0.9rem;
     font-weight: 800;
     line-height: 1;
-    font-family: monospace; 
+    font-family: monospace; /* For uniform width */
 }
 
 .countdown-unit {
@@ -242,6 +247,7 @@ body.light-mode .special-offer-banner-img {
     opacity: 0.9;
 }
 
+/* Expired State */
 .countdown-overlay.expired .countdown-box {
     background-color: #555;
 }
@@ -273,6 +279,7 @@ body.light-mode .special-offer-banner-img {
     background-color: #111;
 }
 
+/* Light Mode Override */
 body.light-mode .product-slider-container {
     background-color: #ffffff;
     border-color: #e0e0e0;
@@ -300,12 +307,14 @@ body.light-mode .product-slider-container {
     transition: all 0.2s;
 }
 
+/* Light Mode Override */
 body.light-mode .clean-card-wrapper {
     background-color: #ffffff;
     border-color: #e0e0e0;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
+/* === 1:1 SQUARE IMAGE BOX === */
 .clean-card-box {
     width: 100%; 
     aspect-ratio: 1 / 1; 
@@ -318,10 +327,12 @@ body.light-mode .clean-card-wrapper {
     padding: 10px;
 }
 
+/* Light Mode Override */
 body.light-mode .clean-card-box {
     background: #f8f8f8;
 }
 
+/* FILL IMAGE */
 .clean-card-img {
     width: 100%; 
     height: 100%; 
@@ -355,6 +366,7 @@ body.light-mode .clean-card-box {
     width: 100%;
 }
 
+/* *** Light Mode Override: Black Title *** */
 body.light-mode .clean-card-title {
     color: #000000;
 }
@@ -369,6 +381,7 @@ body.light-mode .clean-card-title {
     width: 100%;
 }
 
+/* *** Light Mode Override: Black Price *** */
 body.light-mode .clean-card-price-row {
     color: #000000;
 }
@@ -420,12 +433,13 @@ body.light-mode .clean-card-price-row {
     max-height: 2.4em; min-height: auto; text-align: center; margin-bottom: 0;
 }
 
+/* *** Light Mode Override for Screenshot Mode: Black Title & Price *** */
 body.light-mode .screenshot-mode .clean-card-title {
     color: #000000;
 }
 body.light-mode .screenshot-mode .clean-card-price-row {
     color: #000000;
-    text-shadow: none; 
+    text-shadow: none; /* Remove shadow to make black clear */
 }
 
 .screenshot-mode .shop-now-btn { display: none; }
@@ -435,12 +449,13 @@ body.light-mode .screenshot-mode .clean-card-price-row {
 /* === 5. CATEGORIES === */
 .category-swiper { width: 100%; padding: 10px 5px; }
 
+/* *** CATALOGUE Heading Colors Override *** */
 .catalogue-header .section-title-new {
-    color: #ffffff !important; 
+    color: #ffffff !important; /* White in Dark Mode */
 }
 
 body.light-mode .catalogue-header .section-title-new {
-    color: #000000 !important; 
+    color: #000000 !important; /* Black in Light Mode */
 }
 
 .category-circle-item { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; text-decoration: none; }
@@ -450,6 +465,7 @@ body.light-mode .catalogue-header .section-title-new {
     justify-content: center; padding: 5px;
 }
 
+/* Light Mode Override */
 body.light-mode .category-circle-img-box {
     background: #ffffff;
     border-color: #ddd;
@@ -461,26 +477,16 @@ body.light-mode .category-circle-img-box {
 }
 .category-circle-title { color: #ccc; font-size: 0.75rem; font-weight: 600; text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; }
 
+/* *** Light Mode Override: Black Category Title *** */
 body.light-mode .category-circle-title {
     color: #000000;
 }
 
 /* Swiper Config */
-.top-deals-swiper, .top-sellers-swiper-new, .under-799-swiper { padding: 0 4px !important; }
+.top-deals-swiper, .top-sellers-swiper-new, .discount-swiper, .under-799-swiper { padding: 0 4px !important; }
 .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 48% !important; margin-right: 4px !important; }
-
-/* *** UPDATED: 2-Row Grid Layout (Column Fill) *** */
-.discount-swiper { 
-    height: 520px !important; /* Fixed Height required for Grid Column Fill */
-    padding: 10px 4px !important;
-}
-
-.discount-swiper .swiper-slide { 
-    /* Slide Size Calculation: (100% height - space) / 2 rows */
-    height: calc((100% - 10px) / 2) !important; 
-    margin-top: 0 !important; /* Reset any margin logic */
-    width: auto !important; /* Let Grid handle width */
-}
+.discount-swiper { height: auto !important; }
+.discount-swiper .swiper-slide { height: auto !important; margin-top: 0 !important; }
 
 /* Responsive */
 @media (min-width: 640px) {
@@ -496,7 +502,4 @@ body.light-mode .category-circle-title {
     
     .screenshot-mode .clean-card-price-row { font-size: 1rem; }
     .screenshot-mode .clean-card-title { font-size: 0.7rem; }
-    
-    /* Adjust grid height for mobile to fit content snugly */
-    .discount-swiper { height: 480px !important; }
 }

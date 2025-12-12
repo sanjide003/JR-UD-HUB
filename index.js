@@ -353,19 +353,11 @@ async function loadTopDiscounts() {
         let html = '';
         topDiscounts.forEach(p => { html += createNewStyleProductCard(p.id, p, p.discount); });
         grid.innerHTML = html;
-        
-        // *** CHANGE: 2-Row Column Fill ***
         new Swiper('.discount-swiper', {
-            slidesPerView: 2.2, // Approx 2 items visible per row
-            grid: {
-                rows: 2,
-                fill: 'column', // Fills Top -> Bottom, then Next Column
-            },
+            slidesPerView: 2.2,
+            grid: { rows: 2, fill: 'row' },
             spaceBetween: 10,
-            breakpoints: { 
-                640: { slidesPerView: 3.2 }, 
-                1024: { slidesPerView: 5.2 } 
-            }
+            breakpoints: { 640: { slidesPerView: 3.2, grid: { rows: 2 } }, 1024: { slidesPerView: 5.2, grid: { rows: 2 } } }
         });
     } catch(e) {}
 }
