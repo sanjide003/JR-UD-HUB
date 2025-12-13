@@ -1,4 +1,4 @@
-// cart-page.js - Optimized & Image Fallback Added
+// cart-page.js - Fixed Image Issues & Details
 
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
@@ -136,7 +136,9 @@ function renderCartPage() {
         
         const sizeHTML = item.size ? `<span class="cart-item-size">${item.size}</span>` : '';
         const productLink = `product.html?id=${itemId}`;
-        const rawImage = item.image || 'https://placehold.co/150x150/1e1e1e/D4AF37?text=No+Image';
+        
+        // *** Image Validation Logic ***
+        const rawImage = (item.image && item.image !== 'undefined' && item.image !== 'null') ? item.image : 'https://placehold.co/150x150/1e1e1e/D4AF37?text=No+Image';
         const optimizedImage = optimizeImage(rawImage, 150);
 
         let discountBadge = '';
@@ -145,11 +147,10 @@ function renderCartPage() {
             discountBadge = `<span class="item-discount-badge">${discountPercent}% OFF</span>`;
         }
 
-        // *** Image Fallback Logic ***
         itemElement.innerHTML = `
             <div class="cart-item-main">
                 <a href="${productLink}" class="cart-item-image-link">
-                    <img src="${optimizedImage}" alt="${item.name}" class="cart-item-image" loading="lazy" onerror="this.src='https://placehold.co/150x150/1e1e1e/D4AF37?text=No+Image'">
+                    <img src="${optimizedImage}" alt="${item.name}" class="cart-item-image" loading="lazy" onerror="this.src='https://placehold.co/150x150/1e1e1e/D4AF37?text=Image+Error'">
                 </a>
                 <div class="cart-item-info">
                     <div>
