@@ -472,7 +472,7 @@ function setupProductActionButtons() {
                     name: currentProduct.name,
                     price: currentProduct.price,
                     mrp: currentProduct.mrp,
-                    image: rawImage, // Ensure valid image
+                    image: rawImage, 
                     size: currentProduct.size || ''
                 };
                 
@@ -647,6 +647,38 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
         }
 
     } catch (error) { console.error("Error loading related products: ", error); }
+}
+
+async function loadRatingBars(productId) {
+    const summaryContainer = document.getElementById(`rating-summary-${productId}`);
+    if (!summaryContainer) return;
+    
+    const ratingsRef = collection(db, "products", productId, "ratings");
+    const snapshot = await getDocs(ratingsRef);
+    
+    const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const total = snapshot.size;
+    
+    snapshot.forEach(doc => {
+        const val = doc.data().rating;
+        if (counts[val] !== undefined) counts[val]++;
+    });
+    
+    let html = '';
+    const keys = [5, 4, 3, 2, 1];
+    keys.forEach((starVal) => {
+        const count = counts[starVal];
+        const percentage = total > 0 ? (count / total) * 100 : 0;
+        let color = starVal === 1 ? '#ff4d4d' : starVal === 2 ? '#ff9f43' : starVal === 3 ? '#feca57' : starVal === 4 ? '#1dd1a1' : '#10ac84';
+        html += `
+            <div class="rating-bar-row">
+                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
+                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
+                <span class="bar-count">${count}</span>
+            </div>
+        `;
+    });
+    summaryContainer.innerHTML = html;
 }
 
 relatedProductsGrid.addEventListener('click', (e) => {
