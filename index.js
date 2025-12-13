@@ -1,9 +1,9 @@
-// index.js - Hero Slider, Products & Unique Box Countdown Logic
+// index.js - Optimized for Free Plan (getDocs instead of onSnapshot)
 
 import { db } from './firebase-config.js';
 import { 
     collection, 
-    getDocs, 
+    getDocs, // Use getDocs mostly
     doc, 
     getDoc, 
     query, 
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHeroSlider();
     loadHeroText();
     
-    // Product Loaders
+    // Product Loaders - All using Cache/Get strategy
     loadTopDeals();         
     loadTopTrendyDeals();   
     loadTopDiscounts();
@@ -89,6 +89,7 @@ async function loadHeroSlider() {
     
     try {
         const q = query(collection(db, "heroSlides"), orderBy("order"));
+        // This will use cache if available
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
@@ -220,9 +221,8 @@ function setupScrollVideoObserver() {
     observer.observe(sliderContainer);
 }
 
-// *** Product Sections ***
+// *** Product Sections - Optimized ***
 
-// 1. TOP DEALS (Special Offer) with Box Countdown
 async function loadTopDeals() {
     const section = document.getElementById('top-deals-section');
     const bannerContainer = document.querySelector('.special-offer-header'); 
@@ -238,7 +238,6 @@ async function loadTopDeals() {
             const bannerUrl = optimizeImage(settingsSnap.data().topDealsBanner, 1000, 85);
             if(bannerImg) bannerImg.src = bannerUrl;
             
-            // *** COUNTDOWN LOGIC ***
             if (settingsSnap.data().offerEndTime) {
                 const endTime = settingsSnap.data().offerEndTime;
                 if (endTime) {
@@ -259,6 +258,7 @@ async function loadTopDeals() {
             section.style.display = 'block'; 
         }
         
+        // Use getDocs
         const q = query(collection(db, "products"), where("isTopDeal", "==", true), limit(10));
         const snapshot = await getDocs(q);
         if (snapshot.empty) {
@@ -277,10 +277,8 @@ async function loadTopDeals() {
     } catch (e) { console.error(e); }
 }
 
-// *** UPDATED TIMER FUNCTION: Separate Boxes ***
 function startCountdown(endTimeStr, displayElement) {
     const endDate = new Date(endTimeStr).getTime();
-    
     update();
     const timerInterval = setInterval(update, 1000);
 
