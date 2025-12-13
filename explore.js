@@ -1,17 +1,16 @@
-// explore.js - Optimized for Speed & Theme Compatible
+// explore.js - Optimized for Data Saving (No Real-time Listeners)
 
 import {
     collection,
     getDocs,
     doc,
-    getDoc,
+    getDoc, // Changed from onSnapshot to getDoc for savings
     query,
     limit,
     startAfter,
     orderBy,
     setDoc,
     deleteDoc,
-    onSnapshot, 
     runTransaction,
     serverTimestamp,
     setLogLevel
@@ -31,13 +30,11 @@ let isLoading = false;
 const PRODUCTS_PER_PAGE = 10; 
 let currentUser = null;
 
-// ലൈവ് അപ്ഡേറ്റുകൾ ട്രാക്ക് ചെയ്യാൻ
-const activeListeners = [];
-
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        setupUserInteractionListeners();
+        // User logged in, check their likes
+        setupUserInteractionChecks();
     } else {
         signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
     }
@@ -73,6 +70,7 @@ function loadExploreBanner(bannerUrl) {
 
 async function loadCategories() {
     try {
+        // Cache enabled by default in firebase-config
         const q = query(collection(db, "categories"));
         const catSnapshot = await getDocs(q);
         catSnapshot.forEach((doc) => {
@@ -126,11 +124,10 @@ async function loadProducts() {
                 ${buildCardContent(productId, product)}
             `;
             feedContainer.appendChild(card);
-            
-            setupProductListener(productId);
         }
         
-        if(currentUser) setupUserInteractionListeners();
+        // Check interactions if user is already loaded
+        if(currentUser) setupUserInteractionChecks();
 
         new Swiper('.explore-image-swiper', {
             loop: false,
@@ -146,55 +143,42 @@ async function loadProducts() {
     }
 }
 
-// 1. PRODUCT LISTENER (Updates Counts Only)
-function setupProductListener(productId) {
-    const card = document.getElementById(`product-card-${productId}`);
-    if (!card) return;
-
-    const productRef = doc(db, "products", productId);
-    
-    const unsubscribe = onSnapshot(productRef, (docSnap) => {
-        if (docSnap.exists()) {
-            const data = docSnap.data();
-            const likeCountSpan = card.querySelector('.like-count');
-            if (likeCountSpan) likeCountSpan.textContent = data.likeCount || 0;
-            const ratingCountSpan = card.querySelector('.rating-count');
-            if (ratingCountSpan) ratingCountSpan.textContent = data.ratingCount || 0;
-        }
-    });
-    activeListeners.push(unsubscribe);
-}
-
-// 2. USER STATUS LISTENER (My Like)
-function setupUserInteractionListeners() {
+// *** OPTIMIZATION: Use getDoc instead of onSnapshot ***
+// This saves reads. It only checks once when loaded.
+async function setupUserInteractionChecks() {
     if (!currentUser) return;
     const cards = document.querySelectorAll('.explore-card');
     
-    cards.forEach((card) => {
+    cards.forEach(async (card) => {
+        // Skip if already checked to save reads
+        if(card.dataset.checked === "true") return;
+        
         const productId = card.id.replace('product-card-', '');
         
-        const likeRef = doc(db, "products", productId, "likes", currentUser.uid);
-        onSnapshot(likeRef, (docSnap) => {
+        // Check Like
+        try {
+            const likeRef = doc(db, "products", productId, "likes", currentUser.uid);
+            const likeSnap = await getDoc(likeRef);
             const likeBtn = card.querySelector('.like-btn');
             if(likeBtn) {
-                if (docSnap.exists()) {
+                if (likeSnap.exists()) {
                     likeBtn.classList.add('liked');
                     likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
                     likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
-                } else {
-                    likeBtn.classList.remove('liked');
-                    likeBtn.querySelector('svg').style.fill = 'none';
-                    likeBtn.querySelector('svg').style.stroke = 'currentColor';
                 }
             }
-        });
+        } catch(e) {}
 
-        const ratingRef = doc(db, "products", productId, "ratings", currentUser.uid);
-        onSnapshot(ratingRef, (docSnap) => {
-            if (docSnap.exists()) {
-                updateStarUI(card, docSnap.data().rating);
+        // Check Rating
+        try {
+            const ratingRef = doc(db, "products", productId, "ratings", currentUser.uid);
+            const ratingSnap = await getDoc(ratingRef);
+            if (ratingSnap.exists()) {
+                updateStarUI(card, ratingSnap.data().rating);
             }
-        });
+        } catch(e) {}
+        
+        card.dataset.checked = "true"; // Mark as checked
     });
 }
 
@@ -247,8 +231,6 @@ function buildCardContent(productId, product) {
     const imageUrl = optimizeImage(rawImage, 400);
     const isInCart = isItemInCart(productId);
     const activeClass = isInCart ? 'added-to-cart' : '';
-    
-    // *** മാറ്റം: ഇവിടെ ഇൻലൈൻ സ്റ്റൈൽ (style="fill:...") ഒഴിവാക്കി. CSS-ൽ ഇത് നിയന്ത്രിക്കും ***
     const buttonTitle = isInCart ? 'Remove from Cart' : 'Add to Cart';
 
     const likeCount = product.likeCount || 0;
@@ -329,6 +311,25 @@ feedContainer.addEventListener('click', async (e) => {
         const productId = likeButton.dataset.id;
         const productRef = doc(db, "products", productId);
         const userLikeRef = doc(db, "products", productId, "likes", currentUser.uid);
+        
+        // Optimistic UI Update (Immediate visual feedback)
+        const countSpan = likeButton.nextElementSibling;
+        let currentCount = parseInt(countSpan.textContent) || 0;
+        const isLiked = likeButton.classList.contains('liked');
+        
+        if(isLiked) {
+            likeButton.classList.remove('liked');
+            likeButton.querySelector('svg').style.fill = 'none';
+            likeButton.querySelector('svg').style.stroke = 'currentColor';
+            countSpan.textContent = Math.max(0, currentCount - 1);
+        } else {
+            likeButton.classList.add('liked');
+            likeButton.querySelector('svg').style.fill = 'var(--error-red)';
+            likeButton.querySelector('svg').style.stroke = 'var(--error-red)';
+            countSpan.textContent = currentCount + 1;
+            likeButton.style.transform = 'scale(1.2)';
+            setTimeout(() => likeButton.style.transform = 'scale(1)', 200);
+        }
 
         try {
             await runTransaction(db, async (transaction) => {
@@ -336,29 +337,20 @@ feedContainer.addEventListener('click', async (e) => {
                 const productDoc = await transaction.get(productRef);
                 
                 if (!productDoc.exists()) throw "Product not found";
-                
                 let newCount = productDoc.data().likeCount || 0;
 
                 if (likeDoc.exists()) {
                     transaction.delete(userLikeRef);
                     newCount = Math.max(0, newCount - 1);
-                    transaction.update(productRef, { likeCount: newCount });
-                    likeButton.classList.remove('liked');
-                    likeButton.querySelector('svg').style.fill = 'none';
-                    likeButton.querySelector('svg').style.stroke = 'currentColor';
                 } else {
                     transaction.set(userLikeRef, { timestamp: serverTimestamp() });
                     newCount++;
-                    transaction.update(productRef, { likeCount: newCount });
-                    likeButton.classList.add('liked');
-                    likeButton.querySelector('svg').style.fill = 'var(--error-red)';
-                    likeButton.querySelector('svg').style.stroke = 'var(--error-red)';
-                    likeButton.style.transform = 'scale(1.2)';
-                    setTimeout(() => likeButton.style.transform = 'scale(1)', 200);
                 }
+                transaction.update(productRef, { likeCount: newCount });
             });
         } catch (err) { 
             console.error("Like Transaction Error:", err);
+            // Revert UI on error (Optional but good practice)
         }
     }
 
@@ -378,6 +370,10 @@ feedContainer.addEventListener('click', async (e) => {
         const value = parseInt(star.dataset.value);
         const productRef = doc(db, "products", productId);
         const userRatingRef = doc(db, "products", productId, "ratings", currentUser.uid);
+        const card = document.getElementById(`product-card-${productId}`);
+
+        // Optimistic UI
+        updateStarUI(card, value);
 
         try { 
             await runTransaction(db, async (transaction) => {
@@ -391,10 +387,12 @@ feedContainer.addEventListener('click', async (e) => {
                     transaction.set(userRatingRef, { rating: value, timestamp: serverTimestamp() });
                     currentCount++;
                     transaction.update(productRef, { ratingCount: currentCount });
+                    // Update count locally
+                    const countSpan = card.querySelector('.rating-count');
+                    if(countSpan) countSpan.textContent = currentCount;
                 } else {
                     transaction.update(userRatingRef, { rating: value, timestamp: serverTimestamp() });
                 }
-                updateStarUI(document.getElementById(`product-card-${productId}`), value);
             });
         } 
         catch (err) { console.error("Rating Error:", err); }
@@ -404,7 +402,6 @@ feedContainer.addEventListener('click', async (e) => {
     if (bookmarkButton) {
         e.preventDefault();
         const id = bookmarkButton.dataset.id;
-        // *** മാറ്റം: നേരിട്ട് നിറം മാറ്റുന്നത് ഒഴിവാക്കി, ക്ലാസ്സ് മാത്രം മാറ്റുന്നു ***
         if (bookmarkButton.classList.contains('added-to-cart')) {
             removeFromCart(id);
             bookmarkButton.classList.remove('added-to-cart');
@@ -441,6 +438,7 @@ async function loadRatingBars(productId) {
     const summaryContainer = document.getElementById(`rating-summary-${productId}`);
     if (!summaryContainer) return;
     
+    // This fetch is unavoidable if we want to show bars, but it's only on click
     const ratingsRef = collection(db, "products", productId, "ratings");
     const snapshot = await getDocs(ratingsRef);
     
