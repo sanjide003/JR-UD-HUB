@@ -1,9 +1,9 @@
-// cart-page.js - Optimized
+// cart-page.js - Optimized & Image Fallback Added
 
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadSiteSettings, optimizeImage } from './common.js'; 
-import { getCartItems, updateQuantity, removeFromCart, getCartTotal, getCartItemCount, getCartTotalMRP } from './cart.js';
+import { getCartItems, updateQuantity, removeFromCart, getCartTotal, getCartItemCount, getCartTotalMRP, clearCart } from './cart.js';
 
 const itemsContainer = document.getElementById('cart-items-container');
 const summaryContainer = document.getElementById('cart-summary-container');
@@ -145,10 +145,11 @@ function renderCartPage() {
             discountBadge = `<span class="item-discount-badge">${discountPercent}% OFF</span>`;
         }
 
+        // *** Image Fallback Logic ***
         itemElement.innerHTML = `
             <div class="cart-item-main">
                 <a href="${productLink}" class="cart-item-image-link">
-                    <img src="${optimizedImage}" alt="${item.name}" class="cart-item-image" loading="lazy">
+                    <img src="${optimizedImage}" alt="${item.name}" class="cart-item-image" loading="lazy" onerror="this.src='https://placehold.co/150x150/1e1e1e/D4AF37?text=No+Image'">
                 </a>
                 <div class="cart-item-info">
                     <div>
