@@ -1,10 +1,10 @@
-// product.js - Optimized for Free Plan (Data Saving)
+// product.js - Cart Image Fix & Data Saving
 
 import { 
     collection, 
     getDocs, 
     doc, 
-    getDoc, // Changed from onSnapshot to getDoc
+    getDoc, 
     query, 
     where, 
     limit,
@@ -29,7 +29,6 @@ let currentUser = null;
 let appTitle = "JR UD HUB"; 
 let orderConfig = { codEnabled: false, codFee: 0 }; 
 
-// Modal Elements
 const paymentModal = document.getElementById('payment-modal');
 const cancelPaymentBtn = document.getElementById('cancel-payment-btn');
 const confirmPaymentBtn = document.getElementById('confirm-payment-btn');
@@ -65,7 +64,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 async function loadAppTitle() {
     try {
-        // Cache-first strategy provided by firebase-config
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
@@ -106,7 +104,6 @@ function setupModalListeners() {
     }
 }
 
-// *** OPTIMIZATION: Use getDoc instead of onSnapshot ***
 async function loadProductDetails() {
     if (!productDetailContent) return;
 
@@ -120,7 +117,6 @@ async function loadProductDetails() {
         }
 
         const docRef = doc(db, "products", productId);
-        // Using getDoc ensures we only read 1 document per visit, not continuous updates
         const docSnap = await getDoc(docRef);
         
         if (!docSnap.exists()) {
@@ -302,7 +298,6 @@ function renderProductUI(product, productIdStr) {
     });
 }
 
-// *** OPTIMIZATION: Check interactions only once on load ***
 async function checkProductUserInteraction() {
     if (!currentUser || !currentProduct) return;
     const productId = currentProduct.id;
@@ -403,7 +398,6 @@ function setupProductActionButtons() {
                         setTimeout(() => likeBtn.style.transform = 'scale(1)', 200);
                     }
                     
-                    // Update UI Count immediately
                     const countSpan = likeBtn.parentElement.querySelector('.like-count');
                     if(countSpan) countSpan.textContent = newCount;
                 });
@@ -470,7 +464,19 @@ function setupProductActionButtons() {
                 cartButton.classList.remove('added-to-cart');
                 if (buttonText) buttonText.textContent = 'Add to Cart';
             } else {
-                addToCart(id, currentProduct);
+                // *** Fix for Cart Image ***
+                const rawImage = (currentProduct.images && currentProduct.images.length > 0) ? currentProduct.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
+                
+                const product = {
+                    id: id,
+                    name: currentProduct.name,
+                    price: currentProduct.price,
+                    mrp: currentProduct.mrp,
+                    image: rawImage, // Ensure valid image
+                    size: currentProduct.size || ''
+                };
+                
+                addToCart(id, product);
                 cartButton.classList.add('added-to-cart');
                 if (buttonText) buttonText.textContent = 'Remove';
             }
@@ -643,39 +649,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
     } catch (error) { console.error("Error loading related products: ", error); }
 }
 
-async function loadRatingBars(productId) {
-    // onSnapshot removed, fetch only when requested
-    const summaryContainer = document.getElementById(`rating-summary-${productId}`);
-    if (!summaryContainer) return;
-    
-    const ratingsRef = collection(db, "products", productId, "ratings");
-    const snapshot = await getDocs(ratingsRef);
-    
-    const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    const total = snapshot.size;
-    
-    snapshot.forEach(doc => {
-        const val = doc.data().rating;
-        if (counts[val] !== undefined) counts[val]++;
-    });
-    
-    let html = '';
-    const keys = [5, 4, 3, 2, 1];
-    keys.forEach((starVal) => {
-        const count = counts[starVal];
-        const percentage = total > 0 ? (count / total) * 100 : 0;
-        let color = starVal === 1 ? '#ff4d4d' : starVal === 2 ? '#ff9f43' : starVal === 3 ? '#feca57' : starVal === 4 ? '#1dd1a1' : '#10ac84';
-        html += `
-            <div class="rating-bar-row">
-                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
-                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
-                <span class="bar-count">${count}</span>
-            </div>
-        `;
-    });
-    summaryContainer.innerHTML = html;
-}
-
 relatedProductsGrid.addEventListener('click', (e) => {
     const cartButton = e.target.closest('.btn-add-to-cart');
     if (cartButton) {
@@ -688,12 +661,15 @@ relatedProductsGrid.addEventListener('click', (e) => {
             cartButton.classList.remove('added-to-cart');
             if (buttonText) buttonText.textContent = 'Cart';
         } else {
+            // *** Fix for Related Products Cart Image ***
+            const rawImage = cartButton.dataset.image;
+            
             const product = {
                 id: id, 
                 name: cartButton.dataset.name,
                 price: parseFloat(cartButton.dataset.price),
                 mrp: parseFloat(cartButton.dataset.mrp),
-                image: cartButton.dataset.image,
+                image: rawImage, // Using raw image from dataset
                 size: cartButton.dataset.size 
             };
             addToCart(id, product);
