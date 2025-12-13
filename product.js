@@ -1,16 +1,15 @@
-// product.js - Updated with Payment Modal & COD Logic
+// product.js - Optimized for Free Plan (Data Saving)
 
 import { 
     collection, 
     getDocs, 
     doc, 
-    getDoc, 
+    getDoc, // Changed from onSnapshot to getDoc
     query, 
     where, 
     limit,
     setDoc,
     deleteDoc,
-    onSnapshot, 
     runTransaction,
     serverTimestamp,
     setLogLevel
@@ -28,7 +27,7 @@ let currentProduct = null;
 let whatsappNumber = ''; 
 let currentUser = null;
 let appTitle = "JR UD HUB"; 
-let orderConfig = { codEnabled: false, codFee: 0 }; // Default settings
+let orderConfig = { codEnabled: false, codFee: 0 }; 
 
 // Modal Elements
 const paymentModal = document.getElementById('payment-modal');
@@ -59,20 +58,19 @@ function linkify(text) {
 document.addEventListener("DOMContentLoaded", async () => {
     await loadAppTitle(); 
     await loadSiteSettings();
-    await loadOrderSettings(); // Load COD config
+    await loadOrderSettings(); 
     loadProductDetails();
-    setupModalListeners(); // Setup modal events
+    setupModalListeners(); 
 });
 
 async function loadAppTitle() {
     try {
+        // Cache-first strategy provided by firebase-config
         const docRef = doc(db, "settings", "global");
         const docSnap = await getDoc(docRef);
-        if (docSnap.exists() && docSnap.data().logoText) {
-            appTitle = docSnap.data().logoText;
-        }
-        if (docSnap.exists() && docSnap.data().whatsapp) {
-            whatsappNumber = docSnap.data().whatsapp;
+        if (docSnap.exists()) {
+            if(docSnap.data().logoText) appTitle = docSnap.data().logoText;
+            if(docSnap.data().whatsapp) whatsappNumber = docSnap.data().whatsapp;
         }
     } catch (e) { console.error("Error loading settings:", e); }
 }
@@ -108,6 +106,7 @@ function setupModalListeners() {
     }
 }
 
+// *** OPTIMIZATION: Use getDoc instead of onSnapshot ***
 async function loadProductDetails() {
     if (!productDetailContent) return;
 
@@ -121,27 +120,26 @@ async function loadProductDetails() {
         }
 
         const docRef = doc(db, "products", productId);
+        // Using getDoc ensures we only read 1 document per visit, not continuous updates
+        const docSnap = await getDoc(docRef);
         
-        onSnapshot(docRef, (docSnap) => {
-            if (!docSnap.exists()) {
-                productDetailContent.innerHTML = '<p class="error-message">Product not found.</p>';
-                return;
-            }
+        if (!docSnap.exists()) {
+            productDetailContent.innerHTML = '<p class="error-message">Product not found.</p>';
+            return;
+        }
 
-            const product = docSnap.data();
-            const productIdStr = docSnap.id;
-            
-            if (!currentProduct || currentProduct.id !== productIdStr) {
-                renderProductUI(product, productIdStr);
-                setupProductActionButtons();
-                if (product.categoryId) loadRelatedProducts(product.categoryId, productIdStr);
-            } else {
-                updateProductCountsOnly(product);
-            }
-
-            currentProduct = { id: productIdStr, ...product };
-            if(currentUser) checkProductUserInteraction();
-        });
+        const product = docSnap.data();
+        const productIdStr = docSnap.id;
+        
+        currentProduct = { id: productIdStr, ...product };
+        renderProductUI(product, productIdStr);
+        setupProductActionButtons();
+        
+        if (product.categoryId) {
+            loadRelatedProducts(product.categoryId, productIdStr);
+        }
+        
+        if(currentUser) checkProductUserInteraction();
 
     } catch (error) {
         console.error("Error loading product details: ", error);
@@ -304,38 +302,29 @@ function renderProductUI(product, productIdStr) {
     });
 }
 
-function updateProductCountsOnly(product) {
-    const likeCountSpan = document.querySelector('.like-count');
-    const ratingCountSpan = document.querySelector('.rating-count');
-    
-    if (likeCountSpan) likeCountSpan.textContent = product.likeCount || 0;
-    if (ratingCountSpan) ratingCountSpan.textContent = product.ratingCount || 0;
-}
-
-function checkProductUserInteraction() {
+// *** OPTIMIZATION: Check interactions only once on load ***
+async function checkProductUserInteraction() {
     if (!currentUser || !currentProduct) return;
     const productId = currentProduct.id;
 
-    onSnapshot(doc(db, "products", productId, "likes", currentUser.uid), (docSnap) => {
+    try {
+        const likeDoc = await getDoc(doc(db, "products", productId, "likes", currentUser.uid));
         const likeBtn = document.querySelector('.like-btn');
         if(likeBtn) {
-            if(docSnap.exists()) {
+            if(likeDoc.exists()) {
                 likeBtn.classList.add('liked');
                 likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
                 likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
-            } else {
-                likeBtn.classList.remove('liked');
-                likeBtn.querySelector('svg').style.fill = 'none';
-                likeBtn.querySelector('svg').style.stroke = 'currentColor';
             }
         }
-    });
+    } catch(e) {}
 
-    onSnapshot(doc(db, "products", productId, "ratings", currentUser.uid), (docSnap) => {
-        if(docSnap.exists()) {
-            updateStarUI(docSnap.data().rating);
+    try {
+        const ratingDoc = await getDoc(doc(db, "products", productId, "ratings", currentUser.uid));
+        if(ratingDoc.exists()) {
+            updateStarUI(ratingDoc.data().rating);
         }
-    });
+    } catch(e) {}
 }
 
 function updateStarUI(value) {
@@ -413,6 +402,10 @@ function setupProductActionButtons() {
                         likeBtn.style.transform = 'scale(1.2)';
                         setTimeout(() => likeBtn.style.transform = 'scale(1)', 200);
                     }
+                    
+                    // Update UI Count immediately
+                    const countSpan = likeBtn.parentElement.querySelector('.like-count');
+                    if(countSpan) countSpan.textContent = newCount;
                 });
             } catch(err) { console.error("Like error:", err); }
         }
@@ -448,6 +441,8 @@ function setupProductActionButtons() {
                         transaction.update(userRatingRef, { rating: value, timestamp: serverTimestamp() });
                     }
                     updateStarUI(value);
+                    const countSpan = document.querySelector('.rating-count');
+                    if(countSpan) countSpan.textContent = currentCount;
                 });
             } catch(err) { console.error(err); }
         }
@@ -485,12 +480,10 @@ function setupProductActionButtons() {
         if (whatsappButton) {
             e.preventDefault();
             if(paymentModal) {
-                // Open Modal for WhatsApp Buy
                 paymentModal.style.display = 'flex';
                 paymentRadios[0].checked = true; 
                 codWarningBox.style.display = 'none';
                 
-                // Confirm Action for Single Buy
                 confirmPaymentBtn.onclick = () => {
                     let selectedMode = 'online';
                     paymentRadios.forEach(r => { if(r.checked) selectedMode = r.value; });
@@ -498,7 +491,6 @@ function setupProductActionButtons() {
                     paymentModal.style.display = 'none';
                 };
             } else {
-                // Fallback direct
                 handleSingleOrder(currentProduct, 'online');
             }
         }
@@ -575,6 +567,7 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
     try {
         const q = query(collection(db, "products"), where("categoryId", "==", categoryId), limit(10));
+        // Use getDocs for cache benefits
         const querySnapshot = await getDocs(q);
         
         relatedProductsGrid.innerHTML = `<div class="swiper related-products-swiper"><div class="swiper-wrapper" id="related-products-wrapper"></div></div>`;
@@ -648,6 +641,39 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
         }
 
     } catch (error) { console.error("Error loading related products: ", error); }
+}
+
+async function loadRatingBars(productId) {
+    // onSnapshot removed, fetch only when requested
+    const summaryContainer = document.getElementById(`rating-summary-${productId}`);
+    if (!summaryContainer) return;
+    
+    const ratingsRef = collection(db, "products", productId, "ratings");
+    const snapshot = await getDocs(ratingsRef);
+    
+    const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const total = snapshot.size;
+    
+    snapshot.forEach(doc => {
+        const val = doc.data().rating;
+        if (counts[val] !== undefined) counts[val]++;
+    });
+    
+    let html = '';
+    const keys = [5, 4, 3, 2, 1];
+    keys.forEach((starVal) => {
+        const count = counts[starVal];
+        const percentage = total > 0 ? (count / total) * 100 : 0;
+        let color = starVal === 1 ? '#ff4d4d' : starVal === 2 ? '#ff9f43' : starVal === 3 ? '#feca57' : starVal === 4 ? '#1dd1a1' : '#10ac84';
+        html += `
+            <div class="rating-bar-row">
+                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
+                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
+                <span class="bar-count">${count}</span>
+            </div>
+        `;
+    });
+    summaryContainer.innerHTML = html;
 }
 
 relatedProductsGrid.addEventListener('click', (e) => {
