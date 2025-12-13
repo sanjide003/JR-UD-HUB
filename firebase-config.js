@@ -1,12 +1,14 @@
 // ഈ ഫയൽ(firebase-config.js)
-// എല്ലാ JS ഫയലുകളും ഈ ഫയലിനെയാണ് ആശ്രയിക്കുന്നത്.
-// *** Vercel/GitHub-ൽ ഹോസ്റ്റ് ചെയ്യാൻ വേണ്ടി ക്ലീൻ ചെയ്തു ***
+// *** DATA SAVING & OFFLINE MODE ENABLED ***
 
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-import { getFirestore, setLogLevel } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { 
+    getFirestore, 
+    enableIndexedDbPersistence, 
+    setLogLevel 
+} from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
-// --- Vercel/GitHub-ൽ ഹോസ്റ്റ് ചെയ്യുമ്പോൾ ഈ കോൺഫിഗറേഷൻ ഉപയോഗിക്കും
 const firebaseConfig = {
     apiKey: "AIzaSyCePcVE_BTiFuYXAApNmbMKHdkhQ9Ay_F4",
     authDomain: "al-ambar-perfume-company.firebaseapp.com",
@@ -19,10 +21,20 @@ const firebaseConfig = {
 
 // ഫയർബേസ് ആരംഭിക്കുന്നു
 const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
 
-// ഫയർബേസ് സേവനങ്ങൾ എക്സ്പോർട്ട് ചെയ്യുന്നു
-export const db = getFirestore(app); // ഡാറ്റാബേസ് (Firestore)
-export const auth = getAuth(app);    // ലോഗിൻ (Authentication)
+// *** Offline Persistence (Cache) Enable ചെയ്യുന്നു ***
+// ഇത് ഡാറ്റ ഫോണിൽ സേവ് ചെയ്യും. പിന്നീട് വരുമ്പോൾ സെർവറിൽ നിന്ന് എടുക്കാതെ ഇവിടെ നിന്ന് എടുക്കും.
+// ഇത് ഫയർബേസ് റീഡ്സ് (Reads) കുറയ്ക്കാൻ സഹായിക്കും.
+enableIndexedDbPersistence(db).catch((err) => {
+    if (err.code == 'failed-precondition') {
+        console.warn('Persistence failed: Multiple tabs open');
+    } else if (err.code == 'unimplemented') {
+        console.warn('Persistence not supported by browser');
+    }
+});
 
-// ഡീബഗ്ഗിംഗ് ലോഗുകൾ കാണാൻ
-setLogLevel('Debug');
+setLogLevel('Silent'); 
+
+export { db, auth };
