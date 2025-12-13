@@ -1,10 +1,10 @@
-// explore.js - Optimized for Data Saving (No Real-time Listeners)
+// explore.js - Optimized: 5 Initial + 3 on Scroll & Cart Image Fix
 
 import {
     collection,
     getDocs,
     doc,
-    getDoc, // Changed from onSnapshot to getDoc for savings
+    getDoc,
     query,
     limit,
     startAfter,
@@ -27,13 +27,16 @@ const loader = document.getElementById("explore-scroll-loader");
 let categoriesMap = new Map(); 
 let lastVisible = null;
 let isLoading = false;
-const PRODUCTS_PER_PAGE = 10; 
+
+// *** മാറ്റം 1: ആദ്യം 5 എണ്ണം, പിന്നെ 3 എണ്ണം വീതം ***
+const INITIAL_LOAD_COUNT = 5;
+const SCROLL_LOAD_COUNT = 3;
+
 let currentUser = null;
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        // User logged in, check their likes
         setupUserInteractionChecks();
     } else {
         signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
@@ -70,7 +73,6 @@ function loadExploreBanner(bannerUrl) {
 
 async function loadCategories() {
     try {
-        // Cache enabled by default in firebase-config
         const q = query(collection(db, "categories"));
         const catSnapshot = await getDocs(q);
         catSnapshot.forEach((doc) => {
@@ -87,16 +89,22 @@ async function loadProducts() {
     if (isLoading) return;
     isLoading = true;
     if (loader) loader.style.display = 'flex';
-    if (lastVisible === null) feedContainer.innerHTML = ''; 
+    
+    // ആദ്യ തവണയാണോ എന്ന് പരിശോധിക്കുന്നു
+    const isFirstLoad = lastVisible === null;
+    
+    // *** മാറ്റം: ലോഡ് ചെയ്യുന്ന എണ്ണം തീരുമാനിക്കുന്നു ***
+    const limitCount = isFirstLoad ? INITIAL_LOAD_COUNT : SCROLL_LOAD_COUNT;
 
     try {
         const productsRef = collection(db, "products");
         let q;
         
         if (lastVisible) {
-            q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(PRODUCTS_PER_PAGE));
+            q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(limitCount));
         } else {
-            q = query(productsRef, orderBy("createdAt", "desc"), limit(PRODUCTS_PER_PAGE));
+            feedContainer.innerHTML = ''; // Reset only on first load
+            q = query(productsRef, orderBy("createdAt", "desc"), limit(limitCount));
         }
 
         const documentSnapshots = await getDocs(q);
@@ -104,7 +112,10 @@ async function loadProducts() {
             if (feedContainer.innerHTML === '') {
                 feedContainer.innerHTML = '<p class="loading-placeholder-full">No products found.</p>';
             }
+            // ഇനി ഡാറ്റ ഇല്ലെങ്കിൽ ലോഡർ മറയ്ക്കാം
             if (loader) loader.style.display = 'none';
+            // ഒബ്സർവർ നിർത്താം (Infinite scroll stop)
+            if(observer && loader) observer.unobserve(loader);
             return;
         }
         
@@ -126,9 +137,9 @@ async function loadProducts() {
             feedContainer.appendChild(card);
         }
         
-        // Check interactions if user is already loaded
         if(currentUser) setupUserInteractionChecks();
 
+        // Swiper Initialize
         new Swiper('.explore-image-swiper', {
             loop: false,
             allowTouchMove: true,
@@ -136,40 +147,34 @@ async function loadProducts() {
 
     } catch (error) {
         console.error("Error loading products: ", error);
-        feedContainer.innerHTML = '<p class="loading-placeholder-full">Error loading products.</p>';
+        if(feedContainer.innerHTML === '') feedContainer.innerHTML = '<p class="loading-placeholder-full">Error loading products.</p>';
     } finally {
         isLoading = false;
+        // ലോഡിംഗ് കഴിഞ്ഞാൽ ലോഡർ മറയ്ക്കുന്നു (അടുത്ത സ്ക്രോളിൽ വീണ്ടും വരും)
         if (loader) loader.style.display = 'none';
     }
 }
 
-// *** OPTIMIZATION: Use getDoc instead of onSnapshot ***
-// This saves reads. It only checks once when loaded.
 async function setupUserInteractionChecks() {
     if (!currentUser) return;
     const cards = document.querySelectorAll('.explore-card');
     
     cards.forEach(async (card) => {
-        // Skip if already checked to save reads
         if(card.dataset.checked === "true") return;
         
         const productId = card.id.replace('product-card-', '');
         
-        // Check Like
         try {
             const likeRef = doc(db, "products", productId, "likes", currentUser.uid);
             const likeSnap = await getDoc(likeRef);
             const likeBtn = card.querySelector('.like-btn');
-            if(likeBtn) {
-                if (likeSnap.exists()) {
-                    likeBtn.classList.add('liked');
-                    likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
-                    likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
-                }
+            if(likeBtn && likeSnap.exists()) {
+                likeBtn.classList.add('liked');
+                likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
+                likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
             }
         } catch(e) {}
 
-        // Check Rating
         try {
             const ratingRef = doc(db, "products", productId, "ratings", currentUser.uid);
             const ratingSnap = await getDoc(ratingRef);
@@ -178,7 +183,7 @@ async function setupUserInteractionChecks() {
             }
         } catch(e) {}
         
-        card.dataset.checked = "true"; // Mark as checked
+        card.dataset.checked = "true"; 
     });
 }
 
@@ -199,6 +204,9 @@ function buildCategoryHeader(categoryId) {
 function buildImageSlider(productId, images, productName) {
     const productLink = `product.html?id=${productId}`;
     let slidesHTML = '';
+    
+    // *** ഇമേജ് കാർഡിൽ മിസ്സ് ആകാതിരിക്കാൻ ***
+    // ഇമേജ് ഇല്ലെങ്കിൽ പ്ലേസ്ഹോൾഡർ വെക്കുന്നു
     if (images && images.length > 0) {
         images.forEach(imgUrl => {
             const optimizedUrl = optimizeImage(imgUrl, 600, 85);
@@ -227,8 +235,10 @@ function buildCardContent(productId, product) {
         descriptionHTML = `<div class="description-text"><span style="color:var(--text-color); font-weight:500;">${product.name}</span></div>`;
     }
 
-    const rawImage = product.images && product.images[0] ? product.images[0] : '';
-    const imageUrl = optimizeImage(rawImage, 400);
+    // *** Cart Image Logic: Ensure valid image is passed to dataset ***
+    const rawImage = (product.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
+    const imageUrl = optimizeImage(rawImage, 400); // For display/cache
+    
     const isInCart = isItemInCart(productId);
     const activeClass = isInCart ? 'added-to-cart' : '';
     const buttonTitle = isInCart ? 'Remove from Cart' : 'Add to Cart';
@@ -254,7 +264,17 @@ function buildCardContent(productId, product) {
                 </div>
 
                 <button title="Share" class="share-btn" data-id="${productId}" data-name="${product.name}" data-price="${price}"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
-                <button title="${buttonTitle}" class="bookmark-btn ${activeClass}" data-id="${productId}" data-name="${product.name}" data-price="${price}" data-mrp="${mrp}" data-image="${imageUrl}" data-size="${product.size || ''}"><svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg></button>
+                
+                <!-- *** CART BUTTON: Data Attributes Updated *** -->
+                <button title="${buttonTitle}" class="bookmark-btn ${activeClass}" 
+                    data-id="${productId}" 
+                    data-name="${product.name}" 
+                    data-price="${price}" 
+                    data-mrp="${mrp}" 
+                    data-image="${rawImage}" 
+                    data-size="${product.size || ''}">
+                    <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+                </button>
             </div>
             
             <div class="rating-box" id="rating-box-${productId}" style="display: none;">
@@ -312,7 +332,6 @@ feedContainer.addEventListener('click', async (e) => {
         const productRef = doc(db, "products", productId);
         const userLikeRef = doc(db, "products", productId, "likes", currentUser.uid);
         
-        // Optimistic UI Update (Immediate visual feedback)
         const countSpan = likeButton.nextElementSibling;
         let currentCount = parseInt(countSpan.textContent) || 0;
         const isLiked = likeButton.classList.contains('liked');
@@ -348,10 +367,7 @@ feedContainer.addEventListener('click', async (e) => {
                 }
                 transaction.update(productRef, { likeCount: newCount });
             });
-        } catch (err) { 
-            console.error("Like Transaction Error:", err);
-            // Revert UI on error (Optional but good practice)
-        }
+        } catch (err) { console.error("Like Transaction Error:", err); }
     }
 
     const commentButton = target.closest('.comment-btn');
@@ -372,7 +388,6 @@ feedContainer.addEventListener('click', async (e) => {
         const userRatingRef = doc(db, "products", productId, "ratings", currentUser.uid);
         const card = document.getElementById(`product-card-${productId}`);
 
-        // Optimistic UI
         updateStarUI(card, value);
 
         try { 
@@ -387,7 +402,6 @@ feedContainer.addEventListener('click', async (e) => {
                     transaction.set(userRatingRef, { rating: value, timestamp: serverTimestamp() });
                     currentCount++;
                     transaction.update(productRef, { ratingCount: currentCount });
-                    // Update count locally
                     const countSpan = card.querySelector('.rating-count');
                     if(countSpan) countSpan.textContent = currentCount;
                 } else {
@@ -407,12 +421,16 @@ feedContainer.addEventListener('click', async (e) => {
             bookmarkButton.classList.remove('added-to-cart');
             bookmarkButton.title = 'Add to Cart';
         } else {
+            // *** Fix for Cart Image: Ensure valid image URL is passed ***
+            const imgData = bookmarkButton.dataset.image;
+            const validImage = (imgData && imgData !== 'undefined') ? imgData : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
+            
             const product = {
                 id: id,
                 name: bookmarkButton.dataset.name,
                 price: parseFloat(bookmarkButton.dataset.price),
                 mrp: parseFloat(bookmarkButton.dataset.mrp),
-                image: bookmarkButton.dataset.image,
+                image: validImage, // Pass the clean image URL
                 size: bookmarkButton.dataset.size 
             };
             addToCart(id, product);
@@ -438,7 +456,6 @@ async function loadRatingBars(productId) {
     const summaryContainer = document.getElementById(`rating-summary-${productId}`);
     if (!summaryContainer) return;
     
-    // This fetch is unavoidable if we want to show bars, but it's only on click
     const ratingsRef = collection(db, "products", productId, "ratings");
     const snapshot = await getDocs(ratingsRef);
     
@@ -473,9 +490,12 @@ async function loadRatingBars(productId) {
     summaryContainer.innerHTML = html;
 }
 
+// *** Scroll Observer Update ***
+// ലോഡർ സ്ക്രീനിൽ വരുമ്പോൾ മാത്രം അടുത്ത സെറ്റ് വിളിക്കുന്നു
 const observer = new IntersectionObserver((entries) => {
     if (entries[0].isIntersecting && !isLoading && lastVisible) { 
         loadProducts();
     }
-}, { rootMargin: '400px' });
+}, { rootMargin: '100px' }); // Load when 100px away from bottom
+
 if (loader) { observer.observe(loader); }
