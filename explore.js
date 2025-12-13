@@ -1,4 +1,4 @@
-// explore.js - Fixed Scrolling & Cart Image Issues
+// explore.js - Fixed: Initial 5 -> Scroll 3 & Cart Image Data
 
 import {
     collection,
@@ -9,10 +9,6 @@ import {
     limit,
     startAfter,
     orderBy,
-    setDoc,
-    deleteDoc,
-    runTransaction,
-    serverTimestamp,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db, auth } from './firebase-config.js';
@@ -27,9 +23,9 @@ const loader = document.getElementById("explore-scroll-loader");
 let categoriesMap = new Map(); 
 let lastVisible = null;
 let isLoading = false;
-let hasMoreProducts = true; // To track if more products exist
+let hasMoreProducts = true; 
 
-// *** Load Strategy: Initial 5, then 3 per scroll ***
+// *** മാറ്റം: ആദ്യം 5, പിന്നെ 3 വീതം ***
 const INITIAL_LOAD_COUNT = 5;
 const SCROLL_LOAD_COUNT = 3;
 
@@ -63,7 +59,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadCategories();   
     await loadProducts();     
     
-    // Initialize Observer after first load
     setupScrollObserver();
 });
 
@@ -90,7 +85,7 @@ async function loadCategories() {
 }
 
 async function loadProducts() {
-    if (isLoading || !hasMoreProducts) return; // Prevent multiple calls or if no more products
+    if (isLoading || !hasMoreProducts) return;
     
     isLoading = true;
     if (loader) loader.style.display = 'flex';
@@ -102,6 +97,7 @@ async function loadProducts() {
         const productsRef = collection(db, "products");
         let q;
         
+        // Sorting by createdAt desc to show newest first
         if (lastVisible) {
             q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(limitCount));
         } else {
@@ -121,7 +117,7 @@ async function loadProducts() {
         
         lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
 
-        // If fewer docs returned than limit, we reached end
+        // If we got fewer docs than requested, we reached the end
         if (documentSnapshots.docs.length < limitCount) {
             hasMoreProducts = false;
         }
@@ -130,16 +126,19 @@ async function loadProducts() {
             const product = docSnap.data();
             const productId = docSnap.id;
             
-            const card = document.createElement('div');
-            card.className = 'explore-card';
-            card.id = `product-card-${productId}`; 
-            
-            card.innerHTML = `
-                ${buildCategoryHeader(product.categoryId)}
-                ${buildImageSlider(productId, product.images, product.name)}
-                ${buildCardContent(productId, product)}
-            `;
-            feedContainer.appendChild(card);
+            // Check if card already exists (prevent duplicates in fast scroll)
+            if(!document.getElementById(`product-card-${productId}`)) {
+                const card = document.createElement('div');
+                card.className = 'explore-card';
+                card.id = `product-card-${productId}`; 
+                
+                card.innerHTML = `
+                    ${buildCategoryHeader(product.categoryId)}
+                    ${buildImageSlider(productId, product.images, product.name)}
+                    ${buildCardContent(productId, product)}
+                `;
+                feedContainer.appendChild(card);
+            }
         }
         
         if(currentUser) setupUserInteractionChecks();
@@ -151,8 +150,9 @@ async function loadProducts() {
 
     } catch (error) {
         console.error("Error loading products: ", error);
-        if (isFirstLoad && feedContainer.innerHTML === '') {
-            feedContainer.innerHTML = '<p class="loading-placeholder-full">Error loading products. Please refresh.</p>';
+        // Fallback: If 'createdAt' index is missing, try default sort
+        if (error.code === 'failed-precondition') {
+             console.warn("Index missing. Please create index for 'createdAt' in Firestore.");
         }
     } finally {
         isLoading = false;
@@ -164,12 +164,11 @@ function setupScrollObserver() {
     if (!loader) return;
     
     const observer = new IntersectionObserver((entries) => {
-        // Load more only if loader is visible AND we are not loading AND there are more products
         if (entries[0].isIntersecting && !isLoading && hasMoreProducts) { 
             loadProducts();
         }
     }, { 
-        rootMargin: '200px', // Start loading before reaching exact bottom
+        rootMargin: '200px', 
         threshold: 0.1 
     });
     
@@ -254,7 +253,7 @@ function buildCardContent(productId, product) {
         descriptionHTML = `<div class="description-text"><span style="color:var(--text-color); font-weight:500;">${product.name}</span></div>`;
     }
 
-    // *** Cart Image Logic: Ensure valid image URL is passed ***
+    // *** FIX: Ensure Image URL is available for Cart ***
     const rawImage = (product.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
     const imageUrl = optimizeImage(rawImage, 400); 
     
@@ -284,8 +283,7 @@ function buildCardContent(productId, product) {
 
                 <button title="Share" class="share-btn" data-id="${productId}" data-name="${product.name}" data-price="${price}"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
                 
-                <!-- *** CART BUTTON: Image Data Fix *** -->
-                <!-- We pass the raw image URL directly to data-image to ensure it reaches cart correctly -->
+                <!-- *** CART BUTTON FIX: Pass rawImage correctly *** -->
                 <button title="${buttonTitle}" class="bookmark-btn ${activeClass}" 
                     data-id="${productId}" 
                     data-name="${product.name}" 
@@ -441,16 +439,16 @@ feedContainer.addEventListener('click', async (e) => {
             bookmarkButton.classList.remove('added-to-cart');
             bookmarkButton.title = 'Add to Cart';
         } else {
-            // *** Fix for Cart Image: Ensure valid image URL is passed ***
+            // *** Fix for Cart Image: Get raw image URL from dataset ***
             const imgData = bookmarkButton.dataset.image;
-            const validImage = (imgData && imgData !== 'undefined' && imgData !== 'null') ? imgData : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
+            const validImage = (imgData && imgData !== 'undefined' && imgData !== 'null') ? imgData : '';
             
             const product = {
                 id: id,
                 name: bookmarkButton.dataset.name,
                 price: parseFloat(bookmarkButton.dataset.price),
                 mrp: parseFloat(bookmarkButton.dataset.mrp),
-                image: validImage, // Pass the clean image URL
+                image: validImage, 
                 size: bookmarkButton.dataset.size 
             };
             addToCart(id, product);
@@ -480,7 +478,6 @@ async function loadRatingBars(productId) {
     const snapshot = await getDocs(ratingsRef);
     
     const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    const total = snapshot.size;
     
     snapshot.forEach(doc => {
         const val = doc.data().rating;
@@ -491,14 +488,8 @@ async function loadRatingBars(productId) {
     const keys = [5, 4, 3, 2, 1];
     keys.forEach((starVal) => {
         const count = counts[starVal];
-        const percentage = total > 0 ? (count / total) * 100 : 0;
-        
-        let color = '#ff4d4d'; // Red
-        if (starVal === 2) color = '#ff9f43';
-        if (starVal === 3) color = '#feca57';
-        if (starVal === 4) color = '#1dd1a1';
-        if (starVal === 5) color = '#10ac84';
-
+        const percentage = snapshot.size > 0 ? (count / snapshot.size) * 100 : 0;
+        let color = starVal === 1 ? '#ff4d4d' : starVal === 2 ? '#ff9f43' : starVal === 3 ? '#feca57' : starVal === 4 ? '#1dd1a1' : '#10ac84';
         html += `
             <div class="rating-bar-row">
                 <span>${starVal} <span class="star-icon">&#9733;</span></span> 
