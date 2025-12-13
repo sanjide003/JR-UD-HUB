@@ -1,4 +1,4 @@
-// categories.js - Optimized for Speed (Image Proxy)
+// categories.js - Optimized for Data Saving & Speed
 
 import {
     collection,
@@ -15,7 +15,7 @@ import { db } from './firebase-config.js';
 import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { addToCart, isItemInCart, removeFromCart } from './cart.js';
 
-setLogLevel('Silent'); // ലോഗ് കുറയ്ക്കുന്നു
+setLogLevel('Silent');
 
 // --- DOM Elements ---
 const productGrid = document.getElementById("category-product-grid");
@@ -53,6 +53,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         currentCategoryId = categoryIdFromUrl;
     }
     
+    // Load once and use cache for filtering (Saves Reads)
     await loadAllProductsCache();
     
     setupEventListeners();
@@ -61,13 +62,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     applyFilters(); 
 });
 
-// --- SCROLL ANIMATION LOGIC ---
+// --- SCROLL ANIMATION ---
 function setupScrollAnimation() {
     if (!productsScrollContainer) return;
 
     productsScrollContainer.addEventListener('scroll', () => {
         const scrollTop = productsScrollContainer.scrollTop;
-        // ഹെഡർ ചെറുതാകുന്നു
         if (scrollTop > 30) {
             stickyHeader.classList.add('compact');
         } else {
@@ -91,6 +91,7 @@ async function loadCategoryList() {
     if (!categoryNavSection) return;
     try {
         const q = query(collection(db, "categories"), orderBy("name"));
+        // getDocs uses cache if available (due to persistence enabled)
         const catSnapshot = await getDocs(q);
 
         let navHtml = `
@@ -108,7 +109,7 @@ async function loadCategoryList() {
             const category = doc.data();
             categoriesMap.set(doc.id, category.name);
             const rawImage = category.imageUrl || 'https://placehold.co/80x80/333/D4AF37?text=C';
-            // *** മാറ്റം: വളരെ ചെറിയ ഐക്കൺ സൈസ് (80px, 60% Quality) - Data Saving ***
+            // Optimized tiny icon
             const optimizedIcon = optimizeImage(rawImage, 80, 60);
 
             navHtml += `
@@ -129,6 +130,8 @@ async function loadCategoryList() {
     }
 }
 
+// *** CRITICAL OPTIMIZATION: Load All once, Filter Locally ***
+// This avoids calling Firebase every time a user changes a filter.
 async function loadAllProductsCache() {
     if (loader) loader.style.display = 'flex';
     try {
@@ -280,7 +283,6 @@ function applyFilters() {
             renderProductCard(product, product.id);
         });
 
-        // Dummy Cards for better layout alignment (Minimum 8)
         const minItems = 8;
         const currentCount = filtered.length;
         if (currentCount < minItems) {
@@ -311,10 +313,7 @@ function renderProductCard(product, productId) {
 
     const price = product.price || 0;
     const mrp = product.mrp || 0;
-    
     const rawImage = product.images && product.images[0] ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
-    
-    // *** ഇമേജ് ഒപ്റ്റിമൈസേഷൻ: 300px, 60% Quality (Data Saver) ***
     const imageUrl = optimizeImage(rawImage, 300, 60);
 
     let priceHTML = `<span class="price-main">₹${price}</span>`;
