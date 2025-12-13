@@ -1,9 +1,9 @@
-// cart-page.js - Fixed Image Issues & Details
+// cart-page.js - Auto-fix Missing Cart Data & Show Images
 
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadSiteSettings, optimizeImage } from './common.js'; 
-import { getCartItems, updateQuantity, removeFromCart, getCartTotal, getCartItemCount, getCartTotalMRP, clearCart } from './cart.js';
+import { getCartItems, updateQuantity, removeFromCart, getCartTotal, getCartItemCount, getCartTotalMRP, clearCart, addToCart } from './cart.js'; // Ensure addToCart is imported to update
 
 const itemsContainer = document.getElementById('cart-items-container');
 const summaryContainer = document.getElementById('cart-summary-container');
@@ -34,10 +34,59 @@ document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
     await loadWhatsappNumber(); 
     await loadOrderSettings(); 
+    await checkAndFixCartItems(); // *** New: Check & Fix Missing Data ***
     renderCartPage();
     setupButtonObserver();
     setupModalListeners();
 });
+
+// *** NEW FUNCTION: Fetch missing details from Firestore ***
+async function checkAndFixCartItems() {
+    const cart = getCartItems();
+    const cartKeys = Object.keys(cart);
+    let updated = false;
+
+    for (const key of cartKeys) {
+        const item = cart[key];
+        // Check if essential data is missing (image, name, price)
+        if (!item.image || !item.name || item.image === 'undefined' || item.price === undefined) {
+            try {
+                if(checkoutLoader) checkoutLoader.style.display = 'block'; // Show loader while fixing
+                const docRef = doc(db, "products", key);
+                const docSnap = await getDoc(docRef);
+                
+                if (docSnap.exists()) {
+                    const productData = docSnap.data();
+                    const rawImage = (productData.images && productData.images.length > 0) ? productData.images[0] : '';
+                    
+                    // Update item in cart with fresh data
+                    const updatedItem = {
+                        ...item,
+                        name: productData.name,
+                        price: productData.price,
+                        mrp: productData.mrp,
+                        image: rawImage,
+                    };
+                    
+                    // Use addToCart logic to update (it merges/overwrites) but we need to keep quantity
+                    // So we manually update local storage logic conceptually
+                    // Or simply re-save to cart. Let's rely on addToCart with quantity correction or direct update.
+                    
+                    // Direct update to cart object then save
+                    cart[key] = updatedItem;
+                    updated = true;
+                }
+            } catch (e) {
+                console.error("Error fixing cart item:", key, e);
+            }
+        }
+    }
+
+    if (updated) {
+        localStorage.setItem('jrUdHubCart', JSON.stringify(cart)); // Save fixed cart
+        if(checkoutLoader) checkoutLoader.style.display = 'none';
+    }
+}
 
 async function loadWhatsappNumber() {
     try {
@@ -137,7 +186,7 @@ function renderCartPage() {
         const sizeHTML = item.size ? `<span class="cart-item-size">${item.size}</span>` : '';
         const productLink = `product.html?id=${itemId}`;
         
-        // *** Image Validation Logic ***
+        // Ensure image is valid for display
         const rawImage = (item.image && item.image !== 'undefined' && item.image !== 'null') ? item.image : 'https://placehold.co/150x150/1e1e1e/D4AF37?text=No+Image';
         const optimizedImage = optimizeImage(rawImage, 150);
 
@@ -150,7 +199,7 @@ function renderCartPage() {
         itemElement.innerHTML = `
             <div class="cart-item-main">
                 <a href="${productLink}" class="cart-item-image-link">
-                    <img src="${optimizedImage}" alt="${item.name}" class="cart-item-image" loading="lazy" onerror="this.src='https://placehold.co/150x150/1e1e1e/D4AF37?text=Image+Error'">
+                    <img src="${optimizedImage}" alt="${item.name}" class="cart-item-image" loading="lazy" onerror="this.src='https://placehold.co/150x150/1e1e1e/D4AF37?text=Error'">
                 </a>
                 <div class="cart-item-info">
                     <div>
@@ -158,7 +207,7 @@ function renderCartPage() {
                         <div class="cart-item-meta">
                             ${discountBadge}
                             <div class="price-row-wrapper">
-                                <span class="cart-item-price">₹${item.price.toFixed(2)}</span>
+                                <span class="cart-item-price">₹${Number(item.price).toFixed(2)}</span>
                                 ${sizeHTML}
                             </div>
                         </div>
@@ -323,7 +372,7 @@ function generateWhatsAppMessage(items, totalAmount, totalMRP, discount, payment
         message += `🛍️ ${item.name}\n`;
         if (item.size) message += `Size : ${item.size}\n`; 
         message += `Qty : ${item.quantity}\n`;
-        message += `Price : ₹${item.price.toFixed(2)}\n\n`;
+        message += `Price : ₹${Number(item.price).toFixed(2)}\n\n`;
         message += `🔗 Product link :  ${productLink}\n\n`; 
     });
 
