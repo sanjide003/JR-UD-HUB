@@ -1,4 +1,4 @@
-// explore.js - Optimized: 5 Initial + 3 on Scroll & Cart Image Fix
+// explore.js - Fixed Scrolling & Cart Image Issues
 
 import {
     collection,
@@ -27,8 +27,9 @@ const loader = document.getElementById("explore-scroll-loader");
 let categoriesMap = new Map(); 
 let lastVisible = null;
 let isLoading = false;
+let hasMoreProducts = true; // To track if more products exist
 
-// *** മാറ്റം 1: ആദ്യം 5 എണ്ണം, പിന്നെ 3 എണ്ണം വീതം ***
+// *** Load Strategy: Initial 5, then 3 per scroll ***
 const INITIAL_LOAD_COUNT = 5;
 const SCROLL_LOAD_COUNT = 3;
 
@@ -61,6 +62,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     await loadCategories();   
     await loadProducts();     
+    
+    // Initialize Observer after first load
+    setupScrollObserver();
 });
 
 function loadExploreBanner(bannerUrl) {
@@ -86,14 +90,12 @@ async function loadCategories() {
 }
 
 async function loadProducts() {
-    if (isLoading) return;
+    if (isLoading || !hasMoreProducts) return; // Prevent multiple calls or if no more products
+    
     isLoading = true;
     if (loader) loader.style.display = 'flex';
     
-    // ആദ്യ തവണയാണോ എന്ന് പരിശോധിക്കുന്നു
     const isFirstLoad = lastVisible === null;
-    
-    // *** മാറ്റം: ലോഡ് ചെയ്യുന്ന എണ്ണം തീരുമാനിക്കുന്നു ***
     const limitCount = isFirstLoad ? INITIAL_LOAD_COUNT : SCROLL_LOAD_COUNT;
 
     try {
@@ -103,23 +105,26 @@ async function loadProducts() {
         if (lastVisible) {
             q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(limitCount));
         } else {
-            feedContainer.innerHTML = ''; // Reset only on first load
             q = query(productsRef, orderBy("createdAt", "desc"), limit(limitCount));
         }
 
         const documentSnapshots = await getDocs(q);
+        
         if (documentSnapshots.empty) {
-            if (feedContainer.innerHTML === '') {
+            hasMoreProducts = false;
+            if (loader) loader.style.display = 'none';
+            if (isFirstLoad && feedContainer.innerHTML === '') {
                 feedContainer.innerHTML = '<p class="loading-placeholder-full">No products found.</p>';
             }
-            // ഇനി ഡാറ്റ ഇല്ലെങ്കിൽ ലോഡർ മറയ്ക്കാം
-            if (loader) loader.style.display = 'none';
-            // ഒബ്സർവർ നിർത്താം (Infinite scroll stop)
-            if(observer && loader) observer.unobserve(loader);
             return;
         }
         
         lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
+
+        // If fewer docs returned than limit, we reached end
+        if (documentSnapshots.docs.length < limitCount) {
+            hasMoreProducts = false;
+        }
 
         for (const docSnap of documentSnapshots.docs) {
             const product = docSnap.data();
@@ -139,7 +144,6 @@ async function loadProducts() {
         
         if(currentUser) setupUserInteractionChecks();
 
-        // Swiper Initialize
         new Swiper('.explore-image-swiper', {
             loop: false,
             allowTouchMove: true,
@@ -147,12 +151,29 @@ async function loadProducts() {
 
     } catch (error) {
         console.error("Error loading products: ", error);
-        if(feedContainer.innerHTML === '') feedContainer.innerHTML = '<p class="loading-placeholder-full">Error loading products.</p>';
+        if (isFirstLoad && feedContainer.innerHTML === '') {
+            feedContainer.innerHTML = '<p class="loading-placeholder-full">Error loading products. Please refresh.</p>';
+        }
     } finally {
         isLoading = false;
-        // ലോഡിംഗ് കഴിഞ്ഞാൽ ലോഡർ മറയ്ക്കുന്നു (അടുത്ത സ്ക്രോളിൽ വീണ്ടും വരും)
         if (loader) loader.style.display = 'none';
     }
+}
+
+function setupScrollObserver() {
+    if (!loader) return;
+    
+    const observer = new IntersectionObserver((entries) => {
+        // Load more only if loader is visible AND we are not loading AND there are more products
+        if (entries[0].isIntersecting && !isLoading && hasMoreProducts) { 
+            loadProducts();
+        }
+    }, { 
+        rootMargin: '200px', // Start loading before reaching exact bottom
+        threshold: 0.1 
+    });
+    
+    observer.observe(loader);
 }
 
 async function setupUserInteractionChecks() {
@@ -205,8 +226,6 @@ function buildImageSlider(productId, images, productName) {
     const productLink = `product.html?id=${productId}`;
     let slidesHTML = '';
     
-    // *** ഇമേജ് കാർഡിൽ മിസ്സ് ആകാതിരിക്കാൻ ***
-    // ഇമേജ് ഇല്ലെങ്കിൽ പ്ലേസ്ഹോൾഡർ വെക്കുന്നു
     if (images && images.length > 0) {
         images.forEach(imgUrl => {
             const optimizedUrl = optimizeImage(imgUrl, 600, 85);
@@ -235,9 +254,9 @@ function buildCardContent(productId, product) {
         descriptionHTML = `<div class="description-text"><span style="color:var(--text-color); font-weight:500;">${product.name}</span></div>`;
     }
 
-    // *** Cart Image Logic: Ensure valid image is passed to dataset ***
+    // *** Cart Image Logic: Ensure valid image URL is passed ***
     const rawImage = (product.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
-    const imageUrl = optimizeImage(rawImage, 400); // For display/cache
+    const imageUrl = optimizeImage(rawImage, 400); 
     
     const isInCart = isItemInCart(productId);
     const activeClass = isInCart ? 'added-to-cart' : '';
@@ -265,7 +284,8 @@ function buildCardContent(productId, product) {
 
                 <button title="Share" class="share-btn" data-id="${productId}" data-name="${product.name}" data-price="${price}"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
                 
-                <!-- *** CART BUTTON: Data Attributes Updated *** -->
+                <!-- *** CART BUTTON: Image Data Fix *** -->
+                <!-- We pass the raw image URL directly to data-image to ensure it reaches cart correctly -->
                 <button title="${buttonTitle}" class="bookmark-btn ${activeClass}" 
                     data-id="${productId}" 
                     data-name="${product.name}" 
@@ -423,7 +443,7 @@ feedContainer.addEventListener('click', async (e) => {
         } else {
             // *** Fix for Cart Image: Ensure valid image URL is passed ***
             const imgData = bookmarkButton.dataset.image;
-            const validImage = (imgData && imgData !== 'undefined') ? imgData : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
+            const validImage = (imgData && imgData !== 'undefined' && imgData !== 'null') ? imgData : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
             
             const product = {
                 id: id,
@@ -489,13 +509,3 @@ async function loadRatingBars(productId) {
     });
     summaryContainer.innerHTML = html;
 }
-
-// *** Scroll Observer Update ***
-// ലോഡർ സ്ക്രീനിൽ വരുമ്പോൾ മാത്രം അടുത്ത സെറ്റ് വിളിക്കുന്നു
-const observer = new IntersectionObserver((entries) => {
-    if (entries[0].isIntersecting && !isLoading && lastVisible) { 
-        loadProducts();
-    }
-}, { rootMargin: '100px' }); // Load when 100px away from bottom
-
-if (loader) { observer.observe(loader); }
