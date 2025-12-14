@@ -1,9 +1,9 @@
-// cart-page.js - Auto-fix Missing Cart Data & Show Images
+// cart-page.js - Fix: Single Item Buy vs Full Cart Buy Separation
 
 import { db } from './firebase-config.js';
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadSiteSettings, optimizeImage } from './common.js'; 
-import { getCartItems, updateQuantity, removeFromCart, getCartTotal, getCartItemCount, getCartTotalMRP, clearCart, addToCart } from './cart.js'; // Ensure addToCart is imported to update
+import { getCartItems, updateQuantity, removeFromCart, getCartTotal, getCartItemCount, getCartTotalMRP, clearCart, addToCart } from './cart.js'; 
 
 const itemsContainer = document.getElementById('cart-items-container');
 const summaryContainer = document.getElementById('cart-summary-container');
@@ -30,17 +30,23 @@ const codWarningText = document.getElementById('cod-warning-text');
 let whatsappNumber = ''; 
 let orderConfig = { codEnabled: false, codFee: 0 }; 
 
+// *** Transaction State Tracking ***
+let pendingTransaction = {
+    type: 'full', // 'full' or 'single'
+    itemId: null
+};
+
 document.addEventListener("DOMContentLoaded", async () => {
     await loadSiteSettings(); 
     await loadWhatsappNumber(); 
     await loadOrderSettings(); 
-    await checkAndFixCartItems(); // *** New: Check & Fix Missing Data ***
+    await checkAndFixCartItems(); 
     renderCartPage();
     setupButtonObserver();
     setupModalListeners();
 });
 
-// *** NEW FUNCTION: Fetch missing details from Firestore ***
+// Auto-repair missing data
 async function checkAndFixCartItems() {
     const cart = getCartItems();
     const cartKeys = Object.keys(cart);
@@ -48,42 +54,31 @@ async function checkAndFixCartItems() {
 
     for (const key of cartKeys) {
         const item = cart[key];
-        // Check if essential data is missing (image, name, price)
         if (!item.image || !item.name || item.image === 'undefined' || item.price === undefined) {
             try {
-                if(checkoutLoader) checkoutLoader.style.display = 'block'; // Show loader while fixing
+                if(checkoutLoader) checkoutLoader.style.display = 'block'; 
                 const docRef = doc(db, "products", key);
                 const docSnap = await getDoc(docRef);
                 
                 if (docSnap.exists()) {
                     const productData = docSnap.data();
-                    const rawImage = (productData.images && productData.images.length > 0) ? productData.images[0] : '';
+                    const rawImage = (productData.images && productData.images.length > 0) ? productData.images[0] : 'https://placehold.co/150x150/1e1e1e/D4AF37?text=No+Image';
                     
-                    // Update item in cart with fresh data
-                    const updatedItem = {
+                    cart[key] = {
                         ...item,
                         name: productData.name,
                         price: productData.price,
                         mrp: productData.mrp,
                         image: rawImage,
                     };
-                    
-                    // Use addToCart logic to update (it merges/overwrites) but we need to keep quantity
-                    // So we manually update local storage logic conceptually
-                    // Or simply re-save to cart. Let's rely on addToCart with quantity correction or direct update.
-                    
-                    // Direct update to cart object then save
-                    cart[key] = updatedItem;
                     updated = true;
                 }
-            } catch (e) {
-                console.error("Error fixing cart item:", key, e);
-            }
+            } catch (e) { console.error("Error fixing cart item:", key, e); }
         }
     }
 
     if (updated) {
-        localStorage.setItem('jrUdHubCart', JSON.stringify(cart)); // Save fixed cart
+        localStorage.setItem('jrUdHubCart', JSON.stringify(cart));
         if(checkoutLoader) checkoutLoader.style.display = 'none';
     }
 }
@@ -129,6 +124,7 @@ function setupButtonObserver() {
 function setupModalListeners() {
     if(!paymentModal) return;
 
+    // Toggle COD Warning
     paymentRadios.forEach(radio => {
         radio.addEventListener('change', (e) => {
             if (e.target.value === 'cod' && orderConfig.codEnabled) {
@@ -146,11 +142,23 @@ function setupModalListeners() {
         });
     }
 
+    // *** FIX: Single Robust Confirm Listener ***
     if(confirmPaymentBtn) {
-        confirmPaymentBtn.addEventListener('click', () => {
+        // Remove existing listeners to be safe (though this runs once on load)
+        confirmPaymentBtn.replaceWith(confirmPaymentBtn.cloneNode(true));
+        const newConfirmBtn = document.getElementById('confirm-payment-btn');
+        
+        newConfirmBtn.addEventListener('click', () => {
             let selectedMode = 'online';
             paymentRadios.forEach(r => { if(r.checked) selectedMode = r.value; });
-            handleFullOrder(selectedMode);
+            
+            // Check Transaction Type
+            if (pendingTransaction.type === 'single' && pendingTransaction.itemId) {
+                handleSingleOrder(pendingTransaction.itemId, selectedMode);
+            } else {
+                handleFullOrder(selectedMode);
+            }
+            
             paymentModal.style.display = 'none';
         });
     }
@@ -186,7 +194,6 @@ function renderCartPage() {
         const sizeHTML = item.size ? `<span class="cart-item-size">${item.size}</span>` : '';
         const productLink = `product.html?id=${itemId}`;
         
-        // Ensure image is valid for display
         const rawImage = (item.image && item.image !== 'undefined' && item.image !== 'null') ? item.image : 'https://placehold.co/150x150/1e1e1e/D4AF37?text=No+Image';
         const optimizedImage = optimizeImage(rawImage, 150);
 
@@ -199,7 +206,7 @@ function renderCartPage() {
         itemElement.innerHTML = `
             <div class="cart-item-main">
                 <a href="${productLink}" class="cart-item-image-link">
-                    <img src="${optimizedImage}" alt="${item.name}" class="cart-item-image" loading="lazy" onerror="this.src='https://placehold.co/150x150/1e1e1e/D4AF37?text=Error'">
+                    <img src="${optimizedImage}" alt="${item.name}" class="cart-item-image" loading="lazy" onerror="this.src='https://placehold.co/150x150/1e1e1e/D4AF37?text=No+Image'">
                 </a>
                 <div class="cart-item-info">
                     <div>
@@ -269,11 +276,15 @@ function updateCartSummary() {
 
 itemsContainer.addEventListener('click', (e) => {
     const target = e.target;
+    
+    // Remove Item
     if (target.closest('.btn-remove')) {
         const btn = target.closest('.btn-remove');
         removeFromCart(btn.dataset.id);
         renderCartPage(); 
     }
+    
+    // Change Quantity
     if (target.classList.contains('quantity-btn')) {
         const id = target.dataset.id;
         const change = parseInt(target.dataset.change);
@@ -283,41 +294,40 @@ itemsContainer.addEventListener('click', (e) => {
             renderCartPage();
         }
     }
+    
+    // *** BUY SINGLE ITEM CLICK ***
     if (target.closest('.btn-buy-single')) {
         const id = target.closest('.btn-buy-single').dataset.id;
         
-        window.singleBuyId = id; 
+        // 1. Set Transaction State to SINGLE
+        pendingTransaction.type = 'single';
+        pendingTransaction.itemId = id;
         
+        // 2. Open Modal
         if (paymentModal) {
             paymentModal.style.display = 'flex';
-            paymentRadios[0].checked = true; 
+            paymentRadios[0].checked = true; // Reset radio to Online
             codWarningBox.style.display = 'none';
-            confirmPaymentBtn.onclick = () => {
-                let selectedMode = 'online';
-                paymentRadios.forEach(r => { if(r.checked) selectedMode = r.value; });
-                handleSingleOrder(window.singleBuyId, selectedMode);
-                paymentModal.style.display = 'none';
-            };
         }
     }
 });
 
+// *** PLACE ALL ORDER CLICK ***
 if (fullCheckoutButton) {
     fullCheckoutButton.addEventListener('click', () => {
         if (getCartItemCount() === 0) return showError("Cart is empty");
+        
+        // 1. Set Transaction State to FULL
+        pendingTransaction.type = 'full';
+        pendingTransaction.itemId = null;
+        
+        // 2. Open Modal
         if (paymentModal) {
             paymentModal.style.display = 'flex'; 
             paymentRadios[0].checked = true; 
             codWarningBox.style.display = 'none';
-            
-            confirmPaymentBtn.onclick = () => {
-                let selectedMode = 'online';
-                paymentRadios.forEach(r => { if(r.checked) selectedMode = r.value; });
-                handleFullOrder(selectedMode);
-                paymentModal.style.display = 'none';
-            };
         } else {
-            handleFullOrder('online'); 
+            handleFullOrder('online'); // Fallback if no modal
         }
     });
 }
@@ -326,12 +336,15 @@ function handleSingleOrder(itemId, paymentMode = 'online') {
     if (!whatsappNumber) return showError("WhatsApp number not set by admin.");
     const cart = getCartItems();
     const item = cart[itemId];
+    
     if (item) {
         showLoader(true);
+        // Calculate totals for ONLY THIS ITEM
         const itemMRP = ((item.mrp && item.mrp > item.price) ? item.mrp : item.price) * item.quantity;
         const itemTotal = item.price * item.quantity;
         const itemDiscount = itemMRP - itemTotal;
         
+        // Pass single item in array
         const message = generateWhatsAppMessage([item], itemTotal, itemMRP, itemDiscount, paymentMode);
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
@@ -350,6 +363,7 @@ function handleFullOrder(paymentMode = 'online') {
     }
     
     showLoader(true);
+    // Calculate Full Totals
     const total = getCartTotal();
     const totalMRP = getCartTotalMRP();
     const discount = totalMRP - total;
