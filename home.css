@@ -1,4 +1,4 @@
-/* home.css - Updated: Unique Red Box Countdown (Top-Left) */
+/* home.css - Updated for Correct 2-Row Layout */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -485,8 +485,16 @@ body.light-mode .category-circle-title {
 /* Swiper Config */
 .top-deals-swiper, .top-sellers-swiper-new, .discount-swiper, .under-799-swiper { padding: 0 4px !important; }
 .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 48% !important; margin-right: 4px !important; }
-.discount-swiper { height: auto !important; }
-.discount-swiper .swiper-slide { height: auto !important; margin-top: 0 !important; }
+
+/* *** DISCOUNT SWIPER 2-ROW FIX *** */
+.discount-swiper { 
+    height: auto; 
+    padding-bottom: 10px !important; /* Spacing */
+}
+.discount-swiper .swiper-slide { 
+    height: calc((100% - 10px) / 2) !important; /* Force 50% height for proper 2-row grid */
+    margin-top: 0; 
+}
 
 /* Responsive */
 @media (min-width: 640px) {
