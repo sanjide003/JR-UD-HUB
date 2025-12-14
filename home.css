@@ -1,24 +1,25 @@
-/* home.css - Updated: Compact Category Grid */
+/* home.css - Updated: Clean Top Banner (No Animated Border) */
 
 /* =========================================
-   1. HOME TOP BANNER
+   1. HOME TOP BANNER (Clean Style)
    ========================================= */
 .home-top-banner {
     width: 100%;
     height: auto;
     line-height: 0;
     position: relative;
-    background-color: #000;
-    margin-bottom: 0;
+    background-color: transparent;
+    margin-bottom: 15px;
     overflow: hidden;
-    border-bottom: 1px solid #222;
+    border-radius: 12px; /* Rounded Corners */
     display: none; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Soft Shadow */
 }
 
 /* Light Mode Override */
 body.light-mode .home-top-banner {
-    background-color: #fff;
-    border-bottom: 1px solid #e0e0e0;
+    background-color: transparent;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
 .home-top-banner img {
@@ -27,12 +28,12 @@ body.light-mode .home-top-banner {
     display: block;
     max-height: 140px; 
     object-fit: cover;
-    opacity: 0.95;
-    transition: opacity 0.3s ease;
+    border-radius: 12px; /* Match Container Radius */
+    transition: transform 0.3s ease;
 }
 
 .home-top-banner:hover img {
-    opacity: 1;
+    transform: scale(1.02); /* Slight Zoom on Hover */
 }
 
 /* =========================================
@@ -191,15 +192,36 @@ body.light-mode .special-offer-banner-img {
     border: 1px solid #ddd;
 }
 
-/* Countdown Styles */
+.special-offer-header::before {
+    content: 'LIMITED TIME';
+    position: absolute; top: 8px; left: 8px;
+    background: linear-gradient(45deg, #ff3f6c, #ff6b6b);
+    color: white; font-size: 0.65rem; font-weight: 800;
+    padding: 5px 10px; border-radius: 20px; z-index: 2;
+    display: none; /* Removed as per request to simplify, or keep if needed */
+}
+
+/* *** UNIQUE COUNTDOWN TIMER STYLES (Red Boxes, Top-Left) *** */
 .countdown-overlay {
     position: absolute;
-    top: 10px; left: 10px;
-    display: flex; gap: 6px; z-index: 5;
+    top: 10px; /* Top Position */
+    left: 10px; /* Left Position */
+    bottom: auto; /* Remove Bottom */
+    transform: none; /* Remove Center Transform */
+    background: transparent; /* No container background */
+    backdrop-filter: none;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    gap: 6px;
+    z-index: 5;
 }
+
+/* Individual Red Box */
 .countdown-box {
-    background-color: #d32f2f;
-    color: #ffffff;
+    background-color: #d32f2f; /* Red Background */
+    color: #ffffff; /* White Text */
     padding: 4px 6px;
     border-radius: 4px;
     display: flex;
@@ -210,9 +232,26 @@ body.light-mode .special-offer-banner-img {
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     border: 1px solid rgba(255,255,255,0.2);
 }
-.countdown-val { font-size: 0.9rem; font-weight: 800; line-height: 1; font-family: monospace; }
-.countdown-unit { font-size: 0.55rem; text-transform: uppercase; font-weight: 600; margin-top: 2px; opacity: 0.9; }
-.countdown-overlay.expired .countdown-box { background-color: #555; }
+
+.countdown-val {
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1;
+    font-family: monospace; /* For uniform width */
+}
+
+.countdown-unit {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 2px;
+    opacity: 0.9;
+}
+
+/* Expired State */
+.countdown-overlay.expired .countdown-box {
+    background-color: #555;
+}
 
 .section-header-card {
     border-radius: 10px 10px 0 0;
@@ -308,7 +347,8 @@ body.light-mode .clean-card-price-row { color: #000000; }
 }
 .card-discount-badge.red { background: linear-gradient(45deg, #ff4d4d, #ff6b6b); }
 
-/* --- SCREENSHOT STYLE --- */
+
+/* --- SCREENSHOT STYLE (Also 1:1) --- */
 .screenshot-mode .clean-card-wrapper {
     background: transparent; border: none; box-shadow: none; padding: 0; min-height: auto;
 }
