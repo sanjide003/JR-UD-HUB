@@ -1,4 +1,4 @@
-// explore.js - Fixed: Initial 5 -> Scroll 3 & Cart Image Data
+// explore.js - Fixed Scrolling (Sentinel), Loading Stuck Issue & Cart Image
 
 import {
     collection,
@@ -25,11 +25,14 @@ let lastVisible = null;
 let isLoading = false;
 let hasMoreProducts = true; 
 
-// *** മാറ്റം: ആദ്യം 5, പിന്നെ 3 വീതം ***
+// ലോഡിംഗ് കണക്ക്: ആദ്യം 5, പിന്നെ 3 വീതം
 const INITIAL_LOAD_COUNT = 5;
 const SCROLL_LOAD_COUNT = 3;
 
 let currentUser = null;
+
+// സ്ക്രോൾ സെന്റിനൽ (Invisible trigger at bottom)
+let scrollSentinel = null;
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
@@ -57,10 +60,27 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadExploreBanner(settings.homeBannerUrl);
     }
     await loadCategories();   
+    
+    // Inject Sentinel for Scrolling
+    createSentinel();
+    
     await loadProducts();     
     
+    // Setup Observer
     setupScrollObserver();
 });
+
+function createSentinel() {
+    if (document.getElementById('scroll-sentinel')) return;
+    scrollSentinel = document.createElement('div');
+    scrollSentinel.id = 'scroll-sentinel';
+    scrollSentinel.style.height = '20px';
+    scrollSentinel.style.width = '100%';
+    scrollSentinel.style.marginBottom = '20px';
+    // Append to main container, after feed
+    const main = document.querySelector('main');
+    if(main) main.appendChild(scrollSentinel);
+}
 
 function loadExploreBanner(bannerUrl) {
     const bannerContainer = document.getElementById('explore-top-banner');
@@ -97,19 +117,34 @@ async function loadProducts() {
         const productsRef = collection(db, "products");
         let q;
         
-        // Sorting by createdAt desc to show newest first
-        if (lastVisible) {
-            q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(limitCount));
-        } else {
-            q = query(productsRef, orderBy("createdAt", "desc"), limit(limitCount));
+        // Try ordering by createdAt. If it fails (index missing), fallback gracefully.
+        try {
+            if (lastVisible) {
+                q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(limitCount));
+            } else {
+                q = query(productsRef, orderBy("createdAt", "desc"), limit(limitCount));
+            }
+        } catch(e) {
+            // Fallback for missing index or field
+            console.warn("Sorting fallback:", e);
+            if (lastVisible) {
+                q = query(productsRef, startAfter(lastVisible), limit(limitCount));
+            } else {
+                q = query(productsRef, limit(limitCount));
+            }
         }
 
         const documentSnapshots = await getDocs(q);
         
+        // Clear "Loading..." text on first load success
+        if (isFirstLoad) {
+            feedContainer.innerHTML = '';
+        }
+
         if (documentSnapshots.empty) {
             hasMoreProducts = false;
             if (loader) loader.style.display = 'none';
-            if (isFirstLoad && feedContainer.innerHTML === '') {
+            if (isFirstLoad) {
                 feedContainer.innerHTML = '<p class="loading-placeholder-full">No products found.</p>';
             }
             return;
@@ -117,7 +152,6 @@ async function loadProducts() {
         
         lastVisible = documentSnapshots.docs[documentSnapshots.docs.length - 1];
 
-        // If we got fewer docs than requested, we reached the end
         if (documentSnapshots.docs.length < limitCount) {
             hasMoreProducts = false;
         }
@@ -126,7 +160,6 @@ async function loadProducts() {
             const product = docSnap.data();
             const productId = docSnap.id;
             
-            // Check if card already exists (prevent duplicates in fast scroll)
             if(!document.getElementById(`product-card-${productId}`)) {
                 const card = document.createElement('div');
                 card.className = 'explore-card';
@@ -150,9 +183,8 @@ async function loadProducts() {
 
     } catch (error) {
         console.error("Error loading products: ", error);
-        // Fallback: If 'createdAt' index is missing, try default sort
-        if (error.code === 'failed-precondition') {
-             console.warn("Index missing. Please create index for 'createdAt' in Firestore.");
+        if (isFirstLoad) {
+            feedContainer.innerHTML = '<div class="loading-placeholder-full" style="color:red;">Error loading content. Please refresh.<br><small>If you are the admin, check Firestore Indexes.</small></div>';
         }
     } finally {
         isLoading = false;
@@ -161,10 +193,11 @@ async function loadProducts() {
 }
 
 function setupScrollObserver() {
-    if (!loader) return;
+    if (!scrollSentinel) createSentinel();
     
     const observer = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && !isLoading && hasMoreProducts) { 
+            console.log("Loading more products...");
             loadProducts();
         }
     }, { 
@@ -172,7 +205,7 @@ function setupScrollObserver() {
         threshold: 0.1 
     });
     
-    observer.observe(loader);
+    observer.observe(scrollSentinel);
 }
 
 async function setupUserInteractionChecks() {
@@ -181,9 +214,7 @@ async function setupUserInteractionChecks() {
     
     cards.forEach(async (card) => {
         if(card.dataset.checked === "true") return;
-        
         const productId = card.id.replace('product-card-', '');
-        
         try {
             const likeRef = doc(db, "products", productId, "likes", currentUser.uid);
             const likeSnap = await getDoc(likeRef);
@@ -194,7 +225,6 @@ async function setupUserInteractionChecks() {
                 likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
             }
         } catch(e) {}
-
         try {
             const ratingRef = doc(db, "products", productId, "ratings", currentUser.uid);
             const ratingSnap = await getDoc(ratingRef);
@@ -202,7 +232,6 @@ async function setupUserInteractionChecks() {
                 updateStarUI(card, ratingSnap.data().rating);
             }
         } catch(e) {}
-        
         card.dataset.checked = "true"; 
     });
 }
@@ -253,9 +282,7 @@ function buildCardContent(productId, product) {
         descriptionHTML = `<div class="description-text"><span style="color:var(--text-color); font-weight:500;">${product.name}</span></div>`;
     }
 
-    // *** FIX: Ensure Image URL is available for Cart ***
     const rawImage = (product.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
-    const imageUrl = optimizeImage(rawImage, 400); 
     
     const isInCart = isItemInCart(productId);
     const activeClass = isInCart ? 'added-to-cart' : '';
@@ -283,7 +310,6 @@ function buildCardContent(productId, product) {
 
                 <button title="Share" class="share-btn" data-id="${productId}" data-name="${product.name}" data-price="${price}"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
                 
-                <!-- *** CART BUTTON FIX: Pass rawImage correctly *** -->
                 <button title="${buttonTitle}" class="bookmark-btn ${activeClass}" 
                     data-id="${productId}" 
                     data-name="${product.name}" 
@@ -439,9 +465,8 @@ feedContainer.addEventListener('click', async (e) => {
             bookmarkButton.classList.remove('added-to-cart');
             bookmarkButton.title = 'Add to Cart';
         } else {
-            // *** Fix for Cart Image: Get raw image URL from dataset ***
             const imgData = bookmarkButton.dataset.image;
-            const validImage = (imgData && imgData !== 'undefined' && imgData !== 'null') ? imgData : '';
+            const validImage = (imgData && imgData !== 'undefined' && imgData !== 'null') ? imgData : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
             
             const product = {
                 id: id,
