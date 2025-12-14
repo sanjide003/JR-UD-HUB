@@ -1,4 +1,4 @@
-/* home.css - Updated: Reduced Gaps for Top Discount Grid */
+/* home.css - Updated: Compact Category Grid */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -191,36 +191,15 @@ body.light-mode .special-offer-banner-img {
     border: 1px solid #ddd;
 }
 
-.special-offer-header::before {
-    content: 'LIMITED TIME';
-    position: absolute; top: 8px; left: 8px;
-    background: linear-gradient(45deg, #ff3f6c, #ff6b6b);
-    color: white; font-size: 0.65rem; font-weight: 800;
-    padding: 5px 10px; border-radius: 20px; z-index: 2;
-    display: none; /* Removed as per request to simplify, or keep if needed */
-}
-
-/* *** UNIQUE COUNTDOWN TIMER STYLES (Red Boxes, Top-Left) *** */
+/* Countdown Styles */
 .countdown-overlay {
     position: absolute;
-    top: 10px; /* Top Position */
-    left: 10px; /* Left Position */
-    bottom: auto; /* Remove Bottom */
-    transform: none; /* Remove Center Transform */
-    background: transparent; /* No container background */
-    backdrop-filter: none;
-    padding: 0;
-    border: none;
-    box-shadow: none;
-    display: flex;
-    gap: 6px;
-    z-index: 5;
+    top: 10px; left: 10px;
+    display: flex; gap: 6px; z-index: 5;
 }
-
-/* Individual Red Box */
 .countdown-box {
-    background-color: #d32f2f; /* Red Background */
-    color: #ffffff; /* White Text */
+    background-color: #d32f2f;
+    color: #ffffff;
     padding: 4px 6px;
     border-radius: 4px;
     display: flex;
@@ -231,30 +210,13 @@ body.light-mode .special-offer-banner-img {
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     border: 1px solid rgba(255,255,255,0.2);
 }
-
-.countdown-val {
-    font-size: 0.9rem;
-    font-weight: 800;
-    line-height: 1;
-    font-family: monospace; /* For uniform width */
-}
-
-.countdown-unit {
-    font-size: 0.55rem;
-    text-transform: uppercase;
-    font-weight: 600;
-    margin-top: 2px;
-    opacity: 0.9;
-}
-
-/* Expired State */
-.countdown-overlay.expired .countdown-box {
-    background-color: #555;
-}
+.countdown-val { font-size: 0.9rem; font-weight: 800; line-height: 1; font-family: monospace; }
+.countdown-unit { font-size: 0.55rem; text-transform: uppercase; font-weight: 600; margin-top: 2px; opacity: 0.9; }
+.countdown-overlay.expired .countdown-box { background-color: #555; }
 
 .section-header-card {
     border-radius: 10px 10px 0 0;
-    padding: 12px 14px; /* Reduced Padding */
+    padding: 12px 14px; 
     position: relative;
     overflow: hidden;
     display: flex;
@@ -272,7 +234,7 @@ body.light-mode .special-offer-banner-img {
 }
 
 .product-slider-container {
-    padding: 8px 4px; /* Reduced Padding for tighter grid */
+    padding: 8px 4px; 
     border-radius: 0 0 10px 10px;
     border: 1px solid #333;
     border-top: none;
@@ -290,114 +252,54 @@ body.light-mode .product-slider-container {
     height: auto; 
     display: flex; 
     box-sizing: border-box; 
-    padding: 0 3px; /* Reduced side padding */
+    padding: 0 3px; 
 }
 
 .clean-card-wrapper {
-    display: flex; 
-    flex-direction: column; 
-    text-decoration: none; 
-    width: 100%;
-    height: 100%; 
-    background-color: #1a1a1a; 
-    border-radius: 8px;
-    overflow: hidden; 
-    border: 1px solid #333; 
-    position: relative; 
-    transition: all 0.2s;
+    display: flex; flex-direction: column; text-decoration: none; 
+    width: 100%; height: 100%; background-color: #1a1a1a; 
+    border-radius: 8px; overflow: hidden; border: 1px solid #333; 
+    position: relative; transition: all 0.2s;
 }
 
-/* Light Mode Override */
 body.light-mode .clean-card-wrapper {
     background-color: #ffffff;
     border-color: #e0e0e0;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-/* === 1:1 SQUARE IMAGE BOX === */
 .clean-card-box {
-    width: 100%; 
-    aspect-ratio: 1 / 1; 
-    position: relative; 
-    background: #111;
-    display: flex; 
-    align-items: center; 
-    justify-content: center; 
-    overflow: hidden; 
-    padding: 5px; /* Reduced padding inside image box */
+    width: 100%; aspect-ratio: 1 / 1; position: relative; background: #111;
+    display: flex; align-items: center; justify-content: center; overflow: hidden; padding: 5px;
 }
 
-/* Light Mode Override */
-body.light-mode .clean-card-box {
-    background: #f8f8f8;
-}
+body.light-mode .clean-card-box { background: #f8f8f8; }
 
-/* FILL IMAGE */
-.clean-card-img {
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-    transition: transform 0.3s ease; 
-    border-radius: 4px;
-}
+.clean-card-img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
 
 .clean-card-details {
-    padding: 6px 8px; 
-    display: flex; 
-    flex-direction: column; 
-    align-items: center;
-    justify-content: space-between; 
-    flex-grow: 1; 
-    gap: 2px;
+    padding: 6px 8px; display: flex; flex-direction: column; align-items: center;
+    justify-content: space-between; flex-grow: 1; gap: 2px;
 }
 
 .clean-card-title {
-    font-size: 0.8rem; 
-    color: #fff; 
-    font-weight: 600; 
-    text-align: center;
-    line-height: 1.2; 
-    display: -webkit-box; 
-    -webkit-line-clamp: 2; 
-    -webkit-box-orient: vertical;
-    overflow: hidden; 
-    margin: 0; 
-    min-height: auto; 
-    width: 100%;
+    font-size: 0.8rem; color: #fff; font-weight: 600; text-align: center;
+    line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+    overflow: hidden; margin: 0; min-height: auto; width: 100%;
 }
 
-/* *** Light Mode Override: Black Title *** */
-body.light-mode .clean-card-title {
-    color: #000000;
-}
+body.light-mode .clean-card-title { color: #000000; }
 
 .clean-card-price-row {
-    font-size: 0.95rem; 
-    font-weight: 800; 
-    color: var(--primary-gold);
-    text-align: center; 
-    margin: 0; 
-    padding: 0; 
-    width: 100%;
+    font-size: 0.95rem; font-weight: 800; color: var(--primary-gold); text-align: center; width: 100%;
 }
 
-/* *** Light Mode Override: Black Price *** */
-body.light-mode .clean-card-price-row {
-    color: #000000;
-}
+body.light-mode .clean-card-price-row { color: #000000; }
 
 .shop-now-btn {
-    width: 100%; 
-    background: var(--primary-gold); 
-    color: #000; 
-    border: none;
-    padding: 5px 0; 
-    border-radius: 4px; 
-    font-size: 0.7rem; 
-    font-weight: 700;
-    text-transform: uppercase; 
-    margin-top: auto; 
-    display: block;
+    width: 100%; background: var(--primary-gold); color: #000; border: none;
+    padding: 5px 0; border-radius: 4px; font-size: 0.7rem; font-weight: 700;
+    text-transform: uppercase; margin-top: auto; display: block;
 }
 
 .card-discount-badge {
@@ -406,20 +308,15 @@ body.light-mode .clean-card-price-row {
 }
 .card-discount-badge.red { background: linear-gradient(45deg, #ff4d4d, #ff6b6b); }
 
-
-/* --- SCREENSHOT STYLE (Also 1:1) --- */
+/* --- SCREENSHOT STYLE --- */
 .screenshot-mode .clean-card-wrapper {
     background: transparent; border: none; box-shadow: none; padding: 0; min-height: auto;
 }
 .screenshot-mode .clean-card-box {
-    background-color: #ffffff; border-radius: 12px; 
-    aspect-ratio: 1 / 1; 
+    background-color: #ffffff; border-radius: 12px; aspect-ratio: 1 / 1; 
     height: auto; width: 100%; margin-bottom: 6px; padding: 5px;
 }
-.screenshot-mode .clean-card-img { 
-    mix-blend-mode: normal; 
-    object-fit: cover; 
-}
+.screenshot-mode .clean-card-img { mix-blend-mode: normal; object-fit: cover; }
 .screenshot-mode .clean-card-details {
     background: transparent; padding: 0 2px; display: flex; flex-direction: column; height: auto;
     justify-content: flex-start; gap: 0;
@@ -433,73 +330,86 @@ body.light-mode .clean-card-price-row {
     max-height: 2.4em; min-height: auto; text-align: center; margin-bottom: 0;
 }
 
-/* *** Light Mode Override for Screenshot Mode: Black Title & Price *** */
-body.light-mode .screenshot-mode .clean-card-title {
-    color: #000000;
-}
-body.light-mode .screenshot-mode .clean-card-price-row {
-    color: #000000;
-    text-shadow: none; /* Remove shadow to make black clear */
-}
-
+body.light-mode .screenshot-mode .clean-card-title { color: #000000; }
+body.light-mode .screenshot-mode .clean-card-price-row { color: #000000; text-shadow: none; }
 .screenshot-mode .shop-now-btn { display: none; }
 .screenshot-mode .card-discount-badge { top: 6px; left: 6px; font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; }
 
 
-/* === 5. CATEGORIES === */
-.category-swiper { width: 100%; padding: 10px 5px; }
+/* === 5. COMPACT CATEGORY GRID (NEW STYLE) === */
+.catalogue-header .section-title-new { color: #ffffff !important; }
+body.light-mode .catalogue-header .section-title-new { color: #000000 !important; }
 
-/* *** CATALOGUE Heading Colors Override *** */
-.catalogue-header .section-title-new {
-    color: #ffffff !important; /* White in Dark Mode */
+/* Grid Container */
+.home-category-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    padding: 10px;
 }
 
-body.light-mode .catalogue-header .section-title-new {
-    color: #000000 !important; /* Black in Light Mode */
+/* Individual Pill Item */
+.category-pill-item {
+    display: flex;
+    align-items: center;
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 8px; /* Slightly rounded rect */
+    padding: 6px 12px;
+    text-decoration: none;
+    gap: 8px;
+    transition: transform 0.2s, background-color 0.2s;
+    min-width: 110px; /* Consistent width */
+    flex-grow: 1;
+    max-width: 160px;
 }
 
-.category-circle-item { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; text-decoration: none; }
-.category-circle-img-box {
-    width: 60px; height: 60px; border-radius: 50%; background: #1a1a1a;
-    border: 2px solid #333; overflow: hidden; display: flex; align-items: center;
-    justify-content: center; padding: 4px;
-}
-
-/* Light Mode Override */
-body.light-mode .category-circle-img-box {
-    background: #ffffff;
+/* Light Mode Pill */
+body.light-mode .category-pill-item {
+    background-color: #fff;
     border-color: #ddd;
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-.category-circle-img { 
-    width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
-}
-.category-circle-title { color: #ccc; font-size: 0.7rem; font-weight: 600; text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.category-pill-item:active { transform: scale(0.96); }
 
-/* *** Light Mode Override: Black Category Title *** */
-body.light-mode .category-circle-title {
-    color: #000000;
+/* Small Icon in Pill */
+.category-pill-img {
+    width: 28px;
+    height: 28px;
+    object-fit: contain;
+    border-radius: 4px;
 }
+
+/* Text in Pill */
+.category-pill-title {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ccc;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+body.light-mode .category-pill-title { color: #333; }
+
 
 /* Swiper Config */
 .top-deals-swiper, .top-sellers-swiper-new, .discount-swiper, .under-799-swiper { padding: 0 4px !important; }
 .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 48% !important; margin-right: 4px !important; }
 
-/* *** DISCOUNT SWIPER 2-ROW FIX (GAP REDUCED) *** */
+/* *** DISCOUNT SWIPER 2-ROW FIX *** */
 .discount-swiper { 
     padding-bottom: 5px !important;
-    /* REDUCED HEIGHT: was 520px, now 460px to remove vertical gap */
     height: 460px !important; 
 }
-
 .discount-swiper .swiper-slide { 
-    /* Force 50% height with spacing calculation */
     height: calc((100% - 6px) / 2) !important; 
     margin-top: 0; 
 }
 
-/* Tablet & Desktop Height Adjustments */
+/* Responsive */
 @media (min-width: 640px) {
     .discount-swiper { height: 520px !important; }
     .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 32% !important; }
