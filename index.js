@@ -1,4 +1,4 @@
-// index.js - Hero Slider, Products & Unique Box Countdown Logic
+// index.js - Discount Gap Reduced (SpaceBetween 6)
 
 import { db } from './firebase-config.js';
 import { 
@@ -350,15 +350,14 @@ async function loadTopDiscounts() {
         topDiscounts.forEach(p => { html += createNewStyleProductCard(p.id, p, p.discount); });
         grid.innerHTML = html;
         
-        // *** 2-Row Layout Config with Column Fill ***
-        // Column fill requires fixed height container (handled in CSS)
+        // *** TIGHTER GRID ***
         new Swiper('.discount-swiper', {
             slidesPerView: 2.2,
             grid: { rows: 2, fill: 'column' },
-            spaceBetween: 10,
+            spaceBetween: 6, // *** GAP REDUCED TO 6 ***
             breakpoints: { 
-                640: { slidesPerView: 3.2, grid: { rows: 2, fill: 'column' } }, 
-                1024: { slidesPerView: 5.2, grid: { rows: 2, fill: 'column' } } 
+                640: { slidesPerView: 3.2, grid: { rows: 2, fill: 'column' }, spaceBetween: 10 }, 
+                1024: { slidesPerView: 5.2, grid: { rows: 2, fill: 'column' }, spaceBetween: 15 } 
             }
         });
     } catch(e) {}
