@@ -1,9 +1,9 @@
-/* public.css - Updated: Blue Nav in Light Mode & Logo Fix */
+/* public.css - Updated: Light Mode Blue Theme & Black Logo Text */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    /* --- Default Dark Theme Variables --- */
+    /* --- Default Dark Theme Variables (Gold) --- */
     --bg-color: #000000;
     --primary-gold: #D4AF37; 
     --secondary-gold: #B8860B;
@@ -24,7 +24,7 @@
     --shadow-soft: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-/* --- Light Mode Overrides --- */
+/* --- Light Mode Overrides (Blue Theme) --- */
 body.light-mode {
     --bg-color: #f4f6f8;
     --text-color: #1a1a1a;
@@ -35,8 +35,9 @@ body.light-mode {
     --input-bg: #ffffff;
     --shadow-soft: 0 4px 15px rgba(0,0,0,0.08);
     
-    --primary-gold: #B8860B; 
-    --secondary-gold: #8B6508; 
+    /* *** മാറ്റം: ലൈറ്റ് മോഡിൽ നീല നിറം *** */
+    --primary-gold: #2874f0; /* Flipkart/Standard Blue */
+    --secondary-gold: #1e5fc4; /* Darker Blue */
 }
 
 html {
@@ -108,6 +109,12 @@ h1, h2, h3, h4, h5, h6, .section-title-new, .product-title, .page-header-bar h1,
     font-weight: 600; 
     color: var(--primary-gold); 
 }
+
+/* *** മാറ്റം: ലൈറ്റ് മോഡിൽ ആപ്ലിക്കേഷൻ പേര് കറുപ്പ് നിറത്തിൽ *** */
+body.light-mode .header-logo-text {
+    color: #000000 !important;
+}
+
 .section-title-new {
     font-weight: 600;
     letter-spacing: 1px;
@@ -163,10 +170,6 @@ img { max-width: 100%; height: auto; display: block; }
     position: relative; 
 }
 
-/* *** ലോഗോ ഇമേജ് ഫിക്സ് *** Height: 40px (Fixed)
-   Width: auto (Adjusts based on image ratio)
-   object-fit: contain (Prevents stretching/cropping)
-*/
 .header-logo-img { 
     height: 40px; 
     width: auto; 
@@ -274,7 +277,7 @@ img { max-width: 100%; height: auto; display: block; }
     top: -5px;
     right: -10px;
     background-color: var(--primary-gold);
-    color: #000;
+    color: #fff; /* White Text on Blue/Gold Badge */
     font-size: 0.75rem;
     font-weight: 700;
     border-radius: 50%;
@@ -457,12 +460,12 @@ body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
         fill: none; 
     }
 
-    /* *** Active State - Light Mode (BLUE COLOR) *** */
+    /* *** Active State - Light Mode (Uses Blue now via variable) *** */
     body.light-mode .bottom-nav-item.active { 
-        color: #2196f3 !important; /* Blue Text */
+        color: var(--primary-gold) !important;
     }
     body.light-mode .bottom-nav-item.active svg { 
-        stroke: #2196f3 !important; /* Blue Icon */
+        stroke: var(--primary-gold) !important;
     }
     
     @keyframes bounce-subtle {
@@ -474,11 +477,6 @@ body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
         stroke: var(--primary-gold);
     }
     
-    /* Catalog Animation in Light Mode - Blue */
-    body.light-mode .bottom-nav-item:not(.active).catalog-anim svg {
-        stroke: #2196f3;
-    }
-
     .user-menu-overlay { align-items: flex-end; }
     .user-menu-content { transform: translateY(100%); border-radius: 20px 20px 0 0; }
     .user-menu-overlay.open .user-menu-content { transform: translateY(0); }
@@ -568,7 +566,7 @@ body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
 
 .btn-primary-new {
     background-color: var(--primary-gold);
-    border: 2px solid var(--primary-gold); color: #000000; 
+    border: 2px solid var(--primary-gold); color: #fff; /* Blue button text white */
 }
 .btn-primary-new:hover { background-color: var(--secondary-gold); border-color: var(--secondary-gold); }
 
@@ -576,12 +574,12 @@ body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
     background-color: transparent;
     border: 2px solid var(--primary-gold); color: var(--primary-gold);
 }
-.btn-secondary-new:hover { background-color: var(--primary-gold); color: #000000; }
+.btn-secondary-new:hover { background-color: var(--primary-gold); color: #fff; }
 .btn-primary-new svg.icon-btn, .btn-secondary-new svg.icon-btn {
     width: 16px; height: 16px; fill: currentColor; stroke: currentColor; stroke-width: 2;
 }
 .btn-secondary-new svg.icon-btn { stroke: var(--text-color); fill: none; }
-.btn-secondary-new:hover svg.icon-btn { stroke: #000000; }
+.btn-secondary-new:hover svg.icon-btn { stroke: #fff; }
 
 #floating-action-buttons {
     position: fixed; bottom: 20px; right: 20px; z-index: 900;
