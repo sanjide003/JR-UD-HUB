@@ -1,4 +1,4 @@
-/* public.css - Updated: Light Mode Blue Theme & Black Logo Text */
+/* public.css - Updated: Light Blue Header in Light Mode */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
@@ -35,9 +35,9 @@ body.light-mode {
     --input-bg: #ffffff;
     --shadow-soft: 0 4px 15px rgba(0,0,0,0.08);
     
-    /* *** മാറ്റം: ലൈറ്റ് മോഡിൽ നീല നിറം *** */
-    --primary-gold: #2874f0; /* Flipkart/Standard Blue */
-    --secondary-gold: #1e5fc4; /* Darker Blue */
+    /* ലൈറ്റ് മോഡിൽ പ്രൈമറി കളർ നീല */
+    --primary-gold: #2874f0; 
+    --secondary-gold: #1e5fc4; 
 }
 
 html {
@@ -110,7 +110,7 @@ h1, h2, h3, h4, h5, h6, .section-title-new, .product-title, .page-header-bar h1,
     color: var(--primary-gold); 
 }
 
-/* *** മാറ്റം: ലൈറ്റ് മോഡിൽ ആപ്ലിക്കേഷൻ പേര് കറുപ്പ് നിറത്തിൽ *** */
+/* ലൈറ്റ് മോഡിൽ ലോഗോ ടെക്സ്റ്റ് കറുപ്പ് നിറത്തിൽ */
 body.light-mode .header-logo-text {
     color: #000000 !important;
 }
@@ -154,6 +154,13 @@ img { max-width: 100%; height: auto; display: block; }
     width: 100%;
     z-index: 1000;
     transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* *** മാറ്റം: ലൈറ്റ് മോഡിൽ ഹെഡറിന് ലൈറ്റ് ബ്ലൂ നിറം *** */
+body.light-mode .main-header {
+    background-color: #e1f5fe; /* Beautiful Light Blue */
+    border-bottom: 1px solid #b3e5fc; /* Matching Border */
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05); /* Soft Shadow */
 }
 
 .header-left-section {
@@ -230,6 +237,13 @@ img { max-width: 100%; height: auto; display: block; }
     font-family: var(--font-main);
     padding: 0;
 }
+
+/* ലൈറ്റ് മോഡിൽ നാവിഗേഷൻ ലിങ്കുകൾക്ക് കറുപ്പ് നിറം */
+body.light-mode .header-nav-desktop a,
+body.light-mode .header-nav-desktop button {
+    color: #000;
+}
+
 .header-nav-desktop a:hover,
 .header-nav-desktop button:hover {
     color: var(--primary-gold);
@@ -265,6 +279,15 @@ img { max-width: 100%; height: auto; display: block; }
     position: relative;
     padding: 5px;
 }
+
+/* ലൈറ്റ് മോഡിൽ ഐക്കണുകൾക്ക് കറുപ്പ് നിറം */
+body.light-mode .header-icon-btn {
+    color: #000 !important;
+}
+body.light-mode .header-icon-btn svg {
+    stroke: #000 !important;
+}
+
 .header-icon-btn svg {
     stroke: var(--text-color) !important; 
     fill: none;
@@ -277,7 +300,7 @@ img { max-width: 100%; height: auto; display: block; }
     top: -5px;
     right: -10px;
     background-color: var(--primary-gold);
-    color: #fff; /* White Text on Blue/Gold Badge */
+    color: #fff;
     font-size: 0.75rem;
     font-weight: 700;
     border-radius: 50%;
@@ -460,7 +483,7 @@ body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
         fill: none; 
     }
 
-    /* *** Active State - Light Mode (Uses Blue now via variable) *** */
+    /* *** Active State - Light Mode (Blue) *** */
     body.light-mode .bottom-nav-item.active { 
         color: var(--primary-gold) !important;
     }
@@ -566,7 +589,7 @@ body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
 
 .btn-primary-new {
     background-color: var(--primary-gold);
-    border: 2px solid var(--primary-gold); color: #fff; /* Blue button text white */
+    border: 2px solid var(--primary-gold); color: #fff; 
 }
 .btn-primary-new:hover { background-color: var(--secondary-gold); border-color: var(--secondary-gold); }
 
