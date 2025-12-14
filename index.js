@@ -1,4 +1,4 @@
-// index.js - Discount Grid Order Fixed (Column Fill)
+// index.js - Hero Slider, Products & Unique Box Countdown Logic
 
 import { db } from './firebase-config.js';
 import { 
@@ -22,6 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHeroSlider();
     loadHeroText();
     
+    // Product Loaders
     loadTopDeals();         
     loadTopTrendyDeals();   
     loadTopDiscounts();
@@ -349,10 +350,11 @@ async function loadTopDiscounts() {
         topDiscounts.forEach(p => { html += createNewStyleProductCard(p.id, p, p.discount); });
         grid.innerHTML = html;
         
-        // *** മാറ്റം: ഇവിടെ fill: 'column' ആക്കി ***
+        // *** 2-Row Layout Config with Column Fill ***
+        // Column fill requires fixed height container (handled in CSS)
         new Swiper('.discount-swiper', {
             slidesPerView: 2.2,
-            grid: { rows: 2, fill: 'column' }, // *** Column fill for Vertical Order ***
+            grid: { rows: 2, fill: 'column' },
             spaceBetween: 10,
             breakpoints: { 
                 640: { slidesPerView: 3.2, grid: { rows: 2, fill: 'column' } }, 
