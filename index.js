@@ -1,4 +1,4 @@
-// index.js - Discount Gap Reduced (SpaceBetween 6)
+// index.js - Updated: Grid Layout for Categories (No Swiper)
 
 import { db } from './firebase-config.js';
 import { 
@@ -349,12 +349,10 @@ async function loadTopDiscounts() {
         let html = '';
         topDiscounts.forEach(p => { html += createNewStyleProductCard(p.id, p, p.discount); });
         grid.innerHTML = html;
-        
-        // *** TIGHTER GRID ***
         new Swiper('.discount-swiper', {
             slidesPerView: 2.2,
             grid: { rows: 2, fill: 'column' },
-            spaceBetween: 6, // *** GAP REDUCED TO 6 ***
+            spaceBetween: 6,
             breakpoints: { 
                 640: { slidesPerView: 3.2, grid: { rows: 2, fill: 'column' }, spaceBetween: 10 }, 
                 1024: { slidesPerView: 5.2, grid: { rows: 2, fill: 'column' }, spaceBetween: 15 } 
@@ -380,31 +378,36 @@ async function loadUnder799Products() {
     } catch (e) {}
 }
 
+// *** UPDATED: COMPACT GRID FOR CATEGORIES (No Swiper) ***
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
+    
+    // Remove Swiper wrapper classes for Grid Layout
+    container.className = 'home-category-grid'; // New class
+    const parent = container.parentElement;
+    if(parent.classList.contains('swiper')) parent.classList.remove('swiper', 'category-swiper');
+    
     try {
         const catQuery = query(collection(db, "categories"), orderBy("name")); 
         const catSnapshot = await getDocs(catQuery); 
         if (catSnapshot.empty) { container.innerHTML = ''; return; }
+        
         let html = '';
         catSnapshot.forEach(doc => {
             const category = doc.data();
-            const imageUrl = optimizeImage(category.imageUrl || '', 150, 75);
+            const imageUrl = optimizeImage(category.imageUrl || '', 80, 75); // Small icon
+            
+            // *** Compact Pill Design ***
             html += `
-                <div class="swiper-slide">
-                    <a href="categories.html?filter=${doc.id}" class="category-circle-item">
-                        <div class="category-circle-img-box"><img src="${imageUrl}" alt="${category.name}" class="category-circle-img" loading="lazy"></div>
-                        <span class="category-circle-title">${category.name}</span>
-                    </a>
-                </div>`;
+                <a href="categories.html?filter=${doc.id}" class="category-pill-item">
+                    <img src="${imageUrl}" alt="${category.name}" class="category-pill-img" loading="lazy">
+                    <span class="category-pill-title">${category.name}</span>
+                </a>`;
         });
         container.innerHTML = html;
-        new Swiper('.category-swiper', {
-            slidesPerView: 4, spaceBetween: 10, freeMode: true,
-            breakpoints: { 640: { slidesPerView: 5 }, 1024: { slidesPerView: 7 } }
-        });
-    } catch (error) {}
+        // No new Swiper() here
+    } catch (error) { console.error(error); }
 }
 
 function createNewStyleProductCard(id, product, discountVal = null) {
