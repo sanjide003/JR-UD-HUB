@@ -1,9 +1,9 @@
-// index.js - Optimized for Free Plan (getDocs instead of onSnapshot)
+// index.js - Updated Top Discount Layout (Column Fill) & Optimized
 
 import { db } from './firebase-config.js';
 import { 
     collection, 
-    getDocs, // Use getDocs mostly
+    getDocs, 
     doc, 
     getDoc, 
     query, 
@@ -22,7 +22,7 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHeroSlider();
     loadHeroText();
     
-    // Product Loaders - All using Cache/Get strategy
+    // Product Loaders
     loadTopDeals();         
     loadTopTrendyDeals();   
     loadTopDiscounts();
@@ -89,7 +89,6 @@ async function loadHeroSlider() {
     
     try {
         const q = query(collection(db, "heroSlides"), orderBy("order"));
-        // This will use cache if available
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
@@ -221,7 +220,7 @@ function setupScrollVideoObserver() {
     observer.observe(sliderContainer);
 }
 
-// *** Product Sections - Optimized ***
+// *** Product Sections ***
 
 async function loadTopDeals() {
     const section = document.getElementById('top-deals-section');
@@ -258,7 +257,6 @@ async function loadTopDeals() {
             section.style.display = 'block'; 
         }
         
-        // Use getDocs
         const q = query(collection(db, "products"), where("isTopDeal", "==", true), limit(10));
         const snapshot = await getDocs(q);
         if (snapshot.empty) {
@@ -279,6 +277,7 @@ async function loadTopDeals() {
 
 function startCountdown(endTimeStr, displayElement) {
     const endDate = new Date(endTimeStr).getTime();
+    
     update();
     const timerInterval = setInterval(update, 1000);
 
@@ -351,11 +350,16 @@ async function loadTopDiscounts() {
         let html = '';
         topDiscounts.forEach(p => { html += createNewStyleProductCard(p.id, p, p.discount); });
         grid.innerHTML = html;
+        
+        // *** മാറ്റം: ഇവിടെ fill: 'column' ആക്കി ***
         new Swiper('.discount-swiper', {
             slidesPerView: 2.2,
-            grid: { rows: 2, fill: 'row' },
+            grid: { rows: 2, fill: 'column' }, 
             spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 3.2, grid: { rows: 2 } }, 1024: { slidesPerView: 5.2, grid: { rows: 2 } } }
+            breakpoints: { 
+                640: { slidesPerView: 3.2, grid: { rows: 2, fill: 'column' } }, 
+                1024: { slidesPerView: 5.2, grid: { rows: 2, fill: 'column' } } 
+            }
         });
     } catch(e) {}
 }
