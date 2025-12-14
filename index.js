@@ -1,4 +1,4 @@
-// index.js - Updated Top Discount Layout (Column Fill) & Optimized
+// index.js - Discount Grid Order Fixed (Column Fill)
 
 import { db } from './firebase-config.js';
 import { 
@@ -22,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHeroSlider();
     loadHeroText();
     
-    // Product Loaders
     loadTopDeals();         
     loadTopTrendyDeals();   
     loadTopDiscounts();
@@ -277,7 +276,6 @@ async function loadTopDeals() {
 
 function startCountdown(endTimeStr, displayElement) {
     const endDate = new Date(endTimeStr).getTime();
-    
     update();
     const timerInterval = setInterval(update, 1000);
 
@@ -354,7 +352,7 @@ async function loadTopDiscounts() {
         // *** മാറ്റം: ഇവിടെ fill: 'column' ആക്കി ***
         new Swiper('.discount-swiper', {
             slidesPerView: 2.2,
-            grid: { rows: 2, fill: 'column' }, 
+            grid: { rows: 2, fill: 'column' }, // *** Column fill for Vertical Order ***
             spaceBetween: 10,
             breakpoints: { 
                 640: { slidesPerView: 3.2, grid: { rows: 2, fill: 'column' } }, 
