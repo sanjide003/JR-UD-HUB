@@ -1,4 +1,4 @@
-// product.js - Fixed Rating Loading & ID Mismatch
+// product.js - Fixed: Image Loading, Sticky Footer & Related Products Performance
 
 import { 
     collection, 
@@ -137,8 +137,15 @@ async function loadProductDetails() {
             if (!currentProduct || currentProduct.id !== productIdStr) {
                 renderProductUI(product, productIdStr);
                 setupProductActionButtons();
-                if (product.categoryId) loadRelatedProducts(product.categoryId, productIdStr);
+                
+                // *** PERF: Delay Related Products load to prioritize main content ***
+                if (product.categoryId) {
+                    setTimeout(() => {
+                        loadRelatedProducts(product.categoryId, productIdStr);
+                    }, 500);
+                }
             } else {
+                // Update interactions only
                 const likeCount = document.querySelector('.like-count');
                 const ratingCount = document.querySelector('.rating-count');
                 if(likeCount) likeCount.textContent = product.likeCount || 0;
@@ -181,11 +188,14 @@ function renderProductUI(product, productIdStr) {
         moreLinksHTML += '</div>';
     }
 
+    // *** PERF: Image Loading Optimization ***
     let slidesHTML = '';
     if (product.images && product.images.length > 0) {
-        product.images.forEach((imgUrl) => {
+        product.images.forEach((imgUrl, index) => {
+            // First image is priority (eager), others are lazy
+            const loadingAttr = index === 0 ? 'eager' : 'lazy';
             const optimizedUrl = optimizeImage(imgUrl, 1000, 90);
-            slidesHTML += `<div class="swiper-slide"><img src="${optimizedUrl}" alt="${product.name}"></div>`;
+            slidesHTML += `<div class="swiper-slide"><img src="${optimizedUrl}" alt="${product.name}" loading="${loadingAttr}"></div>`;
         });
     } else {
         slidesHTML = `<div class="swiper-slide"><img src="https://placehold.co/600x600/1e1e1e/D4AF37?text=No+Image" alt="${product.name}"></div>`;
