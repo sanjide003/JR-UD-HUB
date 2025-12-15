@@ -1,4 +1,4 @@
-// product.js - Cart Image Fix & Data Saving
+// product.js - Fixed Duplicate Listeners & Real-time Updates
 
 import { 
     collection, 
@@ -10,6 +10,7 @@ import {
     limit,
     setDoc,
     deleteDoc,
+    onSnapshot, // Using onSnapshot for realtime
     runTransaction,
     serverTimestamp,
     setLogLevel
@@ -28,6 +29,11 @@ let whatsappNumber = '';
 let currentUser = null;
 let appTitle = "JR UD HUB"; 
 let orderConfig = { codEnabled: false, codFee: 0 }; 
+
+// *** Listener Cleanup Variables ***
+let productUnsubscribe = null;
+let likeUnsubscribe = null;
+let ratingUnsubscribe = null;
 
 const paymentModal = document.getElementById('payment-modal');
 const cancelPaymentBtn = document.getElementById('cancel-payment-btn');
@@ -117,25 +123,38 @@ async function loadProductDetails() {
         }
 
         const docRef = doc(db, "products", productId);
-        const docSnap = await getDoc(docRef);
         
-        if (!docSnap.exists()) {
-            productDetailContent.innerHTML = '<p class="error-message">Product not found.</p>';
-            return;
-        }
+        // Clean up previous listener if exists
+        if (productUnsubscribe) productUnsubscribe();
 
-        const product = docSnap.data();
-        const productIdStr = docSnap.id;
-        
-        currentProduct = { id: productIdStr, ...product };
-        renderProductUI(product, productIdStr);
-        setupProductActionButtons();
-        
-        if (product.categoryId) {
-            loadRelatedProducts(product.categoryId, productIdStr);
-        }
-        
-        if(currentUser) checkProductUserInteraction();
+        productUnsubscribe = onSnapshot(docRef, (docSnap) => {
+            if (!docSnap.exists()) {
+                productDetailContent.innerHTML = '<p class="error-message">Product not found.</p>';
+                return;
+            }
+
+            const product = docSnap.data();
+            const productIdStr = docSnap.id;
+            
+            // Only re-render full HTML if ID changed or first load
+            // Otherwise just update counts
+            if (!currentProduct || currentProduct.id !== productIdStr) {
+                renderProductUI(product, productIdStr);
+                setupProductActionButtons();
+                if (product.categoryId) loadRelatedProducts(product.categoryId, productIdStr);
+            } else {
+                // Just update counts to prevent swiper reset
+                const likeCount = document.querySelector('.like-count');
+                const ratingCount = document.querySelector('.rating-count');
+                if(likeCount) likeCount.textContent = product.likeCount || 0;
+                if(ratingCount) ratingCount.textContent = product.ratingCount || 0;
+            }
+
+            currentProduct = { id: productIdStr, ...product };
+            
+            // Setup User Interaction Listeners (Likes/Ratings)
+            if(currentUser) checkProductUserInteraction();
+        });
 
     } catch (error) {
         console.error("Error loading product details: ", error);
@@ -298,28 +317,36 @@ function renderProductUI(product, productIdStr) {
     });
 }
 
-async function checkProductUserInteraction() {
+function checkProductUserInteraction() {
     if (!currentUser || !currentProduct) return;
     const productId = currentProduct.id;
 
-    try {
-        const likeDoc = await getDoc(doc(db, "products", productId, "likes", currentUser.uid));
+    // Clean up previous listeners
+    if (likeUnsubscribe) likeUnsubscribe();
+    if (ratingUnsubscribe) ratingUnsubscribe();
+
+    const likeRef = doc(db, "products", productId, "likes", currentUser.uid);
+    likeUnsubscribe = onSnapshot(likeRef, (docSnap) => {
         const likeBtn = document.querySelector('.like-btn');
         if(likeBtn) {
-            if(likeDoc.exists()) {
+            if(docSnap.exists()) {
                 likeBtn.classList.add('liked');
                 likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
                 likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
+            } else {
+                likeBtn.classList.remove('liked');
+                likeBtn.querySelector('svg').style.fill = 'none';
+                likeBtn.querySelector('svg').style.stroke = 'currentColor';
             }
         }
-    } catch(e) {}
+    });
 
-    try {
-        const ratingDoc = await getDoc(doc(db, "products", productId, "ratings", currentUser.uid));
-        if(ratingDoc.exists()) {
-            updateStarUI(ratingDoc.data().rating);
+    const ratingRef = doc(db, "products", productId, "ratings", currentUser.uid);
+    ratingUnsubscribe = onSnapshot(ratingRef, (docSnap) => {
+        if(docSnap.exists()) {
+            updateStarUI(docSnap.data().rating);
         }
-    } catch(e) {}
+    });
 }
 
 function updateStarUI(value) {
@@ -369,6 +396,20 @@ function setupProductActionButtons() {
             const productRef = doc(db, "products", productId);
             const userLikeRef = doc(db, "products", productId, "likes", currentUser.uid);
 
+            // Optimistic UI
+            const isLiked = likeBtn.classList.contains('liked');
+            if (isLiked) {
+                likeBtn.classList.remove('liked');
+                likeBtn.querySelector('svg').style.fill = 'none';
+                likeBtn.querySelector('svg').style.stroke = 'currentColor';
+            } else {
+                likeBtn.classList.add('liked');
+                likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
+                likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
+                likeBtn.style.transform = 'scale(1.2)';
+                setTimeout(() => likeBtn.style.transform = 'scale(1)', 200);
+            }
+
             try {
                 await runTransaction(db, async (transaction) => {
                     const likeDoc = await transaction.get(userLikeRef);
@@ -381,25 +422,11 @@ function setupProductActionButtons() {
                     if (likeDoc.exists()) {
                         transaction.delete(userLikeRef);
                         newCount = Math.max(0, newCount - 1);
-                        transaction.update(productRef, { likeCount: newCount });
-                        
-                        likeBtn.classList.remove('liked');
-                        likeBtn.querySelector('svg').style.fill = 'none';
-                        likeBtn.querySelector('svg').style.stroke = 'currentColor';
                     } else {
                         transaction.set(userLikeRef, { timestamp: serverTimestamp() });
                         newCount++;
-                        transaction.update(productRef, { likeCount: newCount });
-                        
-                        likeBtn.classList.add('liked');
-                        likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
-                        likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
-                        likeBtn.style.transform = 'scale(1.2)';
-                        setTimeout(() => likeBtn.style.transform = 'scale(1)', 200);
                     }
-                    
-                    const countSpan = likeBtn.parentElement.querySelector('.like-count');
-                    if(countSpan) countSpan.textContent = newCount;
+                    transaction.update(productRef, { likeCount: newCount });
                 });
             } catch(err) { console.error("Like error:", err); }
         }
@@ -419,6 +446,8 @@ function setupProductActionButtons() {
             const productRef = doc(db, "products", productId);
             const userRatingRef = doc(db, "products", productId, "ratings", currentUser.uid);
 
+            updateStarUI(value);
+
             try {
                 await runTransaction(db, async (transaction) => {
                     const ratingDoc = await transaction.get(userRatingRef);
@@ -434,9 +463,6 @@ function setupProductActionButtons() {
                     } else {
                         transaction.update(userRatingRef, { rating: value, timestamp: serverTimestamp() });
                     }
-                    updateStarUI(value);
-                    const countSpan = document.querySelector('.rating-count');
-                    if(countSpan) countSpan.textContent = currentCount;
                 });
             } catch(err) { console.error(err); }
         }
@@ -536,7 +562,9 @@ function generateWhatsAppMessage(items, totalAmount, totalMRP, discount, payment
     message += `-------------------\n`;
     message += `Price (${items.length} items) : ₹${totalMRP.toFixed(2)}\n`;
     
-    if (discount > 0) message += `Discount : - ₹${discount.toFixed(2)}\n`;
+    if (discount > 0) {
+        message += `Discount : - ₹${discount.toFixed(2)}\n`;
+    }
 
     let finalPayable = totalAmount;
 
@@ -573,7 +601,6 @@ async function loadRelatedProducts(categoryId, excludeProductId) {
     if (!relatedProductsGrid) return;
     try {
         const q = query(collection(db, "products"), where("categoryId", "==", categoryId), limit(10));
-        // Use getDocs for cache benefits
         const querySnapshot = await getDocs(q);
         
         relatedProductsGrid.innerHTML = `<div class="swiper related-products-swiper"><div class="swiper-wrapper" id="related-products-wrapper"></div></div>`;
@@ -693,7 +720,6 @@ relatedProductsGrid.addEventListener('click', (e) => {
             cartButton.classList.remove('added-to-cart');
             if (buttonText) buttonText.textContent = 'Cart';
         } else {
-            // *** Fix for Related Products Cart Image ***
             const rawImage = cartButton.dataset.image;
             
             const product = {
@@ -701,7 +727,7 @@ relatedProductsGrid.addEventListener('click', (e) => {
                 name: cartButton.dataset.name,
                 price: parseFloat(cartButton.dataset.price),
                 mrp: parseFloat(cartButton.dataset.mrp),
-                image: rawImage, // Using raw image from dataset
+                image: rawImage, 
                 size: cartButton.dataset.size 
             };
             addToCart(id, product);
