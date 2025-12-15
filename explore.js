@@ -36,14 +36,12 @@ const SCROLL_LOAD_COUNT = 3;
 let currentUser = null;
 let scrollSentinel = null;
 
-// ലൈവ് ലിസണേഴ്സ് ട്രാക്ക് ചെയ്യാൻ (മെമ്മറി ലീക്ക് ഒഴിവാക്കാൻ)
 const activeProductListeners = new Map();
 const activeUserListeners = new Map();
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        // ലോഗിൻ ചെയ്താൽ മാത്രം യൂസർ ഇന്ററാക്ഷൻ ചെക്ക് ചെയ്യുക
         setupUserInteractionListeners();
     } else {
         signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
@@ -125,7 +123,6 @@ async function loadProducts() {
                 q = query(productsRef, orderBy("createdAt", "desc"), limit(limitCount));
             }
         } catch(e) {
-            // Fallback if index missing
             if (lastVisible) {
                 q = query(productsRef, startAfter(lastVisible), limit(limitCount));
             } else {
@@ -158,12 +155,10 @@ async function loadProducts() {
             const product = docSnap.data();
             const productId = docSnap.id;
             
-            // Prevent duplicates
             if(!document.getElementById(`product-card-${productId}`)) {
                 const card = document.createElement('div');
                 card.className = 'explore-card';
                 card.id = `product-card-${productId}`; 
-                // Mark as not initialized for interactions yet
                 card.dataset.interactionsInit = "false";
                 
                 card.innerHTML = `
@@ -173,7 +168,6 @@ async function loadProducts() {
                 `;
                 feedContainer.appendChild(card);
                 
-                // Setup live counts listener for this specific card
                 setupProductListener(productId);
             }
         }
@@ -206,9 +200,8 @@ function setupScrollObserver() {
     observer.observe(scrollSentinel);
 }
 
-// 1. PRODUCT LISTENER (Updates Counts Only) - Fixed Duplication
 function setupProductListener(productId) {
-    if (activeProductListeners.has(productId)) return; // Already listening
+    if (activeProductListeners.has(productId)) return; 
 
     const card = document.getElementById(`product-card-${productId}`);
     if (!card) return;
@@ -227,18 +220,15 @@ function setupProductListener(productId) {
     activeProductListeners.set(productId, unsubscribe);
 }
 
-// 2. USER STATUS LISTENER (My Like) - Fixed Duplication
 function setupUserInteractionListeners() {
     if (!currentUser) return;
     const cards = document.querySelectorAll('.explore-card');
     
     cards.forEach((card) => {
-        // *** CRITICAL FIX: Check if already initialized ***
         if (card.dataset.interactionsInit === "true") return;
         
         const productId = card.id.replace('product-card-', '');
         
-        // Listen for Likes
         const likeRef = doc(db, "products", productId, "likes", currentUser.uid);
         const unsubLike = onSnapshot(likeRef, (docSnap) => {
             const likeBtn = card.querySelector('.like-btn');
@@ -255,7 +245,6 @@ function setupUserInteractionListeners() {
             }
         });
 
-        // Listen for Ratings
         const ratingRef = doc(db, "products", productId, "ratings", currentUser.uid);
         const unsubRating = onSnapshot(ratingRef, (docSnap) => {
             if (docSnap.exists()) {
@@ -263,10 +252,8 @@ function setupUserInteractionListeners() {
             }
         });
         
-        // Mark as initialized so we don't attach again
         card.dataset.interactionsInit = "true";
         
-        // Store unsubscribes (optional, for cleanup if needed)
         activeUserListeners.set(productId, { like: unsubLike, rating: unsubRating });
     });
 }
@@ -357,7 +344,9 @@ function buildCardContent(productId, product) {
             </div>
             
             <div class="rating-box" id="rating-box-${productId}" style="display: none;">
-                <div class="rating-summary" id="rating-summary-${productId}"></div>
+                <div class="rating-summary" id="rating-summary-${productId}">
+                    <small style="color:#aaa;">Loading ratings...</small>
+                </div>
                 <hr class="rating-divider">
                 <p class="rating-title">Rate this product</p>
                 <div class="star-rating" data-id="${productId}">
@@ -411,7 +400,6 @@ feedContainer.addEventListener('click', async (e) => {
         const productRef = doc(db, "products", productId);
         const userLikeRef = doc(db, "products", productId, "likes", currentUser.uid);
         
-        // Optimistic UI update (Instant Feedback)
         const isLiked = likeButton.classList.contains('liked');
         const countSpan = likeButton.nextElementSibling;
         let currentCount = parseInt(countSpan.textContent) || 0;
@@ -448,7 +436,6 @@ feedContainer.addEventListener('click', async (e) => {
             });
         } catch (err) { 
             console.error("Like Transaction Error:", err);
-            // Revert on error (optional)
         }
     }
 
@@ -470,7 +457,6 @@ feedContainer.addEventListener('click', async (e) => {
         const userRatingRef = doc(db, "products", productId, "ratings", currentUser.uid);
         const card = document.getElementById(`product-card-${productId}`);
 
-        // Optimistic UI
         updateStarUI(card, value);
 
         try { 
@@ -538,11 +524,11 @@ async function loadRatingBars(productId) {
     const summaryContainer = document.getElementById(`rating-summary-${productId}`);
     if (!summaryContainer) return;
     
-    // Only fetching once on click, so no duplicates here
     const ratingsRef = collection(db, "products", productId, "ratings");
     const snapshot = await getDocs(ratingsRef);
     
     const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const total = snapshot.size;
     
     snapshot.forEach(doc => {
         const val = doc.data().rating;
@@ -553,8 +539,13 @@ async function loadRatingBars(productId) {
     const keys = [5, 4, 3, 2, 1];
     keys.forEach((starVal) => {
         const count = counts[starVal];
-        const percentage = snapshot.size > 0 ? (count / snapshot.size) * 100 : 0;
-        let color = starVal === 1 ? '#ff4d4d' : starVal === 2 ? '#ff9f43' : starVal === 3 ? '#feca57' : starVal === 4 ? '#1dd1a1' : '#10ac84';
+        const percentage = total > 0 ? (count / total) * 100 : 0;
+        let color = '#ff4d4d'; 
+        if (starVal === 2) color = '#ff9f43';
+        if (starVal === 3) color = '#feca57';
+        if (starVal === 4) color = '#1dd1a1';
+        if (starVal === 5) color = '#10ac84';
+
         html += `
             <div class="rating-bar-row">
                 <span>${starVal} <span class="star-icon">&#9733;</span></span> 
