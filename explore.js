@@ -1,4 +1,4 @@
-// explore.js - Fixed Scrolling (Sentinel), Loading Stuck Issue & Cart Image
+// explore.js - Fixed Like/Rate Duplication Issue
 
 import {
     collection,
@@ -9,6 +9,11 @@ import {
     limit,
     startAfter,
     orderBy,
+    setDoc,
+    deleteDoc,
+    onSnapshot, 
+    runTransaction,
+    serverTimestamp,
     setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db, auth } from './firebase-config.js';
@@ -25,19 +30,21 @@ let lastVisible = null;
 let isLoading = false;
 let hasMoreProducts = true; 
 
-// ലോഡിംഗ് കണക്ക്: ആദ്യം 5, പിന്നെ 3 വീതം
-const INITIAL_LOAD_COUNT = 5;
-const SCROLL_LOAD_COUNT = 3;
+const INITIAL_LOAD_COUNT = 5; 
+const SCROLL_LOAD_COUNT = 3;  
 
 let currentUser = null;
-
-// സ്ക്രോൾ സെന്റിനൽ (Invisible trigger at bottom)
 let scrollSentinel = null;
+
+// ലൈവ് ലിസണേഴ്സ് ട്രാക്ക് ചെയ്യാൻ (മെമ്മറി ലീക്ക് ഒഴിവാക്കാൻ)
+const activeProductListeners = new Map();
+const activeUserListeners = new Map();
 
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
-        setupUserInteractionChecks();
+        // ലോഗിൻ ചെയ്താൽ മാത്രം യൂസർ ഇന്ററാക്ഷൻ ചെക്ക് ചെയ്യുക
+        setupUserInteractionListeners();
     } else {
         signInAnonymously(auth).catch((error) => console.error("Auth Error:", error));
     }
@@ -60,13 +67,8 @@ document.addEventListener("DOMContentLoaded", async () => {
         loadExploreBanner(settings.homeBannerUrl);
     }
     await loadCategories();   
-    
-    // Inject Sentinel for Scrolling
     createSentinel();
-    
     await loadProducts();     
-    
-    // Setup Observer
     setupScrollObserver();
 });
 
@@ -74,10 +76,9 @@ function createSentinel() {
     if (document.getElementById('scroll-sentinel')) return;
     scrollSentinel = document.createElement('div');
     scrollSentinel.id = 'scroll-sentinel';
-    scrollSentinel.style.height = '20px';
+    scrollSentinel.style.height = '10px';
     scrollSentinel.style.width = '100%';
-    scrollSentinel.style.marginBottom = '20px';
-    // Append to main container, after feed
+    scrollSentinel.style.marginBottom = '50px';
     const main = document.querySelector('main');
     if(main) main.appendChild(scrollSentinel);
 }
@@ -117,7 +118,6 @@ async function loadProducts() {
         const productsRef = collection(db, "products");
         let q;
         
-        // Try ordering by createdAt. If it fails (index missing), fallback gracefully.
         try {
             if (lastVisible) {
                 q = query(productsRef, orderBy("createdAt", "desc"), startAfter(lastVisible), limit(limitCount));
@@ -125,8 +125,7 @@ async function loadProducts() {
                 q = query(productsRef, orderBy("createdAt", "desc"), limit(limitCount));
             }
         } catch(e) {
-            // Fallback for missing index or field
-            console.warn("Sorting fallback:", e);
+            // Fallback if index missing
             if (lastVisible) {
                 q = query(productsRef, startAfter(lastVisible), limit(limitCount));
             } else {
@@ -136,7 +135,6 @@ async function loadProducts() {
 
         const documentSnapshots = await getDocs(q);
         
-        // Clear "Loading..." text on first load success
         if (isFirstLoad) {
             feedContainer.innerHTML = '';
         }
@@ -160,10 +158,13 @@ async function loadProducts() {
             const product = docSnap.data();
             const productId = docSnap.id;
             
+            // Prevent duplicates
             if(!document.getElementById(`product-card-${productId}`)) {
                 const card = document.createElement('div');
                 card.className = 'explore-card';
                 card.id = `product-card-${productId}`; 
+                // Mark as not initialized for interactions yet
+                card.dataset.interactionsInit = "false";
                 
                 card.innerHTML = `
                     ${buildCategoryHeader(product.categoryId)}
@@ -171,10 +172,13 @@ async function loadProducts() {
                     ${buildCardContent(productId, product)}
                 `;
                 feedContainer.appendChild(card);
+                
+                // Setup live counts listener for this specific card
+                setupProductListener(productId);
             }
         }
         
-        if(currentUser) setupUserInteractionChecks();
+        if(currentUser) setupUserInteractionListeners();
 
         new Swiper('.explore-image-swiper', {
             loop: false,
@@ -184,7 +188,7 @@ async function loadProducts() {
     } catch (error) {
         console.error("Error loading products: ", error);
         if (isFirstLoad) {
-            feedContainer.innerHTML = '<div class="loading-placeholder-full" style="color:red;">Error loading content. Please refresh.<br><small>If you are the admin, check Firestore Indexes.</small></div>';
+            feedContainer.innerHTML = '<div class="loading-placeholder-full" style="color:red;">Error loading content. Please refresh.</div>';
         }
     } finally {
         isLoading = false;
@@ -193,46 +197,77 @@ async function loadProducts() {
 }
 
 function setupScrollObserver() {
-    if (!scrollSentinel) createSentinel();
-    
+    if (!scrollSentinel) return;
     const observer = new IntersectionObserver((entries) => {
         if (entries[0].isIntersecting && !isLoading && hasMoreProducts) { 
-            console.log("Loading more products...");
             loadProducts();
         }
-    }, { 
-        rootMargin: '200px', 
-        threshold: 0.1 
-    });
-    
+    }, { rootMargin: '200px', threshold: 0.1 });
     observer.observe(scrollSentinel);
 }
 
-async function setupUserInteractionChecks() {
+// 1. PRODUCT LISTENER (Updates Counts Only) - Fixed Duplication
+function setupProductListener(productId) {
+    if (activeProductListeners.has(productId)) return; // Already listening
+
+    const card = document.getElementById(`product-card-${productId}`);
+    if (!card) return;
+
+    const productRef = doc(db, "products", productId);
+    
+    const unsubscribe = onSnapshot(productRef, (docSnap) => {
+        if (docSnap.exists()) {
+            const data = docSnap.data();
+            const likeCountSpan = card.querySelector('.like-count');
+            if (likeCountSpan) likeCountSpan.textContent = data.likeCount || 0;
+            const ratingCountSpan = card.querySelector('.rating-count');
+            if (ratingCountSpan) ratingCountSpan.textContent = data.ratingCount || 0;
+        }
+    });
+    activeProductListeners.set(productId, unsubscribe);
+}
+
+// 2. USER STATUS LISTENER (My Like) - Fixed Duplication
+function setupUserInteractionListeners() {
     if (!currentUser) return;
     const cards = document.querySelectorAll('.explore-card');
     
-    cards.forEach(async (card) => {
-        if(card.dataset.checked === "true") return;
+    cards.forEach((card) => {
+        // *** CRITICAL FIX: Check if already initialized ***
+        if (card.dataset.interactionsInit === "true") return;
+        
         const productId = card.id.replace('product-card-', '');
-        try {
-            const likeRef = doc(db, "products", productId, "likes", currentUser.uid);
-            const likeSnap = await getDoc(likeRef);
+        
+        // Listen for Likes
+        const likeRef = doc(db, "products", productId, "likes", currentUser.uid);
+        const unsubLike = onSnapshot(likeRef, (docSnap) => {
             const likeBtn = card.querySelector('.like-btn');
-            if(likeBtn && likeSnap.exists()) {
-                likeBtn.classList.add('liked');
-                likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
-                likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
+            if(likeBtn) {
+                if (docSnap.exists()) {
+                    likeBtn.classList.add('liked');
+                    likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
+                    likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
+                } else {
+                    likeBtn.classList.remove('liked');
+                    likeBtn.querySelector('svg').style.fill = 'none';
+                    likeBtn.querySelector('svg').style.stroke = 'currentColor';
+                }
             }
-        } catch(e) {}
-        try {
-            const ratingRef = doc(db, "products", productId, "ratings", currentUser.uid);
-            const ratingSnap = await getDoc(ratingRef);
-            if (ratingSnap.exists()) {
-                updateStarUI(card, ratingSnap.data().rating);
+        });
+
+        // Listen for Ratings
+        const ratingRef = doc(db, "products", productId, "ratings", currentUser.uid);
+        const unsubRating = onSnapshot(ratingRef, (docSnap) => {
+            if (docSnap.exists()) {
+                updateStarUI(card, docSnap.data().rating);
             }
-        } catch(e) {}
-        card.dataset.checked = "true"; 
+        });
+        
+        // Mark as initialized so we don't attach again
+        card.dataset.interactionsInit = "true";
+        
+        // Store unsubscribes (optional, for cleanup if needed)
+        activeUserListeners.set(productId, { like: unsubLike, rating: unsubRating });
     });
 }
 
@@ -253,7 +288,6 @@ function buildCategoryHeader(categoryId) {
 function buildImageSlider(productId, images, productName) {
     const productLink = `product.html?id=${productId}`;
     let slidesHTML = '';
-    
     if (images && images.length > 0) {
         images.forEach(imgUrl => {
             const optimizedUrl = optimizeImage(imgUrl, 600, 85);
@@ -283,6 +317,7 @@ function buildCardContent(productId, product) {
     }
 
     const rawImage = (product.images && product.images.length > 0) ? product.images[0] : 'https://placehold.co/400x400/1e1e1e/D4AF37?text=No+Image';
+    const imageUrl = optimizeImage(rawImage, 400);
     
     const isInCart = isItemInCart(productId);
     const activeClass = isInCart ? 'added-to-cart' : '';
@@ -376,11 +411,12 @@ feedContainer.addEventListener('click', async (e) => {
         const productRef = doc(db, "products", productId);
         const userLikeRef = doc(db, "products", productId, "likes", currentUser.uid);
         
+        // Optimistic UI update (Instant Feedback)
+        const isLiked = likeButton.classList.contains('liked');
         const countSpan = likeButton.nextElementSibling;
         let currentCount = parseInt(countSpan.textContent) || 0;
-        const isLiked = likeButton.classList.contains('liked');
-        
-        if(isLiked) {
+
+        if (isLiked) {
             likeButton.classList.remove('liked');
             likeButton.querySelector('svg').style.fill = 'none';
             likeButton.querySelector('svg').style.stroke = 'currentColor';
@@ -389,16 +425,15 @@ feedContainer.addEventListener('click', async (e) => {
             likeButton.classList.add('liked');
             likeButton.querySelector('svg').style.fill = 'var(--error-red)';
             likeButton.querySelector('svg').style.stroke = 'var(--error-red)';
-            countSpan.textContent = currentCount + 1;
             likeButton.style.transform = 'scale(1.2)';
             setTimeout(() => likeButton.style.transform = 'scale(1)', 200);
+            countSpan.textContent = currentCount + 1;
         }
 
         try {
             await runTransaction(db, async (transaction) => {
                 const likeDoc = await transaction.get(userLikeRef);
                 const productDoc = await transaction.get(productRef);
-                
                 if (!productDoc.exists()) throw "Product not found";
                 let newCount = productDoc.data().likeCount || 0;
 
@@ -411,7 +446,10 @@ feedContainer.addEventListener('click', async (e) => {
                 }
                 transaction.update(productRef, { likeCount: newCount });
             });
-        } catch (err) { console.error("Like Transaction Error:", err); }
+        } catch (err) { 
+            console.error("Like Transaction Error:", err);
+            // Revert on error (optional)
+        }
     }
 
     const commentButton = target.closest('.comment-btn');
@@ -432,6 +470,7 @@ feedContainer.addEventListener('click', async (e) => {
         const userRatingRef = doc(db, "products", productId, "ratings", currentUser.uid);
         const card = document.getElementById(`product-card-${productId}`);
 
+        // Optimistic UI
         updateStarUI(card, value);
 
         try { 
@@ -499,6 +538,7 @@ async function loadRatingBars(productId) {
     const summaryContainer = document.getElementById(`rating-summary-${productId}`);
     if (!summaryContainer) return;
     
+    // Only fetching once on click, so no duplicates here
     const ratingsRef = collection(db, "products", productId, "ratings");
     const snapshot = await getDocs(ratingsRef);
     
