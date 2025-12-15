@@ -1,4 +1,4 @@
-/* product.css - Updated: Delivery Details Styles & Light Mode */
+/* product.css - Updated: Sticky Footer & Performance Optimized */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
 .product-detail-grid {
@@ -8,6 +8,8 @@
     align-items: start;
     width: 100%;
     box-sizing: border-box;
+    /* മൊബൈലിൽ സ്റ്റിക്കി ഫൂട്ടറിന് വേണ്ടി താഴെ സ്ഥലം ഇടുന്നു */
+    padding-bottom: 0; 
 }
 
 /* --- 2. പ്രൊഡക്റ്റ് ഗാലറി --- */
@@ -310,7 +312,7 @@ body.light-mode .product-description { color: #333; }
     word-break: break-all;
 }
 
-/* *** DELIVERY DETAILS STYLES (New) *** */
+/* *** DELIVERY DETAILS STYLES *** */
 .delivery-details-section {
     margin-bottom: 2rem;
     padding: 0 1.5rem; 
@@ -396,34 +398,6 @@ body.light-mode .del-value { color: #222; }
     stroke: var(--text-muted);
 }
 
-.warranty-badge {
-    background-color: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-top: 1rem;
-    display: flex;
-    gap: 12px;
-    align-items: flex-start;
-}
-
-body.light-mode .warranty-badge {
-    background-color: #f9f9f9;
-    border-color: #e0e0e0;
-}
-
-.warranty-icon { font-size: 1.5rem; }
-
-.warranty-text {
-    font-size: 0.9rem;
-    color: var(--text-color);
-    line-height: 1.5;
-}
-
-body.light-mode .warranty-text { color: #333; }
-
-.warranty-text small { color: var(--text-muted); display: block; margin-top: 4px; }
-
 .trust-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -494,13 +468,14 @@ body.light-mode .product-specs-list li { color: #333; }
     content: "•"; color: var(--primary-gold); font-weight: bold; font-size: 1.2rem; position: absolute; left: 0; top: -2px;
 }
 
-/* Buttons */
+/* --- BUTTONS & STICKY FOOTER --- */
 .product-actions-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 10px; 
     max-width: 100%; 
     margin-bottom: 1rem;
+    transition: all 0.3s ease;
 }
 
 .btn-whatsapp {
@@ -694,11 +669,40 @@ body.light-mode .related-products-section .btn-secondary-new {
     border-color: var(--primary-gold) !important;
 }
 
-
 /* --- 6. Responsive --- */
 @media (max-width: 768px) {
     .product-title { font-size: 1.3rem; }
-    .product-actions-grid { max-width: 100%; }
+    
+    /* *** STICKY FOOTER LOGIC *** */
+    .product-detail-grid {
+        padding-bottom: 70px; /* Space for the fixed footer */
+    }
+
+    .product-actions-grid {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background-color: var(--card-bg); /* Match theme bg */
+        border-top: 1px solid var(--border-color);
+        padding: 10px 15px;
+        z-index: 1000;
+        margin: 0;
+        max-width: none;
+        box-sizing: border-box;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
+    }
+    
+    body.light-mode .product-actions-grid {
+        background-color: #ffffff;
+        border-top-color: #e0e0e0;
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+    }
+
+    /* Move floating buttons up on mobile */
+    #floating-action-buttons {
+        bottom: 85px !important;
+    }
 }
 
 @media (min-width: 769px) {
