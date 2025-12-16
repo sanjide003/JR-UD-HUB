@@ -1,4 +1,4 @@
-// index.js - Restored: Original Catalogue Swiper & Compact Buttons
+// index.js - Updated: 2-3 Grid for Catalogue, Compact Shop Now
 
 import { db } from './firebase-config.js';
 import { 
@@ -378,10 +378,13 @@ async function loadUnder799Products() {
     } catch (e) {}
 }
 
-// *** RESTORED: SWIPER FOR CATEGORIES (Horizontal Scroll) ***
+// *** UPDATED: CATEGORIES (SQUARE GRID, NO SWIPER) ***
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
+    
+    // Apply 2-3 Pattern Grid Class
+    container.className = 'home-category-grid';
     
     try {
         const catQuery = query(collection(db, "categories"), orderBy("name")); 
@@ -391,30 +394,19 @@ async function loadHomeCategories() {
         let html = '';
         catSnapshot.forEach(doc => {
             const category = doc.data();
-            const imageUrl = optimizeImage(category.imageUrl || '', 150); 
+            const imageUrl = optimizeImage(category.imageUrl || '', 300, 300); // Higher Quality
             
-            // *** ORIGINAL CIRCLE ICON DESIGN ***
+            // Square Card with Overlay Title
             html += `
-                <div class="swiper-slide" style="width: auto; margin-right: 15px;">
-                    <a href="categories.html?filter=${doc.id}" class="cat-item-home">
-                        <div class="cat-img-circle">
-                            <img src="${imageUrl}" alt="${category.name}" loading="lazy">
-                        </div>
-                        <span class="cat-name-home">${category.name}</span>
-                    </a>
-                </div>`;
+                <a href="categories.html?filter=${doc.id}" class="home-category-card">
+                    <img src="${imageUrl}" alt="${category.name}" class="cat-card-img" loading="lazy">
+                    <div class="cat-card-overlay">
+                        <h3 class="cat-card-title">${category.name}</h3>
+                    </div>
+                </a>`;
         });
         container.innerHTML = html;
-        
-        // Initialize Swiper for categories
-        new Swiper('.category-swiper', {
-            slidesPerView: 'auto',
-            spaceBetween: 0,
-            freeMode: true,
-            observer: true,
-            observeParents: true
-        });
-        
+        // No Swiper initialization
     } catch (error) { console.error(error); }
 }
 
