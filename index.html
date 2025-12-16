@@ -3,68 +3,130 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home - JR-UD-HUB</title>
-    <!-- Styles -->
+    <title>JR-UD-HUB</title>
+    
     <link rel="stylesheet" href="public.css">
     <link rel="stylesheet" href="home.css">
-    <!-- Swiper CSS (Optional for banners) -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body>
 
-    <!-- Preloader -->
+    <!-- 0. Page Loader -->
     <div id="preloader">
         <div class="loader-logo-container">
+            <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
             <div class="loader-ring"></div>
         </div>
     </div>
 
-    <!-- Header -->
+    <!-- 1. Header -->
     <header class="main-header" id="main-header"></header>
     
-    <!-- Sidebar -->
-    <nav class="side-nav" id="side-nav"></nav>
+    <!-- 2. Nav Overlay -->
     <div class="nav-overlay" id="nav-overlay"></div>
 
-    <main class="container home-container">
+    <!-- 3. Main Content -->
+    <main>
         
-        <!-- Hero Banner -->
-        <div id="home-banner-container" class="hero-section" style="display: none;">
-            <!-- Banner image will be loaded here -->
-        </div>
+        <!-- Home Top Banner (Old Model) -->
+        <section id="home-top-banner" class="home-top-banner" style="display: none;"></section>
 
-        <!-- Featured Products -->
-        <section class="home-section">
-            <div class="section-header">
-                <h2 class="section-title">Latest Arrivals</h2>
-                <a href="explore.html" class="view-all-link">View All</a>
+        <!-- 3.1. Hero Slider (Old Model - Premium) -->
+        <section class="hero-section-new">
+            <div class="swiper hero-slider-new" id="hero-slider-container">
+                <div class="swiper-wrapper" id="hero-slider-wrapper">
+                    <!-- Slides loaded via JS -->
+                </div>
+                <div class="swiper-pagination hero-pagination-dots"></div>
+            </div>
+        </section>
+        
+        <!-- Hero Text (Old Model) -->
+        <section class="hero-text-section container">
+            <p>We don’t see JR UD HUB as just a place to shop. Every product carries purpose and every purchase becomes a small part of someone’s life. Whatever you search for is more than an item, it is something that makes your everyday living better. We don’t simply offer products, we bring you the experiences and convenience you are looking for.</p>
+        </section>
+
+        <!-- 3.2. SPECIAL OFFER (STANDARD STYLE) -->
+        <section class="home-section special-offer-wrapper" id="top-deals-section" style="display:none;">
+            <div class="special-offer-header">
+                <img id="top-deals-banner-img" class="special-offer-banner-img" src="" alt="Special Offers">
             </div>
             
-            <div class="home-product-grid" id="home-products-grid">
-                <div class="home-loader">Loading products...</div>
+            <div class="product-slider-container blue-container">
+                <div class="swiper top-deals-swiper">
+                    <div class="swiper-wrapper" id="top-deals-grid">
+                        <!-- Products JS -->
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- Categories Section (Optional) -->
-        <section class="home-section" style="margin-top: 2rem;">
-            <div class="section-header">
-                <h2 class="section-title">Shop by Category</h2>
-                <a href="categories.html" class="view-all-link">All Categories</a>
+        <!-- 3.3. TOP TRENDY DEALS (SCREENSHOT STYLE) -->
+        <section class="home-section container">
+            <div class="section-header-card orange-card-bg">
+                <h2 class="section-title-card">Top Trendy Deals</h2>
             </div>
-            <div id="home-categories-container" style="display: flex; gap: 10px; overflow-x: auto; padding-bottom: 10px;">
-                <!-- Categories loaded via JS -->
+            
+            <div class="product-slider-container orange-container screenshot-mode">
+                <div class="swiper top-sellers-swiper-new">
+                    <div class="swiper-wrapper" id="top-sellers-grid">
+                        <!-- Products JS -->
+                    </div>
+                </div>
             </div>
         </section>
 
+        <!-- 3.4. TOP DISCOUNT OF THE SALE (SCREENSHOT STYLE - 2 Rows) -->
+        <section class="home-section container orange-section">
+             <div class="section-header-card dark-card-bg">
+                <h2 class="section-title-card">Top Discount of the Sale</h2>
+            </div>
+            
+            <div class="product-slider-container blue-container screenshot-mode"> 
+                <div class="swiper discount-swiper">
+                    <div class="swiper-wrapper" id="top-discount-grid">
+                        <!-- Products JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3.5. UNDER 799 STORE (STANDARD STYLE) -->
+        <section class="home-section container">
+            <div class="section-header-card green-card-bg">
+                <h2 class="section-title-card">Under ₹799 Store</h2>
+            </div>
+            <div class="product-slider-container green-container">
+                <div class="swiper under-799-swiper">
+                    <div class="swiper-wrapper" id="under-799-grid">
+                        <!-- Products loaded via JS -->
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3.6. CATALOGUE -->
+        <section class="home-section container" style="background: transparent; box-shadow: none;">
+            <div class="catalogue-header">
+                <h2 class="section-title-new" style="color:var(--primary-gold); margin-bottom:0;">CATALOGUE</h2>
+            </div>
+            
+            <div class="swiper category-swiper">
+                <div class="swiper-wrapper" id="category-grid-home">
+                    <!-- Categories JS -->
+                </div>
+            </div>
+        </section>
+        
     </main>
 
-    <!-- Footer -->
+    <!-- 4. Footer -->
     <footer class="main-footer-new" id="main-footer"></footer>
 
-    <!-- Floating Actions -->
+    <!-- 5. Floating Icons -->
     <div id="floating-action-buttons"></div>
 
-    <!-- Scripts -->
+    <!-- JS Files -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script type="module" src="firebase-config.js"></script>
     <script type="module" src="cart.js"></script>
