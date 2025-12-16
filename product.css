@@ -1,4 +1,4 @@
-/* product.css - Updated: See More Specs & Footer Fix */
+/* product.css - Updated: Clickable Spec & Dual Related Rows */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
 .product-detail-grid {
@@ -436,7 +436,7 @@ body.light-mode .del-value { color: #222; }
     line-height: 1.2;
 }
 
-/* --- 5. Specification --- */
+/* *** SPECIFICATION STYLES (CLICKABLE) *** */
 .product-specification-section {
     margin-bottom: 1.5rem;
     background-color: transparent;
@@ -448,6 +448,14 @@ body.light-mode .del-value { color: #222; }
     overflow-wrap: break-word;
     height: auto; 
     min-height: 0;
+    cursor: pointer; /* കാണുമ്പോൾ തന്നെ ക്ലിക്ക് ചെയ്യാൻ തോന്നും */
+    position: relative;
+    user-select: none; /* Text selection ഒഴിവാക്കാൻ */
+}
+
+/* Touch feedback effect */
+.product-specification-section:active {
+    opacity: 0.7;
 }
 
 .product-specs-list { list-style-type: none; padding: 0; margin: 0; }
@@ -468,18 +476,12 @@ body.light-mode .product-specs-list li { color: #333; }
     content: "•"; color: var(--primary-gold); font-weight: bold; font-size: 1.2rem; position: absolute; left: 0; top: -2px;
 }
 
-/* *** SEE MORE BUTTON STYLE *** */
-.see-more-specs-btn {
-    background: none;
-    border: none;
+.spec-toggle-hint {
+    font-size: 0.75rem;
     color: var(--primary-gold);
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    padding: 5px 0;
     margin-top: 5px;
-    text-decoration: underline;
-    display: block;
+    font-style: italic;
+    opacity: 0.8;
 }
 
 /* --- BUTTONS & STICKY FOOTER --- */
@@ -551,13 +553,14 @@ body.light-mode .product-actions-grid .btn-secondary-new svg.icon-btn {
     margin-top: 1rem; color: var(--success-green); font-weight: 500; display: none; 
 }
 
-/* --- 6. 'You May Also Like' --- */
+/* --- 6. 'You May Also Like' (Dual Rows) --- */
 .related-products-section {
     margin-top: 3rem;
     padding-top: 2rem;
     border-top: 1px solid var(--border-color);
 }
 
+/* Swiper Container Styles */
 .related-products-section .swiper-slide {
     background-color: var(--card-bg) !important;
     border: 1px solid var(--border-color) !important;
@@ -684,13 +687,11 @@ body.light-mode .related-products-section .btn-secondary-new {
 }
 
 /* --- MINIMAL FOOTER FOR PRODUCT PAGE --- */
-/* "ABOUT", "QUICK LINKS", "Social" എന്നിവയെ മറയ്ക്കുന്നു */
 .main-footer-new .footer-accordion-item,
 .main-footer-new .footer-social-new {
     display: none !important;
 }
 
-/* ബാക്കിയുള്ള Copyright ഭാഗം സെന്ററിൽ കാണിക്കാൻ */
 .main-footer-new .footer-container-new {
     display: flex !important;
     flex-direction: column;
@@ -716,14 +717,11 @@ body.light-mode .related-products-section .btn-secondary-new {
 @media (max-width: 768px) {
     .product-title { font-size: 1.3rem; }
     
-    /* *** STICKY FOOTER LOGIC - Updated for Nav Bar Visibility *** */
     .product-detail-grid {
-        /* ഫൂട്ടറിനും (65px) ബട്ടണുകൾക്കും (~55px) കൂടി 120px സ്ഥലം താഴെ ഇടുന്നു */
         padding-bottom: 120px; 
     }
 
-    /* *** COPYRIGHT VISIBILITY FIX *** */
-    /* ബട്ടണുകൾക്ക് താഴെ പോകാതിരിക്കാൻ ഫൂട്ടറിൽ extra padding നൽകുന്നു */
+    /* Footer Padding for Copyright Visibility */
     .main-footer-new {
         padding-bottom: 140px !important; 
     }
@@ -736,7 +734,7 @@ body.light-mode .related-products-section .btn-secondary-new {
         height: auto;
         background-color: var(--card-bg); 
         border-top: 1px solid var(--border-color);
-        padding: 8px 12px; /* Compact Padding */
+        padding: 8px 12px; 
         z-index: 1000; 
         margin: 0;
         max-width: none;
