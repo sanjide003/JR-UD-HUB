@@ -1,9 +1,7 @@
-/* home.css - Updated: Compact Catalogue Grid with Side Gaps */
-
-/* ... (മറ്റ് സ്റ്റൈലുകൾ പഴയത് പോലെ തന്നെ - Top Banner, Hero Slider etc.) ... */
+/* home.css - Updated: 2-3-3-2 Catalogue Grid Pattern */
 
 /* =========================================
-   1. HOME TOP BANNER (Clean Style)
+   1. HOME TOP BANNER
    ========================================= */
 .home-top-banner {
     width: 100%;
@@ -228,29 +226,30 @@ body.light-mode .screenshot-mode .clean-card-price-row { color: #000000; text-sh
 .screenshot-mode .shop-now-btn { display: none; }
 .screenshot-mode .card-discount-badge { top: 6px; left: 6px; font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; }
 
-/* === 5. NEW CATALOGUE GRID (Compact 2-3 Pattern with Gaps) === */
+/* === 5. NEW CATALOGUE GRID (2-3 Pattern with Half Height) === */
 .catalogue-header .section-title-new { color: #ffffff !important; }
 body.light-mode .catalogue-header .section-title-new { color: #000000 !important; }
 
 /* Grid Container */
 .home-category-grid {
     display: grid;
-    /* 6 columns allows flexibility */
+    /* 6 columns for flexible 2-item and 3-item rows */
     grid-template-columns: repeat(6, 1fr);
-    gap: 12px; /* Standard gap between items */
+    gap: 12px;
     padding: 10px;
     width: 100%;
 }
 
-/* Category Card (Compact & Rectangular) */
+/* Category Card (Rectangular - Half Height) */
 .home-category-card {
     position: relative;
     display: block;
     text-decoration: none;
-    aspect-ratio: 4 / 3; /* Shorter than square (Small & Compact) */
+    /* Aspect ratio ~2:1 makes it half the height of a square */
+    aspect-ratio: 2.2 / 1; 
     background-color: #1a1a1a;
     border: 1px solid #333;
-    border-radius: 12px;
+    border-radius: 8px;
     overflow: hidden;
     transition: transform 0.2s;
 }
@@ -263,58 +262,62 @@ body.light-mode .home-category-card {
 
 .home-category-card:active { transform: scale(0.98); }
 
-/* --- 2-3 Pattern with SIDE GAPS Logic --- */
+/* --- 2-3-3...-2 Pattern Logic --- */
 
-/* Items 1 & 2 (2 in a row):
-   Instead of spanning full 3 cols (50%), span 2 cols and offset.
-   Item 1: Starts at Col 2, Spans 2 (Leaves Col 1 empty)
-   Item 2: Starts at Col 4, Spans 2 (Leaves Col 6 empty)
-   Result: Small boxes centered with gaps on both sides.
-*/
-.home-category-card:nth-child(5n+1) {
-    grid-column: 2 / span 2; 
-}
-.home-category-card:nth-child(5n+2) {
-    grid-column: 4 / span 2;
-}
-
-/* Items 3, 4, 5 (3 in a row):
-   Span 2 cols each. 2+2+2 = 6. Fills the row.
-*/
-.home-category-card:nth-child(5n+3),
-.home-category-card:nth-child(5n+4),
-.home-category-card:nth-child(5n+5) {
+/* Default: Span 2 columns (3 items per row) */
+.home-category-card {
     grid-column: span 2;
 }
 
-/* Inner Content */
+/* Row 1: First 2 items (Span 3 columns each = 2 items per row) */
+.home-category-card:nth-child(1),
+.home-category-card:nth-child(2) {
+    grid-column: span 3; 
+}
+
+/* Last Row: Last 2 items (Span 3 columns each) 
+   Note: Works if user scrolls to bottom, ensuring visual balance */
+.home-category-card:nth-last-child(1),
+.home-category-card:nth-last-child(2) {
+    grid-column: span 3;
+}
+
+/* Inner Content Layout */
 .cat-card-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
+    /* Darken image slightly to make text readable */
+    filter: brightness(0.8);
 }
 
-.home-category-card:hover .cat-card-img { transform: scale(1.05); }
+.home-category-card:hover .cat-card-img { 
+    transform: scale(1.05); 
+    filter: brightness(0.6);
+}
 
-/* Overlay Text */
+/* Title at Bottom */
 .cat-card-overlay {
     position: absolute;
     bottom: 0; left: 0; width: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-    padding: 8px 4px;
-    display: flex; justify-content: center; align-items: flex-end;
+    /* Gradient behind text for readability */
+    background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
+    padding: 8px 5px;
+    display: flex; 
+    justify-content: center; 
+    align-items: flex-end;
+    pointer-events: none;
 }
 
 .cat-card-title {
     color: #fff;
-    font-size: 0.8rem; /* Smaller font for compact look */
-    font-weight: 600;
+    font-size: 0.85rem; 
+    font-weight: 700;
     text-transform: uppercase;
     text-align: center;
-    text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     margin: 0;
-    line-height: 1.2;
+    letter-spacing: 0.5px;
 }
 
 /* Swiper Config for Products */
