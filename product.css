@@ -1,4 +1,4 @@
-/* product.css - Updated: Sticky Buttons above Nav Bar & Compact Size */
+/* product.css - Updated: Minimal Footer & Sticky Buttons */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
 .product-detail-grid {
@@ -8,7 +8,7 @@
     align-items: start;
     width: 100%;
     box-sizing: border-box;
-    /* മൊബൈലിൽ നാവിഗേഷനും ബട്ടണുകൾക്കും വേണ്ടി താഴെ സ്ഥലം ഇടുന്നു (65px Nav + 60px Buttons) */
+    /* മൊബൈലിൽ നാവിഗേഷനും ബട്ടണുകൾക്കും വേണ്ടി താഴെ സ്ഥലം ഇടുന്നു */
     padding-bottom: 20px; 
 }
 
@@ -667,6 +667,35 @@ body.light-mode .related-products-section .btn-secondary-new {
 .related-products-section .btn-secondary-new.added-to-cart {
     color: var(--primary-gold) !important;
     border-color: var(--primary-gold) !important;
+}
+
+/* --- MINIMAL FOOTER FOR PRODUCT PAGE --- */
+/* "ABOUT", "QUICK LINKS", "Social" എന്നിവയെ മറയ്ക്കുന്നു */
+.main-footer-new .footer-accordion-item,
+.main-footer-new .footer-social-new {
+    display: none !important;
+}
+
+/* ബാക്കിയുള്ള Copyright ഭാഗം സെന്ററിൽ കാണിക്കാൻ */
+.main-footer-new .footer-container-new {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+}
+
+.main-footer-new .footer-bottom-new {
+    width: 100%;
+    text-align: center;
+    border-top: none !important;
+    padding-top: 0 !important;
+    margin-top: 0 !important;
+}
+
+.main-footer-new {
+    padding: 1rem 1.5rem !important; 
+    margin-top: 2rem !important;
 }
 
 /* --- 6. Responsive --- */
