@@ -1,4 +1,4 @@
-// product.js - Fixed: Complete code with no missing functions
+// product.js - Fixed: Full logic included
 
 import { 
     collection, 
@@ -43,7 +43,6 @@ const paymentRadios = document.getElementsByName('payment_mode');
 const codWarningBox = document.getElementById('cod-warning-box');
 const codWarningText = document.getElementById('cod-warning-text');
 
-// Auth State Listener
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
@@ -98,10 +97,10 @@ function setupModalListeners() {
         paymentRadios.forEach(radio => {
             radio.addEventListener('change', (e) => {
                 if (e.target.value === 'cod' && orderConfig.codEnabled) {
-                    if (codWarningText) codWarningText.textContent = `Due to handling costs, a nominal fee of ₹${orderConfig.codFee} will be charged for orders placed using this option. Avoid this fee by paying online now.`;
-                    if (codWarningBox) codWarningBox.style.display = 'block';
+                    if(codWarningText) codWarningText.textContent = `Due to handling costs, a nominal fee of ₹${orderConfig.codFee} will be charged for orders placed using this option. Avoid this fee by paying online now.`;
+                    if(codWarningBox) codWarningBox.style.display = 'block';
                 } else {
-                    if (codWarningBox) codWarningBox.style.display = 'none';
+                    if(codWarningBox) codWarningBox.style.display = 'none';
                 }
             });
         });
@@ -151,7 +150,6 @@ async function loadProductDetails() {
                     }, 500);
                 }
             } else {
-                // Update interactions only
                 const likeCount = document.querySelector('.like-count');
                 const ratingCount = document.querySelector('.rating-count');
                 if(likeCount) likeCount.textContent = product.likeCount || 0;
@@ -299,7 +297,6 @@ function renderProductUI(product, productIdStr) {
 
     productDetailContent.innerHTML = galleryHTML + infoHTML;
     
-    // Init main product swiper
     new Swiper('.product-gallery-swiper', {
         loop: true,
         autoplay: { delay: 3000, disableOnInteraction: false },
