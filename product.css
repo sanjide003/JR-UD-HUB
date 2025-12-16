@@ -1,4 +1,4 @@
-/* product.css - Complete & Optimized */
+/* product.css - Updated: Fade Specs, Reduced Gaps, Sticky Footer */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
 .product-detail-grid {
@@ -438,7 +438,7 @@ body.light-mode .del-value { color: #222; }
 
 /* *** SPECIFICATION STYLES (FADE EFFECT) *** */
 .product-specification-section {
-    margin-bottom: 0.5rem; 
+    margin-bottom: 0.5rem; /* താഴെ കുറച്ച് സ്ഥലം മാത്രം മതി */
     background-color: transparent;
     border: none;
     padding: 5px 0 0 1.5rem;
@@ -449,7 +449,7 @@ body.light-mode .del-value { color: #222; }
     
     /* Fade Effect Logic */
     position: relative;
-    max-height: 8.5em; /* 5-6 വരികൾ */
+    max-height: 8.5em; /* ഏകദേശം 5-6 വരികൾക്കുള്ള സ്ഥലം */
     overflow: hidden;
     transition: max-height 0.4s ease-out;
     cursor: pointer;
@@ -463,23 +463,23 @@ body.light-mode .del-value { color: #222; }
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 4.5em; 
-    background: linear-gradient(to bottom, transparent 0%, #000000 90%);
+    height: 4.5em; /* താഴെ പകുതി ഭാഗം മങ്ങിയിരിക്കും */
+    background: linear-gradient(to bottom, transparent 0%, #000000 90%); /* കറുപ്പ് തീമിന് */
     pointer-events: none;
     transition: opacity 0.3s;
 }
 
 body.light-mode .product-specification-section::after {
-    background: linear-gradient(to bottom, transparent 0%, #ffffff 90%); 
+    background: linear-gradient(to bottom, transparent 0%, #ffffff 90%); /* വെള്ള തീമിന് */
 }
 
-/* Expanded State */
+/* വികസിക്കുമ്പോൾ (Expanded State) */
 .product-specification-section.expanded {
-    max-height: 1500px;
+    max-height: 1500px; /* ആവശ്യത്തിന് വലിപ്പം */
 }
 
 .product-specification-section.expanded::after {
-    opacity: 0; 
+    opacity: 0; /* ഫേഡ് ഇഫക്റ്റ് മാറ്റുന്നു */
     pointer-events: none;
 }
 
@@ -520,7 +520,7 @@ body.light-mode .product-specs-list li { color: #333; }
     padding: 0 0.5rem; 
     border-radius: 6px;
     text-decoration: none; cursor: pointer; font-size: 0.8rem;
-    height: 38px; 
+    height: 38px; /* Compact Height */
 }
 .btn-whatsapp svg {
     width: 18px;
@@ -533,7 +533,7 @@ body.light-mode .product-specs-list li { color: #333; }
     color: #ffffff !important;
     border: 1px solid #ffffff !important;
     padding: 0 0.5rem;
-    height: 38px; 
+    height: 38px; /* Compact Height */
     font-size: 0.8rem;
     border-radius: 6px;
     display: flex;
@@ -572,11 +572,12 @@ body.light-mode .product-actions-grid .btn-secondary-new svg.icon-btn {
 
 /* --- 6. 'You May Also Like' (Reduced Gap) --- */
 .related-products-section {
-    margin-top: 1rem; 
-    padding-top: 1rem; 
+    margin-top: 1rem; /* Gap കുറച്ചു (3rem -> 1rem) */
+    padding-top: 1rem; /* Gap കുറച്ചു (2rem -> 1rem) */
     border-top: 1px solid var(--border-color);
 }
 
+/* Swiper Container Styles */
 .related-products-section .swiper-slide {
     background-color: var(--card-bg) !important;
     border: 1px solid var(--border-color) !important;
