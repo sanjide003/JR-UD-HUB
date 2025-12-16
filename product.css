@@ -1,4 +1,4 @@
-/* product.css - Updated: Clickable Spec & Dual Related Rows */
+/* product.css - Updated: Fade Specs & Reduced Gaps */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
 .product-detail-grid {
@@ -436,9 +436,9 @@ body.light-mode .del-value { color: #222; }
     line-height: 1.2;
 }
 
-/* *** SPECIFICATION STYLES (CLICKABLE) *** */
+/* *** SPECIFICATION STYLES (FADE EFFECT) *** */
 .product-specification-section {
-    margin-bottom: 1.5rem;
+    margin-bottom: 0.5rem; /* താഴെ കുറച്ച് സ്ഥലം മാത്രം മതി */
     background-color: transparent;
     border: none;
     padding: 5px 0 0 1.5rem;
@@ -446,16 +446,41 @@ body.light-mode .del-value { color: #222; }
     max-width: 100%;
     box-sizing: border-box;
     overflow-wrap: break-word;
-    height: auto; 
-    min-height: 0;
-    cursor: pointer; /* കാണുമ്പോൾ തന്നെ ക്ലിക്ക് ചെയ്യാൻ തോന്നും */
+    
+    /* Fade Effect Logic */
     position: relative;
-    user-select: none; /* Text selection ഒഴിവാക്കാൻ */
+    max-height: 8.5em; /* ഏകദേശം 5-6 വരികൾക്കുള്ള സ്ഥലം */
+    overflow: hidden;
+    transition: max-height 0.4s ease-out;
+    cursor: pointer;
+    user-select: none;
 }
 
-/* Touch feedback effect */
-.product-specification-section:active {
-    opacity: 0.7;
+/* The Fading Mask */
+.product-specification-section::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 4.5em; /* താഴെ പകുതി ഭാഗം മങ്ങിയിരിക്കും */
+    background: linear-gradient(to bottom, transparent 0%, #000000 90%); /* കറുപ്പ് തീമിന് */
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+body.light-mode .product-specification-section::after {
+    background: linear-gradient(to bottom, transparent 0%, #ffffff 90%); /* വെള്ള തീമിന് */
+}
+
+/* വികസിക്കുമ്പോൾ (Expanded State) */
+.product-specification-section.expanded {
+    max-height: 1500px; /* ആവശ്യത്തിന് വലിപ്പം */
+}
+
+.product-specification-section.expanded::after {
+    opacity: 0; /* ഫേഡ് ഇഫക്റ്റ് മാറ്റുന്നു */
+    pointer-events: none;
 }
 
 .product-specs-list { list-style-type: none; padding: 0; margin: 0; }
@@ -474,14 +499,6 @@ body.light-mode .product-specs-list li { color: #333; }
 
 .product-specs-list li::before {
     content: "•"; color: var(--primary-gold); font-weight: bold; font-size: 1.2rem; position: absolute; left: 0; top: -2px;
-}
-
-.spec-toggle-hint {
-    font-size: 0.75rem;
-    color: var(--primary-gold);
-    margin-top: 5px;
-    font-style: italic;
-    opacity: 0.8;
 }
 
 /* --- BUTTONS & STICKY FOOTER --- */
@@ -553,10 +570,10 @@ body.light-mode .product-actions-grid .btn-secondary-new svg.icon-btn {
     margin-top: 1rem; color: var(--success-green); font-weight: 500; display: none; 
 }
 
-/* --- 6. 'You May Also Like' (Dual Rows) --- */
+/* --- 6. 'You May Also Like' (Reduced Gap) --- */
 .related-products-section {
-    margin-top: 3rem;
-    padding-top: 2rem;
+    margin-top: 1rem; /* Gap കുറച്ചു (3rem -> 1rem) */
+    padding-top: 1rem; /* Gap കുറച്ചു (2rem -> 1rem) */
     border-top: 1px solid var(--border-color);
 }
 
