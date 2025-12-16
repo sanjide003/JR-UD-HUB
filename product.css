@@ -1,4 +1,4 @@
-/* product.css - Updated: Always Visible Sticky Footer */
+/* product.css - Updated: Sticky Buttons above Nav Bar & Compact Size */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
 .product-detail-grid {
@@ -8,7 +8,7 @@
     align-items: start;
     width: 100%;
     box-sizing: border-box;
-    /* മൊബൈലിൽ താഴെ കണ്ടന്റ് മറയാതിരിക്കാൻ പാഡിംഗ് */
+    /* മൊബൈലിൽ നാവിഗേഷനും ബട്ടണുകൾക്കും വേണ്ടി താഴെ സ്ഥലം ഇടുന്നു (65px Nav + 60px Buttons) */
     padding-bottom: 20px; 
 }
 
@@ -484,14 +484,14 @@ body.light-mode .product-specs-list li { color: #333; }
     color: #fff !important;
     font-weight: 600;
     display: inline-flex; align-items: center; justify-content: center; gap: 6px;
-    padding: 0.6rem 0.5rem; 
+    padding: 0 0.5rem; 
     border-radius: 6px;
-    text-decoration: none; cursor: pointer; font-size: 0.85rem;
-    height: 48px; /* Slightly taller for easy tapping */
+    text-decoration: none; cursor: pointer; font-size: 0.8rem;
+    height: 38px; /* Compact Height */
 }
 .btn-whatsapp svg {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     fill: currentColor;
 }
 
@@ -499,9 +499,9 @@ body.light-mode .product-specs-list li { color: #333; }
     background-color: #000 !important;
     color: #ffffff !important;
     border: 1px solid #ffffff !important;
-    padding: 0.6rem 0.5rem;
-    height: 48px; /* Slightly taller */
-    font-size: 0.85rem;
+    padding: 0 0.5rem;
+    height: 38px; /* Compact Height */
+    font-size: 0.8rem;
     border-radius: 6px;
     display: flex;
     align-items: center;
@@ -516,8 +516,8 @@ body.light-mode .product-actions-grid .btn-secondary-new {
 }
 
 .product-actions-grid .btn-secondary-new svg.icon-btn {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
 }
 
 body.light-mode .product-actions-grid .btn-secondary-new svg.icon-btn {
@@ -673,37 +673,38 @@ body.light-mode .related-products-section .btn-secondary-new {
 @media (max-width: 768px) {
     .product-title { font-size: 1.3rem; }
     
-    /* *** STICKY FOOTER LOGIC - Updated *** */
+    /* *** STICKY FOOTER LOGIC - Updated for Nav Bar Visibility *** */
     .product-detail-grid {
-        /* ഫൂട്ടറിന് വേണ്ടി താഴെ 80px സ്ഥലം ഒഴിച്ചിടുന്നു */
-        padding-bottom: 80px; 
+        /* ഫൂട്ടറിനും (65px) ബട്ടണുകൾക്കും (~55px) കൂടി 120px സ്ഥലം താഴെ ഇടുന്നു */
+        padding-bottom: 120px; 
     }
 
     .product-actions-grid {
         position: fixed;
-        bottom: 0;
+        /* Nav Bar Height (65px) is used here to place buttons ABOVE the nav bar */
+        bottom: 65px; 
         left: 0;
         width: 100%;
         height: auto;
-        background-color: var(--card-bg); /* തീമിന് അനുസരിച്ച് നിറം മാറും */
+        background-color: var(--card-bg); 
         border-top: 1px solid var(--border-color);
-        padding: 12px 15px; /* നല്ല സ്പേസിംഗ് */
-        z-index: 2000; /* മറ്റെല്ലാത്തിനും മുകളിൽ */
+        padding: 8px 12px; /* Compact Padding */
+        z-index: 1000; 
         margin: 0;
         max-width: none;
         box-sizing: border-box;
-        box-shadow: 0 -4px 15px rgba(0,0,0,0.3); /* നിഴൽ */
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.2); 
     }
     
     body.light-mode .product-actions-grid {
         background-color: #ffffff;
         border-top-color: #e0e0e0;
-        box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
     }
 
-    /* ഫ്ലോട്ടിംഗ് ബട്ടൺ (WhatsApp) ഫൂട്ടറിന് മുകളിലേക്ക് മാറ്റുന്നു */
+    /* ഫ്ലോട്ടിംഗ് ബട്ടൺ (WhatsApp) ബട്ടണുകൾക്കും മുകളിലേക്ക് മാറ്റുന്നു */
     #floating-action-buttons {
-        bottom: 90px !important;
+        bottom: 130px !important;
     }
 }
 
