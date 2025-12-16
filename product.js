@@ -1,4 +1,4 @@
-// product.js - Fixed: Image Loading, Sticky Footer & Related Products Performance
+// product.js - Optimized for Sticky Footer & Fast Loading
 
 import { 
     collection, 
@@ -138,14 +138,13 @@ async function loadProductDetails() {
                 renderProductUI(product, productIdStr);
                 setupProductActionButtons();
                 
-                // *** PERF: Delay Related Products load to prioritize main content ***
+                // Related products lazy load
                 if (product.categoryId) {
                     setTimeout(() => {
                         loadRelatedProducts(product.categoryId, productIdStr);
                     }, 500);
                 }
             } else {
-                // Update interactions only
                 const likeCount = document.querySelector('.like-count');
                 const ratingCount = document.querySelector('.rating-count');
                 if(likeCount) likeCount.textContent = product.likeCount || 0;
@@ -188,11 +187,9 @@ function renderProductUI(product, productIdStr) {
         moreLinksHTML += '</div>';
     }
 
-    // *** PERF: Image Loading Optimization ***
     let slidesHTML = '';
     if (product.images && product.images.length > 0) {
         product.images.forEach((imgUrl, index) => {
-            // First image is priority (eager), others are lazy
             const loadingAttr = index === 0 ? 'eager' : 'lazy';
             const optimizedUrl = optimizeImage(imgUrl, 1000, 90);
             slidesHTML += `<div class="swiper-slide"><img src="${optimizedUrl}" alt="${product.name}" loading="${loadingAttr}"></div>`;
