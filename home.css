@@ -1,4 +1,4 @@
-/* home.css - Updated: 2-3-3-2 Catalogue Grid Pattern */
+/* home.css - Updated: Uniform Catalogue Grid (Same Size for All) */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -226,32 +226,37 @@ body.light-mode .screenshot-mode .clean-card-price-row { color: #000000; text-sh
 .screenshot-mode .shop-now-btn { display: none; }
 .screenshot-mode .card-discount-badge { top: 6px; left: 6px; font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; }
 
-/* === 5. NEW CATALOGUE GRID (2-3 Pattern with Half Height) === */
+/* === 5. CATALOGUE GRID (UNIFORM DESIGN) === */
 .catalogue-header .section-title-new { color: #ffffff !important; }
 body.light-mode .catalogue-header .section-title-new { color: #000000 !important; }
 
-/* Grid Container */
+/* Uniform Grid Container */
 .home-category-grid {
     display: grid;
-    /* 6 columns for flexible 2-item and 3-item rows */
-    grid-template-columns: repeat(6, 1fr);
-    gap: 12px;
+    /* Mobile: 3 columns (small boxes) */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 10px; /* Small gap */
     padding: 10px;
     width: 100%;
 }
 
-/* Category Card (Rectangular - Half Height) */
+/* Category Card (Uniform Size) */
 .home-category-card {
     position: relative;
     display: block;
     text-decoration: none;
-    /* Aspect ratio ~2:1 makes it half the height of a square */
-    aspect-ratio: 2.2 / 1; 
+    /* Slightly wider than tall (Rectangular) */
+    aspect-ratio: 1.3 / 1; 
     background-color: #1a1a1a;
     border: 1px solid #333;
     border-radius: 8px;
     overflow: hidden;
     transition: transform 0.2s;
+}
+
+/* Remove special spanning logic */
+.home-category-card:nth-child(n) {
+    grid-column: auto;
 }
 
 body.light-mode .home-category-card {
@@ -260,36 +265,15 @@ body.light-mode .home-category-card {
     box-shadow: 0 2px 5px rgba(0,0,0,0.05);
 }
 
-.home-category-card:active { transform: scale(0.98); }
+.home-category-card:active { transform: scale(0.96); }
 
-/* --- 2-3-3...-2 Pattern Logic --- */
-
-/* Default: Span 2 columns (3 items per row) */
-.home-category-card {
-    grid-column: span 2;
-}
-
-/* Row 1: First 2 items (Span 3 columns each = 2 items per row) */
-.home-category-card:nth-child(1),
-.home-category-card:nth-child(2) {
-    grid-column: span 3; 
-}
-
-/* Last Row: Last 2 items (Span 3 columns each) 
-   Note: Works if user scrolls to bottom, ensuring visual balance */
-.home-category-card:nth-last-child(1),
-.home-category-card:nth-last-child(2) {
-    grid-column: span 3;
-}
-
-/* Inner Content Layout */
+/* Inner Content */
 .cat-card-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     transition: transform 0.3s ease;
-    /* Darken image slightly to make text readable */
-    filter: brightness(0.8);
+    filter: brightness(0.8); /* Darken for text readability */
 }
 
 .home-category-card:hover .cat-card-img { 
@@ -301,9 +285,8 @@ body.light-mode .home-category-card {
 .cat-card-overlay {
     position: absolute;
     bottom: 0; left: 0; width: 100%;
-    /* Gradient behind text for readability */
-    background: linear-gradient(to top, rgba(0,0,0,0.95), transparent);
-    padding: 8px 5px;
+    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+    padding: 6px 3px;
     display: flex; 
     justify-content: center; 
     align-items: flex-end;
@@ -312,12 +295,22 @@ body.light-mode .home-category-card {
 
 .cat-card-title {
     color: #fff;
-    font-size: 0.85rem; 
-    font-weight: 700;
+    font-size: 0.75rem; /* Smaller font */
+    font-weight: 600;
     text-transform: uppercase;
     text-align: center;
     margin: 0;
     letter-spacing: 0.5px;
+    line-height: 1.2;
+    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+}
+
+/* Responsive: 4 cols on Tablet, 6 on Desktop */
+@media (min-width: 640px) {
+    .home-category-grid { grid-template-columns: repeat(4, 1fr); gap: 15px; }
+}
+@media (min-width: 1024px) {
+    .home-category-grid { grid-template-columns: repeat(6, 1fr); }
 }
 
 /* Swiper Config for Products */
