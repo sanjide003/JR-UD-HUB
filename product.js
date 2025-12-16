@@ -1,4 +1,4 @@
-// product.js - Optimized for Sticky Footer & Fast Loading
+// product.js - Updated: Specification See More & Footer Fixes
 
 import { 
     collection, 
@@ -138,7 +138,6 @@ async function loadProductDetails() {
                 renderProductUI(product, productIdStr);
                 setupProductActionButtons();
                 
-                // Related products lazy load
                 if (product.categoryId) {
                     setTimeout(() => {
                         loadRelatedProducts(product.categoryId, productIdStr);
@@ -232,13 +231,28 @@ function renderProductUI(product, productIdStr) {
         </div>
     `;
 
+    // *** MODIFIED SPECIFICATION SECTION ***
     let specificationHTML = '';
     if (product.specification) {
         const points = product.specification.split('\n').filter(line => line.trim() !== '');
         if (points.length > 0) {
-            let listHTML = '<ul class="product-specs-list">';
-            points.forEach(point => { listHTML += `<li>${point.replace(/^-\s*/, '').trim()}</li>`; });
-            listHTML += '</ul>';
+            let listItems = '';
+            
+            // Generate list items with hidden class for index >= 5
+            points.forEach((point, index) => {
+                const isHidden = index >= 5;
+                const style = isHidden ? 'display:none;' : '';
+                const className = isHidden ? 'spec-item-hidden' : '';
+                listItems += `<li class="${className}" style="${style}">${point.replace(/^-\s*/, '').trim()}</li>`;
+            });
+            
+            let listHTML = `<ul class="product-specs-list" id="specs-list">${listItems}</ul>`;
+            
+            // Add 'See More' button if there are more than 5 items
+            if(points.length > 5) {
+                listHTML += `<button id="specs-toggle-btn" class="see-more-specs-btn" data-expanded="false">See More</button>`;
+            }
+            
             specificationHTML = `<h3 class="product-section-heading">Specification</h3><div class="product-specification-section">${listHTML}</div>`;
         }
     }
@@ -381,6 +395,22 @@ function setupProductActionButtons() {
     container.addEventListener('click', async (e) => {
         const target = e.target;
         
+        // *** SPECIFICATION TOGGLE LOGIC ***
+        if (target.id === 'specs-toggle-btn') {
+            const btn = target;
+            const hiddenItems = document.querySelectorAll('.spec-item-hidden');
+            const isExpanded = btn.getAttribute('data-expanded') === 'true';
+            
+            hiddenItems.forEach(item => {
+                // Toggle between none and list-item
+                item.style.display = isExpanded ? 'none' : 'list-item'; 
+            });
+            
+            btn.textContent = isExpanded ? 'See More' : 'See Less';
+            btn.setAttribute('data-expanded', !isExpanded);
+            return;
+        }
+
         const likeBtn = target.closest('.like-btn');
         if(likeBtn && currentUser && currentProduct) {
             e.preventDefault();
