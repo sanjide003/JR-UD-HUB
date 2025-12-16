@@ -1,4 +1,4 @@
-/* product.css - Updated: Fade Specs & Reduced Gaps */
+/* product.css - Updated: Fade Specs, Reduced Gaps, Sticky Footer */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
 .product-detail-grid {
@@ -564,10 +564,6 @@ body.light-mode .product-actions-grid .btn-secondary-new svg.icon-btn {
 .product-actions-grid .btn-secondary-new.added-to-cart svg.icon-btn {
     fill: none !important;
     stroke: var(--primary-gold) !important;
-}
-
-#add-to-cart-feedback {
-    margin-top: 1rem; color: var(--success-green); font-weight: 500; display: none; 
 }
 
 /* --- 6. 'You May Also Like' (Reduced Gap) --- */
