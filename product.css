@@ -1,4 +1,4 @@
-/* product.css - Updated: Minimal Footer & Sticky Buttons */
+/* product.css - Updated: See More Specs & Footer Fix */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
 .product-detail-grid {
@@ -468,6 +468,20 @@ body.light-mode .product-specs-list li { color: #333; }
     content: "•"; color: var(--primary-gold); font-weight: bold; font-size: 1.2rem; position: absolute; left: 0; top: -2px;
 }
 
+/* *** SEE MORE BUTTON STYLE *** */
+.see-more-specs-btn {
+    background: none;
+    border: none;
+    color: var(--primary-gold);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 5px 0;
+    margin-top: 5px;
+    text-decoration: underline;
+    display: block;
+}
+
 /* --- BUTTONS & STICKY FOOTER --- */
 .product-actions-grid {
     display: grid;
@@ -708,9 +722,14 @@ body.light-mode .related-products-section .btn-secondary-new {
         padding-bottom: 120px; 
     }
 
+    /* *** COPYRIGHT VISIBILITY FIX *** */
+    /* ബട്ടണുകൾക്ക് താഴെ പോകാതിരിക്കാൻ ഫൂട്ടറിൽ extra padding നൽകുന്നു */
+    .main-footer-new {
+        padding-bottom: 140px !important; 
+    }
+
     .product-actions-grid {
         position: fixed;
-        /* Nav Bar Height (65px) is used here to place buttons ABOVE the nav bar */
         bottom: 65px; 
         left: 0;
         width: 100%;
@@ -731,7 +750,6 @@ body.light-mode .related-products-section .btn-secondary-new {
         box-shadow: 0 -2px 10px rgba(0,0,0,0.05);
     }
 
-    /* ഫ്ലോട്ടിംഗ് ബട്ടൺ (WhatsApp) ബട്ടണുകൾക്കും മുകളിലേക്ക് മാറ്റുന്നു */
     #floating-action-buttons {
         bottom: 130px !important;
     }
