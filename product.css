@@ -1,4 +1,4 @@
-/* product.css - Updated: Sticky Footer & Performance Optimized */
+/* product.css - Updated: Always Visible Sticky Footer */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
 .product-detail-grid {
@@ -8,8 +8,8 @@
     align-items: start;
     width: 100%;
     box-sizing: border-box;
-    /* മൊബൈലിൽ സ്റ്റിക്കി ഫൂട്ടറിന് വേണ്ടി താഴെ സ്ഥലം ഇടുന്നു */
-    padding-bottom: 0; 
+    /* മൊബൈലിൽ താഴെ കണ്ടന്റ് മറയാതിരിക്കാൻ പാഡിംഗ് */
+    padding-bottom: 20px; 
 }
 
 /* --- 2. പ്രൊഡക്റ്റ് ഗാലറി --- */
@@ -487,11 +487,11 @@ body.light-mode .product-specs-list li { color: #333; }
     padding: 0.6rem 0.5rem; 
     border-radius: 6px;
     text-decoration: none; cursor: pointer; font-size: 0.85rem;
-    height: 40px; 
+    height: 48px; /* Slightly taller for easy tapping */
 }
 .btn-whatsapp svg {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
     fill: currentColor;
 }
 
@@ -500,7 +500,7 @@ body.light-mode .product-specs-list li { color: #333; }
     color: #ffffff !important;
     border: 1px solid #ffffff !important;
     padding: 0.6rem 0.5rem;
-    height: 40px;
+    height: 48px; /* Slightly taller */
     font-size: 0.85rem;
     border-radius: 6px;
     display: flex;
@@ -516,8 +516,8 @@ body.light-mode .product-actions-grid .btn-secondary-new {
 }
 
 .product-actions-grid .btn-secondary-new svg.icon-btn {
-    width: 18px;
-    height: 18px;
+    width: 20px;
+    height: 20px;
 }
 
 body.light-mode .product-actions-grid .btn-secondary-new svg.icon-btn {
@@ -673,9 +673,10 @@ body.light-mode .related-products-section .btn-secondary-new {
 @media (max-width: 768px) {
     .product-title { font-size: 1.3rem; }
     
-    /* *** STICKY FOOTER LOGIC *** */
+    /* *** STICKY FOOTER LOGIC - Updated *** */
     .product-detail-grid {
-        padding-bottom: 70px; /* Space for the fixed footer */
+        /* ഫൂട്ടറിന് വേണ്ടി താഴെ 80px സ്ഥലം ഒഴിച്ചിടുന്നു */
+        padding-bottom: 80px; 
     }
 
     .product-actions-grid {
@@ -683,14 +684,15 @@ body.light-mode .related-products-section .btn-secondary-new {
         bottom: 0;
         left: 0;
         width: 100%;
-        background-color: var(--card-bg); /* Match theme bg */
+        height: auto;
+        background-color: var(--card-bg); /* തീമിന് അനുസരിച്ച് നിറം മാറും */
         border-top: 1px solid var(--border-color);
-        padding: 10px 15px;
-        z-index: 1000;
+        padding: 12px 15px; /* നല്ല സ്പേസിംഗ് */
+        z-index: 2000; /* മറ്റെല്ലാത്തിനും മുകളിൽ */
         margin: 0;
         max-width: none;
         box-sizing: border-box;
-        box-shadow: 0 -4px 15px rgba(0,0,0,0.3);
+        box-shadow: 0 -4px 15px rgba(0,0,0,0.3); /* നിഴൽ */
     }
     
     body.light-mode .product-actions-grid {
@@ -699,9 +701,9 @@ body.light-mode .related-products-section .btn-secondary-new {
         box-shadow: 0 -4px 15px rgba(0,0,0,0.1);
     }
 
-    /* Move floating buttons up on mobile */
+    /* ഫ്ലോട്ടിംഗ് ബട്ടൺ (WhatsApp) ഫൂട്ടറിന് മുകളിലേക്ക് മാറ്റുന്നു */
     #floating-action-buttons {
-        bottom: 85px !important;
+        bottom: 90px !important;
     }
 }
 
