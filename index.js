@@ -1,4 +1,4 @@
-// index.js - Updated: Grid Layout for Categories (No Swiper)
+// index.js - Restored: Original Catalogue Swiper & Compact Buttons
 
 import { db } from './firebase-config.js';
 import { 
@@ -378,15 +378,10 @@ async function loadUnder799Products() {
     } catch (e) {}
 }
 
-// *** UPDATED: COMPACT GRID FOR CATEGORIES (No Swiper) ***
+// *** RESTORED: SWIPER FOR CATEGORIES (Horizontal Scroll) ***
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
-    
-    // Remove Swiper wrapper classes for Grid Layout
-    container.className = 'home-category-grid'; // New class
-    const parent = container.parentElement;
-    if(parent.classList.contains('swiper')) parent.classList.remove('swiper', 'category-swiper');
     
     try {
         const catQuery = query(collection(db, "categories"), orderBy("name")); 
@@ -396,17 +391,30 @@ async function loadHomeCategories() {
         let html = '';
         catSnapshot.forEach(doc => {
             const category = doc.data();
-            const imageUrl = optimizeImage(category.imageUrl || '', 80, 75); // Small icon
+            const imageUrl = optimizeImage(category.imageUrl || '', 150); 
             
-            // *** Compact Pill Design ***
+            // *** ORIGINAL CIRCLE ICON DESIGN ***
             html += `
-                <a href="categories.html?filter=${doc.id}" class="category-pill-item">
-                    <img src="${imageUrl}" alt="${category.name}" class="category-pill-img" loading="lazy">
-                    <span class="category-pill-title">${category.name}</span>
-                </a>`;
+                <div class="swiper-slide" style="width: auto; margin-right: 15px;">
+                    <a href="categories.html?filter=${doc.id}" class="cat-item-home">
+                        <div class="cat-img-circle">
+                            <img src="${imageUrl}" alt="${category.name}" loading="lazy">
+                        </div>
+                        <span class="cat-name-home">${category.name}</span>
+                    </a>
+                </div>`;
         });
         container.innerHTML = html;
-        // No new Swiper() here
+        
+        // Initialize Swiper for categories
+        new Swiper('.category-swiper', {
+            slidesPerView: 'auto',
+            spaceBetween: 0,
+            freeMode: true,
+            observer: true,
+            observeParents: true
+        });
+        
     } catch (error) { console.error(error); }
 }
 
