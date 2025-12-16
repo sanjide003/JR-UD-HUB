@@ -1,4 +1,6 @@
-/* home.css - Updated: 2-3 Pattern Catalogue Grid & Compact Buttons */
+/* home.css - Updated: Compact Catalogue Grid with Side Gaps */
+
+/* ... (മറ്റ് സ്റ്റൈലുകൾ പഴയത് പോലെ തന്നെ - Top Banner, Hero Slider etc.) ... */
 
 /* =========================================
    1. HOME TOP BANNER (Clean Style)
@@ -226,26 +228,26 @@ body.light-mode .screenshot-mode .clean-card-price-row { color: #000000; text-sh
 .screenshot-mode .shop-now-btn { display: none; }
 .screenshot-mode .card-discount-badge { top: 6px; left: 6px; font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; }
 
-/* === 5. NEW CATALOGUE GRID (2-3-2-3 Pattern) === */
+/* === 5. NEW CATALOGUE GRID (Compact 2-3 Pattern with Gaps) === */
 .catalogue-header .section-title-new { color: #ffffff !important; }
 body.light-mode .catalogue-header .section-title-new { color: #000000 !important; }
 
 /* Grid Container */
 .home-category-grid {
     display: grid;
-    /* 6 columns allows us to create 2 items (span 3) and 3 items (span 2) */
+    /* 6 columns allows flexibility */
     grid-template-columns: repeat(6, 1fr);
-    gap: 12px; /* Spacing between cards */
+    gap: 12px; /* Standard gap between items */
     padding: 10px;
     width: 100%;
 }
 
-/* Category Card (Square) */
+/* Category Card (Compact & Rectangular) */
 .home-category-card {
     position: relative;
     display: block;
     text-decoration: none;
-    aspect-ratio: 1 / 1; /* Square Shape */
+    aspect-ratio: 4 / 3; /* Shorter than square (Small & Compact) */
     background-color: #1a1a1a;
     border: 1px solid #333;
     border-radius: 12px;
@@ -261,14 +263,24 @@ body.light-mode .home-category-card {
 
 .home-category-card:active { transform: scale(0.98); }
 
-/* --- 2-3 Pattern Logic --- */
-/* Items 1, 2, 6, 7, 11, 12... (2 items per row) -> Span 3 columns each (50% width) */
-.home-category-card:nth-child(5n+1),
+/* --- 2-3 Pattern with SIDE GAPS Logic --- */
+
+/* Items 1 & 2 (2 in a row):
+   Instead of spanning full 3 cols (50%), span 2 cols and offset.
+   Item 1: Starts at Col 2, Spans 2 (Leaves Col 1 empty)
+   Item 2: Starts at Col 4, Spans 2 (Leaves Col 6 empty)
+   Result: Small boxes centered with gaps on both sides.
+*/
+.home-category-card:nth-child(5n+1) {
+    grid-column: 2 / span 2; 
+}
 .home-category-card:nth-child(5n+2) {
-    grid-column: span 3; 
+    grid-column: 4 / span 2;
 }
 
-/* Items 3, 4, 5, 8, 9, 10... (3 items per row) -> Span 2 columns each (33.3% width) */
+/* Items 3, 4, 5 (3 in a row):
+   Span 2 cols each. 2+2+2 = 6. Fills the row.
+*/
 .home-category-card:nth-child(5n+3),
 .home-category-card:nth-child(5n+4),
 .home-category-card:nth-child(5n+5) {
@@ -290,18 +302,19 @@ body.light-mode .home-category-card {
     position: absolute;
     bottom: 0; left: 0; width: 100%;
     background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-    padding: 10px 5px;
+    padding: 8px 4px;
     display: flex; justify-content: center; align-items: flex-end;
 }
 
 .cat-card-title {
     color: #fff;
-    font-size: 0.9rem;
-    font-weight: 700;
+    font-size: 0.8rem; /* Smaller font for compact look */
+    font-weight: 600;
     text-transform: uppercase;
     text-align: center;
     text-shadow: 0 1px 3px rgba(0,0,0,0.8);
     margin: 0;
+    line-height: 1.2;
 }
 
 /* Swiper Config for Products */
