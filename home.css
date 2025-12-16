@@ -1,7 +1,7 @@
-/* home.css - Original File with Shop Now Button Fix */
+/* home.css - Shop Now Compact & Original Catalogue Restored */
 
 /* =========================================
-   1. HOME TOP BANNER (Clean Style)
+   1. HOME TOP BANNER
    ========================================= */
 .home-top-banner {
     width: 100%;
@@ -11,12 +11,11 @@
     background-color: transparent;
     margin-bottom: 15px;
     overflow: hidden;
-    border-radius: 12px; /* Rounded Corners */
+    border-radius: 12px; 
     display: none; 
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Soft Shadow */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2); 
 }
 
-/* Light Mode Override */
 body.light-mode .home-top-banner {
     background-color: transparent;
     box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -28,12 +27,12 @@ body.light-mode .home-top-banner {
     display: block;
     max-height: 140px; 
     object-fit: cover;
-    border-radius: 12px; /* Match Container Radius */
+    border-radius: 12px;
     transition: transform 0.3s ease;
 }
 
 .home-top-banner:hover img {
-    transform: scale(1.02); /* Slight Zoom on Hover */
+    transform: scale(1.02);
 }
 
 /* =========================================
@@ -50,14 +49,9 @@ body.light-mode .home-top-banner {
     transition: aspect-ratio 0.3s ease;
 }
 
-/* Light Mode Override */
-body.light-mode .hero-section-new {
-    background-color: #f0f0f0;
-}
+body.light-mode .hero-section-new { background-color: #f0f0f0; }
 
-.hero-section-new.aspect-portrait {
-    aspect-ratio: 3 / 4; 
-}
+.hero-section-new.aspect-portrait { aspect-ratio: 3 / 4; }
 
 @media (max-width: 768px) {
     .hero-section-new { width: 100%; }
@@ -65,10 +59,7 @@ body.light-mode .hero-section-new {
     .hero-section-new.aspect-portrait { aspect-ratio: 3 / 4; }
 }
 
-.hero-slider-new {
-    width: 100%;
-    height: 100%;
-}
+.hero-slider-new { width: 100%; height: 100%; }
 
 .hero-slider-new .swiper-slide {
     width: 100%;
@@ -80,10 +71,7 @@ body.light-mode .hero-section-new {
     overflow: hidden;
 }
 
-/* Light Mode Override for Slide Background */
-body.light-mode .hero-slider-new .swiper-slide {
-    background: #e0e0e0;
-}
+body.light-mode .hero-slider-new .swiper-slide { background: #e0e0e0; }
 
 .hero-slider-new .swiper-slide img,
 .hero-slider-new .swiper-slide video,
@@ -145,19 +133,13 @@ body.light-mode .hero-slider-new .swiper-slide {
     display: none;
 }
 
-/* Light Mode Override */
-body.light-mode .hero-text-section {
-    color: #000000; /* Black Text */
-}
+body.light-mode .hero-text-section { color: #000000; }
 
 /* =============================================================
    4. PRODUCT CARDS & SECTIONS
    ============================================================= */
 
-.special-offer-wrapper {
-    margin-bottom: 2rem;
-    padding: 0 10px;
-}
+.special-offer-wrapper { margin-bottom: 2rem; padding: 0 10px; }
 .special-offer-header {
     width: 100%;
     margin-bottom: 15px;
@@ -186,72 +168,42 @@ body.light-mode .hero-text-section {
     background-color: #000;
 }
 
-/* Light Mode Override */
 body.light-mode .special-offer-banner-img {
     background-color: #fff;
     border: 1px solid #ddd;
 }
 
-.special-offer-header::before {
-    content: 'LIMITED TIME';
-    position: absolute; top: 8px; left: 8px;
-    background: linear-gradient(45deg, #ff3f6c, #ff6b6b);
-    color: white; font-size: 0.65rem; font-weight: 800;
-    padding: 5px 10px; border-radius: 20px; z-index: 2;
-    display: none; /* Removed as per request to simplify, or keep if needed */
-}
-
-/* *** UNIQUE COUNTDOWN TIMER STYLES (Red Boxes, Top-Left) *** */
+/* Countdown Overlay */
 .countdown-overlay {
     position: absolute;
-    top: 10px; /* Top Position */
-    left: 10px; /* Left Position */
-    bottom: auto; /* Remove Bottom */
-    transform: none; /* Remove Center Transform */
-    background: transparent; /* No container background */
-    backdrop-filter: none;
-    padding: 0;
-    border: none;
-    box-shadow: none;
-    display: flex;
-    gap: 6px;
-    z-index: 5;
+    top: 10px; left: 10px;
+    bottom: auto; transform: none;
+    background: transparent;
+    padding: 0; border: none; box-shadow: none;
+    display: flex; gap: 6px; z-index: 5;
 }
 
-/* Individual Red Box */
 .countdown-box {
-    background-color: #d32f2f; /* Red Background */
-    color: #ffffff; /* White Text */
+    background-color: #d32f2f;
+    color: #ffffff;
     padding: 4px 6px;
     border-radius: 4px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
     min-width: 38px;
     box-shadow: 0 2px 5px rgba(0,0,0,0.4);
     border: 1px solid rgba(255,255,255,0.2);
 }
 
 .countdown-val {
-    font-size: 0.9rem;
-    font-weight: 800;
-    line-height: 1;
-    font-family: monospace; /* For uniform width */
+    font-size: 0.9rem; font-weight: 800; line-height: 1; font-family: monospace;
 }
 
 .countdown-unit {
-    font-size: 0.55rem;
-    text-transform: uppercase;
-    font-weight: 600;
-    margin-top: 2px;
-    opacity: 0.9;
+    font-size: 0.55rem; text-transform: uppercase; font-weight: 600; margin-top: 2px; opacity: 0.9;
 }
 
-/* Expired State */
-.countdown-overlay.expired .countdown-box {
-    background-color: #555;
-}
+.countdown-overlay.expired .countdown-box { background-color: #555; }
 
 .section-header-card {
     border-radius: 10px 10px 0 0;
@@ -280,13 +232,12 @@ body.light-mode .special-offer-banner-img {
     background-color: #111;
 }
 
-/* Light Mode Override */
 body.light-mode .product-slider-container {
     background-color: #ffffff;
     border-color: #e0e0e0;
 }
 
-/* --- STANDARD CARD STYLES --- */
+/* --- CARD STYLES --- */
 .swiper-slide { 
     height: auto; 
     display: flex; 
@@ -335,21 +286,21 @@ body.light-mode .clean-card-title { color: #000000; }
 
 body.light-mode .clean-card-price-row { color: #000000; }
 
-/* --- MODIFIED SHOP NOW BUTTON (COMPACT) --- */
+/* --- COMPACT SHOP NOW BUTTON --- */
 .shop-now-btn {
-    width: auto; /* Changed from 100% to auto */
-    min-width: 90px; /* Minimum width for touch targets */
+    width: auto; 
+    min-width: 90px;
     background: var(--primary-gold); 
     color: #000; 
     border: none;
-    padding: 5px 12px; /* Added padding sides */
-    border-radius: 20px; /* Rounded pill shape */
+    padding: 5px 12px;
+    border-radius: 20px;
     font-size: 0.7rem; 
     font-weight: 700;
     text-transform: uppercase; 
     margin-top: auto; 
     display: block;
-    align-self: center; /* Center in flex container */
+    align-self: center;
     box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
@@ -359,8 +310,7 @@ body.light-mode .clean-card-price-row { color: #000000; }
 }
 .card-discount-badge.red { background: linear-gradient(45deg, #ff4d4d, #ff6b6b); }
 
-
-/* --- SCREENSHOT STYLE (Also 1:1) --- */
+/* --- SCREENSHOT STYLE --- */
 .screenshot-mode .clean-card-wrapper {
     background: transparent; border: none; box-shadow: none; padding: 0; min-height: auto;
 }
@@ -388,19 +338,71 @@ body.light-mode .screenshot-mode .clean-card-price-row { color: #000000; text-sh
 .screenshot-mode .card-discount-badge { top: 6px; left: 6px; font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; }
 
 
+/* === ORIGINAL CATALOGUE STYLES (RESTORED) === */
+.catalogue-header .section-title-new { color: #ffffff !important; }
+body.light-mode .catalogue-header .section-title-new { color: #000000 !important; }
+
+.category-swiper {
+    padding: 10px 5px !important;
+}
+
+.cat-item-home {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-decoration: none;
+    width: 100%;
+}
+
+.cat-img-circle {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    overflow: hidden;
+    margin-bottom: 8px;
+    border: 2px solid var(--primary-gold);
+    padding: 2px;
+    background-color: var(--card-bg);
+    transition: transform 0.2s;
+}
+
+body.light-mode .cat-img-circle {
+    background-color: #fff;
+}
+
+.cat-item-home:active .cat-img-circle {
+    transform: scale(0.95);
+}
+
+.cat-img-circle img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+}
+
+.cat-name-home {
+    font-size: 0.75rem;
+    color: var(--text-color);
+    text-align: center;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+    max-width: 80px;
+}
+
+body.light-mode .cat-name-home { color: #333; }
+
+
 /* Swiper Config */
 .top-deals-swiper, .top-sellers-swiper-new, .discount-swiper, .under-799-swiper { padding: 0 4px !important; }
 .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 48% !important; margin-right: 4px !important; }
 
-/* *** DISCOUNT SWIPER 2-ROW FIX *** */
-.discount-swiper { 
-    padding-bottom: 5px !important;
-    height: 460px !important; 
-}
-.discount-swiper .swiper-slide { 
-    height: calc((100% - 6px) / 2) !important; 
-    margin-top: 0; 
-}
+/* Discount 2-Row Fix */
+.discount-swiper { padding-bottom: 5px !important; height: 460px !important; }
+.discount-swiper .swiper-slide { height: calc((100% - 6px) / 2) !important; margin-top: 0; }
 
 /* Responsive */
 @media (min-width: 640px) {
