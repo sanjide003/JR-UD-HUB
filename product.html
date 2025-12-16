@@ -1,6 +1,6 @@
 <!-- 
-  ഇതാണ് product.html 
-  Updated: Sticky Footer Structure & Optimized
+  product.html
+  Updated: Dual Related Rows & Clickable Specs
 -->
 <!DOCTYPE html>
 <html lang="en">
@@ -106,17 +106,26 @@
             <div class="loading-placeholder-full">Loading product...</div>
         </div>
 
-        <!-- 4. ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ -->
+        <!-- 4. ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ (രണ്ട് വരികൾ) -->
         <section class="related-products-section">
-            <h2 class="section-title-new">You May Also Like</h2>
-            <!-- ഗ്രിഡ് ക്ലാസ് -->
-            <div class="product-grid-new" id="related-products-grid">
-                <!-- ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ JS വഴി വരും -->
-                <p class="loading-placeholder" style="text-align:center;">Loading related products...</p>
+            
+            <!-- Row 1: Same Category -->
+            <h2 class="section-title-new" id="category-row-title">Similar Products</h2>
+            <div class="product-grid-new" id="category-products-grid">
+                <p class="loading-placeholder" style="text-align:center;">Loading similar items...</p>
             </div>
+
+            <!-- Row 2: Random / Explore More -->
+            <div id="random-products-section-wrapper" style="margin-top: 2rem; display: none;">
+                <h2 class="section-title-new">Explore More</h2>
+                <div class="product-grid-new" id="random-products-grid">
+                    <p class="loading-placeholder" style="text-align:center;">Loading recommendations...</p>
+                </div>
+            </div>
+
         </section>
 
-        <!-- *** PAYMENT MODAL (Added) *** -->
+        <!-- *** PAYMENT MODAL *** -->
         <div id="payment-modal" class="payment-modal-overlay">
             <div class="payment-modal-content">
                 <h3 class="payment-modal-title">Select Payment Method</h3>
@@ -141,7 +150,6 @@
                     </label>
                 </div>
 
-                <!-- Warning Box for COD -->
                 <div id="cod-warning-box" class="cod-warning-box" style="display: none;">
                     <p id="cod-warning-text"></p>
                 </div>
