@@ -1,434 +1,127 @@
-// index.js - Updated: Grid Layout for Categories (No Swiper)
+// index.js - Optimized Home Page Logic
 
-import { db } from './firebase-config.js';
 import { 
     collection, 
     getDocs, 
-    doc, 
-    getDoc, 
     query, 
     orderBy, 
-    setLogLevel,
-    where,
-    limit
+    limit,
+    setLogLevel
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { loadSiteSettings, optimizeImage } from './common.js'; 
+import { db } from './firebase-config.js';
+import { loadSiteSettings, fetchSiteSettings, optimizeImage } from './common.js'; 
 
 setLogLevel('Silent');
 
-document.addEventListener("DOMContentLoaded", () => {
-    loadSiteSettings();
-    loadHomeBanner(); 
-    loadHeroSlider();
-    loadHeroText();
-    
-    // Product Loaders
-    loadTopDeals();         
-    loadTopTrendyDeals();   
-    loadTopDiscounts();
-    loadUnder799Products(); 
-    loadHomeCategories(); 
-    
-    setupScrollReveal();
+const productsGrid = document.getElementById('home-products-grid');
+const bannerContainer = document.getElementById('home-banner-container');
+const categoriesContainer = document.getElementById('home-categories-container');
+
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadSiteSettings();
+    loadHomeData();
 });
 
-function setupScrollReveal() {
-    const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.classList.add('revealed');
-                observer.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-    const sections = document.querySelectorAll('.home-section, .hero-text-section');
-    sections.forEach(section => {
-        section.classList.add('scroll-reveal');
-        observer.observe(section);
-    });
-}
-
-async function loadHomeBanner() {
-    const bannerContainer = document.getElementById('home-top-banner');
-    if (!bannerContainer) return;
-
-    try {
-        const docRef = doc(db, "settings", "global");
-        const docSnap = await getDoc(docRef);
-
-        if (docSnap.exists() && docSnap.data().homeBannerUrl && docSnap.data().homeBannerUrl.trim() !== '') {
-            const bannerUrl = docSnap.data().homeBannerUrl;
-            const optimizedUrl = optimizeImage(bannerUrl, 1500, 90); 
-            bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Offer Banner" loading="lazy">`;
-            bannerContainer.style.display = 'block';
-        } else {
-            bannerContainer.style.display = 'none';
-        }
-    } catch (error) {
-        console.error("Error loading banner");
+async function loadHomeData() {
+    // 1. Load Banner
+    const settings = await fetchSiteSettings();
+    if (settings && settings.homeBannerUrl) {
+        const optimizedBanner = optimizeImage(settings.homeBannerUrl, 800); // Optimize banner
+        bannerContainer.innerHTML = `<img src="${optimizedBanner}" alt="Welcome" loading="eager">`;
+        bannerContainer.style.display = 'block';
+    } else {
         bannerContainer.style.display = 'none';
     }
+
+    // 2. Load Products (Limit 10 for speed)
+    loadFeaturedProducts();
+
+    // 3. Load Categories (Simple list)
+    loadHomeCategories();
 }
 
-async function loadHeroText() {
-    const section = document.querySelector('.hero-text-section');
-    if(!section) return;
-    const text = section.innerText.trim();
-    if(text.length < 5) {
-        section.style.display = 'none';
-    } else {
-        section.style.display = 'block';
-    }
-}
-
-async function loadHeroSlider() {
-    const sliderContainer = document.querySelector('.hero-section-new');
-    const sliderWrapper = document.getElementById('hero-slider-wrapper');
-    if (!sliderWrapper || !sliderContainer) return;
-    
+async function loadFeaturedProducts() {
     try {
-        const q = query(collection(db, "heroSlides"), orderBy("order"));
-        const querySnapshot = await getDocs(q);
-
-        if (querySnapshot.empty) {
-            sliderContainer.style.display = 'none';
-            return;
-        }
-
-        sliderContainer.style.display = 'block';
-        sliderWrapper.innerHTML = '';
-        
-        let hasPortraitContent = false;
-
-        querySnapshot.forEach((doc) => {
-            const s = doc.data();
-            if(s.type === 'video' && s.url.includes('shorts')) {
-                hasPortraitContent = true;
-            }
-        });
-
-        if(hasPortraitContent) {
-            sliderContainer.classList.add('aspect-portrait');
-        } else {
-            sliderContainer.classList.remove('aspect-portrait');
-        }
-
-        querySnapshot.forEach((doc) => {
-            const slide = doc.data();
-            const slideEl = document.createElement('div');
-            slideEl.className = 'swiper-slide';
-
-            let isVideo = slide.type === 'video';
-            let videoId = '';
-            let embedUrl = '';
-            let finalUrl = slide.url;
-
-            if (isVideo) {
-                if (slide.url.includes('drive.google.com') && slide.url.includes('/d/')) {
-                    try { const id = slide.url.split('/d/')[1].split('/')[0]; finalUrl = `https://drive.google.com/uc?export=download&id=${id}`; } catch(e) {}
-                } 
-                else if (slide.url.includes('youtube.com/watch?v=')) {
-                    videoId = new URL(slide.url).searchParams.get('v');
-                }
-                else if (slide.url.includes('youtube.com/shorts/')) {
-                    videoId = new URL(slide.url).pathname.split('/shorts/')[1];
-                }
-                else if (slide.url.includes('youtu.be/')) {
-                    videoId = slide.url.split('youtu.be/')[1];
-                }
-
-                if (videoId) {
-                    embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=1&loop=1&playlist=${videoId}&controls=0&rel=0&modestbranding=1&showinfo=0&playsinline=1&autoplay=1`;
-                }
-            }
-
-            if (slide.type === 'image') {
-                const imgUrl = optimizeImage(slide.url, 1200, 90);
-                slideEl.innerHTML = `<img src="${imgUrl}" alt="Hero" loading="lazy">`;
-            }
-            else if (isVideo && embedUrl) {
-                slideEl.innerHTML = `<iframe class="hero-video-iframe" src="${embedUrl}" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen style="width:100%; height:100%; pointer-events:none;"></iframe>`;
-            }
-            else if (isVideo) {
-                slideEl.innerHTML = `<video class="hero-video-element" src="${finalUrl}" autoplay muted loop playsinline preload="auto" style="width:100%; height:100%; object-fit: cover;"></video>`;
-            }
-            
-            sliderWrapper.appendChild(slideEl);
-        });
-
-        const heroSwiper = new Swiper('.hero-slider-new', {
-            loop: true, 
-            allowTouchMove: true,
-            speed: 600,
-            autoplay: false, 
-            pagination: { el: '.hero-pagination-dots', clickable: true },
-            on: {
-                slideChangeTransitionEnd: function () {
-                    playActiveSlideVideo(this);
-                }
-            }
-        });
-
-        playActiveSlideVideo(heroSwiper);
-        setupScrollVideoObserver();
-
-    } catch (error) { 
-        console.error("Error loading hero slider", error); 
-        sliderContainer.style.display = 'none';
-    }
-}
-
-function playActiveSlideVideo(swiper) {
-    const slides = document.querySelectorAll('.hero-slider-new .swiper-slide');
-    slides.forEach((slide) => {
-        const video = slide.querySelector('video');
-        if (video) {
-            if (slide.classList.contains('swiper-slide-active')) {
-                video.currentTime = 0; video.play().catch(e => {});
-            } else { video.pause(); }
-        }
-        const iframe = slide.querySelector('iframe');
-        if (iframe && iframe.contentWindow) {
-            if (slide.classList.contains('swiper-slide-active')) {
-                iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-            } else {
-                iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-            }
-        }
-    });
-}
-
-function setupScrollVideoObserver() {
-    const sliderContainer = document.querySelector('.hero-section-new');
-    if (!sliderContainer) return;
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            const activeSlide = document.querySelector('.hero-slider-new .swiper-slide-active');
-            if (!activeSlide) return;
-            const video = activeSlide.querySelector('video');
-            const iframe = activeSlide.querySelector('iframe');
-            if (entry.isIntersecting) {
-                if (video) video.play().catch(e => {});
-                if (iframe) iframe.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*');
-            } else {
-                if (video) video.pause();
-                if (iframe) iframe.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*');
-            }
-        });
-    }, { threshold: 0.5 });
-    observer.observe(sliderContainer);
-}
-
-// *** Product Sections ***
-
-async function loadTopDeals() {
-    const section = document.getElementById('top-deals-section');
-    const bannerContainer = document.querySelector('.special-offer-header'); 
-    const bannerImg = document.getElementById('top-deals-banner-img');
-    const grid = document.getElementById('top-deals-grid');
-    if (!section) return;
-    
-    try {
-        const settingsRef = doc(db, "settings", "homeLayout");
-        const settingsSnap = await getDoc(settingsRef);
-        
-        if (settingsSnap.exists() && settingsSnap.data().topDealsBanner) {
-            const bannerUrl = optimizeImage(settingsSnap.data().topDealsBanner, 1000, 85);
-            if(bannerImg) bannerImg.src = bannerUrl;
-            
-            if (settingsSnap.data().offerEndTime) {
-                const endTime = settingsSnap.data().offerEndTime;
-                if (endTime) {
-                    let timerOverlay = document.getElementById('offer-countdown');
-                    if (!timerOverlay) {
-                        timerOverlay = document.createElement('div');
-                        timerOverlay.id = 'offer-countdown';
-                        timerOverlay.className = 'countdown-overlay';
-                        bannerContainer.appendChild(timerOverlay);
-                    }
-                    startCountdown(endTime, timerOverlay);
-                }
-            } else {
-                const existing = document.getElementById('offer-countdown');
-                if(existing) existing.remove();
-            }
-            
-            section.style.display = 'block'; 
-        }
-        
-        const q = query(collection(db, "products"), where("isTopDeal", "==", true), limit(10));
+        const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(12));
         const snapshot = await getDocs(q);
+
         if (snapshot.empty) {
-            if (!settingsSnap.exists() || !settingsSnap.data().topDealsBanner) section.style.display = 'none';
+            productsGrid.innerHTML = '<p class="home-loader">No products found.</p>';
             return;
         }
-        
-        section.style.display = 'block';
-        let slidesHTML = '';
-        snapshot.forEach(doc => { slidesHTML += createNewStyleProductCard(doc.id, doc.data()); });
-        grid.innerHTML = slidesHTML;
-        new Swiper('.top-deals-swiper', {
-            slidesPerView: 2.2, spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
-        });
-    } catch (e) { console.error(e); }
-}
-
-function startCountdown(endTimeStr, displayElement) {
-    const endDate = new Date(endTimeStr).getTime();
-    update();
-    const timerInterval = setInterval(update, 1000);
-
-    function update() {
-        const now = new Date().getTime();
-        const distance = endDate - now;
-
-        if (distance < 0) {
-            clearInterval(timerInterval);
-            displayElement.innerHTML = `<div class="countdown-box" style="background-color:#555; padding:6px 12px;"><span class="countdown-val">Expired</span></div>`;
-            displayElement.classList.add('expired');
-            return;
-        }
-
-        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
 
         let html = '';
-        if (days > 0) {
-             html += `<div class="countdown-box"><span class="countdown-val">${days}</span><span class="countdown-unit">Day</span></div>`;
-        }
-        html += `<div class="countdown-box"><span class="countdown-val">${hours.toString().padStart(2, '0')}</span><span class="countdown-unit">Hr</span></div>`;
-        html += `<div class="countdown-box"><span class="countdown-val">${minutes.toString().padStart(2, '0')}</span><span class="countdown-unit">Min</span></div>`;
-        html += `<div class="countdown-box"><span class="countdown-val">${seconds.toString().padStart(2, '0')}</span><span class="countdown-unit">Sec</span></div>`;
-        
-        displayElement.innerHTML = html;
-    }
-}
-
-async function loadTopTrendyDeals() {
-    const grid = document.getElementById("top-sellers-grid");
-    if (!grid) return;
-    try {
-        const q = query(collection(db, "products"), where("featured", "==", true), limit(10));
-        const querySnapshot = await getDocs(q);
-        if (querySnapshot.empty) { grid.innerHTML = ''; return; }
-        let slidesHTML = '';
-        querySnapshot.forEach((doc) => { slidesHTML += createNewStyleProductCard(doc.id, doc.data()); });
-        grid.innerHTML = slidesHTML;
-        new Swiper('.top-sellers-swiper-new', {
-            slidesPerView: 2.2, spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
-        });
-    } catch (error) {}
-}
-
-async function loadTopDiscounts() {
-    const grid = document.getElementById("top-discount-grid");
-    if (!grid) return;
-    try {
-        const q = query(collection(db, "products"), orderBy("createdAt", "desc"), limit(50));
-        const snapshot = await getDocs(q);
-        let products = [];
         snapshot.forEach(doc => {
-            const p = doc.data();
-            if (p.isTopDeal === true || p.featured === true) return;
-            if (p.mrp && p.price && p.mrp > p.price) {
-                const discount = Math.round(((p.mrp - p.price) / p.mrp) * 100);
-                products.push({ id: doc.id, ...p, discount });
+            const product = doc.data();
+            const id = doc.id;
+            
+            // Image Handling
+            let imageSrc = 'https://placehold.co/400x400/222/D4AF37?text=No+Image';
+            if (product.images && product.images.length > 0) {
+                imageSrc = optimizeImage(product.images[0], 400); // 400px optimized width
             }
-        });
-        products.sort((a, b) => b.discount - a.discount);
-        const topDiscounts = products.slice(0, 20); 
-        if (topDiscounts.length === 0) {
-            document.querySelector('.orange-section').style.display = 'none';
-            return;
-        }
-        let html = '';
-        topDiscounts.forEach(p => { html += createNewStyleProductCard(p.id, p, p.discount); });
-        grid.innerHTML = html;
-        new Swiper('.discount-swiper', {
-            slidesPerView: 2.2,
-            grid: { rows: 2, fill: 'column' },
-            spaceBetween: 6,
-            breakpoints: { 
-                640: { slidesPerView: 3.2, grid: { rows: 2, fill: 'column' }, spaceBetween: 10 }, 
-                1024: { slidesPerView: 5.2, grid: { rows: 2, fill: 'column' }, spaceBetween: 15 } 
+
+            // Price Logic
+            const price = product.price || 0;
+            const mrp = product.mrp || 0;
+            let priceDisplay = `<span class="card-price">₹${price}</span>`;
+            let badgeHtml = '';
+
+            if (mrp > price) {
+                priceDisplay += `<span class="card-mrp">₹${mrp}</span>`;
+                const discount = Math.round(((mrp - price) / mrp) * 100);
+                badgeHtml = `<span class="card-badge">${discount}% OFF</span>`;
             }
+
+            // Compact Button HTML
+            html += `
+                <div class="home-product-card" onclick="window.location.href='product.html?id=${id}'" style="cursor: pointer;">
+                    <div class="card-image-container">
+                        ${badgeHtml}
+                        <img src="${imageSrc}" alt="${product.name}" loading="lazy">
+                    </div>
+                    <div class="card-content">
+                        <h3 class="card-title">${product.name}</h3>
+                        <div class="card-price-row">${priceDisplay}</div>
+                        <div class="card-actions">
+                            <button class="btn-shop-now" onclick="event.stopPropagation(); window.location.href='product.html?id=${id}'">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"></path></svg>
+                                SHOP NOW
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
         });
-    } catch(e) {}
+
+        productsGrid.innerHTML = html;
+
+    } catch (error) {
+        console.error("Home products error:", error);
+        productsGrid.innerHTML = '<p class="home-loader">Error loading products.</p>';
+    }
 }
 
-async function loadUnder799Products() {
-    const grid = document.getElementById("under-799-grid");
-    if (!grid) return;
-    try {
-        const q = query(collection(db, "products"), where("price", "<=", 799), orderBy("price", "desc"), limit(15));
-        const snapshot = await getDocs(q);
-        if (snapshot.empty) return; 
-        let slidesHTML = '';
-        snapshot.forEach(doc => { slidesHTML += createNewStyleProductCard(doc.id, doc.data()); });
-        grid.innerHTML = slidesHTML;
-        new Swiper('.under-799-swiper', {
-            slidesPerView: 2.2, spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
-        });
-    } catch (e) {}
-}
-
-// *** UPDATED: COMPACT GRID FOR CATEGORIES (No Swiper) ***
 async function loadHomeCategories() {
-    const container = document.getElementById("category-grid-home");
-    if (!container) return;
-    
-    // Remove Swiper wrapper classes for Grid Layout
-    container.className = 'home-category-grid'; // New class
-    const parent = container.parentElement;
-    if(parent.classList.contains('swiper')) parent.classList.remove('swiper', 'category-swiper');
-    
     try {
-        const catQuery = query(collection(db, "categories"), orderBy("name")); 
-        const catSnapshot = await getDocs(catQuery); 
-        if (catSnapshot.empty) { container.innerHTML = ''; return; }
+        const q = query(collection(db, "categories"), limit(8));
+        const snapshot = await getDocs(q);
         
         let html = '';
-        catSnapshot.forEach(doc => {
-            const category = doc.data();
-            const imageUrl = optimizeImage(category.imageUrl || '', 80, 75); // Small icon
-            
-            // *** Compact Pill Design ***
+        snapshot.forEach(doc => {
+            const cat = doc.data();
+            const img = cat.imageUrl ? optimizeImage(cat.imageUrl, 100) : 'https://placehold.co/100x100/333/fff?text=C';
             html += `
-                <a href="categories.html?filter=${doc.id}" class="category-pill-item">
-                    <img src="${imageUrl}" alt="${category.name}" class="category-pill-img" loading="lazy">
-                    <span class="category-pill-title">${category.name}</span>
-                </a>`;
+                <a href="categories.html?filter=${doc.id}" style="text-align: center; text-decoration: none; min-width: 70px;">
+                    <div style="width: 60px; height: 60px; border-radius: 50%; overflow: hidden; margin: 0 auto 5px; border: 1px solid var(--primary-gold);">
+                        <img src="${img}" style="width:100%; height:100%; object-fit:cover;">
+                    </div>
+                    <span style="font-size: 0.75rem; color: var(--text-color);">${cat.name}</span>
+                </a>
+            `;
         });
-        container.innerHTML = html;
-        // No new Swiper() here
-    } catch (error) { console.error(error); }
-}
+        if(html) categoriesContainer.innerHTML = html;
+        else categoriesContainer.parentElement.style.display = 'none';
 
-function createNewStyleProductCard(id, product, discountVal = null) {
-    const img = optimizeImage(product.images?.[0] || '', 500, 500);
-    let badgeHTML = "";
-    if (discountVal) {
-        badgeHTML = `<div class="card-discount-badge red">${discountVal}% OFF</div>`;
-    } else if (product.mrp > product.price) {
-        const d = Math.round(((product.mrp - product.price) / product.mrp) * 100);
-        badgeHTML = `<div class="card-discount-badge">${d}% OFF</div>`;
-    }
-    return `
-        <div class="swiper-slide">
-            <a href="product.html?id=${id}" class="clean-card-wrapper">
-                ${badgeHTML}
-                <div class="clean-card-box"><img src="${img}" class="clean-card-img" loading="lazy" alt="${product.name}"></div>
-                <div class="clean-card-details">
-                    <h3 class="clean-card-title">${product.name}</h3>
-                    <div class="clean-card-price-row">₹${product.price}</div>
-                    <button class="shop-now-btn">Shop Now</button>
-                </div>
-            </a>
-        </div>`;
+    } catch(e) { console.error(e); }
 }
