@@ -1,4 +1,4 @@
-// product.js - Updated: Clean Render for Specs Fade
+// product.js - Fixed: Complete code with no missing functions
 
 import { 
     collection, 
@@ -43,6 +43,7 @@ const paymentRadios = document.getElementsByName('payment_mode');
 const codWarningBox = document.getElementById('cod-warning-box');
 const codWarningText = document.getElementById('cod-warning-text');
 
+// Auth State Listener
 onAuthStateChanged(auth, (user) => {
     if (user) {
         currentUser = user;
@@ -93,16 +94,18 @@ async function loadOrderSettings() {
 function setupModalListeners() {
     if(!paymentModal) return;
 
-    paymentRadios.forEach(radio => {
-        radio.addEventListener('change', (e) => {
-            if (e.target.value === 'cod' && orderConfig.codEnabled) {
-                codWarningText.textContent = `Due to handling costs, a nominal fee of ₹${orderConfig.codFee} will be charged for orders placed using this option. Avoid this fee by paying online now.`;
-                codWarningBox.style.display = 'block';
-            } else {
-                codWarningBox.style.display = 'none';
-            }
+    if (paymentRadios) {
+        paymentRadios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if (e.target.value === 'cod' && orderConfig.codEnabled) {
+                    if (codWarningText) codWarningText.textContent = `Due to handling costs, a nominal fee of ₹${orderConfig.codFee} will be charged for orders placed using this option. Avoid this fee by paying online now.`;
+                    if (codWarningBox) codWarningBox.style.display = 'block';
+                } else {
+                    if (codWarningBox) codWarningBox.style.display = 'none';
+                }
+            });
         });
-    });
+    }
 
     if(cancelPaymentBtn) {
         cancelPaymentBtn.addEventListener('click', () => {
@@ -148,6 +151,7 @@ async function loadProductDetails() {
                     }, 500);
                 }
             } else {
+                // Update interactions only
                 const likeCount = document.querySelector('.like-count');
                 const ratingCount = document.querySelector('.rating-count');
                 if(likeCount) likeCount.textContent = product.likeCount || 0;
@@ -241,7 +245,6 @@ function renderProductUI(product, productIdStr) {
         const points = product.specification.split('\n').filter(line => line.trim() !== '');
         if (points.length > 0) {
             let listItems = '';
-            // Render all items cleanly
             points.forEach((point) => {
                 listItems += `<li>${point.replace(/^-\s*/, '').trim()}</li>`;
             });
@@ -296,6 +299,7 @@ function renderProductUI(product, productIdStr) {
 
     productDetailContent.innerHTML = galleryHTML + infoHTML;
     
+    // Init main product swiper
     new Swiper('.product-gallery-swiper', {
         loop: true,
         autoplay: { delay: 3000, disableOnInteraction: false },
@@ -331,10 +335,9 @@ function setupProductActionButtons() {
     container.addEventListener('click', async (e) => {
         const target = e.target;
         
-        // *** UPDATED SPECIFICATION TOGGLE LOGIC ***
+        // *** SPECIFICATION TOGGLE LOGIC ***
         const specContainer = target.closest('#clickable-specs-container');
         if (specContainer) {
-            // Simply toggle the expanded class
             specContainer.classList.toggle('expanded');
             return; 
         }
@@ -377,8 +380,10 @@ function setupProductActionButtons() {
         if(commentBtn) {
             e.preventDefault();
             const ratingBox = document.getElementById('rating-box-main');
-            ratingBox.style.display = ratingBox.style.display === 'none' ? 'block' : 'none';
-            if(ratingBox.style.display === 'block') loadRatingBars(currentProduct.id);
+            if(ratingBox) {
+                ratingBox.style.display = ratingBox.style.display === 'none' ? 'block' : 'none';
+                if(ratingBox.style.display === 'block') loadRatingBars(currentProduct.id);
+            }
         }
 
         if(target.classList.contains('star') && currentUser && currentProduct) {
@@ -451,8 +456,10 @@ function setupProductActionButtons() {
             e.preventDefault();
             if(paymentModal) {
                 paymentModal.style.display = 'flex';
-                paymentRadios[0].checked = true; 
-                codWarningBox.style.display = 'none';
+                // Reset radios
+                if(paymentRadios.length > 0) paymentRadios[0].checked = true; 
+                if(codWarningBox) codWarningBox.style.display = 'none';
+                
                 confirmPaymentBtn.onclick = () => {
                     let selectedMode = 'online';
                     paymentRadios.forEach(r => { if(r.checked) selectedMode = r.value; });
@@ -534,6 +541,81 @@ function generateWhatsAppMessage(items, totalAmount, totalMRP, discount, payment
     return message;
 }
 
+async function checkProductUserInteraction() {
+    if (!currentUser || !currentProduct) return;
+    const productId = currentProduct.id;
+
+    try {
+        const likeDoc = await getDoc(doc(db, "products", productId, "likes", currentUser.uid));
+        const likeBtn = document.querySelector('.like-btn');
+        if(likeBtn) {
+            if(likeDoc.exists()) {
+                likeBtn.classList.add('liked');
+                likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
+                likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
+            }
+        }
+    } catch(e) {}
+
+    try {
+        const ratingDoc = await getDoc(doc(db, "products", productId, "ratings", currentUser.uid));
+        if(ratingDoc.exists()) {
+            updateStarUI(ratingDoc.data().rating);
+        }
+    } catch(e) {}
+}
+
+function updateStarUI(value) {
+    const stars = document.querySelectorAll('.star');
+    const feedback = document.querySelector('.rating-feedback');
+    const colorClass = `filled-${value}`; 
+    stars.forEach(s => {
+        s.className = 'star'; 
+        if (parseInt(s.dataset.value) <= value) {
+            s.classList.add(colorClass); 
+        }
+    });
+    const messages = ["Poor", "Fair", "Good", "Very Good", "Excellent"];
+    if (feedback) feedback.textContent = value > 0 ? messages[value - 1] : "Tap a star to rate";
+}
+
+async function loadRatingBars(productId) {
+    const summaryContainer = document.getElementById('rating-summary-main');
+    if (!summaryContainer) return;
+    
+    const ratingsRef = collection(db, "products", productId, "ratings");
+    const snapshot = await getDocs(ratingsRef);
+    
+    const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
+    const total = snapshot.size;
+    
+    snapshot.forEach(doc => {
+        const val = doc.data().rating;
+        if (counts[val] !== undefined) counts[val]++;
+    });
+    
+    let html = '';
+    const keys = [5, 4, 3, 2, 1];
+    keys.forEach((starVal) => {
+        const count = counts[starVal];
+        const percentage = total > 0 ? (count / total) * 100 : 0;
+        let color = '#ff4d4d'; 
+        if (starVal === 2) color = '#ff9f43';
+        if (starVal === 3) color = '#feca57';
+        if (starVal === 4) color = '#1dd1a1';
+        if (starVal === 5) color = '#10ac84';
+
+        html += `
+            <div class="rating-bar-row">
+                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
+                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
+                <span class="bar-count">${count}</span>
+            </div>
+        `;
+    });
+    summaryContainer.innerHTML = html;
+}
+
 // *** ROW 1: CATEGORY PRODUCTS ***
 async function loadCategoryProducts(categoryId, excludeProductId) {
     if (!categoryProductsGrid) return;
@@ -557,6 +639,7 @@ async function loadRandomProducts(excludeProductId) {
         
         let docs = [];
         querySnapshot.forEach(doc => docs.push(doc));
+        // Shuffle client side
         docs = docs.sort(() => Math.random() - 0.5);
 
         renderProductSwiper(docs, randomProductsGrid, excludeProductId, 'rand-swiper');
@@ -643,81 +726,7 @@ function renderProductSwiper(docsOrSnapshot, container, excludeId, swiperClass) 
     }
 }
 
-async function checkProductUserInteraction() {
-    if (!currentUser || !currentProduct) return;
-    const productId = currentProduct.id;
-
-    try {
-        const likeDoc = await getDoc(doc(db, "products", productId, "likes", currentUser.uid));
-        const likeBtn = document.querySelector('.like-btn');
-        if(likeBtn) {
-            if(likeDoc.exists()) {
-                likeBtn.classList.add('liked');
-                likeBtn.querySelector('svg').style.fill = 'var(--error-red)';
-                likeBtn.querySelector('svg').style.stroke = 'var(--error-red)';
-            }
-        }
-    } catch(e) {}
-
-    try {
-        const ratingDoc = await getDoc(doc(db, "products", productId, "ratings", currentUser.uid));
-        if(ratingDoc.exists()) {
-            updateStarUI(ratingDoc.data().rating);
-        }
-    } catch(e) {}
-}
-
-function updateStarUI(value) {
-    const stars = document.querySelectorAll('.star');
-    const feedback = document.querySelector('.rating-feedback');
-    const colorClass = `filled-${value}`; 
-    stars.forEach(s => {
-        s.className = 'star'; 
-        if (parseInt(s.dataset.value) <= value) {
-            s.classList.add(colorClass); 
-        }
-    });
-    const messages = ["Poor", "Fair", "Good", "Very Good", "Excellent"];
-    if (feedback) feedback.textContent = value > 0 ? messages[value - 1] : "Tap a star to rate";
-}
-
-async function loadRatingBars(productId) {
-    const summaryContainer = document.getElementById('rating-summary-main');
-    if (!summaryContainer) return;
-    
-    const ratingsRef = collection(db, "products", productId, "ratings");
-    const snapshot = await getDocs(ratingsRef);
-    
-    const counts = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 };
-    const total = snapshot.size;
-    
-    snapshot.forEach(doc => {
-        const val = doc.data().rating;
-        if (counts[val] !== undefined) counts[val]++;
-    });
-    
-    let html = '';
-    const keys = [5, 4, 3, 2, 1];
-    keys.forEach((starVal) => {
-        const count = counts[starVal];
-        const percentage = total > 0 ? (count / total) * 100 : 0;
-        let color = '#ff4d4d'; 
-        if (starVal === 2) color = '#ff9f43';
-        if (starVal === 3) color = '#feca57';
-        if (starVal === 4) color = '#1dd1a1';
-        if (starVal === 5) color = '#10ac84';
-
-        html += `
-            <div class="rating-bar-row">
-                <span>${starVal} <span class="star-icon">&#9733;</span></span> 
-                <div class="bar-bg"><div class="bar-fill" style="width: ${percentage}%; background-color: ${color};"></div></div> 
-                <span class="bar-count">${count}</span>
-            </div>
-        `;
-    });
-    summaryContainer.innerHTML = html;
-}
-
+// Event Listeners for new grid containers
 const grids = [categoryProductsGrid, randomProductsGrid];
 grids.forEach(grid => {
     if(!grid) return;
