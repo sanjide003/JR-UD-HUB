@@ -1,4 +1,4 @@
-// index.js - Updated: 2-3 Grid for Catalogue, Compact Shop Now
+// index.js - Updated: 3-Column Catalogue Grid
 
 import { db } from './firebase-config.js';
 import { 
@@ -378,12 +378,12 @@ async function loadUnder799Products() {
     } catch (e) {}
 }
 
-// *** UPDATED: CATEGORIES (SQUARE GRID, NO SWIPER) ***
+// *** UPDATED: CATEGORIES (PREMIUM SQUARE GRID) ***
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
     
-    // Apply 2-3 Pattern Grid Class
+    // Grid Class applied in HTML/CSS
     container.className = 'home-category-grid';
     
     try {
@@ -394,7 +394,7 @@ async function loadHomeCategories() {
         let html = '';
         catSnapshot.forEach(doc => {
             const category = doc.data();
-            const imageUrl = optimizeImage(category.imageUrl || '', 300, 300); // Higher Quality
+            const imageUrl = optimizeImage(category.imageUrl || '', 400, 400); // Quality Image
             
             // Square Card with Overlay Title
             html += `
