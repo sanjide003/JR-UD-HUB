@@ -1,4 +1,4 @@
-/* product.css - Updated: Full Footer Visibility & Mobile Padding */
+/* product.css - Updated: Standard Footer & Sticky Actions */
 
 /* --- 1. പ്രധാന ലേഔട്ട് --- */
 .product-detail-grid {
@@ -8,7 +8,6 @@
     align-items: start;
     width: 100%;
     box-sizing: border-box;
-    /* മൊബൈലിൽ നാവിഗേഷനും ബട്ടണുകൾക്കും വേണ്ടി താഴെ സ്ഥലം ഇടുന്നു */
     padding-bottom: 20px; 
 }
 
@@ -44,19 +43,20 @@ body.light-mode .product-gallery-swiper {
 .product-gallery-swiper .swiper-pagination {
     position: absolute;
     bottom: 15px;
-    left: 0;
+    left: 0; 
     width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 5px;
     z-index: 10;
 }
-
 .product-gallery-swiper .swiper-pagination-bullet {
-    background: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.5);
     opacity: 1;
-    width: 8px;
-    height: 8px;
+    width: 8px; height: 8px;
+    margin: 0 4px;
     transition: all 0.3s ease;
 }
-
 .product-gallery-swiper .swiper-pagination-bullet-active {
     background: var(--primary-gold);
     width: 20px;
@@ -66,279 +66,264 @@ body.light-mode .product-gallery-swiper {
 /* --- 3. പ്രൊഡക്റ്റ് വിവരങ്ങൾ --- */
 .product-info-container {
     width: 100%;
-    padding: 0 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-.product-brand {
-    font-size: 0.9rem;
-    color: var(--text-muted);
+.brand-badge {
+    display: inline-block;
+    background-color: rgba(212, 175, 55, 0.1);
+    color: var(--primary-gold);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    width: fit-content;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    margin-bottom: 0.5rem;
-    display: block;
+    letter-spacing: 0.5px;
 }
 
 .product-title {
-    font-size: 1.8rem;
-    margin-bottom: 1rem;
+    font-size: 1.6rem;
     line-height: 1.3;
+    margin: 0;
+    color: var(--text-color);
 }
+body.light-mode .product-title { color: #000; }
 
+/* Price Section */
 .product-price-block {
     display: flex;
     align-items: center;
-    gap: 15px;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 0.5rem 0 1rem;
+    padding-bottom: 1rem;
     border-bottom: 1px solid var(--border-color);
 }
-
 .current-price {
-    font-size: 2rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: var(--primary-gold);
 }
-
-.original-price {
-    font-size: 1.2rem;
-    color: var(--text-muted);
+.mrp-price {
+    font-size: 1.1rem;
     text-decoration: line-through;
+    color: var(--text-muted);
 }
-
-.discount-badge {
-    background-color: rgba(46, 204, 113, 0.15);
-    color: var(--success-green);
-    padding: 5px 10px;
-    border-radius: 6px;
+.discount-tag {
+    background-color: var(--success-green);
+    color: #000;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.85rem;
+    padding: 4px 8px;
+    border-radius: 4px;
 }
 
-/* --- 4. വേരിയന്റുകൾ (Size/Color) --- */
-.variant-section {
-    margin-bottom: 1.5rem;
-}
-
-.variant-title {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-bottom: 0.8rem;
+/* Selectors */
+.selector-group { margin-bottom: 1rem; }
+.selector-label {
     display: block;
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+    font-weight: 500;
 }
-
-.variant-options {
+.size-options {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
 }
-
-.variant-btn {
+.size-btn {
     background: transparent;
     border: 1px solid var(--border-color);
-    color: var(--text-color);
+    color: var(--text-muted);
     padding: 8px 16px;
     border-radius: 6px;
     cursor: pointer;
+    font-size: 0.9rem;
     transition: all 0.2s ease;
-    min-width: 40px;
 }
-
-.variant-btn:hover {
+.size-btn.selected {
     border-color: var(--primary-gold);
-}
-
-.variant-btn.selected {
-    background-color: var(--primary-gold);
-    border-color: var(--primary-gold);
-    color: #000;
-    font-weight: 700;
-}
-
-/* --- 5. സ്പെസിഫിക്കേഷൻസ് & വിവരണം --- */
-.product-description-text {
-    color: var(--text-muted);
-    font-size: 1rem;
-    line-height: 1.8;
-    margin-bottom: 2rem;
-}
-
-/* Specification Styling Updates */
-.specs-container {
-    background-color: var(--card-bg);
-    border-radius: 12px;
-    padding: 1.5rem;
-    margin-top: 1rem;
-    border: 1px solid var(--border-color);
-}
-
-.specs-title {
-    font-size: 1.2rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+    background-color: rgba(212, 175, 55, 0.1);
     color: var(--primary-gold);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    cursor: pointer;
+    font-weight: 600;
 }
 
-.specs-toggle-icon {
-    transition: transform 0.3s ease;
-}
-.specs-toggle-icon.rotated {
-    transform: rotate(180deg);
-}
-
-.specs-list {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 12px;
-    transition: max-height 0.4s ease, opacity 0.4s ease;
-    overflow: hidden;
-    max-height: 1000px; /* Default open max-height */
-    opacity: 1;
+/* Description & Specs */
+.description-text {
+    font-size: 0.95rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
 }
 
-.specs-list.hidden {
-    max-height: 0;
-    opacity: 0;
+.spec-list {
+    list-style: none;
+    padding: 0;
     margin: 0;
+    display: grid;
+    gap: 0.8rem;
 }
-
 .spec-item {
     display: flex;
     justify-content: space-between;
-    padding-bottom: 8px;
-    border-bottom: 1px solid var(--border-color);
-    font-size: 0.95rem;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    font-size: 0.9rem;
 }
+body.light-mode .spec-item { border-bottom-color: rgba(0,0,0,0.05); }
 
-.spec-item:last-child {
-    border-bottom: none;
-}
+.spec-label { color: var(--text-muted); }
+.spec-value { color: var(--text-color); font-weight: 500; text-align: right; }
+body.light-mode .spec-value { color: #333; }
 
-.spec-label {
-    color: var(--text-muted);
-    font-weight: 500;
-}
-
-.spec-value {
-    color: var(--text-color);
-    font-weight: 600;
-    text-align: right;
-}
-
-/* --- 6. ആക്ഷൻ ബട്ടണുകൾ (Add to Cart / Buy Now) --- */
+/* Sticky Footer Actions (Desktop: Inline) */
 .product-actions-grid {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 1rem;
     margin-top: 2rem;
-    max-width: 500px;
+    width: 100%;
 }
 
-.action-btn-large {
-    padding: 1rem;
-    font-size: 1.1rem;
+.btn-add-to-cart, .btn-buy-now {
+    width: 100%;
+    padding: 14px;
+    font-size: 1rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-radius: 8px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    gap: 8px;
+    cursor: pointer;
+    transition: transform 0.2s;
+    border: none;
 }
 
-/* --- 7. ഡെസ്ക്ടോപ്പ് ലേഔട്ട് --- */
-@media (min-width: 769px) {
-    .product-detail-grid {
-        grid-template-columns: 1.2fr 1fr; /* Image wider than details */
-        gap: 4rem;
-    }
+.btn-add-to-cart {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    color: var(--text-color);
+}
+body.light-mode .btn-add-to-cart { background-color: #fff; border-color: #ccc; color: #000; }
 
-    .product-gallery-swiper {
-        height: 600px;
-        position: sticky;
-        top: 100px;
-    }
-    
-    .product-info-container {
-        padding-top: 0;
-    }
-
-    .specs-list {
-        grid-template-columns: 1fr 1fr; /* 2 Column specs on desktop */
-        gap: 20px 40px;
-    }
+.btn-buy-now {
+    background-color: var(--primary-gold);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
 }
 
-/* --- 8. ബന്ധപ്പെട്ട ഉൽപ്പന്നങ്ങൾ (Related Products) --- */
-.related-products-section {
-    margin-top: 4rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
+/* Added to Cart State */
+.btn-add-to-cart.added-to-cart {
+    background-color: var(--success-green);
+    color: #fff;
+    border-color: var(--success-green);
+}
+
+/* --- 4. Related & Random Grids --- */
+.related-section { margin-top: 3rem; margin-bottom: 2rem; }
+.section-heading {
+    font-size: 1.2rem;
+    color: var(--primary-gold);
+    margin-bottom: 1rem;
+    padding-left: 5px;
+    border-left: 3px solid var(--primary-gold);
 }
 
 .related-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 15px;
-    margin-top: 2rem;
+    gap: 10px;
+}
+@media (min-width: 640px) { .related-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (min-width: 1024px) { .related-grid { grid-template-columns: repeat(5, 1fr); } }
+
+/* Reusing Home Card Styles from public.css mostly, but ensuring compatibility */
+.clean-card-wrapper { aspect-ratio: auto; }
+
+
+/* --- 5. Footer Reset --- */
+/* We removed the overrides that were hiding the footer styles. 
+   Now it will inherit from public.css properly. */
+
+.main-footer-new {
+    /* Only keeping necessary spacing from content */
+    margin-top: 3rem !important; 
 }
 
-@media (min-width: 640px) {
-    .related-grid { grid-template-columns: repeat(3, 1fr); }
-}
-@media (min-width: 1024px) {
-    .related-grid { grid-template-columns: repeat(5, 1fr); }
-}
-
-/* --- 9. WhatsApp Button --- */
-.whatsapp-order-btn {
-    background-color: #25D366;
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    border-radius: 8px;
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-bottom: 1.5rem;
-    width: fit-content;
-    text-decoration: none;
-    transition: transform 0.2s;
-}
-.whatsapp-order-btn:hover { transform: scale(1.02); }
-
-/* --- 10. Responsive Footer Padding --- */
+/* --- 6. Responsive --- */
 @media (max-width: 768px) {
     .product-title { font-size: 1.3rem; }
     
     .product-detail-grid {
-        padding-bottom: 120px; 
+        padding-bottom: 20px; 
     }
 
-    /* ഫൂട്ടർ പൂർണ്ണമായി കാണിക്കാൻ താഴെ പാഡിംഗ് നൽകുന്നു.
-       ഇല്ലെങ്കിൽ 'Add to Cart' ബട്ടണിന്റെ പിന്നിൽ ഫൂട്ടർ മറഞ്ഞുപോകും.
-    */
+    /* Important: Add padding to bottom of footer so it's not hidden behind sticky bar */
     .main-footer-new {
-        padding-bottom: 160px !important; 
+        padding-bottom: 100px !important; 
     }
 
     /* Sticky Action Bar for Mobile */
     .product-actions-grid {
         position: fixed;
-        bottom: 65px; /* Above Bottom Nav */
+        bottom: 0; /* Align to very bottom */
         left: 0;
         width: 100%;
         height: auto;
         background-color: var(--card-bg); 
         border-top: 1px solid var(--border-color);
         padding: 10px 15px; 
-        z-index: 999; 
+        z-index: 1000; 
         margin: 0;
         max-width: none;
         box-sizing: border-box;
-        box-shadow: 0 -4px 15px rgba(0,0,0,0.3); 
+        box-shadow: 0 -2px 10px rgba(0,0,0,0.2); 
+        padding-bottom: max(10px, env(safe-area-inset-bottom));
     }
+    
+    body.light-mode .product-actions-grid {
+        background-color: #fff;
+        border-color: #e0e0e0;
+    }
+
+    .btn-add-to-cart, .btn-buy-now {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+}
+
+/* Desktop Layout Fixes */
+@media (min-width: 769px) {
+    .product-detail-grid {
+        grid-template-columns: 1.2fr 1fr; /* Image wider */
+        gap: 3rem;
+    }
+    .product-gallery-swiper {
+        height: 550px; /* Taller on desktop */
+        position: sticky;
+        top: 90px;
+    }
+    .product-actions-grid {
+        max-width: 400px;
+    }
+}
+
+/* Fading Specifications Logic */
+.spec-list.collapsed .spec-item:nth-child(n+5) {
+    display: none;
+}
+.spec-toggle-btn {
+    background: none; border: none;
+    color: var(--primary-gold);
+    font-size: 0.85rem; font-weight: 600;
+    margin-top: 10px; cursor: pointer;
+    padding: 0;
+    display: none; /* Hidden by default, JS enables if needed */
 }
