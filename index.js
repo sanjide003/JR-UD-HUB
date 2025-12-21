@@ -1,4 +1,4 @@
-// index.js - Updated: 3-Column Catalogue Grid
+// index.js - Updated: Horizontal Scroll Circle Categories
 
 import { db } from './firebase-config.js';
 import { 
@@ -378,35 +378,53 @@ async function loadUnder799Products() {
     } catch (e) {}
 }
 
-// *** UPDATED: CATEGORIES (PREMIUM SQUARE GRID) ***
+// *** UPDATED: CATEGORIES (HORIZONTAL SCROLL CIRCLES) ***
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
     
-    // Grid Class applied in HTML/CSS
-    container.className = 'home-category-grid';
+    // Use Wrapper Class
+    container.className = 'category-slider-wrapper';
     
     try {
         const catQuery = query(collection(db, "categories"), orderBy("name")); 
         const catSnapshot = await getDocs(catQuery); 
         if (catSnapshot.empty) { container.innerHTML = ''; return; }
         
-        let html = '';
+        // Swiper Structure
+        let html = `<div class=\"swiper category-circle-swiper\"><div class=\"swiper-wrapper\">`;
+        
         catSnapshot.forEach(doc => {
             const category = doc.data();
-            const imageUrl = optimizeImage(category.imageUrl || '', 400, 400); // Quality Image
+            const imageUrl = optimizeImage(category.imageUrl || '', 200, 200); 
             
-            // Square Card with Overlay Title
             html += `
-                <a href="categories.html?filter=${doc.id}" class="home-category-card">
-                    <img src="${imageUrl}" alt="${category.name}" class="cat-card-img" loading="lazy">
-                    <div class="cat-card-overlay">
-                        <h3 class="cat-card-title">${category.name}</h3>
-                    </div>
-                </a>`;
+                <div class=\"swiper-slide category-circle-slide\">
+                    <a href=\"categories.html?filter=${doc.id}\" class=\"cat-circle-link\">
+                        <div class=\"cat-circle-img-box\">
+                            <img src=\"${imageUrl}\" alt=\"${category.name}\" class=\"cat-circle-img\" loading=\"lazy\">
+                        </div>
+                        <span class=\"cat-circle-title\">${category.name}</span>
+                    </a>
+                </div>`;
         });
+        html += `</div></div>`; // Close wrapper and swiper
+        
         container.innerHTML = html;
-        // No Swiper initialization
+        
+        // Initialize Swiper for Horizontal Scroll
+        new Swiper('.category-circle-swiper', {
+            slidesPerView: 4.5, // Mobile: Show 4.5 items
+            spaceBetween: 12,
+            freeMode: true, // Smooth scrolling
+            grabCursor: true,
+            breakpoints: {
+                480: { slidesPerView: 5.5, spaceBetween: 15 },
+                768: { slidesPerView: 7.5, spaceBetween: 20 },
+                1024: { slidesPerView: 9.5, spaceBetween: 25 }
+            }
+        });
+        
     } catch (error) { console.error(error); }
 }
 
