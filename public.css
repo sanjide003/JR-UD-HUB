@@ -1,9 +1,8 @@
-/* public.css - Updated: Desktop Header Alignment & Visibility */
+/* public.css - Footer Design Fixed */
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
-    /* --- Default Dark Theme Variables (Gold) --- */
     --bg-color: #000000;
     --primary-gold: #D4AF37; 
     --secondary-gold: #B8860B;
@@ -24,7 +23,6 @@
     --shadow-soft: 0 4px 10px rgba(0,0,0,0.3);
 }
 
-/* --- Light Mode Overrides (Blue Theme) --- */
 body.light-mode {
     --bg-color: #f4f6f8;
     --text-color: #1a1a1a;
@@ -34,8 +32,6 @@ body.light-mode {
     --nav-bg: rgba(255, 255, 255, 0.9);
     --input-bg: #ffffff;
     --shadow-soft: 0 4px 15px rgba(0,0,0,0.08);
-    
-    /* ലൈറ്റ് മോഡിൽ പ്രൈമറി കളർ നീല */
     --primary-gold: #2874f0; 
     --secondary-gold: #1e5fc4; 
 }
@@ -45,328 +41,267 @@ html {
     -webkit-tap-highlight-color: transparent; 
 }
 
-/* --- 0. പേജ് ലോഡർ --- */
 #preloader {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--bg-color); 
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    transition: opacity 0.5s ease-out;
-    opacity: 1;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+    background-color: var(--bg-color); z-index: 9999;
+    display: flex; justify-content: center; align-items: center;
+    transition: opacity 0.5s ease-out; opacity: 1;
 }
 .loader-logo-container {
-    position: relative;
-    width: 100px;
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    position: relative; width: 100px; height: 100px;
+    display: flex; justify-content: center; align-items: center;
 }
-#preloader-logo {
-    width: 70px;
-    height: 70px;
-    object-fit: contain;
-    border-radius: 50%;
-}
+#preloader-logo { width: 70px; height: 70px; object-fit: contain; border-radius: 50%; }
 .loader-ring {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100px;
-    height: 100px;
-    border: 4px solid var(--border-color);
-    border-top-color: var(--primary-gold); 
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
+    position: absolute; top: 0; left: 0; width: 100px; height: 100px;
+    border: 4px solid var(--border-color); border-top-color: var(--primary-gold); 
+    border-radius: 50%; animation: spin 1s linear infinite;
 }
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-/* --- 2. പൊതുവായ സ്റ്റൈലുകൾ --- */
 body {
-    font-family: var(--font-main);
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    line-height: 1.6;
-    margin: 0;
-    padding: 0;
-    padding-top: var(--header-height);
-    transition: background-color 0.3s ease, color 0.3s ease; 
+    font-family: var(--font-main); background-color: var(--bg-color);
+    color: var(--text-color); line-height: 1.6; margin: 0; padding: 0;
+    padding-top: var(--header-height); transition: background-color 0.3s ease, color 0.3s ease; 
 }
-
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 h1, h2, h3, h4, h5, h6, .section-title-new, .product-title, .page-header-bar h1, .cart-summary-card h2, .header-logo-text {
-    font-family: var(--font-heading);
-    font-weight: 600; 
-    color: var(--primary-gold); 
+    font-family: var(--font-heading); font-weight: 600; color: var(--primary-gold); 
 }
-
-/* ലൈറ്റ് മോഡിൽ ലോഗോ ടെക്സ്റ്റ് കറുപ്പ് നിറത്തിൽ */
-body.light-mode .header-logo-text {
-    color: #000000 !important;
-}
-
-.section-title-new {
-    font-weight: 600;
-    letter-spacing: 1px;
-    text-align: center; 
-    margin-bottom: 2rem; 
-}
+body.light-mode .header-logo-text { color: #000000 !important; }
+.section-title-new { font-weight: 600; letter-spacing: 1px; text-align: center; margin-bottom: 2rem; }
 .page-header-bar h1, .product-title { font-weight: 700; }
 .header-logo-text { font-weight: 700; }
 
-.container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 3rem 1.5rem;
-}
-
-a {
-    color: var(--primary-gold);
-    text-decoration: none;
-    transition: color 0.3s ease;
-}
+.container { max-width: 1200px; margin: 0 auto; padding: 3rem 1.5rem; }
+a { color: var(--primary-gold); text-decoration: none; transition: color 0.3s ease; }
 a:hover { color: var(--secondary-gold); }
-
 img { max-width: 100%; height: auto; display: block; }
 
-/* --- 3. ഹെഡർ (Main Header) - UPDATED FOR DESKTOP ALIGNMENT --- */
+/* --- Header --- */
 .main-header {
-    background-color: var(--bg-color);
-    padding: 0 2rem; /* Increased padding */
-    height: var(--header-height);
-    display: flex; /* Changed from grid to flex */
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border-color);
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    z-index: 1000;
+    background-color: var(--bg-color); padding: 0 2rem; height: var(--header-height);
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border-color); position: fixed;
+    top: 0; left: 0; width: 100%; z-index: 1000;
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
-
-/* *** മാറ്റം: ലൈറ്റ് മോഡിൽ ഹെഡറിന് ലൈറ്റ് ബ്ലൂ നിറം *** */
 body.light-mode .main-header {
-    background-color: #e1f5fe; 
-    border-bottom: 1px solid #b3e5fc; 
+    background-color: #e1f5fe; border-bottom: 1px solid #b3e5fc; 
     box-shadow: 0 2px 10px rgba(0,0,0,0.05); 
 }
-
-.header-left-section {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0; /* Logo shouldn't shrink */
-}
-
-.header-logo {
-    display: flex;
-    align-items: center;
-    text-decoration: none;
-    gap: 12px;
-    position: relative; 
-}
-
-.header-logo-img { 
-    height: 45px; /* Slightly larger logo */
-    width: auto; 
-    display: block;
-    object-fit: contain; 
-}
-
-/* Updated: Text flows naturally next to logo, NOT fixed in center */
+.header-left-section { display: flex; align-items: center; flex-shrink: 0; }
+.header-logo { display: flex; align-items: center; text-decoration: none; gap: 12px; position: relative; }
+.header-logo-img { height: 45px; width: auto; display: block; object-fit: contain; }
 .header-logo-content { 
-    position: static; 
-    transform: none;
-    display: flex; 
-    flex-direction: column; 
-    align-items: flex-start; 
-    text-align: left;
-    line-height: 1.2;
-    pointer-events: auto; 
+    position: static; transform: none; display: flex; flex-direction: column; 
+    align-items: flex-start; text-align: left; line-height: 1.2; pointer-events: auto; 
 }
-
-.header-logo-text {
-    font-size: 1.3rem; /* Clearly visible title */
-}
+.header-logo-text { font-size: 1.3rem; }
 .header-logo-subtitle {
-    font-family: var(--font-main);
-    font-size: 0.75rem;
-    color: var(--text-muted);
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    white-space: nowrap;
+    font-family: var(--font-main); font-size: 0.75rem; color: var(--text-muted);
+    letter-spacing: 0.5px; text-transform: uppercase; white-space: nowrap;
 }
+.header-nav-desktop { margin-left: auto; margin-right: 3rem; }
+.header-nav-desktop ul { list-style: none; display: flex; gap: 2rem; padding: 0; margin: 0; }
+.header-nav-desktop a, .header-nav-desktop button {
+    color: var(--text-color); font-weight: 600; font-size: 0.95rem; text-transform: uppercase;
+    letter-spacing: 0.5px; transition: color 0.3s ease; position: relative;
+    background: none; border: none; cursor: pointer; font-family: var(--font-main); padding: 5px 0;
+}
+body.light-mode .header-nav-desktop a, body.light-mode .header-nav-desktop button { color: #000; }
+.header-nav-desktop a:hover, .header-nav-desktop button:hover { color: var(--primary-gold); }
+.header-nav-desktop a::after, .header-nav-desktop button::after {
+    content: ''; position: absolute; width: 0; height: 2px; bottom: 0; left: 0;
+    background-color: var(--primary-gold); transition: width 0.3s ease;
+}
+.header-nav-desktop a:hover::after, .header-nav-desktop button:hover::after { width: 100%; }
 
-/* ഡെസ്ക്ടോപ്പ് നാവിഗേഷൻ - Moved to Right Side */
-.header-nav-desktop {
-    margin-left: auto; /* Pushes nav to the right */
-    margin-right: 3rem; /* Gap between Nav and Cart */
-}
-.header-nav-desktop ul {
-    list-style: none;
-    display: flex;
-    gap: 2rem;
-    padding: 0;
-    margin: 0;
-}
-.header-nav-desktop a,
-.header-nav-desktop button {
-    color: var(--text-color);
-    font-weight: 600; /* Bold text */
-    font-size: 0.95rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    transition: color 0.3s ease;
-    position: relative;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-family: var(--font-main);
-    padding: 5px 0;
-}
-
-/* ലൈറ്റ് മോഡിൽ നാവിഗേഷൻ ലിങ്കുകൾക്ക് കറുപ്പ് നിറം */
-body.light-mode .header-nav-desktop a,
-body.light-mode .header-nav-desktop button {
-    color: #000;
-}
-
-.header-nav-desktop a:hover,
-.header-nav-desktop button:hover {
-    color: var(--primary-gold);
-}
-.header-nav-desktop a::after,
-.header-nav-desktop button::after {
-    content: '';
-    position: absolute;
-    width: 0;
-    height: 2px;
-    bottom: 0;
-    left: 0;
-    background-color: var(--primary-gold);
-    transition: width 0.3s ease;
-}
-.header-nav-desktop a:hover::after,
-.header-nav-desktop button:hover::after {
-    width: 100%;
-}
-
-/* വലതുവശത്തെ ഐക്കണുകൾ */
-.header-right-section {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-    flex-shrink: 0;
-}
+.header-right-section { display: flex; align-items: center; gap: 1.5rem; flex-shrink: 0; }
 .header-icon-btn {
-    background: none;
-    border: none;
-    color: var(--text-color) !important; 
-    cursor: pointer;
-    position: relative;
-    padding: 5px;
+    background: none; border: none; color: var(--text-color) !important; 
+    cursor: pointer; position: relative; padding: 5px;
 }
-
-/* ലൈറ്റ് മോഡിൽ ഐക്കണുകൾക്ക് കറുപ്പ് നിറം */
-body.light-mode .header-icon-btn {
-    color: #000 !important;
-}
-body.light-mode .header-icon-btn svg {
-    stroke: #000 !important;
-}
-
+body.light-mode .header-icon-btn { color: #000 !important; }
+body.light-mode .header-icon-btn svg { stroke: #000 !important; }
 .header-icon-btn svg {
-    stroke: var(--text-color) !important; 
-    fill: none;
-    width: 24px;
-    height: 24px;
-    stroke-width: 2;
+    stroke: var(--text-color) !important; fill: none; width: 24px; height: 24px; stroke-width: 2;
 }
 .cart-item-count {
-    position: absolute;
-    top: -5px;
-    right: -10px;
-    background-color: var(--primary-gold);
-    color: #fff;
-    font-size: 0.75rem;
-    font-weight: 700;
-    border-radius: 50%;
-    width: 20px;
-    height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    line-height: 1;
+    position: absolute; top: -5px; right: -10px; background-color: var(--primary-gold);
+    color: #fff; font-size: 0.75rem; font-weight: 700; border-radius: 50%;
+    width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; line-height: 1;
 }
 
-/* --- 4. ഫൂട്ടർ (Main Footer) --- */
+/* ==========================================================================
+   4. FOOTER (REDESIGNED)
+   ========================================================================== */
 .main-footer-new {
     background-color: var(--bg-color);
     color: var(--text-muted);
-    padding: 3rem 1.5rem;
-    margin-top: 3rem;
+    padding: 4rem 2rem 2rem; /* More padding for desktop */
+    margin-top: 4rem;
     border-top: 1px solid var(--border-color);
     transition: background-color 0.3s ease, border-color 0.3s ease;
 }
+
 .footer-container-new { 
     max-width: 1200px; 
     margin: 0 auto; 
     display: grid;
-    grid-template-columns: 1fr 1fr; 
-    gap: 2rem;
+    /* Desktop: 3 Columns (About, Links, Follow) */
+    grid-template-columns: 1.5fr 1fr 1fr; 
+    gap: 3rem;
     align-items: start;
-    justify-items: center; 
 }
 
-.footer-accordion-item { 
-    border-bottom: 1px solid var(--border-color); 
-    width: 100%;
+/* Column Header Styles */
+.footer-column-title {
+    font-family: var(--font-heading);
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--primary-gold);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 1.5rem;
+    display: block;
 }
 
-.footer-accordion-toggle {
-    display: flex; justify-content: space-between; align-items: center; width: 100%;
-    background: none; border: none; color: var(--text-color);
-    padding: 1.5rem 0; font-family: var(--font-main); font-size: 1rem;
-    font-weight: 500; text-transform: uppercase; letter-spacing: 1px; cursor: pointer;
+/* List Styles */
+.footer-links-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
-.footer-accordion-toggle svg {
-    transition: transform 0.3s ease; width: 16px; height: 16px; fill: currentColor;
-}
-.footer-accordion-toggle.active svg { transform: rotate(180deg); }
 
-.footer-accordion-content {
-    max-height: 0; 
-    overflow: hidden; 
-    transition: max-height 0.3s ease-out;
+.footer-links-list li {
+    margin-bottom: 0.8rem;
 }
-.footer-accordion-content ul { list-style: none; padding: 0 0 1.5rem 0; }
-.footer-accordion-content li { margin-bottom: 0.75rem; }
-.footer-accordion-content a { color: var(--text-muted); font-size: 0.95rem; }
 
-.footer-social-new {
-    grid-column: 1 / -1; 
-    display: flex; justify-content: center; gap: 2rem; padding: 2rem 0; border-bottom: 1px solid var(--border-color); width: 100%;
+.footer-links-list a {
+    color: var(--text-muted);
+    font-size: 0.95rem;
+    transition: color 0.2s ease, padding-left 0.2s ease;
+    display: inline-block;
 }
-.footer-social-new a { color: var(--text-color); }
-.footer-social-new a svg { width: 24px; height: 24px; fill: currentColor; }
+
+.footer-links-list a:hover {
+    color: var(--primary-gold);
+    padding-left: 5px;
+}
+
+/* Social Icons (Desktop) */
+.footer-social-wrapper {
+    display: flex;
+    gap: 1rem;
+}
+
+.footer-social-wrapper a {
+    color: var(--text-muted);
+    background-color: rgba(255,255,255,0.05);
+    width: 40px; height: 40px;
+    display: flex; align-items: center; justify-content: center;
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+body.light-mode .footer-social-wrapper a { background-color: rgba(0,0,0,0.05); }
+
+.footer-social-wrapper a:hover {
+    background-color: var(--primary-gold);
+    color: #fff;
+    border-color: var(--primary-gold);
+    transform: translateY(-3px);
+}
+.footer-social-wrapper svg { width: 20px; height: 20px; fill: currentColor; }
+
+/* Copyright Section */
 .footer-bottom-new { 
     grid-column: 1 / -1;
-    text-align: center; font-size: 0.9rem; padding-top: 1.5rem; width: 100%;
+    text-align: center; 
+    font-size: 0.85rem; 
+    padding-top: 2rem; 
+    margin-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
 }
-.footer-powered-by { font-size: 0.8rem; color: var(--text-muted); opacity: 0.7; margin-top: 0.5rem; }
 
-/* --- 5. മൊബൈൽ ബോട്ടം നാവിഗേഷൻ & യൂസർ മെനു --- */
+/* --- MOBILE FOOTER OVERRIDES --- */
+@media (max-width: 768px) {
+    .main-footer-new {
+        padding: 2rem 1.5rem 8rem 1.5rem; /* Bottom padding for fixed nav */
+    }
+
+    .footer-container-new {
+        grid-template-columns: 1fr; /* Stack vertically */
+        gap: 0; /* Accordion handles spacing */
+    }
+
+    /* Accordion Style for Mobile */
+    .footer-column {
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .footer-column-title {
+        margin-bottom: 0;
+        padding: 1.2rem 0;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.95rem;
+    }
+    
+    .footer-accordion-icon {
+        display: block;
+        transition: transform 0.3s ease;
+        width: 12px; height: 12px; fill: currentColor;
+    }
+    
+    .footer-column.active .footer-accordion-icon {
+        transform: rotate(180deg);
+    }
+
+    .footer-links-list {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out;
+    }
+    
+    .footer-column.active .footer-links-list {
+        padding-bottom: 1.5rem;
+    }
+
+    /* Social Section on Mobile */
+    .footer-column.social-column {
+        border-bottom: none;
+        padding-top: 2rem;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .footer-column.social-column .footer-column-title {
+        pointer-events: none;
+        padding-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+    
+    .footer-column.social-column .footer-accordion-icon {
+        display: none;
+    }
+}
+
+@media (min-width: 769px) {
+    .footer-accordion-icon { display: none; }
+    .footer-links-list { max-height: none !important; opacity: 1 !important; }
+}
+
+/* --- Mobile Bottom Nav & User Menu --- */
 .bottom-nav { display: none; }
 .user-menu-overlay {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -375,16 +310,13 @@ body.light-mode .header-icon-btn svg {
     display: flex;
 }
 .user-menu-overlay.open { opacity: 1; visibility: visible; }
-
 .user-menu-content {
     width: 100%; background-color: var(--card-bg);
     border-top-left-radius: 20px; border-top-right-radius: 20px;
     padding: 1.5rem; border-top: 1px solid var(--primary-gold);
     transition: transform 0.3s ease;
-    max-height: 70vh; overflow-y: auto;
-    color: var(--text-color);
+    max-height: 70vh; overflow-y: auto; color: var(--text-color);
 }
-
 .user-menu-header {
     display: flex; justify-content: space-between; align-items: center;
     margin-bottom: 1.5rem; border-bottom: 1px solid var(--border-color); padding-bottom: 1rem;
@@ -394,175 +326,71 @@ body.light-mode .header-icon-btn svg {
 .user-menu-close-btn svg { width: 24px; height: 24px; stroke: currentColor; }
 .user-menu-list { list-style: none; padding: 0; margin: 0; }
 .user-menu-list li { margin-bottom: 0.8rem; }
-
 .user-menu-link, .user-menu-action-btn {
     display: flex; align-items: center; gap: 1rem; padding: 1rem;
     color: var(--text-color); text-decoration: none; border-radius: 8px;
     background-color: rgba(255, 255, 255, 0.03); 
-    transition: background-color 0.3s ease;
-    font-weight: 500;
-    width: 100%;
-    border: none;
-    cursor: pointer;
-    font-family: var(--font-main);
-    font-size: 1rem;
-    text-align: left;
+    transition: background-color 0.3s ease; font-weight: 500;
+    width: 100%; border: none; cursor: pointer; font-family: var(--font-main);
+    font-size: 1rem; text-align: left;
 }
-body.light-mode .user-menu-link, 
-body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
+body.light-mode .user-menu-link, body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
 .user-menu-link:hover, .user-menu-action-btn:hover { background-color: rgba(212, 175, 55, 0.1); color: var(--primary-gold); }
 .user-menu-link svg, .user-menu-action-btn svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 2; }
-
-/* Theme Switcher Toggle UI inside menu */
 .theme-switch-wrapper { display: flex; justify-content: space-between; align-items: center; width: 100%; }
 .theme-status-text { font-size: 0.9rem; color: var(--text-muted); }
 
-/* --- 6. റെസ്പോൺസീവ് (മൊബൈൽ) --- */
 @media (max-width: 768px) {
     body { padding-bottom: var(--bottom-nav-height); }
-    
-    .main-header { 
-        padding: 0 1rem; 
-        height: 60px; 
-        display: flex; /* Kept flex for mobile too */
-        justify-content: space-between;
-    }
+    .main-header { padding: 0 1rem; height: 60px; display: flex; justify-content: space-between; }
     .header-nav-desktop { display: none; }
+    .header-logo-img { height: 32px; } .header-logo-text { font-size: 1.1rem; }
     
-    .header-logo-img { height: 32px; } 
-    .header-logo-text { font-size: 1.1rem; }
-    
-    .footer-container-new {
-        display: grid;
-        grid-template-columns: 1fr 1fr; 
-        gap: 1rem;
-        text-align: center;
-    }
-    .footer-accordion-item { border-bottom: none; }
-    .footer-accordion-toggle {
-        justify-content: center; 
-        padding: 1rem 0;
-        font-size: 0.9rem;
-        pointer-events: auto; 
-    }
-    .footer-accordion-toggle svg { display: inline-block; margin-left: 5px; width: 12px; height: 12px; }
-    
-    /* --- Bottom Nav Styles --- */
     .bottom-nav {
         display: flex; justify-content: space-around; align-items: center;
         position: fixed; bottom: 0; left: 0; width: 100%; height: var(--bottom-nav-height);
-        background-color: var(--nav-bg); 
-        border-top: 1px solid var(--border-color);
+        background-color: var(--nav-bg); border-top: 1px solid var(--border-color);
         backdrop-filter: blur(10px); z-index: 1001; box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
         transition: background-color 0.3s ease;
     }
     .bottom-nav-item {
         display: flex; flex-direction: column; align-items: center; justify-content: center;
-        text-decoration: none;
-        color: var(--text-muted); 
-        font-size: 0.7rem; font-weight: 500;
+        text-decoration: none; color: var(--text-muted); font-size: 0.7rem; font-weight: 500;
         flex: 1; height: 100%; gap: 4px; transition: all 0.3s ease;
         background: none; border: none; cursor: pointer; padding: 0;
     }
-    
-    /* Active State - Dark Mode (Default) */
     .bottom-nav-item.active { color: var(--primary-gold) !important; }
     .bottom-nav-item svg {
         width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2;
         stroke-linecap: round; stroke-linejoin: round; transition: all 0.3s ease;
     }
-    .bottom-nav-item.active svg { 
-        stroke: var(--primary-gold) !important; 
-        transform: translateY(-2px); 
-        fill: none; 
-    }
-
-    /* *** Active State - Light Mode (Blue) *** */
-    body.light-mode .bottom-nav-item.active { 
-        color: var(--primary-gold) !important;
-    }
-    body.light-mode .bottom-nav-item.active svg { 
-        stroke: var(--primary-gold) !important;
-    }
+    .bottom-nav-item.active svg { stroke: var(--primary-gold) !important; transform: translateY(-2px); fill: none; }
+    body.light-mode .bottom-nav-item.active { color: var(--primary-gold) !important; }
+    body.light-mode .bottom-nav-item.active svg { stroke: var(--primary-gold) !important; }
     
-    @keyframes bounce-subtle {
-        0%, 100% { transform: translateY(0); }
-        50% { transform: translateY(-4px); }
-    }
-    .bottom-nav-item:not(.active).catalog-anim svg {
-        animation: bounce-subtle 2s infinite;
-        stroke: var(--primary-gold);
-    }
+    @keyframes bounce-subtle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-4px); } }
+    .bottom-nav-item:not(.active).catalog-anim svg { animation: bounce-subtle 2s infinite; stroke: var(--primary-gold); }
     
     .user-menu-overlay { align-items: flex-end; }
     .user-menu-content { transform: translateY(100%); border-radius: 20px 20px 0 0; }
     .user-menu-overlay.open .user-menu-content { transform: translateY(0); }
-
     #floating-action-buttons { bottom: 80px; right: 15px; }
     .container { padding: 2rem 1rem; }
 }
 
-/* --- 7. റെസ്പോൺസീവ് (ഡെസ്ക്ടോപ്പ്) --- */
 @media (min-width: 769px) {
     .header-nav-desktop { display: block; }
-    /* Padding adjusted in main class */
-
-    .footer-accordion-toggle {
-        pointer-events: none; 
-        cursor: default;
-        justify-content: center; 
-        font-size: 1.1rem;
-    }
-    .footer-accordion-toggle svg { display: none; }
-    .footer-accordion-content {
-        max-height: none !important; 
-        overflow: visible;
-        text-align: center; 
-    }
-    .footer-accordion-item {
-        border-bottom: none;
-        width: 100%;
-        max-width: 300px; 
-    }
-    .footer-social-new {
-        border-bottom: none;
-        padding-top: 3rem;
-        padding-bottom: 1rem;
-    }
-    .footer-bottom-new {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 1.5rem; 
-        padding-top: 0;
-    }
-    .footer-bottom-new p { margin: 0; }
-    .footer-powered-by { margin-top: 0; }
-
     .user-menu-overlay {
-        background-color: transparent; 
-        align-items: flex-start; 
-        justify-content: flex-end; 
-        padding-top: calc(var(--header-height) + 10px); 
-        padding-right: 2rem; 
-        pointer-events: none; 
+        background-color: transparent; align-items: flex-start; justify-content: flex-end; 
+        padding-top: calc(var(--header-height) + 10px); padding-right: 2rem; pointer-events: none; 
     }
     .user-menu-overlay.open { pointer-events: auto; }
     .user-menu-content {
-        width: 300px;
-        border-radius: 10px;
-        border: 1px solid var(--border-color);
-        transform: translateY(10px);
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        width: 300px; border-radius: 10px; border: 1px solid var(--border-color);
+        transform: translateY(10px); opacity: 0; visibility: hidden;
+        transition: all 0.3s ease; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     }
-    .user-menu-overlay.open .user-menu-content {
-        transform: translateY(0);
-        opacity: 1;
-        visibility: visible;
-    }
+    .user-menu-overlay.open .user-menu-content { transform: translateY(0); opacity: 1; visibility: visible; }
     .user-menu-close-btn { display: none; }
 }
 
@@ -572,32 +400,19 @@ body.light-mode .user-menu-action-btn { background-color: rgba(0, 0, 0, 0.05); }
 .price-mrp { font-size: 1rem; color: var(--text-muted); }
 .product-mrp-red del { color: var(--error-red); }
 .price-discount { font-size: 0.8rem; font-weight: 700; color: var(--success-green); background-color: rgba(46, 204, 113, 0.1); padding: 2px 6px; border-radius: 4px; }
-
 .btn-primary-new, .btn-primary-icon, .btn-secondary-new, .float-btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
     padding: 0.75rem 1rem; font-weight: 700; border-radius: 5px; text-decoration: none;
-    cursor: pointer; font-size: 0.9rem; transition: all 0.2s ease;
-    user-select: none;
+    cursor: pointer; font-size: 0.9rem; transition: all 0.2s ease; user-select: none;
 }
 .btn-primary-new:active, .btn-secondary-new:active, .float-btn:active { transform: scale(0.96); }
-
-.btn-primary-new {
-    background-color: var(--primary-gold);
-    border: 2px solid var(--primary-gold); color: #fff; 
-}
+.btn-primary-new { background-color: var(--primary-gold); border: 2px solid var(--primary-gold); color: #fff; }
 .btn-primary-new:hover { background-color: var(--secondary-gold); border-color: var(--secondary-gold); }
-
-.btn-secondary-new {
-    background-color: transparent;
-    border: 2px solid var(--primary-gold); color: var(--primary-gold);
-}
+.btn-secondary-new { background-color: transparent; border: 2px solid var(--primary-gold); color: var(--primary-gold); }
 .btn-secondary-new:hover { background-color: var(--primary-gold); color: #fff; }
-.btn-primary-new svg.icon-btn, .btn-secondary-new svg.icon-btn {
-    width: 16px; height: 16px; fill: currentColor; stroke: currentColor; stroke-width: 2;
-}
+.btn-primary-new svg.icon-btn, .btn-secondary-new svg.icon-btn { width: 16px; height: 16px; fill: currentColor; stroke: currentColor; stroke-width: 2; }
 .btn-secondary-new svg.icon-btn { stroke: var(--text-color); fill: none; }
 .btn-secondary-new:hover svg.icon-btn { stroke: #fff; }
-
 #floating-action-buttons {
     position: fixed; bottom: 20px; right: 20px; z-index: 900;
     display: flex; justify-content: flex-end; pointer-events: none;
