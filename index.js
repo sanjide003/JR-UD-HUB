@@ -1,4 +1,4 @@
-// index.js - Updated: Horizontal Scroll Circle Categories
+// index.js - Reverted Product Cards + New Circular Catalog
 
 import { db } from './firebase-config.js';
 import { 
