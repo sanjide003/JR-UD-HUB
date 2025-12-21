@@ -1,4 +1,4 @@
-/* home.css - Final: 1:1 Square Images for ALL Cards (CSS Only Update) */
+/* home.css - Updated: Unique Red Box Countdown (Top-Left) */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -13,6 +13,12 @@
     overflow: hidden;
     border-bottom: 1px solid #222;
     display: none; 
+}
+
+/* Light Mode Override */
+body.light-mode .home-top-banner {
+    background-color: #fff;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .home-top-banner img {
@@ -39,9 +45,13 @@
     margin: 0;
     overflow: hidden;
     display: none;
-    /* Aspect Ratio handled by JS class, defaulting landscape here */
     aspect-ratio: 16 / 9; 
     transition: aspect-ratio 0.3s ease;
+}
+
+/* Light Mode Override */
+body.light-mode .hero-section-new {
+    background-color: #f0f0f0;
 }
 
 .hero-section-new.aspect-portrait {
@@ -67,6 +77,11 @@
     align-items: center;
     background: #000;
     overflow: hidden;
+}
+
+/* Light Mode Override for Slide Background */
+body.light-mode .hero-slider-new .swiper-slide {
+    background: #e0e0e0;
 }
 
 .hero-slider-new .swiper-slide img,
@@ -129,6 +144,11 @@
     display: none;
 }
 
+/* Light Mode Override */
+body.light-mode .hero-text-section {
+    color: #000000; /* Black Text */
+}
+
 /* =============================================================
    4. PRODUCT CARDS & SECTIONS
    ============================================================= */
@@ -165,12 +185,71 @@
     background-color: #000;
 }
 
+/* Light Mode Override */
+body.light-mode .special-offer-banner-img {
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+
 .special-offer-header::before {
     content: 'LIMITED TIME';
     position: absolute; top: 8px; left: 8px;
     background: linear-gradient(45deg, #ff3f6c, #ff6b6b);
     color: white; font-size: 0.65rem; font-weight: 800;
     padding: 5px 10px; border-radius: 20px; z-index: 2;
+    display: none; /* Removed as per request to simplify, or keep if needed */
+}
+
+/* *** UNIQUE COUNTDOWN TIMER STYLES (Red Boxes, Top-Left) *** */
+.countdown-overlay {
+    position: absolute;
+    top: 10px; /* Top Position */
+    left: 10px; /* Left Position */
+    bottom: auto; /* Remove Bottom */
+    transform: none; /* Remove Center Transform */
+    background: transparent; /* No container background */
+    backdrop-filter: none;
+    padding: 0;
+    border: none;
+    box-shadow: none;
+    display: flex;
+    gap: 6px;
+    z-index: 5;
+}
+
+/* Individual Red Box */
+.countdown-box {
+    background-color: #d32f2f; /* Red Background */
+    color: #ffffff; /* White Text */
+    padding: 4px 6px;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-width: 38px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+    border: 1px solid rgba(255,255,255,0.2);
+}
+
+.countdown-val {
+    font-size: 0.9rem;
+    font-weight: 800;
+    line-height: 1;
+    font-family: monospace; /* For uniform width */
+}
+
+.countdown-unit {
+    font-size: 0.55rem;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-top: 2px;
+    opacity: 0.9;
+}
+
+/* Expired State */
+.countdown-overlay.expired .countdown-box {
+    background-color: #555;
 }
 
 .section-header-card {
@@ -200,7 +279,13 @@
     background-color: #111;
 }
 
-/* --- STANDARD CARD STYLES (ALL IMAGES 1:1 SQUARE) --- */
+/* Light Mode Override */
+body.light-mode .product-slider-container {
+    background-color: #ffffff;
+    border-color: #e0e0e0;
+}
+
+/* --- STANDARD CARD STYLES --- */
 .swiper-slide { 
     height: auto; 
     display: flex; 
@@ -213,7 +298,6 @@
     flex-direction: column; 
     text-decoration: none; 
     width: 100%;
-    /* Removed fixed aspect-ratio so card grows with content */
     height: 100%; 
     background-color: #1a1a1a; 
     border-radius: 10px;
@@ -223,10 +307,16 @@
     transition: all 0.2s;
 }
 
+/* Light Mode Override */
+body.light-mode .clean-card-wrapper {
+    background-color: #ffffff;
+    border-color: #e0e0e0;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
 /* === 1:1 SQUARE IMAGE BOX === */
 .clean-card-box {
     width: 100%; 
-    /* Force Square Ratio */
     aspect-ratio: 1 / 1; 
     position: relative; 
     background: #111;
@@ -237,11 +327,16 @@
     padding: 10px;
 }
 
+/* Light Mode Override */
+body.light-mode .clean-card-box {
+    background: #f8f8f8;
+}
+
 /* FILL IMAGE */
 .clean-card-img {
     width: 100%; 
     height: 100%; 
-    object-fit: cover; /* Crops image to fill square without stretching */
+    object-fit: cover; 
     transition: transform 0.3s ease; 
     border-radius: 4px;
 }
@@ -271,6 +366,11 @@
     width: 100%;
 }
 
+/* *** Light Mode Override: Black Title *** */
+body.light-mode .clean-card-title {
+    color: #000000;
+}
+
 .clean-card-price-row {
     font-size: 1rem; 
     font-weight: 800; 
@@ -279,6 +379,11 @@
     margin: 0; 
     padding: 0; 
     width: 100%;
+}
+
+/* *** Light Mode Override: Black Price *** */
+body.light-mode .clean-card-price-row {
+    color: #000000;
 }
 
 .shop-now-btn {
@@ -308,12 +413,12 @@
 }
 .screenshot-mode .clean-card-box {
     background-color: #ffffff; border-radius: 16px; 
-    aspect-ratio: 1 / 1; /* Already Square */
+    aspect-ratio: 1 / 1; 
     height: auto; width: 100%; margin-bottom: 8px; padding: 10px;
 }
 .screenshot-mode .clean-card-img { 
     mix-blend-mode: normal; 
-    object-fit: cover; /* Fill */
+    object-fit: cover; 
 }
 .screenshot-mode .clean-card-details {
     background: transparent; padding: 0 4px; display: flex; flex-direction: column; height: auto;
@@ -327,22 +432,55 @@
     color: #cccccc; font-size: 0.8rem; font-weight: 400; line-height: 1.2;
     max-height: 2.4em; min-height: auto; text-align: center; margin-bottom: 0;
 }
+
+/* *** Light Mode Override for Screenshot Mode: Black Title & Price *** */
+body.light-mode .screenshot-mode .clean-card-title {
+    color: #000000;
+}
+body.light-mode .screenshot-mode .clean-card-price-row {
+    color: #000000;
+    text-shadow: none; /* Remove shadow to make black clear */
+}
+
 .screenshot-mode .shop-now-btn { display: none; }
 .screenshot-mode .card-discount-badge { top: 8px; left: 8px; font-size: 0.6rem; padding: 3px 6px; border-radius: 6px; }
 
 
 /* === 5. CATEGORIES === */
 .category-swiper { width: 100%; padding: 10px 5px; }
+
+/* *** CATALOGUE Heading Colors Override *** */
+.catalogue-header .section-title-new {
+    color: #ffffff !important; /* White in Dark Mode */
+}
+
+body.light-mode .catalogue-header .section-title-new {
+    color: #000000 !important; /* Black in Light Mode */
+}
+
 .category-circle-item { display: flex; flex-direction: column; align-items: center; gap: 8px; width: 100%; text-decoration: none; }
 .category-circle-img-box {
     width: 70px; height: 70px; border-radius: 50%; background: #1a1a1a;
     border: 2px solid #333; overflow: hidden; display: flex; align-items: center;
     justify-content: center; padding: 5px;
 }
+
+/* Light Mode Override */
+body.light-mode .category-circle-img-box {
+    background: #ffffff;
+    border-color: #ddd;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
 .category-circle-img { 
     width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
 }
 .category-circle-title { color: #ccc; font-size: 0.75rem; font-weight: 600; text-align: center; width: 100%; overflow: hidden; text-overflow: ellipsis; }
+
+/* *** Light Mode Override: Black Category Title *** */
+body.light-mode .category-circle-title {
+    color: #000000;
+}
 
 /* Swiper Config */
 .top-deals-swiper, .top-sellers-swiper-new, .discount-swiper, .under-799-swiper { padding: 0 4px !important; }

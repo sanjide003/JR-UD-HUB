@@ -1,4 +1,4 @@
-// index.js - Smart 3:4 Portrait Logic for Hero Slider
+// index.js - Hero Slider, Products & Unique Box Countdown Logic
 
 import { db } from './firebase-config.js';
 import { 
@@ -32,9 +32,6 @@ document.addEventListener("DOMContentLoaded", () => {
     setupScrollReveal();
 });
 
-/**
- * Scroll Reveal
- */
 function setupScrollReveal() {
     const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
     const observer = new IntersectionObserver((entries) => {
@@ -52,9 +49,6 @@ function setupScrollReveal() {
     });
 }
 
-/**
- * 1. HOME BANNER - Auto Hide
- */
 async function loadHomeBanner() {
     const bannerContainer = document.getElementById('home-top-banner');
     if (!bannerContainer) return;
@@ -65,7 +59,6 @@ async function loadHomeBanner() {
 
         if (docSnap.exists() && docSnap.data().homeBannerUrl && docSnap.data().homeBannerUrl.trim() !== '') {
             const bannerUrl = docSnap.data().homeBannerUrl;
-            // High quality for full width
             const optimizedUrl = optimizeImage(bannerUrl, 1500, 90); 
             bannerContainer.innerHTML = `<img src="${optimizedUrl}" alt="Offer Banner" loading="lazy">`;
             bannerContainer.style.display = 'block';
@@ -78,9 +71,6 @@ async function loadHomeBanner() {
     }
 }
 
-/**
- * 2. HERO TEXT - Auto Hide
- */
 async function loadHeroText() {
     const section = document.querySelector('.hero-text-section');
     if(!section) return;
@@ -92,9 +82,6 @@ async function loadHeroText() {
     }
 }
 
-/**
- * 3. HERO SLIDER - Smart Aspect Ratio (3:4) & Auto Hide
- */
 async function loadHeroSlider() {
     const sliderContainer = document.querySelector('.hero-section-new');
     const sliderWrapper = document.getElementById('hero-slider-wrapper');
@@ -105,26 +92,22 @@ async function loadHeroSlider() {
         const querySnapshot = await getDocs(q);
 
         if (querySnapshot.empty) {
-            sliderContainer.style.display = 'none'; // Hide if no slides
+            sliderContainer.style.display = 'none';
             return;
         }
 
-        sliderContainer.style.display = 'block'; // Show if slides exist
+        sliderContainer.style.display = 'block';
         sliderWrapper.innerHTML = '';
         
         let hasPortraitContent = false;
 
-        // Pre-scan: Check for Shorts or indicate portrait preference
         querySnapshot.forEach((doc) => {
             const s = doc.data();
-            // Check for YouTube Shorts
             if(s.type === 'video' && s.url.includes('shorts')) {
                 hasPortraitContent = true;
             }
-            // Optional: If you had a field for 'isPortrait', check that too
         });
 
-        // Apply 3:4 Aspect Ratio if portrait content exists
         if(hasPortraitContent) {
             sliderContainer.classList.add('aspect-portrait');
         } else {
@@ -196,7 +179,6 @@ async function loadHeroSlider() {
     }
 }
 
-// Video Controls
 function playActiveSlideVideo(swiper) {
     const slides = document.querySelectorAll('.hero-slider-new .swiper-slide');
     slides.forEach((slide) => {
@@ -238,26 +220,52 @@ function setupScrollVideoObserver() {
     observer.observe(sliderContainer);
 }
 
-// Product Sections (Standard Calls)
+// *** Product Sections ***
+
+// 1. TOP DEALS (Special Offer) with Box Countdown
 async function loadTopDeals() {
     const section = document.getElementById('top-deals-section');
-    const bannerContainer = document.getElementById('top-deals-banner-img');
+    const bannerContainer = document.querySelector('.special-offer-header'); 
+    const bannerImg = document.getElementById('top-deals-banner-img');
     const grid = document.getElementById('top-deals-grid');
     if (!section) return;
+    
     try {
         const settingsRef = doc(db, "settings", "homeLayout");
         const settingsSnap = await getDoc(settingsRef);
+        
         if (settingsSnap.exists() && settingsSnap.data().topDealsBanner) {
             const bannerUrl = optimizeImage(settingsSnap.data().topDealsBanner, 1000, 85);
-            if(bannerContainer) bannerContainer.src = bannerUrl;
+            if(bannerImg) bannerImg.src = bannerUrl;
+            
+            // *** COUNTDOWN LOGIC ***
+            if (settingsSnap.data().offerEndTime) {
+                const endTime = settingsSnap.data().offerEndTime;
+                if (endTime) {
+                    let timerOverlay = document.getElementById('offer-countdown');
+                    if (!timerOverlay) {
+                        timerOverlay = document.createElement('div');
+                        timerOverlay.id = 'offer-countdown';
+                        timerOverlay.className = 'countdown-overlay';
+                        bannerContainer.appendChild(timerOverlay);
+                    }
+                    startCountdown(endTime, timerOverlay);
+                }
+            } else {
+                const existing = document.getElementById('offer-countdown');
+                if(existing) existing.remove();
+            }
+            
             section.style.display = 'block'; 
         }
+        
         const q = query(collection(db, "products"), where("isTopDeal", "==", true), limit(10));
         const snapshot = await getDocs(q);
         if (snapshot.empty) {
             if (!settingsSnap.exists() || !settingsSnap.data().topDealsBanner) section.style.display = 'none';
             return;
         }
+        
         section.style.display = 'block';
         let slidesHTML = '';
         snapshot.forEach(doc => { slidesHTML += createNewStyleProductCard(doc.id, doc.data()); });
@@ -267,6 +275,41 @@ async function loadTopDeals() {
             breakpoints: { 640: { slidesPerView: 3.2 }, 1024: { slidesPerView: 5.2 } }
         });
     } catch (e) { console.error(e); }
+}
+
+// *** UPDATED TIMER FUNCTION: Separate Boxes ***
+function startCountdown(endTimeStr, displayElement) {
+    const endDate = new Date(endTimeStr).getTime();
+    
+    update();
+    const timerInterval = setInterval(update, 1000);
+
+    function update() {
+        const now = new Date().getTime();
+        const distance = endDate - now;
+
+        if (distance < 0) {
+            clearInterval(timerInterval);
+            displayElement.innerHTML = `<div class="countdown-box" style="background-color:#555; padding:6px 12px;"><span class="countdown-val">Expired</span></div>`;
+            displayElement.classList.add('expired');
+            return;
+        }
+
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        let html = '';
+        if (days > 0) {
+             html += `<div class="countdown-box"><span class="countdown-val">${days}</span><span class="countdown-unit">Day</span></div>`;
+        }
+        html += `<div class="countdown-box"><span class="countdown-val">${hours.toString().padStart(2, '0')}</span><span class="countdown-unit">Hr</span></div>`;
+        html += `<div class="countdown-box"><span class="countdown-val">${minutes.toString().padStart(2, '0')}</span><span class="countdown-unit">Min</span></div>`;
+        html += `<div class="countdown-box"><span class="countdown-val">${seconds.toString().padStart(2, '0')}</span><span class="countdown-unit">Sec</span></div>`;
+        
+        displayElement.innerHTML = html;
+    }
 }
 
 async function loadTopTrendyDeals() {
