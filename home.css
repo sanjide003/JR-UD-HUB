@@ -1,4 +1,4 @@
-/* home.css - Updated: Horizontal Scroll Categories (Premium Circle Look) */
+/* home.css - Reverted Design + New Circular Catalog */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -99,7 +99,7 @@ body.light-mode .hero-slider-new .swiper-slide { background: #e0e0e0; }
 body.light-mode .hero-text-section { color: #000000; }
 
 /* =============================================================
-   4. PRODUCT CARDS & SECTIONS
+   4. PRODUCT CARDS & SECTIONS (Reverted to Original Style)
    ============================================================= */
 
 .special-offer-wrapper { margin-bottom: 2rem; padding: 0 10px; }
@@ -159,7 +159,7 @@ body.light-mode .special-offer-banner-img { background-color: #fff; border: 1px 
 
 body.light-mode .product-slider-container { background-color: #ffffff; border-color: #e0e0e0; }
 
-/* --- STANDARD CARD STYLES --- */
+/* --- ORIGINAL CARD STYLES --- */
 .swiper-slide { height: auto; display: flex; box-sizing: border-box; padding: 0 3px; }
 
 .clean-card-wrapper {
