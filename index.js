@@ -1,4 +1,4 @@
-// index.js - Hero Slider, Products & Unique Box Countdown Logic
+// index.js - Updated: 3-Column Catalogue Grid
 
 import { db } from './firebase-config.js';
 import { 
@@ -222,7 +222,6 @@ function setupScrollVideoObserver() {
 
 // *** Product Sections ***
 
-// 1. TOP DEALS (Special Offer) with Box Countdown
 async function loadTopDeals() {
     const section = document.getElementById('top-deals-section');
     const bannerContainer = document.querySelector('.special-offer-header'); 
@@ -238,7 +237,6 @@ async function loadTopDeals() {
             const bannerUrl = optimizeImage(settingsSnap.data().topDealsBanner, 1000, 85);
             if(bannerImg) bannerImg.src = bannerUrl;
             
-            // *** COUNTDOWN LOGIC ***
             if (settingsSnap.data().offerEndTime) {
                 const endTime = settingsSnap.data().offerEndTime;
                 if (endTime) {
@@ -277,10 +275,8 @@ async function loadTopDeals() {
     } catch (e) { console.error(e); }
 }
 
-// *** UPDATED TIMER FUNCTION: Separate Boxes ***
 function startCountdown(endTimeStr, displayElement) {
     const endDate = new Date(endTimeStr).getTime();
-    
     update();
     const timerInterval = setInterval(update, 1000);
 
@@ -355,9 +351,12 @@ async function loadTopDiscounts() {
         grid.innerHTML = html;
         new Swiper('.discount-swiper', {
             slidesPerView: 2.2,
-            grid: { rows: 2, fill: 'row' },
-            spaceBetween: 10,
-            breakpoints: { 640: { slidesPerView: 3.2, grid: { rows: 2 } }, 1024: { slidesPerView: 5.2, grid: { rows: 2 } } }
+            grid: { rows: 2, fill: 'column' },
+            spaceBetween: 6,
+            breakpoints: { 
+                640: { slidesPerView: 3.2, grid: { rows: 2, fill: 'column' }, spaceBetween: 10 }, 
+                1024: { slidesPerView: 5.2, grid: { rows: 2, fill: 'column' }, spaceBetween: 15 } 
+            }
         });
     } catch(e) {}
 }
@@ -379,31 +378,36 @@ async function loadUnder799Products() {
     } catch (e) {}
 }
 
+// *** UPDATED: CATEGORIES (PREMIUM SQUARE GRID) ***
 async function loadHomeCategories() {
     const container = document.getElementById("category-grid-home");
     if (!container) return;
+    
+    // Grid Class applied in HTML/CSS
+    container.className = 'home-category-grid';
+    
     try {
         const catQuery = query(collection(db, "categories"), orderBy("name")); 
         const catSnapshot = await getDocs(catQuery); 
         if (catSnapshot.empty) { container.innerHTML = ''; return; }
+        
         let html = '';
         catSnapshot.forEach(doc => {
             const category = doc.data();
-            const imageUrl = optimizeImage(category.imageUrl || '', 150, 75);
+            const imageUrl = optimizeImage(category.imageUrl || '', 400, 400); // Quality Image
+            
+            // Square Card with Overlay Title
             html += `
-                <div class="swiper-slide">
-                    <a href="categories.html?filter=${doc.id}" class="category-circle-item">
-                        <div class="category-circle-img-box"><img src="${imageUrl}" alt="${category.name}" class="category-circle-img" loading="lazy"></div>
-                        <span class="category-circle-title">${category.name}</span>
-                    </a>
-                </div>`;
+                <a href="categories.html?filter=${doc.id}" class="home-category-card">
+                    <img src="${imageUrl}" alt="${category.name}" class="cat-card-img" loading="lazy">
+                    <div class="cat-card-overlay">
+                        <h3 class="cat-card-title">${category.name}</h3>
+                    </div>
+                </a>`;
         });
         container.innerHTML = html;
-        new Swiper('.category-swiper', {
-            slidesPerView: 4, spaceBetween: 10, freeMode: true,
-            breakpoints: { 640: { slidesPerView: 5 }, 1024: { slidesPerView: 7 } }
-        });
-    } catch (error) {}
+        // No Swiper initialization
+    } catch (error) { console.error(error); }
 }
 
 function createNewStyleProductCard(id, product, discountVal = null) {
