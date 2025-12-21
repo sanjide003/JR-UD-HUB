@@ -1,4 +1,4 @@
-/* home.css - Updated: Desktop Hero Height & Banner */
+/* home.css - Original Design with New Circular Catalogue */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -36,10 +36,9 @@ body.light-mode .home-top-banner {
 /* Desktop Banner Height Adjustment */
 @media (min-width: 769px) {
     .home-top-banner img {
-        max-height: 300px; /* Increased height for desktop */
+        max-height: 300px; 
     }
 }
-
 
 /* =========================================
    2. HERO SLIDER
@@ -68,13 +67,13 @@ body.light-mode .hero-section-new { background-color: #f0f0f0; }
 /* Desktop Hero Height */
 @media (min-width: 769px) {
     .hero-section-new {
-        height: 500px; /* Fixed height for desktop to prevent it from being too tall */
+        height: 500px; 
         aspect-ratio: auto;
     }
     .hero-section-new.aspect-portrait {
-        height: 600px; /* Taller for portrait mode on desktop if needed, or keep same */
+        height: 600px; 
         width: 100%;
-        max-width: 500px; /* Limit width for portrait videos on desktop */
+        max-width: 500px; 
         margin: 0 auto;
     }
 }
@@ -142,7 +141,6 @@ body.light-mode .hero-text-section { color: #000000; }
     object-fit: cover; padding: 3px; border-radius: 10px; background-color: #000;
 }
 
-/* Desktop Banner for Special Offer */
 @media (min-width: 769px) {
     .special-offer-banner-img { max-height: 250px; }
 }
@@ -253,91 +251,107 @@ body.light-mode .screenshot-mode .clean-card-price-row { color: #000000; text-sh
 .screenshot-mode .shop-now-btn { display: none; }
 .screenshot-mode .card-discount-badge { top: 6px; left: 6px; font-size: 0.6rem; padding: 2px 5px; border-radius: 4px; }
 
-/* === 5. CATALOGUE GRID (UNIFORM DESIGN) === */
+/* === 5. NEW CATALOGUE DESIGN (HORIZONTAL SCROLL CIRCLES) === */
 .catalogue-header .section-title-new { color: #ffffff !important; }
 body.light-mode .catalogue-header .section-title-new { color: #000000 !important; }
 
-/* Uniform Grid Container */
-.home-category-grid {
-    display: grid;
-    /* Mobile: 3 columns (small boxes) */
-    grid-template-columns: repeat(3, 1fr); 
-    gap: 10px; /* Small gap */
-    padding: 10px;
+/* Container */
+.category-slider-wrapper {
     width: 100%;
+    padding: 10px 0;
+    margin-bottom: 2rem;
 }
 
-/* Category Card (Uniform Size) */
-.home-category-card {
-    position: relative;
-    display: block;
+/* Swiper */
+.category-circle-swiper {
+    width: 100%;
+    padding: 15px 5px !important; /* Space for shadows */
+}
+
+.category-circle-slide {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    height: auto;
+    width: auto !important; /* Let Swiper handle width */
+}
+
+/* Link Wrapper */
+.cat-circle-link {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     text-decoration: none;
-    /* Slightly wider than tall (Rectangular) */
-    aspect-ratio: 1.3 / 1; 
-    background-color: #1a1a1a;
-    border: 1px solid #333;
-    border-radius: 8px;
+    gap: 10px;
+    width: 100%;
+    transition: transform 0.2s ease;
+}
+
+.cat-circle-link:active { transform: scale(0.95); }
+
+/* Image Box (Circle/Rounded) */
+.cat-circle-img-box {
+    width: 75px;
+    height: 75px;
+    border-radius: 50%; /* Perfect Circle */
+    background: var(--card-bg);
+    border: 2px solid var(--primary-gold);
+    padding: 3px; /* Gap between border and image */
     overflow: hidden;
-    transition: transform 0.2s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-/* Remove special spanning logic */
-.home-category-card:nth-child(n) {
-    grid-column: auto;
+/* Light Mode Overrides */
+body.light-mode .cat-circle-img-box {
+    background: #fff;
+    border-color: #2874f0; /* Blue in light mode */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-body.light-mode .home-category-card {
-    background-color: #fff;
-    border-color: #ddd;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-}
-
-.home-category-card:active { transform: scale(0.96); }
-
-/* Inner Content */
-.cat-card-img {
+.cat-circle-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    transition: transform 0.3s ease;
-    filter: brightness(0.8); /* Darken for text readability */
+    border-radius: 50%;
 }
 
-.home-category-card:hover .cat-card-img { 
-    transform: scale(1.05); 
-    filter: brightness(0.6);
+/* Hover Effect (Desktop) */
+@media (hover: hover) {
+    .cat-circle-link:hover .cat-circle-img-box {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(212, 175, 55, 0.4);
+        border-color: #fff;
+    }
+    body.light-mode .cat-circle-link:hover .cat-circle-img-box {
+        border-color: #000;
+    }
 }
 
-/* Title at Bottom */
-.cat-card-overlay {
-    position: absolute;
-    bottom: 0; left: 0; width: 100%;
-    background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
-    padding: 6px 3px;
-    display: flex; 
-    justify-content: center; 
-    align-items: flex-end;
-    pointer-events: none;
-}
-
-.cat-card-title {
-    color: #fff;
-    font-size: 0.75rem; /* Smaller font */
-    font-weight: 600;
-    text-transform: uppercase;
+/* Title */
+.cat-circle-title {
+    font-size: 0.8rem;
+    color: var(--text-color);
     text-align: center;
-    margin: 0;
-    letter-spacing: 0.5px;
+    font-weight: 600;
+    max-width: 85px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     line-height: 1.2;
-    text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+    letter-spacing: 0.3px;
 }
 
-/* Responsive: 4 cols on Tablet, 6 on Desktop */
-@media (min-width: 640px) {
-    .home-category-grid { grid-template-columns: repeat(4, 1fr); gap: 15px; }
-}
-@media (min-width: 1024px) {
-    .home-category-grid { grid-template-columns: repeat(6, 1fr); }
+body.light-mode .cat-circle-title { color: #333; }
+
+/* Responsive Adjustments */
+@media (min-width: 768px) {
+    .cat-circle-img-box { width: 100px; height: 100px; padding: 4px; }
+    .cat-circle-title { font-size: 0.95rem; max-width: 110px; margin-top: 5px; }
 }
 
 /* Swiper Config for Products */
