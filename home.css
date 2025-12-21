@@ -1,4 +1,4 @@
-/* home.css - Original Design with New Circular Catalogue */
+/* home.css - Fixed: Top Discount Grid for Desktop */
 
 /* =========================================
    1. HOME TOP BANNER
@@ -358,16 +358,23 @@ body.light-mode .cat-circle-title { color: #333; }
 .top-deals-swiper, .top-sellers-swiper-new, .discount-swiper, .under-799-swiper { padding: 0 4px !important; }
 .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 48% !important; margin-right: 4px !important; }
 
-/* Discount Swiper */
+/* Discount Swiper - Fixed Grid Spacing for Desktop */
 .discount-swiper { padding-bottom: 5px !important; height: 460px !important; }
 .discount-swiper .swiper-slide { height: calc((100% - 6px) / 2) !important; margin-top: 0; }
 
 @media (min-width: 640px) {
     .discount-swiper { height: 520px !important; }
+    /* Tablet Spacing: 10px */
+    .discount-swiper .swiper-slide { height: calc((100% - 10px) / 2) !important; }
+    
     .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 32% !important; }
 }
+
 @media (min-width: 1024px) {
+    /* Desktop Spacing: 15px - Increased Height to prevent overflow */
     .discount-swiper { height: 600px !important; }
+    .discount-swiper .swiper-slide { height: calc((100% - 15px) / 2) !important; }
+    
     .top-deals-swiper .swiper-slide, .top-sellers-swiper-new .swiper-slide, .under-799-swiper .swiper-slide { width: 19% !important; }
 }
 
