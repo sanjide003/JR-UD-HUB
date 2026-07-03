@@ -155,3 +155,16 @@ await admin.auth().setCustomUserClaims(user.uid, null);
 ```
 
 Claim മാറ്റിയ ശേഷം user logout/login ചെയ്യണം.
+
+## 8. Admin login ചെയ്തിട്ടും add/edit/delete നടക്കാത്തപ്പോൾ പരിശോധിക്കേണ്ടത്
+
+1. **Rules publish ചെയ്തിട്ടുണ്ടോ?** Repo-യിലെ `firestore.rules` file മാത്രം മാറ്റിയാൽ മതി വരില്ല. Firebase Console → Firestore → Rules-ൽ paste ചെയ്ത് **Publish** ചെയ്യണം.
+2. **Admin document ID ശരിയാണോ?** `admins` collection-ൽ document ID ആയി Firebase Auth **UID** വേണം. Email കൊടുത്താൽ permission കിട്ടില്ല.
+3. **active field boolean ആണോ?** `active` field type `boolean` ആയിരിക്കണം; value `true`. String ആയി `"true"` കൊടുത്താൽ admin access കിട്ടില്ല.
+4. **അതേ Firebase project തന്നെയാണോ?** App-ലെ `firebase-config.js` ഉള്ള project-ലാണ് Authentication user/admins document/rules എല്ലാം വേണം.
+5. **Logout/login ചെയ്തോ?** Custom claim ഉപയോഗിക്കുന്നുവെങ്കിൽ token refresh വേണം. Firestore admin document method-ൽ സാധാരണ ഉടൻ work ചെയ്യും, പക്ഷേ logout/login ചെയ്താൽ ഉറപ്പാകും.
+6. **Browser console permission error നോക്കുക.** `Missing or insufficient permissions` കണ്ടാൽ admin document/rules publish ആണ് ആദ്യം പരിശോധിക്കേണ്ടത്.
+
+## 9. Admin അല്ലാത്തവർ admin page കാണുന്നത് തടയൽ
+
+Admin UI ഇപ്പോൾ login ചെയ്ത user-നെ തുറക്കുന്നതിനു മുൻപ് admin permission check ചെയ്യും. User-ന് custom claim `admin: true` അല്ലെങ്കിൽ `admins/{uid}.active == true` ഇല്ലെങ്കിൽ admin panel കാണിക്കാതെ sign out ചെയ്യും.

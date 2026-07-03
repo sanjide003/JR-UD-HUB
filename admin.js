@@ -3,7 +3,8 @@ import {
     getAuth, 
     signInWithEmailAndPassword, 
     onAuthStateChanged, 
-    signOut 
+    signOut,
+    getIdTokenResult
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { 
     getFirestore, 
@@ -45,6 +46,8 @@ const adminSideNav = document.getElementById("admin-side-nav");
 const adminNavOverlay = document.getElementById("admin-nav-overlay");
 const adminNavLinks = document.querySelector(".admin-nav-links");
 const themeToggleBtn = document.getElementById("theme-toggle-btn");
+const togglePasswordVisibilityBtn = document.getElementById("toggle-password-visibility");
+const loginPasswordInput = document.getElementById("login-password");
 
 const pageContents = document.querySelectorAll(".page-content");
 const navLinks = document.querySelectorAll(".nav-link");
@@ -120,16 +123,49 @@ loginForm.addEventListener("submit", async (e) => {
 logoutButtons.forEach(btn => btn.addEventListener("click", () => signOut(auth)));
 document.querySelector('.full-width-logout').addEventListener('click', () => signOut(auth));
 
-onAuthStateChanged(auth, (user) => {
+async function userHasAdminAccess(user) {
+    if (!user || user.isAnonymous) return false;
+    try {
+        const token = await getIdTokenResult(user, true);
+        if (token.claims.admin === true) return true;
+
+        const adminSnap = await getDoc(doc(db, "admins", user.uid));
+        return adminSnap.exists() && adminSnap.data().active === true;
+    } catch (error) {
+        console.error("Admin permission check failed:", error);
+        return false;
+    }
+}
+
+onAuthStateChanged(auth, async (user) => {
     if (user && !user.isAnonymous) {
-        loginSection.style.display = "none";
-        adminPanel.style.display = "block";
-        loadInitialData();
+        const isAdmin = await userHasAdminAccess(user);
+        if (isAdmin) {
+            loginSection.style.display = "none";
+            adminPanel.style.display = "block";
+            loadInitialData();
+        } else {
+            loginSection.style.display = "block";
+            adminPanel.style.display = "none";
+            showStatus(null, "This account does not have admin permission. Add admins/{uid} with active=true or set admin custom claim.", true);
+            await signOut(auth);
+        }
     } else {
         loginSection.style.display = "block";
         adminPanel.style.display = "none";
     }
 });
+
+
+if (togglePasswordVisibilityBtn && loginPasswordInput) {
+    togglePasswordVisibilityBtn.addEventListener('click', () => {
+        const shouldShow = loginPasswordInput.type === 'password';
+        loginPasswordInput.type = shouldShow ? 'text' : 'password';
+        togglePasswordVisibilityBtn.setAttribute('aria-label', shouldShow ? 'Hide password' : 'Show password');
+        togglePasswordVisibilityBtn.setAttribute('aria-pressed', String(shouldShow));
+        togglePasswordVisibilityBtn.textContent = shouldShow ? '🙈' : '👁';
+    });
+}
 
 // Theme
 if(localStorage.getItem('admin-theme') === 'light') document.body.classList.add('light-mode');

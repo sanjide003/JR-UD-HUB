@@ -916,3 +916,37 @@ body.light-mode .logo-preview-box img { background: #fff; }
 .image-upload-status.uploading { color: #60a5fa; }
 .image-upload-status.success { color: #22c55e; }
 .image-upload-status.error { color: #ef4444; }
+
+
+.password-input-wrapper {
+    align-items: center;
+    display: flex;
+    position: relative;
+}
+
+.password-input-wrapper input {
+    padding-right: 3rem;
+    width: 100%;
+}
+
+.password-toggle-btn {
+    align-items: center;
+    background: transparent;
+    border: 0;
+    color: var(--text-secondary);
+    cursor: pointer;
+    display: flex;
+    font-size: 1rem;
+    height: 100%;
+    justify-content: center;
+    padding: 0 0.8rem;
+    position: absolute;
+    right: 0;
+    top: 0;
+}
+
+.password-toggle-btn:hover,
+.password-toggle-btn:focus-visible {
+    color: var(--primary-gold);
+    outline: none;
+}
