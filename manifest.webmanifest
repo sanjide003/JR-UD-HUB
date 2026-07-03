@@ -1,0 +1,19 @@
+{
+  "name": "JR-UD-HUB",
+  "short_name": "JR-UD-HUB",
+  "description": "JR-UD-HUB shopping app",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#0f0f0f",
+  "theme_color": "#d4af37",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

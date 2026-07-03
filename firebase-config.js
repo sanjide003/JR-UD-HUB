@@ -8,6 +8,7 @@ import {
     enableIndexedDbPersistence, 
     setLogLevel 
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { getStorage } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCePcVE_BTiFuYXAApNmbMKHdkhQ9Ay_F4",
@@ -23,6 +24,7 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const storage = getStorage(app);
 
 // *** Offline Persistence (Cache) Enable ചെയ്യുന്നു ***
 // ഇത് ഡാറ്റ ഫോണിൽ സേവ് ചെയ്യും. പിന്നീട് വരുമ്പോൾ സെർവറിൽ നിന്ന് എടുക്കാതെ ഇവിടെ നിന്ന് എടുക്കും.
@@ -37,4 +39,4 @@ enableIndexedDbPersistence(db).catch((err) => {
 
 setLogLevel('Silent'); 
 
-export { db, auth };
+export { db, auth, storage };

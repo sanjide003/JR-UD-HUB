@@ -21,7 +21,8 @@ import {
     serverTimestamp,
     orderBy
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { db, auth } from './firebase-config.js';
+import { getDownloadURL, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
+import { db, auth, storage } from './firebase-config.js';
 import { optimizeImage } from './common.js'; 
 
 const ICONS = {
@@ -77,6 +78,8 @@ let currentFeaturedQuery = null;
 let currentTopDealsQuery = null;
 let deleteInfo = { id: null, type: null }; 
 let allProductsCache = []; 
+const MAX_PRODUCT_IMAGE_SIZE_BYTES = 200 * 1024;
+
 
 // Helper Functions
 function showStatus(ignored, message, isError = true) {
@@ -518,17 +521,51 @@ function setupImageUploader(cid, bid) {
     if(btn) btn.onclick = () => addImageInput(cid);
     document.getElementById(cid).addEventListener('click', e => { if(e.target.closest('.btn-remove-image')) e.target.closest('.image-url-item').remove(); });
     document.getElementById(cid).addEventListener('input', e => { 
-        if(e.target.tagName==='INPUT') {
+        if(e.target.matches('input[type="text"]')) {
             const url = e.target.value;
             e.target.closest('.image-url-item').querySelector('img').src = optimizeImage(url, 100);
+        }
+    });
+    document.getElementById(cid).addEventListener('change', e => {
+        if(e.target.matches('input[type="file"]')) {
+            uploadProductImageFile(e.target.files?.[0], e.target, e.target.closest('.image-url-item'));
         }
     });
 }
 function addImageInput(cid, val='') {
     const prevUrl = val ? optimizeImage(val, 100) : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="image-url-item"><img src="${prevUrl}" class="image-preview-item"><input type="text" value="${val}" placeholder="URL"><button type="button" class="btn-remove-image">${ICONS.x}</button></div>`);
+    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="image-url-item"><img src="${prevUrl}" class="image-preview-item"><div class="image-input-stack"><input type="text" value="${val}" placeholder="Paste image URL or upload below"><label class="image-upload-label"><span>Upload image (max 200 KB)</span><input type="file" accept="image/*"></label><small class="image-upload-status">Only images up to 200 KB will upload.</small></div><button type="button" class="btn-remove-image">${ICONS.x}</button></div>`);
 }
-function getImageUrlsFromUploader(cid) { return Array.from(document.getElementById(cid).querySelectorAll('input')).map(i=>i.value.trim()).filter(v=>v); }
+function getImageUrlsFromUploader(cid) { return Array.from(document.getElementById(cid).querySelectorAll('input[type="text"]')).map(i=>i.value.trim()).filter(v=>v); }
+async function uploadProductImageFile(file, input, item) {
+    if (!file) return;
+    if (file.size > MAX_PRODUCT_IMAGE_SIZE_BYTES) {
+        input.value = '';
+        showStatus(null, `Image size must be 200 KB or less. Selected: ${(file.size / 1024).toFixed(1)} KB`, true);
+        return;
+    }
+    const status = item.querySelector('.image-upload-status');
+    const textInput = item.querySelector('input[type="text"]');
+    try {
+        status.textContent = 'Uploading...';
+        status.className = 'image-upload-status uploading';
+        const safeName = file.name.replace(/[^a-z0-9._-]/gi, '-').toLowerCase();
+        const storageRef = ref(storage, `product-images/${Date.now()}-${safeName}`);
+        await uploadBytes(storageRef, file, { contentType: file.type });
+        const url = await getDownloadURL(storageRef);
+        textInput.value = url;
+        item.querySelector('img').src = optimizeImage(url, 100);
+        status.textContent = `Uploaded (${(file.size / 1024).toFixed(1)} KB)`;
+        status.className = 'image-upload-status success';
+        showStatus(null, 'Image uploaded successfully', false);
+    } catch (error) {
+        status.textContent = 'Upload failed';
+        status.className = 'image-upload-status error';
+        showStatus(null, error.message || 'Image upload failed', true);
+    } finally {
+        input.value = '';
+    }
+}
 function populateImageUploader(cid, urls) { const c=document.getElementById(cid); c.innerHTML=''; (urls&&urls.length?urls:['']).forEach(u=>addImageInput(cid, u)); }
 
 function setupMoreLinksUploader(cid, bid) {

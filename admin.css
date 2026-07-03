@@ -884,3 +884,35 @@ body.light-mode .logo-preview-box img { background: #fff; }
         font-size: 0.9rem;
     }
 }
+.image-input-stack {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.image-upload-label {
+    align-items: center;
+    background: rgba(212, 175, 55, 0.08);
+    border: 1px dashed var(--primary-gold);
+    border-radius: 8px;
+    color: var(--primary-gold);
+    cursor: pointer;
+    display: flex;
+    font-size: 0.85rem;
+    justify-content: center;
+    padding: 0.55rem;
+}
+
+.image-upload-label input {
+    display: none;
+}
+
+.image-upload-status {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+
+.image-upload-status.uploading { color: #60a5fa; }
+.image-upload-status.success { color: #22c55e; }
+.image-upload-status.error { color: #ef4444; }
