@@ -2,27 +2,8 @@ rules_version = '2';
 
 service firebase.storage {
   match /b/{bucket}/o {
-    function isSignedIn() {
-      return request.auth != null;
-    }
-
-    function isAdmin() {
-      return isSignedIn() && request.auth.token.admin == true;
-    }
-
-    function isValidProductImage() {
-      return request.resource != null
-        && request.resource.size <= 200 * 1024
-        && request.resource.contentType.matches('image/.*');
-    }
-
-    match /product-images/{fileName} {
-      allow read: if isSignedIn();
-      allow create: if isAdmin() && isValidProductImage();
-      allow update: if false;
-      allow delete: if isAdmin();
-    }
-
+    // This project does not use Firebase Storage for product images.
+    // Images chosen in admin are converted to data URLs and saved in Firestore.
     match /{allPaths=**} {
       allow read, write: if false;
     }

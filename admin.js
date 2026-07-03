@@ -21,8 +21,7 @@ import {
     serverTimestamp,
     orderBy
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
-import { getDownloadURL, ref, uploadBytes } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-storage.js";
-import { db, auth, storage } from './firebase-config.js';
+import { db, auth } from './firebase-config.js';
 import { optimizeImage } from './common.js'; 
 
 const ICONS = {
@@ -79,6 +78,7 @@ let currentTopDealsQuery = null;
 let deleteInfo = { id: null, type: null }; 
 let allProductsCache = []; 
 const MAX_PRODUCT_IMAGE_SIZE_BYTES = 200 * 1024;
+const MAX_PRODUCT_IMAGES_PER_PRODUCT = 3;
 
 
 // Helper Functions
@@ -407,6 +407,7 @@ addProductForm.addEventListener("submit", async (e) => {
     try {
         const imgs = getImageUrlsFromUploader('product-image-list-container');
         if(!imgs.length) throw new Error("Add at least 1 image");
+        if(imgs.length > MAX_PRODUCT_IMAGES_PER_PRODUCT) throw new Error(`Maximum ${MAX_PRODUCT_IMAGES_PER_PRODUCT} images allowed per product in free mode`);
         await addDoc(collection(db, "products"), {
             categoryId: document.getElementById("product-category").value,
             name: document.getElementById("product-name").value,
@@ -518,7 +519,13 @@ setupImagePreview('top-deals-banner-input', 'top-deals-banner-preview');
 
 function setupImageUploader(cid, bid) {
     const btn = document.getElementById(bid);
-    if(btn) btn.onclick = () => addImageInput(cid);
+    if(btn) btn.onclick = () => {
+        if(document.getElementById(cid).children.length >= MAX_PRODUCT_IMAGES_PER_PRODUCT) {
+            showStatus(null, `Maximum ${MAX_PRODUCT_IMAGES_PER_PRODUCT} images allowed per product in free mode`, true);
+            return;
+        }
+        addImageInput(cid);
+    };
     document.getElementById(cid).addEventListener('click', e => { if(e.target.closest('.btn-remove-image')) e.target.closest('.image-url-item').remove(); });
     document.getElementById(cid).addEventListener('input', e => { 
         if(e.target.matches('input[type="text"]')) {
@@ -528,43 +535,58 @@ function setupImageUploader(cid, bid) {
     });
     document.getElementById(cid).addEventListener('change', e => {
         if(e.target.matches('input[type="file"]')) {
-            uploadProductImageFile(e.target.files?.[0], e.target, e.target.closest('.image-url-item'));
+            convertProductImageFileToDataUrl(e.target.files?.[0], e.target, e.target.closest('.image-url-item'));
         }
     });
 }
 function addImageInput(cid, val='') {
     const prevUrl = val ? optimizeImage(val, 100) : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="image-url-item"><img src="${prevUrl}" class="image-preview-item"><div class="image-input-stack"><input type="text" value="${val}" placeholder="Paste image URL or upload below"><label class="image-upload-label"><span>Upload image (max 200 KB)</span><input type="file" accept="image/*"></label><small class="image-upload-status">Only images up to 200 KB will upload.</small></div><button type="button" class="btn-remove-image">${ICONS.x}</button></div>`);
+    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="image-url-item"><img src="${prevUrl}" class="image-preview-item"><div class="image-input-stack"><input type="text" value="${val}" placeholder="Paste image URL or upload below"><label class="image-upload-label"><span>Choose image (max 200 KB)</span><input type="file" accept="image/*"></label><small class="image-upload-status">Only images up to 200 KB will be saved as an image link.</small></div><button type="button" class="btn-remove-image">${ICONS.x}</button></div>`);
 }
 function getImageUrlsFromUploader(cid) { return Array.from(document.getElementById(cid).querySelectorAll('input[type="text"]')).map(i=>i.value.trim()).filter(v=>v); }
-async function uploadProductImageFile(file, input, item) {
+function convertProductImageFileToDataUrl(file, input, item) {
     if (!file) return;
+    const status = item.querySelector('.image-upload-status');
+    const textInput = item.querySelector('input[type="text"]');
+
+    if (!file.type.startsWith('image/')) {
+        input.value = '';
+        status.textContent = 'Please choose an image file.';
+        status.className = 'image-upload-status error';
+        showStatus(null, 'Please choose an image file.', true);
+        return;
+    }
+
     if (file.size > MAX_PRODUCT_IMAGE_SIZE_BYTES) {
         input.value = '';
+        status.textContent = `Blocked: ${(file.size / 1024).toFixed(1)} KB is above 200 KB.`;
+        status.className = 'image-upload-status error';
         showStatus(null, `Image size must be 200 KB or less. Selected: ${(file.size / 1024).toFixed(1)} KB`, true);
         return;
     }
-    const status = item.querySelector('.image-upload-status');
-    const textInput = item.querySelector('input[type="text"]');
-    try {
-        status.textContent = 'Uploading...';
-        status.className = 'image-upload-status uploading';
-        const safeName = file.name.replace(/[^a-z0-9._-]/gi, '-').toLowerCase();
-        const storageRef = ref(storage, `product-images/${Date.now()}-${safeName}`);
-        await uploadBytes(storageRef, file, { contentType: file.type });
-        const url = await getDownloadURL(storageRef);
-        textInput.value = url;
-        item.querySelector('img').src = optimizeImage(url, 100);
-        status.textContent = `Uploaded (${(file.size / 1024).toFixed(1)} KB)`;
+
+    const reader = new FileReader();
+    status.textContent = 'Preparing image link...';
+    status.className = 'image-upload-status uploading';
+
+    reader.onload = () => {
+        const dataUrl = reader.result;
+        textInput.value = dataUrl;
+        item.querySelector('img').src = dataUrl;
+        status.textContent = `Ready (${(file.size / 1024).toFixed(1)} KB). Save the product to store it.`;
         status.className = 'image-upload-status success';
-        showStatus(null, 'Image uploaded successfully', false);
-    } catch (error) {
-        status.textContent = 'Upload failed';
-        status.className = 'image-upload-status error';
-        showStatus(null, error.message || 'Image upload failed', true);
-    } finally {
+        showStatus(null, 'Image is ready. Click Save/Add Product to store it.', false);
         input.value = '';
-    }
+    };
+
+    reader.onerror = () => {
+        status.textContent = 'Could not read image';
+        status.className = 'image-upload-status error';
+        showStatus(null, 'Could not read this image file.', true);
+        input.value = '';
+    };
+
+    reader.readAsDataURL(file);
 }
 function populateImageUploader(cid, urls) { const c=document.getElementById(cid); c.innerHTML=''; (urls&&urls.length?urls:['']).forEach(u=>addImageInput(cid, u)); }
 
@@ -634,6 +656,7 @@ async function openEditModal(id, type) {
                 } else {
                     const imgs = getImageUrlsFromUploader('edit-image-list');
                     if(!imgs.length) throw new Error("At least 1 image required");
+                    if(imgs.length > MAX_PRODUCT_IMAGES_PER_PRODUCT) throw new Error(`Maximum ${MAX_PRODUCT_IMAGES_PER_PRODUCT} images allowed per product in free mode`);
                     updateData = {
                         name: document.getElementById('edit-name').value, categoryId: document.getElementById('edit-cat').value,
                         price: Number(document.getElementById('edit-price').value), mrp: Number(document.getElementById('edit-mrp').value),
