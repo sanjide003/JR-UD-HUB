@@ -6,8 +6,18 @@ service cloud.firestore {
       return request.auth != null;
     }
 
-    function isAdmin() {
+    function hasAdminClaim() {
       return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    function hasAdminDocument() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+
+    function isAdmin() {
+      return hasAdminClaim() || hasAdminDocument();
     }
 
     function isValidUrl(value) {
@@ -102,6 +112,12 @@ service cloud.firestore {
     function isValidSettingsDocument() {
       return request.resource.data.keys().size() <= 60
         && request.resource.data.keys().all(key, key is string && key.size() <= 80);
+    }
+
+
+    match /admins/{adminUid} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == adminUid);
+      allow create, update, delete: if isAdmin();
     }
 
     match /products/{productId} {

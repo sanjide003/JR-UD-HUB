@@ -1,7 +1,6 @@
 # JR-UD-HUB Admin Setup Guide
 
-ഈ project-ൽ admin access secure ആക്കുന്നത് Firebase Authentication + Firebase custom claim (`admin: true`) ഉപയോഗിച്ചാണ്.
-Firestore rules write permission നൽകുന്നത് `request.auth.token.admin == true` ഉള്ള users-ന് മാത്രം ആണ്.
+ഈ project-ൽ admin access secure ആക്കുന്നത് Firebase Authentication ഉപയോഗിച്ചാണ്. Admin ആയി തിരിച്ചറിയാൻ രണ്ട് മാർഗമുണ്ട്: Firebase custom claim (`admin: true`) അല്ലെങ്കിൽ Firestore `admins/{uid}` document-ൽ `active: true`.
 
 ## 1. Firebase Console-ൽ admin user create ചെയ്യുക
 
@@ -14,8 +13,40 @@ Firestore rules write permission നൽകുന്നത് `request.auth.token
 
 ## 2. Admin custom claim set ചെയ്യുക
 
-Firestore rules അനുസരിച്ച് login മാത്രം മതിയല്ല. ആ user-ന് `admin: true` custom claim വേണം.
-ഇത് frontend-ൽ നിന്ന് ചെയ്യാൻ പാടില്ല. Firebase Admin SDK ഉപയോഗിക്കുന്ന trusted machine/backend/Cloud Function വഴി ചെയ്യണം.
+Firestore rules അനുസരിച്ച് login മാത്രം മതിയല്ല. ആ user-ന് custom claim (`admin: true`) അല്ലെങ്കിൽ Firestore `admins/{uid}` document (`active: true`) വേണം. Custom claim frontend-ൽ നിന്ന് ചെയ്യാൻ പാടില്ല; Firebase Admin SDK ഉപയോഗിക്കുന്ന trusted machine/backend/Cloud Function വഴി ചെയ്യണം.
+
+
+## 2A. Firebase Console Data tab വഴി admin add ചെയ്യാമോ?
+
+അതെ, ചെയ്യാം. ഈ repo-യിലെ Firestore rules ഇപ്പോൾ രണ്ട് രീതിയിൽ admin തിരിച്ചറിയും:
+
+1. Firebase Auth custom claim: `admin: true`
+2. Firestore `admins/{uid}` document-ൽ `active: true`
+
+Console Data tab വഴി admin add ചെയ്യാൻ:
+
+1. Firebase Console → **Authentication** → **Users** തുറക്കുക.
+2. Admin ആക്കേണ്ട user-ന്റെ **UID** copy ചെയ്യുക. Email അല്ല; UID ആണ് document ID ആയി വേണം.
+3. Firebase Console → **Firestore Database** → **Data** തുറക്കുക.
+4. **Start collection** click ചെയ്യുക.
+5. Collection ID: `admins`
+6. Document ID: Authentication-ൽ നിന്ന് copy ചെയ്ത admin user **UID** paste ചെയ്യുക.
+7. താഴെ fields add ചെയ്യുക:
+
+| Field | Type | Value |
+| --- | --- | --- |
+| `active` | boolean | `true` |
+| `email` | string | admin email |
+| `name` | string | admin name |
+| `role` | string | `admin` |
+| `createdAt` | timestamp | current time |
+
+8. **Save** click ചെയ്യുക.
+9. Admin user logout ചെയ്ത് വീണ്ടും login ചെയ്യുക.
+
+> ശ്രദ്ധിക്കുക: `admins` collection-ൽ document ID ആയി email കൊടുക്കരുത്. Firebase Auth UID തന്നെയാണ് കൊടുക്കേണ്ടത്.
+
+ഈ method ഉപയോഗിച്ചാൽ Admin SDK script ആവശ്യമില്ല. പക്ഷേ കൂടുതൽ secure production setup-ൽ custom claim method ആണ് best.
 
 ### Option A: Local one-time script ഉപയോഗിച്ച് set ചെയ്യുക
 
