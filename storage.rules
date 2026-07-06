@@ -1,0 +1,11 @@
+rules_version = '2';
+
+service firebase.storage {
+  match /b/{bucket}/o {
+    // This project does not use Firebase Storage for product images.
+    // Images chosen in admin are converted to data URLs and saved in Firestore.
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

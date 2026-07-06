@@ -1,0 +1,151 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function hasAdminClaim() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    function hasAdminDocument() {
+      return isSignedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+        && get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.active == true;
+    }
+
+    function isAdmin() {
+      return hasAdminClaim() || hasAdminDocument();
+    }
+
+    function isValidUrl(value) {
+      return value == null || value is string && value.size() <= 2048;
+    }
+
+    function hasOnlyProductFields() {
+      return request.resource.data.keys().hasOnly([
+        'categoryId',
+        'name',
+        'specification',
+        'mrp',
+        'price',
+        'description',
+        'featured',
+        'isTopDeal',
+        'images',
+        'moreLinks',
+        'createdAt',
+        'updatedAt'
+      ]);
+    }
+
+    function hasRequiredProductFields() {
+      return request.resource.data.keys().hasAll([
+        'categoryId',
+        'name',
+        'price',
+        'images'
+      ]);
+    }
+
+    function isValidProduct() {
+      return hasOnlyProductFields()
+        && hasRequiredProductFields()
+        && request.resource.data.categoryId is string
+        && request.resource.data.categoryId.size() > 0
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 160
+        && (!('specification' in request.resource.data) || request.resource.data.specification is string && request.resource.data.specification.size() <= 10000)
+        && (!('description' in request.resource.data) || request.resource.data.description is string && request.resource.data.description.size() <= 10000)
+        && (!('mrp' in request.resource.data) || request.resource.data.mrp is number && request.resource.data.mrp >= 0)
+        && request.resource.data.price is number
+        && request.resource.data.price >= 0
+        && (!('featured' in request.resource.data) || request.resource.data.featured is bool)
+        && (!('isTopDeal' in request.resource.data) || request.resource.data.isTopDeal is bool)
+        && request.resource.data.images is list
+        && request.resource.data.images.size() > 0
+        && request.resource.data.images.size() <= 3
+        && request.resource.data.images.all(image, image is string && image.size() <= 280000)
+        && (!('moreLinks' in request.resource.data) || request.resource.data.moreLinks is list && request.resource.data.moreLinks.size() <= 20);
+    }
+
+    function hasOnlyCategoryFields() {
+      return request.resource.data.keys().hasOnly([
+        'name',
+        'imageUrl',
+        'createdAt',
+        'updatedAt'
+      ]);
+    }
+
+    function isValidCategory() {
+      return hasOnlyCategoryFields()
+        && request.resource.data.name is string
+        && request.resource.data.name.size() > 0
+        && request.resource.data.name.size() <= 120
+        && request.resource.data.imageUrl is string
+        && request.resource.data.imageUrl.size() <= 2048;
+    }
+
+    function hasOnlyHeroSlideFields() {
+      return request.resource.data.keys().hasOnly([
+        'url',
+        'type',
+        'order',
+        'createdAt',
+        'updatedAt'
+      ]);
+    }
+
+    function isValidHeroSlide() {
+      return hasOnlyHeroSlideFields()
+        && request.resource.data.url is string
+        && request.resource.data.url.size() <= 2048
+        && request.resource.data.type in ['image', 'video']
+        && request.resource.data.order is number
+        && request.resource.data.order >= 0;
+    }
+
+    function isValidSettingsDocument() {
+      return request.resource.data.keys().size() <= 60
+        && request.resource.data.keys().all(key, key is string && key.size() <= 80);
+    }
+
+
+    match /admins/{adminUid} {
+      allow read: if isAdmin() || (isSignedIn() && request.auth.uid == adminUid);
+      allow create, update, delete: if isAdmin();
+    }
+
+    match /products/{productId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidProduct();
+      allow delete: if isAdmin();
+    }
+
+    match /categories/{categoryId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidCategory();
+      allow delete: if isAdmin();
+    }
+
+    match /heroSlides/{slideId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidHeroSlide();
+      allow delete: if isAdmin();
+    }
+
+    match /settings/{settingId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidSettingsDocument();
+      allow delete: if isAdmin();
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

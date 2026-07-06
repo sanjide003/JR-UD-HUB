@@ -3,7 +3,8 @@ import {
     getAuth, 
     signInWithEmailAndPassword, 
     onAuthStateChanged, 
-    signOut 
+    signOut,
+    getIdTokenResult
 } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
 import { 
     getFirestore, 
@@ -45,6 +46,8 @@ const adminSideNav = document.getElementById("admin-side-nav");
 const adminNavOverlay = document.getElementById("admin-nav-overlay");
 const adminNavLinks = document.querySelector(".admin-nav-links");
 const themeToggleBtn = document.getElementById("theme-toggle-btn");
+const togglePasswordVisibilityBtn = document.getElementById("toggle-password-visibility");
+const loginPasswordInput = document.getElementById("login-password");
 
 const pageContents = document.querySelectorAll(".page-content");
 const navLinks = document.querySelectorAll(".nav-link");
@@ -77,6 +80,9 @@ let currentFeaturedQuery = null;
 let currentTopDealsQuery = null;
 let deleteInfo = { id: null, type: null }; 
 let allProductsCache = []; 
+const MAX_PRODUCT_IMAGE_SIZE_BYTES = 200 * 1024;
+const MAX_PRODUCT_IMAGES_PER_PRODUCT = 3;
+
 
 // Helper Functions
 function showStatus(ignored, message, isError = true) {
@@ -117,16 +123,49 @@ loginForm.addEventListener("submit", async (e) => {
 logoutButtons.forEach(btn => btn.addEventListener("click", () => signOut(auth)));
 document.querySelector('.full-width-logout').addEventListener('click', () => signOut(auth));
 
-onAuthStateChanged(auth, (user) => {
+async function userHasAdminAccess(user) {
+    if (!user || user.isAnonymous) return false;
+    try {
+        const token = await getIdTokenResult(user, true);
+        if (token.claims.admin === true) return true;
+
+        const adminSnap = await getDoc(doc(db, "admins", user.uid));
+        return adminSnap.exists() && adminSnap.data().active === true;
+    } catch (error) {
+        console.error("Admin permission check failed:", error);
+        return false;
+    }
+}
+
+onAuthStateChanged(auth, async (user) => {
     if (user && !user.isAnonymous) {
-        loginSection.style.display = "none";
-        adminPanel.style.display = "block";
-        loadInitialData();
+        const isAdmin = await userHasAdminAccess(user);
+        if (isAdmin) {
+            loginSection.style.display = "none";
+            adminPanel.style.display = "block";
+            loadInitialData();
+        } else {
+            loginSection.style.display = "block";
+            adminPanel.style.display = "none";
+            showStatus(null, "This account does not have admin permission. Add admins/{uid} with active=true or set admin custom claim.", true);
+            await signOut(auth);
+        }
     } else {
         loginSection.style.display = "block";
         adminPanel.style.display = "none";
     }
 });
+
+
+if (togglePasswordVisibilityBtn && loginPasswordInput) {
+    togglePasswordVisibilityBtn.addEventListener('click', () => {
+        const shouldShow = loginPasswordInput.type === 'password';
+        loginPasswordInput.type = shouldShow ? 'text' : 'password';
+        togglePasswordVisibilityBtn.setAttribute('aria-label', shouldShow ? 'Hide password' : 'Show password');
+        togglePasswordVisibilityBtn.setAttribute('aria-pressed', String(shouldShow));
+        togglePasswordVisibilityBtn.textContent = shouldShow ? '🙈' : '👁';
+    });
+}
 
 // Theme
 if(localStorage.getItem('admin-theme') === 'light') document.body.classList.add('light-mode');
@@ -404,6 +443,7 @@ addProductForm.addEventListener("submit", async (e) => {
     try {
         const imgs = getImageUrlsFromUploader('product-image-list-container');
         if(!imgs.length) throw new Error("Add at least 1 image");
+        if(imgs.length > MAX_PRODUCT_IMAGES_PER_PRODUCT) throw new Error(`Maximum ${MAX_PRODUCT_IMAGES_PER_PRODUCT} images allowed per product in free mode`);
         await addDoc(collection(db, "products"), {
             categoryId: document.getElementById("product-category").value,
             name: document.getElementById("product-name").value,
@@ -515,20 +555,75 @@ setupImagePreview('top-deals-banner-input', 'top-deals-banner-preview');
 
 function setupImageUploader(cid, bid) {
     const btn = document.getElementById(bid);
-    if(btn) btn.onclick = () => addImageInput(cid);
+    if(btn) btn.onclick = () => {
+        if(document.getElementById(cid).children.length >= MAX_PRODUCT_IMAGES_PER_PRODUCT) {
+            showStatus(null, `Maximum ${MAX_PRODUCT_IMAGES_PER_PRODUCT} images allowed per product in free mode`, true);
+            return;
+        }
+        addImageInput(cid);
+    };
     document.getElementById(cid).addEventListener('click', e => { if(e.target.closest('.btn-remove-image')) e.target.closest('.image-url-item').remove(); });
     document.getElementById(cid).addEventListener('input', e => { 
-        if(e.target.tagName==='INPUT') {
+        if(e.target.matches('input[type="text"]')) {
             const url = e.target.value;
             e.target.closest('.image-url-item').querySelector('img').src = optimizeImage(url, 100);
+        }
+    });
+    document.getElementById(cid).addEventListener('change', e => {
+        if(e.target.matches('input[type="file"]')) {
+            convertProductImageFileToDataUrl(e.target.files?.[0], e.target, e.target.closest('.image-url-item'));
         }
     });
 }
 function addImageInput(cid, val='') {
     const prevUrl = val ? optimizeImage(val, 100) : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="image-url-item"><img src="${prevUrl}" class="image-preview-item"><input type="text" value="${val}" placeholder="URL"><button type="button" class="btn-remove-image">${ICONS.x}</button></div>`);
+    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="image-url-item"><img src="${prevUrl}" class="image-preview-item"><div class="image-input-stack"><input type="text" value="${val}" placeholder="Paste image URL or upload below"><label class="image-upload-label"><span>Choose image (max 200 KB)</span><input type="file" accept="image/*"></label><small class="image-upload-status">Only images up to 200 KB will be saved as an image link.</small></div><button type="button" class="btn-remove-image">${ICONS.x}</button></div>`);
 }
-function getImageUrlsFromUploader(cid) { return Array.from(document.getElementById(cid).querySelectorAll('input')).map(i=>i.value.trim()).filter(v=>v); }
+function getImageUrlsFromUploader(cid) { return Array.from(document.getElementById(cid).querySelectorAll('input[type="text"]')).map(i=>i.value.trim()).filter(v=>v); }
+function convertProductImageFileToDataUrl(file, input, item) {
+    if (!file) return;
+    const status = item.querySelector('.image-upload-status');
+    const textInput = item.querySelector('input[type="text"]');
+
+    if (!file.type.startsWith('image/')) {
+        input.value = '';
+        status.textContent = 'Please choose an image file.';
+        status.className = 'image-upload-status error';
+        showStatus(null, 'Please choose an image file.', true);
+        return;
+    }
+
+    if (file.size > MAX_PRODUCT_IMAGE_SIZE_BYTES) {
+        input.value = '';
+        status.textContent = `Blocked: ${(file.size / 1024).toFixed(1)} KB is above 200 KB.`;
+        status.className = 'image-upload-status error';
+        showStatus(null, `Image size must be 200 KB or less. Selected: ${(file.size / 1024).toFixed(1)} KB`, true);
+        return;
+    }
+
+    const reader = new FileReader();
+    status.textContent = 'Preparing image link...';
+    status.className = 'image-upload-status uploading';
+
+    reader.onload = () => {
+        const dataUrl = reader.result;
+        textInput.value = dataUrl;
+        item.querySelector('img').src = dataUrl;
+        status.textContent = `Ready (${(file.size / 1024).toFixed(1)} KB). Save the product to store it.`;
+        status.className = 'image-upload-status success';
+        showStatus(null, 'Image is ready. Click Save/Add Product to store it.', false);
+        input.value = '';
+    };
+
+    reader.onerror = () => {
+        status.textContent = 'Could not read image';
+        status.className = 'image-upload-status error';
+        showStatus(null, 'Could not read this image file.', true);
+        input.value = '';
+    };
+
+    reader.readAsDataURL(file);
+}
 function populateImageUploader(cid, urls) { const c=document.getElementById(cid); c.innerHTML=''; (urls&&urls.length?urls:['']).forEach(u=>addImageInput(cid, u)); }
 
 function setupMoreLinksUploader(cid, bid) {
@@ -597,6 +692,7 @@ async function openEditModal(id, type) {
                 } else {
                     const imgs = getImageUrlsFromUploader('edit-image-list');
                     if(!imgs.length) throw new Error("At least 1 image required");
+                    if(imgs.length > MAX_PRODUCT_IMAGES_PER_PRODUCT) throw new Error(`Maximum ${MAX_PRODUCT_IMAGES_PER_PRODUCT} images allowed per product in free mode`);
                     updateData = {
                         name: document.getElementById('edit-name').value, categoryId: document.getElementById('edit-cat').value,
                         price: Number(document.getElementById('edit-price').value), mrp: Number(document.getElementById('edit-mrp').value),
