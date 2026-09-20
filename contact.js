@@ -16,13 +16,14 @@ const addressEl = document.getElementById('contact-address-main');
 const socialIconsEl = document.getElementById('contact-social-icons');
 
 // പേജ് ലോഡ് ആവുമ്പോൾ
-document.addEventListener("DOMContentLoaded", async () => {
+export async function initContactPage() {
     // 1. ഹെഡർ, ഫൂട്ടർ, ഫ്ലോട്ടിംഗ് ബട്ടണുകൾ എന്നിവ ലോഡ് ചെയ്യുന്നു
     await loadSiteSettings(); 
     
     // 2. കോൺടാക്റ്റ് വിവരങ്ങൾ ലോഡ് ചെയ്യുന്നു
     loadContactDetails();
-});
+}
+document.addEventListener("DOMContentLoaded", initContactPage, { once: true });
 
 /**
  * ഫയർബേസിൽ നിന്ന് കോൺടാക്റ്റ് വിവരങ്ങളും സോഷ്യൽ ലിങ്കുകളും ലോഡ് ചെയ്യുന്നു

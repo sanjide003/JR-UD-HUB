@@ -1,6 +1,7 @@
 import { loadSiteSettings } from './common.js';
 
-document.addEventListener("DOMContentLoaded", async () => {
+export async function initAboutPage() {
     // ഹെഡറും ഫൂട്ടറും ലോഡ് ചെയ്യാനും, ലോഡിംഗ് സ്ക്രീൻ മാറ്റാനും ഇത് വിളിക്കുന്നു
     await loadSiteSettings();
-});
+}
+document.addEventListener("DOMContentLoaded", initAboutPage, { once: true });

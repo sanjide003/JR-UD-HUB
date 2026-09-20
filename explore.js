@@ -58,7 +58,7 @@ function linkify(text) {
     });
 }
 
-document.addEventListener("DOMContentLoaded", async () => {
+export async function initExplorePage() {
     await loadSiteSettings(); 
     const settings = await fetchSiteSettings();
     if (settings && settings.homeBannerUrl) {
@@ -68,7 +68,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     createSentinel();
     await loadProducts();     
     setupScrollObserver();
-});
+}
+document.addEventListener("DOMContentLoaded", initExplorePage, { once: true });
 
 function createSentinel() {
     if (document.getElementById('scroll-sentinel')) return;

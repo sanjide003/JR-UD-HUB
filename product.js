@@ -61,13 +61,14 @@ function linkify(text) {
 }
 
 // 2. Initialize
-document.addEventListener("DOMContentLoaded", async () => {
+export async function initProductPage() {
     await loadAppTitle(); 
     await loadSiteSettings();
     await loadOrderSettings(); 
     loadProductDetails();
     setupModalListeners(); 
-});
+}
+document.addEventListener("DOMContentLoaded", initProductPage, { once: true });
 
 async function loadAppTitle() {
     try {
