@@ -21,7 +21,7 @@
                     </div>
                     <div class="form-group">
                         <label for="login-password">Password <span class="required-star">*</span></label>
-                        <input type="password" id="login-password" required>
+                        <div class="password-input"><input type="password" id="login-password" required><button type="button" id="toggle-login-password" aria-label="Show password" title="Show password">👁</button></div>
                     </div>
                     <button type="submit" class="btn btn-save mt-large" id="login-button">
                         <span class="btn-text">Login</span>
@@ -130,7 +130,7 @@
                     <button type="submit" class="btn btn-save mt-large" id="save-top-deals-banner-btn">Save Banner & Timer</button>
                 </form>
                 <div class="data-list-section" style="margin-top: 2rem;">
-                    <h3>Manage Special Offer Products</h3>
+                    <h3>Manage Special Offer Products</h3><div class="list-controls"><div class="form-group"><label>Search listed products</label><input type="search" id="top-deal-list-search" placeholder="Search Special Offer..."></div><div class="form-group"><label>Filter by category</label><select id="top-deal-filter-category"><option value="all">All Categories</option></select></div></div>
                     <div class="featured-search-container">
                         <label>Search & Add to Special Offer</label>
                         <div class="search-wrapper">
@@ -151,7 +151,7 @@
             <div id="page-existing-products" class="page-content">
                 <div class="data-list-section">
                     <h2>Existing Products</h2>
-                    <div class="form-group" style="max-width: 300px;"><label>Filter</label><select id="product-filter-category"><option value="all">All Categories</option></select></div>
+                    <div class="list-controls"><div class="form-group"><label>Search</label><input type="search" id="product-search-input" placeholder="Search products..."></div><div class="form-group"><label>Filter by category</label><select id="product-filter-category"><option value="all">All Categories</option></select></div></div>
                     <div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Actions</th></tr></thead><tbody id="products-list-body"></tbody></table></div>
                 </div>
             </div>
@@ -160,7 +160,7 @@
             <div id="page-featured-products" class="page-content">
                 <div class="data-list-section">
                     <h2>Top Trendy Products</h2>
-                    <div class="featured-search-container"><label>Search & Add to Trendy</label><div class="search-wrapper"><input type="text" id="featured-product-search" placeholder="Search..."><div id="featured-search-results" class="search-results-dropdown"></div></div></div>
+                    <div class="list-controls"><div class="form-group"><label>Search listed products</label><input type="search" id="featured-list-search" placeholder="Search Top Trendy..."></div><div class="form-group"><label>Filter by category</label><select id="featured-filter-category"><option value="all">All Categories</option></select></div></div><div class="featured-search-container"><label>Search & Add to Trendy</label><div class="search-wrapper"><input type="text" id="featured-product-search" placeholder="Search..."><div id="featured-search-results" class="search-results-dropdown"></div></div></div>
                     <div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Image</th><th>Name</th><th>Price</th><th>Actions</th></tr></thead><tbody id="featured-products-list-body"></tbody></table></div>
                 </div>
             </div>
@@ -175,14 +175,14 @@
             </div>
 
             <div id="page-existing-categories" class="page-content">
-                <div class="data-list-section"><h2>Existing Categories</h2><div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Image</th><th>Name</th><th>Actions</th></tr></thead><tbody id="categories-list-body"></tbody></table></div></div>
+                <div class="data-list-section"><h2>Existing Categories</h2><div class="list-controls"><div class="form-group"><label>Search</label><input type="search" id="category-search-input" placeholder="Search categories..."></div><div class="form-group"><label>Filter</label><select id="category-filter"><option value="all">All categories</option><option value="a-m">A–M</option><option value="n-z">N–Z</option></select></div></div><div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Image</th><th>Name</th><th>Actions</th></tr></thead><tbody id="categories-list-body"></tbody></table></div></div>
             </div>
             
             <!-- Hero Slides -->
             <div id="page-manage-hero" class="page-content">
                 <form id="add-hero-slide-form" class="form-section">
                     <h2>Add New Hero Slide</h2>
-                    <div class="form-grid"><div class="form-group"><label id="hero-slide-source-label">Video URL</label><p id="hero-slide-image-hint" class="image-upload-hint" hidden>Recommended ratio: 16:9 (landscape) or 3:4 (portrait). Images larger than 50 KB are compressed automatically.</p><div id="hero-slide-url"></div></div><div class="form-group"><label>Type</label><select id="hero-slide-type" required><option value="video">Video</option><option value="image">Image</option></select></div><div class="form-group"><label>Order</label><input type="number" id="hero-slide-order" value="1" required></div></div>
+                    <div class="form-grid"><div class="form-group"><label>Slide Type</label><select id="hero-slide-type" required><option value="">Select image or video...</option><option value="video">Video</option><option value="image">Image</option></select></div><div class="form-group"><label id="hero-slide-source-label">Select a slide type first</label><p id="hero-slide-image-hint" class="image-upload-hint" hidden>Recommended ratio: 16:9 (landscape) or 3:4 (portrait). Images larger than 50 KB are compressed automatically.</p><div id="hero-slide-url"></div></div><div class="form-group"><label>Order</label><input type="number" id="hero-slide-order" value="1" required></div></div>
                     <button type="submit" class="btn btn-save mt-large" id="add-hero-slide-button"><span class="btn-text">Add Slide</span><div class="btn-loader loader-small" style="display: none;"></div></button>
                 </form>
                 <div class="data-list-section"><h2>Hero Slides</h2><div class="data-table-wrapper"><table class="data-table"><thead><tr><th>Preview</th><th>Type</th><th>Order</th><th>Source</th><th>Actions</th></tr></thead><tbody id="hero-slides-list-body"></tbody></table></div></div>

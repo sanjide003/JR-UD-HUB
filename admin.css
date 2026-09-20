@@ -939,3 +939,12 @@ body.light-mode .logo-preview-box img { background: #fff; }
 .image-url-item .btn-remove-image {
     margin-left: auto;
 }
+
+.password-input { position: relative; }
+.password-input input { padding-right: 48px; }
+.password-input button {
+    position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
+    border: 0; background: transparent; cursor: pointer; font-size: 1.1rem; padding: 6px;
+}
+.list-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 300px)); gap: 14px; margin: 0 0 16px; }
+@media (max-width: 600px) { .list-controls { grid-template-columns: 1fr; } }

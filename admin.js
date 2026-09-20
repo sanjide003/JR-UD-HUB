@@ -78,6 +78,31 @@ let currentTopDealsQuery = null;
 let deleteInfo = { id: null, type: null }; 
 let allProductsCache = []; 
 
+function filterTableRows(bodyId, searchId, categoryId) {
+    const term = (document.getElementById(searchId)?.value || '').toLowerCase().trim();
+    const category = document.getElementById(categoryId)?.value || 'all';
+    document.querySelectorAll(`#${bodyId} tr[data-name]`).forEach(row => {
+        row.style.display = ((!term || row.dataset.name.includes(term)) && (category === 'all' || row.dataset.category === category)) ? '' : 'none';
+    });
+}
+function filterCategoryRows() {
+    const term = document.getElementById('category-search-input').value.toLowerCase().trim();
+    const range = document.getElementById('category-filter').value;
+    document.querySelectorAll('#categories-list-body tr[data-name]').forEach(row => {
+        const first = row.dataset.name.charAt(0);
+        const inRange = range === 'all' || (range === 'a-m' ? first >= 'a' && first <= 'm' : first >= 'n' && first <= 'z');
+        row.style.display = ((!term || row.dataset.name.includes(term)) && inRange) ? '' : 'none';
+    });
+}
+function setupListControls() {
+    [['product-search-input', 'products-list-body', 'product-filter-category'], ['featured-list-search', 'featured-products-list-body', 'featured-filter-category'], ['top-deal-list-search', 'top-deals-list-body', 'top-deal-filter-category']].forEach(([search, body, category]) => {
+        document.getElementById(search).addEventListener('input', () => filterTableRows(body, search, category));
+        document.getElementById(category).addEventListener('change', () => filterTableRows(body, search, category));
+    });
+    document.getElementById('category-search-input').addEventListener('input', filterCategoryRows);
+    document.getElementById('category-filter').addEventListener('change', filterCategoryRows);
+}
+
 // Helper Functions
 function showStatus(ignored, message, isError = true) {
     const toast = document.createElement('div');
@@ -103,6 +128,17 @@ function enableButton(btn, text) {
     if(txt) txt.textContent = text;
     if(load) load.style.display = 'none';
 }
+
+// Password visibility
+const toggleLoginPassword = document.getElementById('toggle-login-password');
+toggleLoginPassword.addEventListener('click', () => {
+    const password = document.getElementById('login-password');
+    const visible = password.type === 'text';
+    password.type = visible ? 'password' : 'text';
+    toggleLoginPassword.textContent = visible ? '👁' : '🙈';
+    toggleLoginPassword.setAttribute('aria-label', visible ? 'Show password' : 'Hide password');
+    toggleLoginPassword.title = visible ? 'Show password' : 'Hide password';
+});
 
 // Auth
 loginForm.addEventListener("submit", async (e) => {
@@ -166,6 +202,7 @@ function loadInitialData() {
     setupSingleImageUploader('setting-home-banner-url');
     setupSingleImageUploader('top-deals-banner-input');
     setupHeroSlideSource();
+    setupListControls();
 }
 
 // Settings
@@ -274,12 +311,15 @@ async function loadTopDealsConfig() {
                 const p = d.data();
                 const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50) : '';
                 const row = document.createElement('tr');
-                row.innerHTML = `<td data-label="Image"><img src="${thumb}"></td><td data-label="Name">${p.name}</td><td data-label="Price">₹${p.price}</td><td data-label="Actions"><button class="btn btn-remove-featured" data-id="${d.id}" style="background-color:#ef4444;">${ICONS.x} Remove</button></td>`;
+                row.dataset.name = (p.name || '').toLowerCase();
+            row.dataset.category = p.categoryId || '';
+            row.innerHTML = `<td data-label="Image"><img src="${thumb}"></td><td data-label="Name">${p.name}</td><td data-label="Price">₹${p.price}</td><td data-label="Actions"><button class="btn btn-remove-featured" data-id="${d.id}" style="background-color:#ef4444;">${ICONS.x} Remove</button></td>`;
                 row.querySelector('.btn-remove-featured').addEventListener('click', async () => {
                     if(confirm("Remove from Top Deals?")) { await updateDoc(doc(db, "products", d.id), { isTopDeal: false }); showStatus(null, "Removed", false); }
                 });
                 topDealsListBody.appendChild(row);
             });
+            filterTableRows('top-deals-list-body', 'top-deal-list-search', 'top-deal-filter-category');
         });
     } catch(e) { console.error(e); }
 }
@@ -327,13 +367,17 @@ function loadCategories() {
         categoriesListBody.innerHTML = '';
         const sel = document.getElementById("product-category");
         const fil = document.getElementById("product-filter-category");
+        const featuredFil = document.getElementById("featured-filter-category");
+        const topDealFil = document.getElementById("top-deal-filter-category");
         sel.innerHTML = '<option value="">Select...</option>';
-        fil.innerHTML = '<option value="all">All</option>';
+        fil.innerHTML = '<option value="all">All Categories</option>';
+        featuredFil.innerHTML = '<option value="all">All Categories</option>';
+        topDealFil.innerHTML = '<option value="all">All Categories</option>';
         snap.forEach(d => {
             const c = d.data();
             const imgUrl = optimizeImage(c.imageUrl, 50, 60);
             categoriesListBody.innerHTML += `
-                <tr>
+                <tr data-name="${(c.name || '').toLowerCase()}">
                     <td data-label="Image"><img src="${imgUrl}" alt="${c.name}"></td>
                     <td data-label="Name">${c.name}</td>
                     <td data-label="Actions">
@@ -342,8 +386,9 @@ function loadCategories() {
                     </td>
                 </tr>`;
             const opt = `<option value="${d.id}">${c.name}</option>`;
-            sel.innerHTML += opt; fil.innerHTML += opt;
+            sel.innerHTML += opt; fil.innerHTML += opt; featuredFil.innerHTML += opt; topDealFil.innerHTML += opt;
         });
+        filterCategoryRows();
     });
 }
 addCategoryForm.addEventListener("submit", async (e) => {
@@ -371,7 +416,7 @@ function loadProducts(catId = "all") {
             const p = d.data();
             const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50, 60) : '';
             productsListBody.innerHTML += `
-                <tr>
+                <tr data-name="${(p.name || '').toLowerCase()}" data-category="${p.categoryId || ''}">
                     <td data-label="Image"><img src="${thumb}"></td>
                     <td data-label="Name">${p.name} ${p.featured ? ICONS.star : ''}</td>
                     <td data-label="Price">₹${p.price}</td>
@@ -381,6 +426,7 @@ function loadProducts(catId = "all") {
                     </td>
                 </tr>`;
         });
+        filterTableRows('products-list-body', 'product-search-input', 'product-filter-category');
     });
 }
 document.getElementById("product-filter-category").addEventListener("change", (e) => loadProducts(e.target.value));
@@ -451,12 +497,15 @@ function loadFeaturedProducts() {
             const p = d.data();
             const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50) : '';
             const row = document.createElement('tr');
+            row.dataset.name = (p.name || '').toLowerCase();
+            row.dataset.category = p.categoryId || '';
             row.innerHTML = `<td data-label="Image"><img src="${thumb}"></td><td data-label="Name">${p.name}</td><td data-label="Price">₹${p.price}</td><td data-label="Actions"><button class="btn btn-remove-featured" data-id="${d.id}">${ICONS.x} Remove</button></td>`;
             row.querySelector('.btn-remove-featured').addEventListener('click', async () => {
                 if(confirm("Remove?")) { await updateDoc(doc(db, "products", d.id), { featured: false }); showStatus(null, "Removed", false); }
             });
             featuredProductsListBody.appendChild(row);
         });
+        filterTableRows('featured-products-list-body', 'featured-list-search', 'featured-filter-category');
     });
 }
 
@@ -529,16 +578,12 @@ async function compressImage(file) {
     throw new Error('This image could not be compressed below 50 KB. Please choose a smaller image.');
 }
 
-function imageUploaderMarkup(required = false) {
-    return `<label class="image-file-control"><span>Select image</span><input type="file" accept="image/*" capture="environment" ${required ? 'required' : ''}></label><div class="uploaded-image-preview" aria-live="polite"></div><span class="image-upload-status">No image selected</span>`;
+function imageUploaderMarkup() {
+    return `<label class="image-file-control"><span>Choose from gallery</span><input type="file" accept="image/*" data-image-source="gallery"></label><label class="image-file-control"><span>Use camera</span><input type="file" accept="image/*" capture="environment" data-image-source="camera"></label><div class="uploaded-image-preview" aria-live="polite"></div><span class="image-upload-status">No image selected</span>`;
 }
 
-function setupSingleImageUploader(id) {
-    const container = document.getElementById(id);
-    if (!container || container.dataset.ready) return;
-    container.dataset.ready = 'true';
-    container.innerHTML = imageUploaderMarkup(container.dataset.required === 'true');
-    container.querySelector('input[type="file"]').addEventListener('change', async event => {
+function bindImageUploadInputs(container) {
+    container.querySelectorAll('input[type="file"]').forEach(input => input.addEventListener('change', async event => {
         const file = event.target.files[0];
         if (!file) return;
         try {
@@ -549,7 +594,15 @@ function setupSingleImageUploader(id) {
             event.target.value = '';
             showStatus(null, error.message);
         } finally { setUploaderBusy(container, false); }
-    });
+    }));
+}
+
+function setupSingleImageUploader(id) {
+    const container = document.getElementById(id);
+    if (!container || container.dataset.ready) return;
+    container.dataset.ready = 'true';
+    container.innerHTML = imageUploaderMarkup();
+    bindImageUploadInputs(container);
 }
 
 function setUploaderBusy(container, busy) {
@@ -575,20 +628,14 @@ function setupHeroSlideSource() {
 function renderHeroSlideSource() {
     const isImage = document.getElementById('hero-slide-type').value === 'image';
     const source = document.getElementById('hero-slide-url');
-    document.getElementById('hero-slide-source-label').textContent = isImage ? 'Hero Image' : 'Video URL';
+    const selectedType = document.getElementById('hero-slide-type').value;
+    document.getElementById('hero-slide-source-label').textContent = isImage ? 'Hero Image' : (selectedType === 'video' ? 'Video URL' : 'Select a slide type first');
     document.getElementById('hero-slide-image-hint').hidden = !isImage;
-    source.innerHTML = isImage ? imageUploaderMarkup(true) : '<input type="url" id="hero-slide-video-url" placeholder="https://…" required>';
-    if (isImage) {
-        source.querySelector('input[type="file"]').addEventListener('change', async event => {
-            const file = event.target.files[0]; if (!file) return;
-            try { setUploaderBusy(source, true); setUploaderValue(source, await compressImage(file), file.size > MAX_IMAGE_BYTES ? 'Compressed to under 50 KB' : `${Math.ceil(file.size / 1024)} KB`); }
-            catch (error) { event.target.value = ''; showStatus(null, error.message); }
-            finally { setUploaderBusy(source, false); }
-        });
-    }
+    source.innerHTML = isImage ? imageUploaderMarkup() : (isImage === false && document.getElementById('hero-slide-type').value ? '<input type="url" id="hero-slide-video-url" placeholder="https://…" required>' : '<span class="image-upload-status">Choose Image or Video above.</span>');
+    if (isImage) bindImageUploadInputs(source);
 }
-function getHeroSlideSource() { return document.getElementById('hero-slide-type').value === 'image' ? (document.getElementById('hero-slide-url').dataset.imageValue || '') : document.getElementById('hero-slide-video-url').value.trim(); }
-function resetHeroSlideSource() { document.getElementById('hero-slide-type').value = 'video'; renderHeroSlideSource(); }
+function getHeroSlideSource() { const type = document.getElementById('hero-slide-type').value; if (type === 'image') return document.getElementById('hero-slide-url').dataset.imageValue || ''; return document.getElementById('hero-slide-video-url')?.value.trim() || ''; }
+function resetHeroSlideSource() { document.getElementById('hero-slide-type').value = ''; renderHeroSlideSource(); }
 
 function setupImageUploader(cid, bid) {
     const btn = document.getElementById(bid);
@@ -602,12 +649,7 @@ function addImageInput(cid, val='') {
     item.innerHTML = `${imageUploaderMarkup(false)}<button type="button" class="btn-remove-image" aria-label="Remove image">${ICONS.x}</button>`;
     document.getElementById(cid).appendChild(item);
     if (val) setUploaderValue(item, val, 'Saved image');
-    item.querySelector('input[type="file"]').addEventListener('change', async event => {
-        const file = event.target.files[0]; if (!file) return;
-        try { setUploaderBusy(item, true); setUploaderValue(item, await compressImage(file), file.size > MAX_IMAGE_BYTES ? 'Compressed to under 50 KB' : `${Math.ceil(file.size / 1024)} KB`); }
-        catch (error) { event.target.value = ''; showStatus(null, error.message); }
-        finally { setUploaderBusy(item, false); }
-    });
+    bindImageUploadInputs(item);
 }
 function getImageUrlsFromUploader(cid) { return Array.from(document.getElementById(cid).querySelectorAll('.image-url-item')).map(item => item.dataset.imageValue || '').filter(Boolean); }
 function populateImageUploader(cid, urls) { const c=document.getElementById(cid); c.innerHTML=''; (urls&&urls.length?urls:['']).forEach(u=>addImageInput(cid, u)); }
