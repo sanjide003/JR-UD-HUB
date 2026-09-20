@@ -1,0 +1,82 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // The public storefront signs visitors in anonymously. Any non-anonymous
+    // Firebase Authentication account is treated as the administrator account
+    // used by admin.html. For multiple staff accounts, replace this with a
+    // custom-claim check such as request.auth.token.admin == true.
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return signedIn()
+        && request.auth.token.firebase.sign_in_provider != 'anonymous';
+    }
+
+    function isPublicCounterUpdate() {
+      return signedIn()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(['likeCount', 'ratingCount'])
+        && (!('likeCount' in request.resource.data)
+          || (request.resource.data.likeCount is int
+            && request.resource.data.likeCount >= 0))
+        && (!('ratingCount' in request.resource.data)
+          || (request.resource.data.ratingCount is int
+            && request.resource.data.ratingCount >= 0));
+    }
+
+    match /products/{productId} {
+      allow read: if true;
+      allow create, delete: if isAdmin();
+      // Public users can only update the aggregate counters used by likes and
+      // ratings; product details and Base64 image fields remain admin-only.
+      allow update: if isAdmin() || isPublicCounterUpdate();
+
+      match /likes/{userId} {
+        allow read: if true;
+        allow create: if signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.keys().hasOnly(['timestamp']);
+        allow delete: if signedIn() && request.auth.uid == userId;
+        allow update: if false;
+      }
+
+      match /ratings/{userId} {
+        allow read: if true;
+        allow create: if signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.keys().hasOnly(['rating', 'timestamp'])
+          && request.resource.data.rating is int
+          && request.resource.data.rating >= 1
+          && request.resource.data.rating <= 5;
+        allow update: if signedIn()
+          && request.auth.uid == userId
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['rating', 'timestamp'])
+          && request.resource.data.rating is int
+          && request.resource.data.rating >= 1
+          && request.resource.data.rating <= 5;
+        allow delete: if signedIn() && request.auth.uid == userId;
+      }
+    }
+
+    match /categories/{categoryId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /heroSlides/{slideId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    // global, homeLayout, and orderConfig are read by the public pages but
+    // edited only from the authenticated admin panel.
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+  }
+}
