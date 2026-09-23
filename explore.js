@@ -1,11 +1,10 @@
 import { collection, getDocs, query, limit, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { db } from './firebase-config.js';
-import { loadSiteSettings, optimizeImage } from './common.js';
-import { addToCart } from './cart.js';
+import { fetchSiteSettings, loadSiteSettings, optimizeImage } from './common.js';
 
-const DISCLAIMER_EN = 'AI-generated responses may not always be correct.';
-const DISCLAIMER_ML = 'AI സൃഷ്ടിക്കുന്ന മറുപടികൾ എല്ലായ്പ്പോഴും കൃത്യമാകണമെന്നില്ല.';
 let products = [];
+let activeProduct = null;
+let companyName = 'JR-UD-HUB';
 
 const escapeHTML = value => String(value || '').replace(/[&<>'"]/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', "'":'&#39;', '"':'&quot;' })[char]);
 const isMalayalam = text => /[\u0D00-\u0D7F]/.test(text) || /\b(venam|undo|entha|parayu|kanikku|protein|diet)\b/i.test(text);
@@ -17,11 +16,13 @@ export async function initExplorePage() {
     const input = document.getElementById('chat-input');
     if (!messages || !form || !input) return;
     await loadSiteSettings();
+    const settings = await fetchSiteSettings();
+    companyName = settings?.logoText || companyName;
+    document.getElementById('chatbot-brand').textContent = companyName;
     addAssistantMessage(welcomeMessage(), []);
     loadProducts();
     form.addEventListener('submit', event => { event.preventDefault(); submitQuestion(input.value); });
-    document.querySelectorAll('[data-prompt]').forEach(button => button.addEventListener('click', () => submitQuestion(button.dataset.prompt)));
-    document.getElementById('clear-chat-btn')?.addEventListener('click', () => { messages.innerHTML = ''; addAssistantMessage(welcomeMessage(), []); input.focus(); });
+    document.getElementById('clear-chat-btn')?.addEventListener('click', () => { activeProduct = null; messages.innerHTML = ''; addAssistantMessage(welcomeMessage(), []); input.focus(); });
     input.addEventListener('input', () => { input.style.height = 'auto'; input.style.height = `${Math.min(input.scrollHeight, 130)}px`; });
 }
 document.addEventListener('DOMContentLoaded', initExplorePage, { once: true });
@@ -40,7 +41,7 @@ async function loadProducts() {
 }
 
 function welcomeMessage() {
-    return 'Hello! ഞാൻ JR-UD-HUB Shopping Assistant ആണ്.\n\nProducts, price, ingredients, protein, specification, diet suggestions എന്നിവയെക്കുറിച്ച് മലയാളത്തിലോ English-ലോ ചോദിക്കാം.';
+    return `Hello! ഞാൻ ${companyName} Assistant ആണ്.\n\nഞങ്ങളുടെ products-ുമായി ബന്ധപ്പെട്ട എന്ത് ചോദ്യവും മലയാളത്തിലോ English-ലോ അയക്കാം.`;
 }
 
 async function submitQuestion(question) {
@@ -59,7 +60,8 @@ async function submitQuestion(question) {
 function answerQuestion(question) {
     const malayalam = isMalayalam(question);
     const q = normalise(question);
-    const matches = rankProducts(q);
+    const matchingQuestion = activeProduct ? `${normalise(activeProduct.name)} ${q}` : q;
+    const matches = rankProducts(matchingQuestion);
     const product = matches[0];
     const wantsProtein = /protein|പ്രോട്ടീൻ/.test(q);
     const wantsIngredients = /ingredient|ingredients|ചേരുവ|ഇൻഗ്രീഡിയൻറ്/.test(q);
@@ -114,13 +116,13 @@ function productDetailsAnswer(product, protein, ingredients, specs, malayalam) {
 
 function addUserMessage(text) { addMessage('user', 'You', escapeHTML(text)); }
 function addAssistantMessage(text, recommendedProducts) {
-    addMessage('assistant', 'JR-UD-HUB Assistant', escapeHTML(text), recommendedProducts);
+    addMessage('assistant', `${companyName} Assistant`, escapeHTML(text), recommendedProducts);
 }
 function addMessage(role, label, text, recommendedProducts = []) {
     const messages = document.getElementById('chat-messages');
     const element = document.createElement('article');
     element.className = `chat-message ${role}`;
-    element.innerHTML = `<span class="message-label">${label}</span><div class="message-bubble">${text}</div>${role === 'assistant' ? `<p class="chat-disclaimer">${DISCLAIMER_EN}<br>${DISCLAIMER_ML}</p>` : ''}`;
+    element.innerHTML = `<span class="message-label">${label}</span><div class="message-bubble">${text}</div>`;
     if (recommendedProducts.length) {
         const cards = document.createElement('div'); cards.className = 'chat-products';
         recommendedProducts.forEach(product => cards.appendChild(productCard(product)));
@@ -132,7 +134,11 @@ function productCard(product) {
     const card = document.createElement('article'); card.className = 'chat-product';
     const image = product.images?.[0] || 'https://placehold.co/300x300/1e1e1e/D4AF37?text=Product';
     const protein = product.proteinPerServing ? `Protein: ${escapeHTML(product.proteinPerServing)}` : (product.dietTags ? escapeHTML(product.dietTags) : '');
-    card.innerHTML = `<img src="${escapeHTML(optimizeImage(image, 300))}" alt="${escapeHTML(product.name)}" loading="lazy"><div class="chat-product-info"><p class="chat-product-name">${escapeHTML(product.name)}</p><div class="chat-product-price">₹${escapeHTML(product.price || 0)}</div>${protein ? `<p class="chat-product-meta">${protein}</p>` : ''}<div class="chat-product-actions"><a href="product.html?id=${encodeURIComponent(product.id)}">View</a><button type="button">Add to cart</button></div></div>`;
-    card.querySelector('button').addEventListener('click', () => addToCart(product.id, { name: product.name, price: product.price || 0, mrp: product.mrp || 0, image, size: product.size || '' }));
+    card.innerHTML = `<img src="${escapeHTML(optimizeImage(image, 300))}" alt="${escapeHTML(product.name)}" loading="lazy"><div class="chat-product-info"><p class="chat-product-name">${escapeHTML(product.name)}</p><div class="chat-product-price">₹${escapeHTML(product.price || 0)}</div>${protein ? `<p class="chat-product-meta">${protein}</p>` : ''}<div class="chat-product-actions"><a href="product.html?id=${encodeURIComponent(product.id)}">View</a><button type="button">Follow up</button></div></div>`;
+    card.querySelector('button').addEventListener('click', () => {
+        activeProduct = product;
+        addAssistantMessage(`ഇനി ${product.name} -നെക്കുറിച്ചുള്ള ചോദ്യങ്ങൾ ചോദിക്കാം.`, []);
+        document.getElementById('chat-input')?.focus();
+    });
     return card;
 }

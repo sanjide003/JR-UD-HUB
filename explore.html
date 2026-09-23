@@ -15,21 +15,18 @@
     <main class="container page-container chatbot-page">
         <section class="chatbot-shell" aria-labelledby="chatbot-title">
             <div class="chatbot-heading">
-                <div><p class="chatbot-eyebrow">JR-UD-HUB</p><h1 id="chatbot-title">Shopping Assistant</h1><p>ഡയറ്റ്, പ്രോട്ടീൻ, ingredients, product details എന്നിവ ചോദിക്കൂ.</p></div>
+                <div><p class="chatbot-eyebrow" id="chatbot-brand">JR-UD-HUB</p><h1 id="chatbot-title">Shopping Assistant</h1></div>
                 <button id="clear-chat-btn" class="clear-chat-btn" type="button">New chat</button>
             </div>
             <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
-            <div class="quick-prompts" aria-label="Suggested questions">
-                <button type="button" data-prompt="Show me high protein products">High protein products</button>
-                <button type="button" data-prompt="₹500 ന് താഴെയുള്ള products കാണിക്കൂ">Products under ₹500</button>
-                <button type="button" data-prompt="Weight loss diet ന് സഹായിക്കുന്ന products കാണിക്കൂ">Diet suggestions</button>
-                <button type="button" data-prompt="ഒരു product-ന്റെ ingredients ഉം specification ഉം പറയൂ">Product details</button>
+            <div class="chat-input-area">
+                <form id="chat-form" class="chat-form">
+                    <label class="sr-only" for="chat-input">Ask the shopping assistant</label>
+                    <textarea id="chat-input" rows="1" maxlength="500" placeholder="Ask about products, protein, diet, ingredients..." required></textarea>
+                    <button type="submit" id="chat-send-btn" aria-label="Send message"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13"></path><path d="m22 2-7 20-4-9-9-4Z"></path></svg></button>
+                </form>
+                <p class="chat-disclaimer">AI-generated responses may not always be correct.</p>
             </div>
-            <form id="chat-form" class="chat-form">
-                <label class="sr-only" for="chat-input">Ask the shopping assistant</label>
-                <textarea id="chat-input" rows="1" maxlength="500" placeholder="Ask about products, protein, diet, ingredients..." required></textarea>
-                <button type="submit" id="chat-send-btn" aria-label="Send message">Send</button>
-            </form>
         </section>
     </main>
     <footer class="main-footer-new" id="main-footer"></footer><div id="floating-action-buttons"></div>
