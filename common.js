@@ -18,7 +18,7 @@ let siteSettings = null;
 let authPromise = null;
 
 (function initTheme() {
-    const savedTheme = localStorage.getItem('app-theme') || 'dark'; 
+    const savedTheme = localStorage.getItem('app-theme') || 'light';
     if (savedTheme === 'light') {
         document.body.classList.add('light-mode');
     }
