@@ -1,72 +1,38 @@
-<!-- 
-  ഇതാണ് 'Explore.html 
-  മാറ്റം: തലക്കെട്ടിന് പകരം ബാനർ ഇമേജ് ചേർത്തു.
--->
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explore - JR-UD-HUB</title>
-    
-    <!-- പൊതുവായ ഡിസൈൻ ഫയൽ -->
+    <title>ChatBot - JR-UD-HUB</title>
     <link rel="stylesheet" href="public.css">
-    <!-- ഈ പേജിന് മാത്രമായുള്ള ഡിസൈൻ ഫയൽ -->
     <link rel="stylesheet" href="explore.css">
-    
-    <!-- Swiper CSS (ചിത്രങ്ങൾ സ്ലൈഡ് ചെയ്യാൻ) -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
 </head>
 <body>
-
-    <!-- 0. പേജ് ലോഡർ -->
-    <div id="preloader">
-        <div class="loader-logo-container">
-            <img src="" alt="Loading..." id="preloader-logo" style="display: none;" />
-            <div class="loader-ring"></div>
-        </div>
-    </div>
-
-    <!-- 1. ഹെഡർ -->
+    <div id="preloader"><div class="loader-logo-container"><img src="" alt="Loading..." id="preloader-logo" style="display: none;"><div class="loader-ring"></div></div></div>
     <header class="main-header" id="main-header"></header>
-    
-    <!-- 2. സൈഡ് മെനു -->
-    <nav class="side-nav" id="side-nav"></nav>
-    <div class="nav-overlay" id="nav-overlay"></div>
+    <nav class="side-nav" id="side-nav"></nav><div class="nav-overlay" id="nav-overlay"></div>
 
-    <!-- 3. പ്രധാന ഉള്ളടക്കം -->
-    <main class="container page-container">
-        
-        <!-- *** മാറ്റം: തലക്കെട്ട് (h1) നീക്കം ചെയ്തു, ബാനർ ചേർത്തു *** -->
-        <div id="explore-top-banner" class="explore-top-banner">
-            <!-- ബാനർ ഇമേജ് JS വഴി വരും -->
-        </div>
-
-        <!-- പ്രൊഡക്റ്റ് ഫീഡ് കണ്ടെയ്നർ -->
-        <div class="explore-feed-container" id="explore-feed">
-            <!-- 'explore.js' ഉപയോഗിച്ച് പ്രൊഡക്റ്റ് കാർഡുകൾ ഇവിടെ വരും -->
-            <div class="loading-placeholder-full">Loading products...</div>
-        </div>
-        
-        <!-- ഇൻഫിനിറ്റ് സ്ക്രോൾ ലോഡർ -->
-        <div class="loader-container" id="explore-scroll-loader" style="display: none;">
-            <div class="loader-small"></div>
-        </div>
-
+    <main class="container page-container chatbot-page">
+        <section class="chatbot-shell" aria-labelledby="chatbot-title">
+            <div class="chatbot-heading">
+                <div><p class="chatbot-eyebrow">JR-UD-HUB</p><h1 id="chatbot-title">Shopping Assistant</h1><p>ഡയറ്റ്, പ്രോട്ടീൻ, ingredients, product details എന്നിവ ചോദിക്കൂ.</p></div>
+                <button id="clear-chat-btn" class="clear-chat-btn" type="button">New chat</button>
+            </div>
+            <div id="chat-messages" class="chat-messages" aria-live="polite"></div>
+            <div class="quick-prompts" aria-label="Suggested questions">
+                <button type="button" data-prompt="Show me high protein products">High protein products</button>
+                <button type="button" data-prompt="₹500 ന് താഴെയുള്ള products കാണിക്കൂ">Products under ₹500</button>
+                <button type="button" data-prompt="Weight loss diet ന് സഹായിക്കുന്ന products കാണിക്കൂ">Diet suggestions</button>
+                <button type="button" data-prompt="ഒരു product-ന്റെ ingredients ഉം specification ഉം പറയൂ">Product details</button>
+            </div>
+            <form id="chat-form" class="chat-form">
+                <label class="sr-only" for="chat-input">Ask the shopping assistant</label>
+                <textarea id="chat-input" rows="1" maxlength="500" placeholder="Ask about products, protein, diet, ingredients..." required></textarea>
+                <button type="submit" id="chat-send-btn" aria-label="Send message">Send</button>
+            </form>
+        </section>
     </main>
-
-    <!-- 4. ഫൂട്ടർ -->
-    <footer class="main-footer-new" id="main-footer"></footer>
-
-    <!-- 5. ഫ്ലോട്ടിംഗ് ഐക്കണുകൾ -->
-    <div id="floating-action-buttons"></div>
-
-    <!-- JS ഫയലുകൾ -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script src="public-router.js"></script>
-    <script type="module" src="firebase-config.js"></script>
-    <script type="module" src="cart.js"></script>
-    <script type="module" src="common.js"></script>
-    <script type="module" src="explore.js"></script>
+    <footer class="main-footer-new" id="main-footer"></footer><div id="floating-action-buttons"></div>
+    <script src="public-router.js"></script><script type="module" src="firebase-config.js"></script><script type="module" src="cart.js"></script><script type="module" src="common.js"></script><script type="module" src="explore.js"></script>
 </body>
 </html>

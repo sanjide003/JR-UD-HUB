@@ -116,7 +116,7 @@ async function buildHeader() {
         <nav class="header-nav-desktop">
             <ul>
                 <li><a href="index.html">Home</a></li>
-                <li><a href="explore.html">Explore</a></li>
+                <li><a href="explore.html">ChatBot</a></li>
                 <li><a href="categories.html">Catalog</a></li>
                 <li><button id="desktop-account-btn">Account</button></li>
             </ul>
@@ -170,7 +170,7 @@ async function buildFooter() {
                 </span>
                 <ul class="footer-links-list" id="footer-content-3">
                     <li><a href="index.html">Home</a></li>
-                    <li><a href="explore.html">Explore</a></li>
+                    <li><a href="explore.html">ChatBot</a></li>
                     <li><a href="categories.html">Catalog</a></li>
                     <li><a href="cart.html">Cart</a></li>
                 </ul>
@@ -217,10 +217,7 @@ async function buildFloatingButtons() {
 }
 
 function buildUserMenuHTML(settings) {
-    let chatbotHTML = '';
-    if (settings && settings.chatbotNumber) {
-        chatbotHTML = `<li><a href="https://wa.me/${settings.chatbotNumber}" target="_blank" class="user-menu-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg><span>ChatBot</span></a></li>`;
-    }
+    const chatbotHTML = `<li><a href="explore.html" class="user-menu-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"></rect><circle cx="12" cy="5" r="2"></circle><path d="M12 7v4"></path><line x1="8" y1="16" x2="8" y2="16"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg><span>ChatBot</span></a></li>`;
     let dealerChatHTML = '';
     if (settings && settings.dealerChatNumber) {
         dealerChatHTML = `<li><a href="https://wa.me/${settings.dealerChatNumber}" target="_blank" class="user-menu-link"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91C2.13 13.66 2.61 15.31 3.4 16.78L2.05 22L7.42 20.64C8.83 21.37 10.38 21.82 12.04 21.82C17.5 21.82 21.95 17.37 21.95 11.91C21.95 6.45 17.5 2 12.04 2ZM17.11 15.65C16.82 15.94 15.82 16.46 15.34 16.59C14.86 16.71 14.12 16.78 13.53 16.6C12.94 16.41 11.77 16.03 10.42 14.77C8.85 13.28 7.92 11.47 7.73 11.18C7.54 10.89 7.02 10.15 7.02 9.47C7.02 8.79 7.49 8.35 7.73 8.11C7.97 7.87 8.28 7.81 8.52 7.81C8.76 7.81 8.97 7.81 9.15 7.84C9.33 7.87 9.47 7.9 9.69 8.41C9.91 8.92 10.37 10.13 10.43 10.25C10.49 10.37 10.56 10.56 10.43 10.74C10.31 10.92 10.22 11.02 10.07 11.16C9.92 11.31 9.77 11.41 9.66 11.53C9.54 11.65 9.36 11.83 9.54 12.12C9.72 12.42 10.26 13.23 11.03 13.91C11.97 14.75 12.82 15.02 13.11 15.17C13.4 15.31 13.58 15.28 13.73 15.11C13.87 14.93 14.28 14.43 14.46 14.14C14.65 13.85 14.92 13.79 15.19 13.88C15.46 13.97 16.53 14.52 16.82 14.66C17.11 14.8 17.26 14.89 17.32 15.02C17.38 15.14 17.38 15.36 17.11 15.65Z"></path></svg><span>Chat with Dealer</span></a></li>`;
@@ -264,7 +261,7 @@ function buildBottomNav(settings) {
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item ${homeActive}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
         <a href="categories.html" class="bottom-nav-item catalog-anim ${catalogActive}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg><span>Catalog</span></a>
-        <a href="explore.html" class="bottom-nav-item ${exploreActive}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg><span>Explore</span></a>
+        <a href="explore.html" class="bottom-nav-item ${exploreActive}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 18v3"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>ChatBot</span></a>
         <button class="bottom-nav-item ${accountActive}" id="bottom-nav-account-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Account</span></button>
     </nav>`;
     document.body.insertAdjacentHTML('beforeend', navHTML);

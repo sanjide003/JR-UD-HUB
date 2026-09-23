@@ -216,7 +216,6 @@ async function loadAllSettings() {
             set("setting-logo-text", s.logoText);
             set("setting-logo-subtitle", s.logoSubtitle);
             set("setting-home-banner-url", s.homeBannerUrl);
-            set("setting-chatbot-number", s.chatbotNumber);
             set("setting-dealer-number", s.dealerChatNumber);
             set("setting-phone", s.phone);
             set("setting-email", s.email);
@@ -255,7 +254,6 @@ bindSave("general-settings-form", "save-general-settings-button", "Save General 
     logoText: document.getElementById("setting-logo-text").value,
     logoSubtitle: document.getElementById("setting-logo-subtitle").value,
     homeBannerUrl: getSingleImageValue('setting-home-banner-url'),
-    chatbotNumber: document.getElementById("setting-chatbot-number").value,
     dealerChatNumber: document.getElementById("setting-dealer-number").value
 }));
 bindSave("contact-settings-form", "save-contact-settings-button", "Save Details", () => ({
@@ -442,6 +440,11 @@ addProductForm.addEventListener("submit", async (e) => {
             categoryId: document.getElementById("product-category").value,
             name: document.getElementById("product-name").value,
             specification: document.getElementById("product-specification").value,
+            ingredients: document.getElementById("product-ingredients").value,
+            proteinPerServing: document.getElementById("product-protein").value,
+            dietTags: document.getElementById("product-diet-tags").value,
+            nutrition: document.getElementById("product-nutrition").value,
+            allergens: document.getElementById("product-allergens").value,
             mrp: Number(document.getElementById("product-mrp").value)||0,
             price: Number(document.getElementById("product-price").value)||0,
             description: document.getElementById("product-description").value,
@@ -703,7 +706,7 @@ async function openEditModal(id, type) {
              const catsSnap = await getDocs(query(collection(db, "categories")));
              let catOptions = '';
              catsSnap.forEach(c => catOptions += `<option value="${c.id}" ${c.id===data.categoryId?'selected':''}>${c.data().name}</option>`);
-             modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="product"><div class="form-grid"><div class="form-group"><label>Name</label><input type="text" id="edit-name" value="${data.name}"></div><div class="form-group"><label>Category</label><select id="edit-cat">${catOptions}</select></div><div class="form-group"><label>Price</label><input type="number" id="edit-price" value="${data.price}"></div><div class="form-group"><label>MRP</label><input type="number" id="edit-mrp" value="${data.mrp}"></div><div class="form-group checkbox-group"><input type="checkbox" id="edit-featured" ${data.featured?'checked':''}><label>Featured</label></div><div class="form-group full-width"><label>Specification</label><textarea id="edit-spec" rows="3">${data.specification||''}</textarea></div><div class="form-group full-width"><label>Description</label><textarea id="edit-desc" rows="3">${data.description||''}</textarea></div><div class="form-group full-width"><label>Images</label><p class="image-upload-hint">Recommended ratio: 1:1 (square). Images larger than 50 KB are compressed automatically.</p><div id="edit-image-list" class="image-url-list"></div><button type="button" id="btn-add-edit-image" class="btn btn-secondary" style="margin-top:5px;">${ICONS.edit.replace('Edit', '')} Add Image</button></div><div class="form-group full-width"><label>More Links</label><div id="edit-link-list" class="link-url-list"></div><button type="button" id="btn-add-edit-link" class="btn btn-secondary" style="margin-top:5px;">Add Link</button></div></div><button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
+             modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="product"><div class="form-grid"><div class="form-group"><label>Name</label><input type="text" id="edit-name" value="${data.name}"></div><div class="form-group"><label>Category</label><select id="edit-cat">${catOptions}</select></div><div class="form-group"><label>Price</label><input type="number" id="edit-price" value="${data.price}"></div><div class="form-group"><label>MRP</label><input type="number" id="edit-mrp" value="${data.mrp}"></div><div class="form-group checkbox-group"><input type="checkbox" id="edit-featured" ${data.featured?'checked':''}><label>Featured</label></div><div class="form-group full-width"><label>Specification</label><textarea id="edit-spec" rows="3">${data.specification||''}</textarea></div><div class="form-group full-width"><label>Description</label><textarea id="edit-desc" rows="3">${data.description||''}</textarea></div><div class="form-group full-width"><label>Ingredients</label><textarea id="edit-ingredients" rows="3">${data.ingredients||''}</textarea></div><div class="form-group"><label>Protein per Serving</label><input type="text" id="edit-protein" value="${data.proteinPerServing||''}"></div><div class="form-group"><label>Diet Tags</label><input type="text" id="edit-diet-tags" value="${data.dietTags||''}"></div><div class="form-group full-width"><label>Nutrition Information</label><textarea id="edit-nutrition" rows="3">${data.nutrition||''}</textarea></div><div class="form-group full-width"><label>Allergen / Safety Information</label><textarea id="edit-allergens" rows="2">${data.allergens||''}</textarea></div><div class="form-group full-width"><label>Images</label><p class="image-upload-hint">Recommended ratio: 1:1 (square). Images larger than 50 KB are compressed automatically.</p><div id="edit-image-list" class="image-url-list"></div><button type="button" id="btn-add-edit-image" class="btn btn-secondary" style="margin-top:5px;">${ICONS.edit.replace('Edit', '')} Add Image</button></div><div class="form-group full-width"><label>More Links</label><div id="edit-link-list" class="link-url-list"></div><button type="button" id="btn-add-edit-link" class="btn btn-secondary" style="margin-top:5px;">Add Link</button></div></div><button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
              setupImageUploader('edit-image-list', 'btn-add-edit-image');
              populateImageUploader('edit-image-list', data.images);
              setupMoreLinksUploader('edit-link-list', 'btn-add-edit-link');
@@ -728,7 +731,10 @@ async function openEditModal(id, type) {
                         name: document.getElementById('edit-name').value, categoryId: document.getElementById('edit-cat').value,
                         price: Number(document.getElementById('edit-price').value), mrp: Number(document.getElementById('edit-mrp').value),
                         featured: document.getElementById('edit-featured').checked, specification: document.getElementById('edit-spec').value,
-                        description: document.getElementById('edit-desc').value, images: imgs, moreLinks: getMoreLinksFromUploader('edit-link-list')
+                        description: document.getElementById('edit-desc').value, ingredients: document.getElementById('edit-ingredients').value,
+                        proteinPerServing: document.getElementById('edit-protein').value, dietTags: document.getElementById('edit-diet-tags').value,
+                        nutrition: document.getElementById('edit-nutrition').value, allergens: document.getElementById('edit-allergens').value,
+                        images: imgs, moreLinks: getMoreLinksFromUploader('edit-link-list')
                     };
                 }
                 await updateDoc(doc(db, col, eId), updateData);
