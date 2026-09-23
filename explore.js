@@ -76,12 +76,29 @@ function answerQuestion(question) {
     const wantsProtein = /protein|പ്രോട്ടീൻ/.test(q);
     const wantsIngredients = /ingredient|ingredients|ചേരുവ|ഇൻഗ്രീഡിയൻറ്/.test(q);
     const wantsSpecs = /specification|specifications|spec|സ്പെസിഫിക്ക/.test(q);
+    if (isGeneralProductQuestion(q, categoryIds, wantsProtein, wantsIngredients, wantsSpecs, discountQuery, priceLimit)) {
+        return { text: categoryOverview(ml), products: [] };
+    }
     if ((wantsProtein || wantsIngredients || wantsSpecs) && selected) return { text: productDetailsAnswer(selected, wantsProtein, wantsIngredients, wantsSpecs, ml), products: [selected] };
     if (discountQuery || priceLimit || categoryIds.length || matches.length) {
         const intro = resultIntro(matches.length, categoryIds, discountQuery, priceLimit, ml);
         return { text: intro, products: matches };
     }
     return { text: ml ? 'യോജിക്കുന്ന product അല്ലെങ്കിൽ category കണ്ടെത്താനായില്ല. പേര്, category, price, discount, ingredients അല്ലെങ്കിൽ protein ചേർത്ത് വീണ്ടും ചോദിക്കൂ.' : 'I could not find a matching product or category. Please try a name, category, price, discount, ingredients, or protein.', products: [] };
+}
+
+function isGeneralProductQuestion(question, categoryIds, protein, ingredients, specs, discount, priceLimit) {
+    const asksForProducts = /product|products|പ്രോഡക്റ്റ്|ഉൽപ്പന്ന/.test(question);
+    return asksForProducts && !categoryIds.length && !protein && !ingredients && !specs && !discount && !priceLimit;
+}
+
+function categoryOverview(ml) {
+    const names = [...categories.values()].filter(Boolean);
+    if (!names.length) return ml ? 'Products load ചെയ്യുന്നു. ഒരു നിമിഷം കഴിഞ്ഞ് വീണ്ടും ചോദിക്കൂ.' : 'Products are loading. Please ask again in a moment.';
+    const categoryList = names.join(', ');
+    return ml
+        ? `ഞങ്ങൾക്ക് ലഭ്യമായ categories: ${categoryList}.\n\nനിങ്ങൾക്ക് ഏത് category ആണ് വേണ്ടത്? Category name പറഞ്ഞാൽ അതിലെ products കാണിക്കാം.`
+        : `Available categories: ${categoryList}.\n\nWhich category do you need? Tell me a category name and I will show its products.`;
 }
 
 function rankProducts(question) {
@@ -150,11 +167,15 @@ function openFollowUp(product) {
     activeProduct = product;
     const unavailable = label => lastMalayalam ? `${label} വിവരം ഇപ്പോൾ ലഭ്യമല്ല.` : `${label} information is not available yet.`;
     addMessage('assistant', `${companyName} Assistant`, lastMalayalam ? `ഇനി ${product.name} -നെക്കുറിച്ച് തിരഞ്ഞെടുക്കൂ.` : `Choose what you want to know about ${product.name}.`, [], [
-        { label: 'Description', action: () => addAssistantMessage(product.description ? `${product.name}\n\n${product.description}` : unavailable('Description')) },
-        { label: 'Specification', action: () => addAssistantMessage(product.specification ? `${product.name}\n\n${product.specification}` : unavailable('Specification')) },
-        { label: 'Price', action: () => addAssistantMessage(priceMessage(product)) }
+        { label: 'Description', action: () => sendFollowUpChoice('Description', product.description ? `${product.name}\n\n${product.description}` : unavailable('Description')) },
+        { label: 'Specification', action: () => sendFollowUpChoice('Specification', product.specification ? `${product.name}\n\n${product.specification}` : unavailable('Specification')) },
+        { label: 'Price', action: () => sendFollowUpChoice('Price', priceMessage(product)) }
     ]);
     document.getElementById('chat-input')?.focus();
+}
+function sendFollowUpChoice(label, response) {
+    addUserMessage(label);
+    addAssistantMessage(response);
 }
 function priceMessage(product) {
     const mrp = Number(product.mrp || 0); const price = Number(product.price || 0); const saving = mrp > price ? mrp - price : 0; const discount = discountPercent(product);
