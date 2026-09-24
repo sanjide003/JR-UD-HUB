@@ -36,7 +36,7 @@ let pendingTransaction = {
     itemId: null
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
+export async function initCartPage() {
     await loadSiteSettings(); 
     await loadWhatsappNumber(); 
     await loadOrderSettings(); 
@@ -44,7 +44,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     renderCartPage();
     setupButtonObserver();
     setupModalListeners();
-});
+}
+document.addEventListener("DOMContentLoaded", initCartPage, { once: true });
 
 // Auto-repair missing data
 async function checkAndFixCartItems() {

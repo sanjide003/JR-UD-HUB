@@ -426,3 +426,5 @@ body.light-mode .user-menu-link, body.light-mode .user-menu-action-btn { backgro
 .float-btn:hover { transform: scale(1.1); border-color: var(--primary-gold); }
 .float-btn.whatsapp { background-color: #25D366; border: 1px solid #25D366; }
 .float-btn.whatsapp svg { fill: #FFFFFF; width: 32px; height: 32px; }
+/* Instant public-view transitions handled by public-router.js */
+body.view-loading main { opacity: 0.55; pointer-events: none; transition: opacity 0.15s ease; }

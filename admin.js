@@ -78,6 +78,31 @@ let currentTopDealsQuery = null;
 let deleteInfo = { id: null, type: null }; 
 let allProductsCache = []; 
 
+function filterTableRows(bodyId, searchId, categoryId) {
+    const term = (document.getElementById(searchId)?.value || '').toLowerCase().trim();
+    const category = document.getElementById(categoryId)?.value || 'all';
+    document.querySelectorAll(`#${bodyId} tr[data-name]`).forEach(row => {
+        row.style.display = ((!term || row.dataset.name.includes(term)) && (category === 'all' || row.dataset.category === category)) ? '' : 'none';
+    });
+}
+function filterCategoryRows() {
+    const term = document.getElementById('category-search-input').value.toLowerCase().trim();
+    const range = document.getElementById('category-filter').value;
+    document.querySelectorAll('#categories-list-body tr[data-name]').forEach(row => {
+        const first = row.dataset.name.charAt(0);
+        const inRange = range === 'all' || (range === 'a-m' ? first >= 'a' && first <= 'm' : first >= 'n' && first <= 'z');
+        row.style.display = ((!term || row.dataset.name.includes(term)) && inRange) ? '' : 'none';
+    });
+}
+function setupListControls() {
+    [['product-search-input', 'products-list-body', 'product-filter-category'], ['featured-list-search', 'featured-products-list-body', 'featured-filter-category'], ['top-deal-list-search', 'top-deals-list-body', 'top-deal-filter-category']].forEach(([search, body, category]) => {
+        document.getElementById(search).addEventListener('input', () => filterTableRows(body, search, category));
+        document.getElementById(category).addEventListener('change', () => filterTableRows(body, search, category));
+    });
+    document.getElementById('category-search-input').addEventListener('input', filterCategoryRows);
+    document.getElementById('category-filter').addEventListener('change', filterCategoryRows);
+}
+
 // Helper Functions
 function showStatus(ignored, message, isError = true) {
     const toast = document.createElement('div');
@@ -103,6 +128,17 @@ function enableButton(btn, text) {
     if(txt) txt.textContent = text;
     if(load) load.style.display = 'none';
 }
+
+// Password visibility
+const toggleLoginPassword = document.getElementById('toggle-login-password');
+toggleLoginPassword.addEventListener('click', () => {
+    const password = document.getElementById('login-password');
+    const visible = password.type === 'text';
+    password.type = visible ? 'password' : 'text';
+    toggleLoginPassword.textContent = visible ? '👁' : '🙈';
+    toggleLoginPassword.setAttribute('aria-label', visible ? 'Show password' : 'Hide password');
+    toggleLoginPassword.title = visible ? 'Show password' : 'Hide password';
+});
 
 // Auth
 loginForm.addEventListener("submit", async (e) => {
@@ -161,22 +197,12 @@ function loadInitialData() {
     setupImageUploader('product-image-list-container', 'add-image-url-btn');
     setupMoreLinksUploader('product-more-links-container', 'add-more-link-btn');
     if(!document.getElementById("product-image-list-container").children.length) addImageInput('product-image-list-container');
-    transformHeroSlideInput();
-}
-
-function transformHeroSlideInput() {
-    const heroInput = document.getElementById("hero-slide-url");
-    if (heroInput && !heroInput.parentElement.classList.contains('inline-image-input-container')) {
-        const wrapper = document.createElement('div');
-        wrapper.className = 'inline-image-input-container';
-        const preview = document.createElement('div');
-        preview.className = 'image-preview-small';
-        preview.id = 'hero-slide-preview';
-        heroInput.parentNode.insertBefore(wrapper, heroInput);
-        wrapper.appendChild(preview);
-        wrapper.appendChild(heroInput);
-        setupImagePreview('hero-slide-url', 'hero-slide-preview');
-    }
+    setupSingleImageUploader('category-image-url');
+    setupSingleImageUploader('setting-logo-image-url');
+    setupSingleImageUploader('setting-home-banner-url');
+    setupSingleImageUploader('top-deals-banner-input');
+    setupHeroSlideSource();
+    setupListControls();
 }
 
 // Settings
@@ -185,7 +211,7 @@ async function loadAllSettings() {
         const snap = await getDoc(doc(db, "settings", "global"));
         if (snap.exists()) {
             const s = snap.data();
-            const set = (id, v) => { const el=document.getElementById(id); if(el) el.value = v||''; };
+            const set = (id, v) => { const el=document.getElementById(id); if(el) { if (el.classList.contains('single-image-uploader')) setSingleImageValue(id, v || ''); else el.value = v || ''; } };
             set("setting-logo-image-url", s.logoImageUrl);
             set("setting-logo-text", s.logoText);
             set("setting-logo-subtitle", s.logoSubtitle);
@@ -200,8 +226,6 @@ async function loadAllSettings() {
             set("setting-facebook-url", s.facebookUrl);
             set("setting-instagram-url", s.instagramUrl);
             set("setting-youtube-url", s.youtubeUrl);
-            document.getElementById("setting-logo-image-url").dispatchEvent(new Event('input'));
-            document.getElementById("setting-home-banner-url").dispatchEvent(new Event('input'));
         }
         
         // *** LOAD ORDER SETTINGS ***
@@ -227,10 +251,10 @@ function bindSave(formId, btnId, txt, getter) {
     });
 }
 bindSave("general-settings-form", "save-general-settings-button", "Save General Settings", () => ({
-    logoImageUrl: document.getElementById("setting-logo-image-url").value,
+    logoImageUrl: getSingleImageValue('setting-logo-image-url'),
     logoText: document.getElementById("setting-logo-text").value,
     logoSubtitle: document.getElementById("setting-logo-subtitle").value,
-    homeBannerUrl: document.getElementById("setting-home-banner-url").value,
+    homeBannerUrl: getSingleImageValue('setting-home-banner-url'),
     chatbotNumber: document.getElementById("setting-chatbot-number").value,
     dealerChatNumber: document.getElementById("setting-dealer-number").value
 }));
@@ -271,8 +295,7 @@ async function loadTopDealsConfig() {
         if(snap.exists()) {
             const data = snap.data();
             // Banner
-            document.getElementById("top-deals-banner-input").value = data.topDealsBanner || '';
-            document.getElementById("top-deals-banner-input").dispatchEvent(new Event('input'));
+            setSingleImageValue('top-deals-banner-input', data.topDealsBanner || '');
             
             // Load End Time
             if (data.offerEndTime) {
@@ -288,12 +311,15 @@ async function loadTopDealsConfig() {
                 const p = d.data();
                 const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50) : '';
                 const row = document.createElement('tr');
-                row.innerHTML = `<td data-label="Image"><img src="${thumb}"></td><td data-label="Name">${p.name}</td><td data-label="Price">₹${p.price}</td><td data-label="Actions"><button class="btn btn-remove-featured" data-id="${d.id}" style="background-color:#ef4444;">${ICONS.x} Remove</button></td>`;
+                row.dataset.name = (p.name || '').toLowerCase();
+            row.dataset.category = p.categoryId || '';
+            row.innerHTML = `<td data-label="Image"><img src="${thumb}"></td><td data-label="Name">${p.name}</td><td data-label="Price">₹${p.price}</td><td data-label="Actions"><button class="btn btn-remove-featured" data-id="${d.id}" style="background-color:#ef4444;">${ICONS.x} Remove</button></td>`;
                 row.querySelector('.btn-remove-featured').addEventListener('click', async () => {
                     if(confirm("Remove from Top Deals?")) { await updateDoc(doc(db, "products", d.id), { isTopDeal: false }); showStatus(null, "Removed", false); }
                 });
                 topDealsListBody.appendChild(row);
             });
+            filterTableRows('top-deals-list-body', 'top-deal-list-search', 'top-deal-filter-category');
         });
     } catch(e) { console.error(e); }
 }
@@ -304,7 +330,7 @@ topDealsBannerForm.addEventListener("submit", async(e) => {
     disableButton(btn, "Saving...");
     try {
         await setDoc(doc(db, "settings", "homeLayout"), {
-            topDealsBanner: document.getElementById("top-deals-banner-input").value,
+            topDealsBanner: getSingleImageValue('top-deals-banner-input'),
             offerEndTime: document.getElementById("top-deals-end-time").value
         }, { merge: true });
         showStatus(null, "Banner & Timer Saved", false);
@@ -341,13 +367,17 @@ function loadCategories() {
         categoriesListBody.innerHTML = '';
         const sel = document.getElementById("product-category");
         const fil = document.getElementById("product-filter-category");
+        const featuredFil = document.getElementById("featured-filter-category");
+        const topDealFil = document.getElementById("top-deal-filter-category");
         sel.innerHTML = '<option value="">Select...</option>';
-        fil.innerHTML = '<option value="all">All</option>';
+        fil.innerHTML = '<option value="all">All Categories</option>';
+        featuredFil.innerHTML = '<option value="all">All Categories</option>';
+        topDealFil.innerHTML = '<option value="all">All Categories</option>';
         snap.forEach(d => {
             const c = d.data();
             const imgUrl = optimizeImage(c.imageUrl, 50, 60);
             categoriesListBody.innerHTML += `
-                <tr>
+                <tr data-name="${(c.name || '').toLowerCase()}">
                     <td data-label="Image"><img src="${imgUrl}" alt="${c.name}"></td>
                     <td data-label="Name">${c.name}</td>
                     <td data-label="Actions">
@@ -356,8 +386,9 @@ function loadCategories() {
                     </td>
                 </tr>`;
             const opt = `<option value="${d.id}">${c.name}</option>`;
-            sel.innerHTML += opt; fil.innerHTML += opt;
+            sel.innerHTML += opt; fil.innerHTML += opt; featuredFil.innerHTML += opt; topDealFil.innerHTML += opt;
         });
+        filterCategoryRows();
     });
 }
 addCategoryForm.addEventListener("submit", async (e) => {
@@ -365,10 +396,12 @@ addCategoryForm.addEventListener("submit", async (e) => {
     const btn = document.getElementById("add-category-button");
     disableButton(btn, "Adding...");
     try {
-        await addDoc(collection(db, "categories"), { name: document.getElementById("category-name").value, imageUrl: document.getElementById("category-image-url").value, createdAt: serverTimestamp() });
+        const imageUrl = getSingleImageValue('category-image-url');
+        if (!imageUrl) throw new Error('Please select a category image.');
+        await addDoc(collection(db, "categories"), { name: document.getElementById("category-name").value, imageUrl, createdAt: serverTimestamp() });
         showStatus(null, "Category Added", false);
         addCategoryForm.reset();
-        document.getElementById('category-image-preview').innerHTML = '';
+        clearSingleImageValue('category-image-url');
     } catch(e) { showStatus(null, e.message); } finally { enableButton(btn, "Add Category"); }
 });
 
@@ -383,7 +416,7 @@ function loadProducts(catId = "all") {
             const p = d.data();
             const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50, 60) : '';
             productsListBody.innerHTML += `
-                <tr>
+                <tr data-name="${(p.name || '').toLowerCase()}" data-category="${p.categoryId || ''}">
                     <td data-label="Image"><img src="${thumb}"></td>
                     <td data-label="Name">${p.name} ${p.featured ? ICONS.star : ''}</td>
                     <td data-label="Price">₹${p.price}</td>
@@ -393,6 +426,7 @@ function loadProducts(catId = "all") {
                     </td>
                 </tr>`;
         });
+        filterTableRows('products-list-body', 'product-search-input', 'product-filter-category');
     });
 }
 document.getElementById("product-filter-category").addEventListener("change", (e) => loadProducts(e.target.value));
@@ -463,12 +497,15 @@ function loadFeaturedProducts() {
             const p = d.data();
             const thumb = p.images?.[0] ? optimizeImage(p.images[0], 50) : '';
             const row = document.createElement('tr');
+            row.dataset.name = (p.name || '').toLowerCase();
+            row.dataset.category = p.categoryId || '';
             row.innerHTML = `<td data-label="Image"><img src="${thumb}"></td><td data-label="Name">${p.name}</td><td data-label="Price">₹${p.price}</td><td data-label="Actions"><button class="btn btn-remove-featured" data-id="${d.id}">${ICONS.x} Remove</button></td>`;
             row.querySelector('.btn-remove-featured').addEventListener('click', async () => {
                 if(confirm("Remove?")) { await updateDoc(doc(db, "products", d.id), { featured: false }); showStatus(null, "Removed", false); }
             });
             featuredProductsListBody.appendChild(row);
         });
+        filterTableRows('featured-products-list-body', 'featured-list-search', 'featured-filter-category');
     });
 }
 
@@ -478,15 +515,17 @@ addHeroSlideForm.addEventListener("submit", async (e) => {
     const btn = document.getElementById("add-hero-slide-button");
     disableButton(btn, "Adding...");
     try {
+        const source = getHeroSlideSource();
+        if (!source) throw new Error('Please select an image or enter a video URL.');
         await addDoc(collection(db, "heroSlides"), {
-            url: document.getElementById("hero-slide-url").value,
+            url: source,
             type: document.getElementById("hero-slide-type").value,
             order: Number(document.getElementById("hero-slide-order").value)||1,
             createdAt: serverTimestamp()
         });
         showStatus(null, "Slide Added", false); 
         addHeroSlideForm.reset();
-        document.getElementById('hero-slide-preview').innerHTML = '';
+        resetHeroSlideSource();
     } catch(e) { showStatus(null, e.message); } finally { enableButton(btn, "Add Slide"); }
 });
 function loadHeroSlides() {
@@ -500,35 +539,119 @@ function loadHeroSlides() {
     });
 }
 
-// Preview Logic
-function setupImagePreview(id, pid) {
-    const el = document.getElementById(id);
-    if(el) el.addEventListener('input', () => {
-        const url = el.value;
-        document.getElementById(pid).innerHTML = url ? `<img src="${optimizeImage(url, 200)}">` : '';
+// Image upload helpers: images are stored as Base64 strings directly in Firestore.
+const MAX_IMAGE_BYTES = 50 * 1024;
+
+function readFileAsDataUrl(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Unable to read this image.'));
+        reader.readAsDataURL(file);
     });
 }
-setupImagePreview('category-image-url', 'category-image-preview');
-setupImagePreview('setting-logo-image-url', 'logo-preview');
-setupImagePreview('setting-home-banner-url', 'banner-preview');
-setupImagePreview('top-deals-banner-input', 'top-deals-banner-preview'); 
+
+function loadImage(source) {
+    return new Promise((resolve, reject) => {
+        const image = new Image();
+        image.onload = () => resolve(image);
+        image.onerror = () => reject(new Error('Unable to process this image. Please choose another file.'));
+        image.src = source;
+    });
+}
+
+async function compressImage(file) {
+    if (file.size <= MAX_IMAGE_BYTES) return readFileAsDataUrl(file);
+    const source = await readFileAsDataUrl(file);
+    const image = await loadImage(source);
+    let scale = Math.min(1, 1600 / Math.max(image.width, image.height));
+
+    for (let attempt = 0; attempt < 8; attempt += 1) {
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.max(1, Math.round(image.width * scale));
+        canvas.height = Math.max(1, Math.round(image.height * scale));
+        canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/webp', Math.max(0.35, 0.82 - attempt * 0.06)));
+        if (blob && blob.size <= MAX_IMAGE_BYTES) return readFileAsDataUrl(blob);
+        scale *= 0.72;
+    }
+    throw new Error('This image could not be compressed below 50 KB. Please choose a smaller image.');
+}
+
+function imageUploaderMarkup() {
+    return `<label class="image-file-control"><span>Choose from gallery</span><input type="file" accept="image/*" data-image-source="gallery"></label><label class="image-file-control"><span>Use camera</span><input type="file" accept="image/*" capture="environment" data-image-source="camera"></label><div class="uploaded-image-preview" aria-live="polite"></div><span class="image-upload-status">No image selected</span>`;
+}
+
+function bindImageUploadInputs(container) {
+    container.querySelectorAll('input[type="file"]').forEach(input => input.addEventListener('change', async event => {
+        const file = event.target.files[0];
+        if (!file) return;
+        try {
+            setUploaderBusy(container, true);
+            const dataUrl = await compressImage(file);
+            setUploaderValue(container, dataUrl, file.size > MAX_IMAGE_BYTES ? 'Compressed to under 50 KB' : `${Math.ceil(file.size / 1024)} KB`);
+        } catch (error) {
+            event.target.value = '';
+            showStatus(null, error.message);
+        } finally { setUploaderBusy(container, false); }
+    }));
+}
+
+function setupSingleImageUploader(id) {
+    const container = document.getElementById(id);
+    if (!container || container.dataset.ready) return;
+    container.dataset.ready = 'true';
+    container.innerHTML = imageUploaderMarkup();
+    bindImageUploadInputs(container);
+}
+
+function setUploaderBusy(container, busy) {
+    container.classList.toggle('is-processing', busy);
+    container.querySelector('.image-upload-status').textContent = busy ? 'Compressing image…' : (container.dataset.status || 'No image selected');
+}
+function setUploaderValue(container, value, status = 'Image ready') {
+    container.dataset.imageValue = value || '';
+    container.dataset.status = status;
+    const preview = container.querySelector('.uploaded-image-preview');
+    preview.innerHTML = value ? `<img src="${value}" alt="Selected image">` : '';
+    container.querySelector('.image-upload-status').textContent = status;
+}
+function setSingleImageValue(id, value) { const container = document.getElementById(id); if (container) setUploaderValue(container, value, value ? 'Saved image' : 'No image selected'); }
+function clearSingleImageValue(id) { setSingleImageValue(id, ''); const input = document.querySelector(`#${id} input[type="file"]`); if (input) input.value = ''; }
+function getSingleImageValue(id) { return document.getElementById(id)?.dataset.imageValue || ''; }
+
+function setupHeroSlideSource() {
+    const type = document.getElementById('hero-slide-type');
+    type.addEventListener('change', renderHeroSlideSource);
+    renderHeroSlideSource();
+}
+function renderHeroSlideSource() {
+    const isImage = document.getElementById('hero-slide-type').value === 'image';
+    const source = document.getElementById('hero-slide-url');
+    const selectedType = document.getElementById('hero-slide-type').value;
+    document.getElementById('hero-slide-source-label').textContent = isImage ? 'Hero Image' : (selectedType === 'video' ? 'Video URL' : 'Select a slide type first');
+    document.getElementById('hero-slide-image-hint').hidden = !isImage;
+    source.innerHTML = isImage ? imageUploaderMarkup() : (isImage === false && document.getElementById('hero-slide-type').value ? '<input type="url" id="hero-slide-video-url" placeholder="https://…" required>' : '<span class="image-upload-status">Choose Image or Video above.</span>');
+    if (isImage) bindImageUploadInputs(source);
+}
+function getHeroSlideSource() { const type = document.getElementById('hero-slide-type').value; if (type === 'image') return document.getElementById('hero-slide-url').dataset.imageValue || ''; return document.getElementById('hero-slide-video-url')?.value.trim() || ''; }
+function resetHeroSlideSource() { document.getElementById('hero-slide-type').value = ''; renderHeroSlideSource(); }
 
 function setupImageUploader(cid, bid) {
     const btn = document.getElementById(bid);
     if(btn) btn.onclick = () => addImageInput(cid);
-    document.getElementById(cid).addEventListener('click', e => { if(e.target.closest('.btn-remove-image')) e.target.closest('.image-url-item').remove(); });
-    document.getElementById(cid).addEventListener('input', e => { 
-        if(e.target.tagName==='INPUT') {
-            const url = e.target.value;
-            e.target.closest('.image-url-item').querySelector('img').src = optimizeImage(url, 100);
-        }
-    });
+    const container = document.getElementById(cid);
+    container.addEventListener('click', e => { if(e.target.closest('.btn-remove-image')) e.target.closest('.image-url-item').remove(); });
 }
 function addImageInput(cid, val='') {
-    const prevUrl = val ? optimizeImage(val, 100) : 'data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=';
-    document.getElementById(cid).insertAdjacentHTML('beforeend', `<div class="image-url-item"><img src="${prevUrl}" class="image-preview-item"><input type="text" value="${val}" placeholder="URL"><button type="button" class="btn-remove-image">${ICONS.x}</button></div>`);
+    const item = document.createElement('div');
+    item.className = 'image-url-item';
+    item.innerHTML = `${imageUploaderMarkup(false)}<button type="button" class="btn-remove-image" aria-label="Remove image">${ICONS.x}</button>`;
+    document.getElementById(cid).appendChild(item);
+    if (val) setUploaderValue(item, val, 'Saved image');
+    bindImageUploadInputs(item);
 }
-function getImageUrlsFromUploader(cid) { return Array.from(document.getElementById(cid).querySelectorAll('input')).map(i=>i.value.trim()).filter(v=>v); }
+function getImageUrlsFromUploader(cid) { return Array.from(document.getElementById(cid).querySelectorAll('.image-url-item')).map(item => item.dataset.imageValue || '').filter(Boolean); }
 function populateImageUploader(cid, urls) { const c=document.getElementById(cid); c.innerHTML=''; (urls&&urls.length?urls:['']).forEach(u=>addImageInput(cid, u)); }
 
 function setupMoreLinksUploader(cid, bid) {
@@ -573,12 +696,14 @@ async function openEditModal(id, type) {
         const data = docSnap.data();
 
         if(type === 'category') {
-            modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="category"><div class="form-group"><label>Name</label><input type="text" id="edit-cat-name" value="${data.name}"></div><div class="form-group"><label>Image URL</label><input type="text" id="edit-cat-img" value="${data.imageUrl}"></div><button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
+            modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="category"><div class="form-group"><label>Name</label><input type="text" id="edit-cat-name" value="${data.name}"></div><div class="form-group"><label>Category Image</label><p class="image-upload-hint">Recommended ratio: 1:1 (square). Images larger than 50 KB are compressed automatically.</p><div id="edit-cat-img" class="single-image-uploader" data-required="true"></div></div><button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
+             setupSingleImageUploader('edit-cat-img');
+             setSingleImageValue('edit-cat-img', data.imageUrl || '');
         } else {
              const catsSnap = await getDocs(query(collection(db, "categories")));
              let catOptions = '';
              catsSnap.forEach(c => catOptions += `<option value="${c.id}" ${c.id===data.categoryId?'selected':''}>${c.data().name}</option>`);
-             modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="product"><div class="form-grid"><div class="form-group"><label>Name</label><input type="text" id="edit-name" value="${data.name}"></div><div class="form-group"><label>Category</label><select id="edit-cat">${catOptions}</select></div><div class="form-group"><label>Price</label><input type="number" id="edit-price" value="${data.price}"></div><div class="form-group"><label>MRP</label><input type="number" id="edit-mrp" value="${data.mrp}"></div><div class="form-group checkbox-group"><input type="checkbox" id="edit-featured" ${data.featured?'checked':''}><label>Featured</label></div><div class="form-group full-width"><label>Specification</label><textarea id="edit-spec" rows="3">${data.specification||''}</textarea></div><div class="form-group full-width"><label>Description</label><textarea id="edit-desc" rows="3">${data.description||''}</textarea></div><div class="form-group full-width"><label>Images</label><div id="edit-image-list" class="image-url-list"></div><button type="button" id="btn-add-edit-image" class="btn btn-secondary" style="margin-top:5px;">${ICONS.edit.replace('Edit', '')} Add Image</button></div><div class="form-group full-width"><label>More Links</label><div id="edit-link-list" class="link-url-list"></div><button type="button" id="btn-add-edit-link" class="btn btn-secondary" style="margin-top:5px;">Add Link</button></div></div><button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
+             modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="product"><div class="form-grid"><div class="form-group"><label>Name</label><input type="text" id="edit-name" value="${data.name}"></div><div class="form-group"><label>Category</label><select id="edit-cat">${catOptions}</select></div><div class="form-group"><label>Price</label><input type="number" id="edit-price" value="${data.price}"></div><div class="form-group"><label>MRP</label><input type="number" id="edit-mrp" value="${data.mrp}"></div><div class="form-group checkbox-group"><input type="checkbox" id="edit-featured" ${data.featured?'checked':''}><label>Featured</label></div><div class="form-group full-width"><label>Specification</label><textarea id="edit-spec" rows="3">${data.specification||''}</textarea></div><div class="form-group full-width"><label>Description</label><textarea id="edit-desc" rows="3">${data.description||''}</textarea></div><div class="form-group full-width"><label>Images</label><p class="image-upload-hint">Recommended ratio: 1:1 (square). Images larger than 50 KB are compressed automatically.</p><div id="edit-image-list" class="image-url-list"></div><button type="button" id="btn-add-edit-image" class="btn btn-secondary" style="margin-top:5px;">${ICONS.edit.replace('Edit', '')} Add Image</button></div><div class="form-group full-width"><label>More Links</label><div id="edit-link-list" class="link-url-list"></div><button type="button" id="btn-add-edit-link" class="btn btn-secondary" style="margin-top:5px;">Add Link</button></div></div><button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
              setupImageUploader('edit-image-list', 'btn-add-edit-image');
              populateImageUploader('edit-image-list', data.images);
              setupMoreLinksUploader('edit-link-list', 'btn-add-edit-link');
@@ -593,7 +718,9 @@ async function openEditModal(id, type) {
                 const eType = document.getElementById('edit-type').value;
                 let updateData = {};
                 if(eType === 'category') {
-                    updateData = { name: document.getElementById('edit-cat-name').value, imageUrl: document.getElementById('edit-cat-img').value };
+                    const imageUrl = getSingleImageValue('edit-cat-img');
+                    if (!imageUrl) throw new Error('Please select a category image.');
+                    updateData = { name: document.getElementById('edit-cat-name').value, imageUrl };
                 } else {
                     const imgs = getImageUrlsFromUploader('edit-image-list');
                     if(!imgs.length) throw new Error("At least 1 image required");

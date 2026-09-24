@@ -43,7 +43,7 @@ let categoriesMap = new Map();
 let activeDiscount = null;
 
 // --- പേജ് ലോഡ് ആവുമ്പോൾ ---
-document.addEventListener("DOMContentLoaded", async () => {
+export async function initCategoriesPage() {
     await loadSiteSettings(); 
     await loadCategoryList(); 
     
@@ -60,7 +60,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     setupScrollAnimation(); 
     updateActiveCategoryUI(currentCategoryId);
     applyFilters(); 
-});
+}
+document.addEventListener("DOMContentLoaded", initCategoriesPage, { once: true });
 
 // --- SCROLL ANIMATION ---
 function setupScrollAnimation() {

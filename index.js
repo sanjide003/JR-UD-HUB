@@ -16,7 +16,7 @@ import { loadSiteSettings, optimizeImage } from './common.js';
 
 setLogLevel('Silent');
 
-document.addEventListener("DOMContentLoaded", () => {
+export function initHomePage() {
     loadSiteSettings();
     loadHomeBanner(); 
     loadHeroSlider();
@@ -30,7 +30,8 @@ document.addEventListener("DOMContentLoaded", () => {
     loadHomeCategories(); 
     
     setupScrollReveal();
-});
+}
+document.addEventListener("DOMContentLoaded", initHomePage, { once: true });
 
 function setupScrollReveal() {
     const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };

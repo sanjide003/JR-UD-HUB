@@ -884,3 +884,67 @@ body.light-mode .logo-preview-box img { background: #fff; }
         font-size: 0.9rem;
     }
 }
+/* Firestore/Base64 image upload controls */
+.image-upload-hint {
+    margin: -4px 0 8px;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+.single-image-uploader,
+.image-url-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+.image-file-control {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    min-height: 38px;
+    padding: 0 13px;
+    border: 1px solid var(--primary-gold);
+    border-radius: var(--radius-sm);
+    color: var(--primary-gold);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.image-file-control input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+.uploaded-image-preview {
+    display: contents;
+}
+.uploaded-image-preview img {
+    width: 46px;
+    height: 46px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    object-fit: cover;
+}
+.image-upload-status {
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+}
+.is-processing .image-file-control {
+    opacity: 0.55;
+    pointer-events: none;
+}
+.image-url-item .btn-remove-image {
+    margin-left: auto;
+}
+
+.password-input { position: relative; }
+.password-input input { padding-right: 48px; }
+.password-input button {
+    position: absolute; right: 7px; top: 50%; transform: translateY(-50%);
+    border: 0; background: transparent; cursor: pointer; font-size: 1.1rem; padding: 6px;
+}
+.list-controls { display: grid; grid-template-columns: repeat(2, minmax(0, 300px)); gap: 14px; margin: 0 0 16px; }
+@media (max-width: 600px) { .list-controls { grid-template-columns: 1fr; } }
