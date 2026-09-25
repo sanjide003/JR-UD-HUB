@@ -903,8 +903,10 @@ body.light-mode .logo-preview-box img { background: #fff; }
     overflow: hidden;
     display: inline-flex;
     align-items: center;
-    min-height: 38px;
-    padding: 0 13px;
+    justify-content: center;
+    width: 42px;
+    height: 38px;
+    padding: 0;
     border: 1px solid var(--primary-gold);
     border-radius: var(--radius-sm);
     color: var(--primary-gold);
@@ -912,6 +914,7 @@ body.light-mode .logo-preview-box img { background: #fff; }
     font-weight: 600;
     cursor: pointer;
 }
+.image-file-control svg { width: 20px; height: 20px; }
 .image-file-control input {
     position: absolute;
     inset: 0;
@@ -927,6 +930,14 @@ body.light-mode .logo-preview-box img { background: #fff; }
     border: 1px solid var(--border-color);
     border-radius: 5px;
     object-fit: cover;
+}
+.hero-slide-preview {
+    width: 82px;
+    height: 52px;
+    display: block;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
 }
 .image-upload-status {
     color: var(--text-secondary);

@@ -28,7 +28,9 @@ const ICONS = {
     trash: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
     edit: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`,
     x: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
-    star: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+    star: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`,
+    gallery: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path></svg>`,
+    camera: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4 16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>`
 };
 
 // DOM Elements
@@ -536,8 +538,8 @@ function loadHeroSlides() {
         heroSlidesListBody.innerHTML = '';
         snap.forEach(d => {
             const s = d.data();
-            const preview = s.type === 'image' ? `<img src="${optimizeImage(s.url, 100)}">` : 'Video';
-            heroSlidesListBody.innerHTML += `<tr><td data-label="Preview">${preview}</td><td data-label="Type">${s.type}</td><td data-label="Order">${s.order}</td><td data-label="URL">${s.url}</td><td data-label="Actions"><button class="btn btn-delete" data-id="${d.id}" data-type="heroSlide">${ICONS.trash} Delete</button></td></tr>`;
+            const preview = s.type === 'image' ? `<img class="hero-slide-preview" src="${optimizeImage(s.url, 160)}" alt="Hero slide preview">` : 'Video';
+            heroSlidesListBody.innerHTML += `<tr><td data-label="Preview">${preview}</td><td data-label="Type">${s.type}</td><td data-label="Order">${s.order}</td><td data-label="Actions"><button class="btn btn-delete" data-id="${d.id}" data-type="heroSlide">${ICONS.trash} Delete</button></td></tr>`;
         });
     });
 }
@@ -582,7 +584,7 @@ async function compressImage(file) {
 }
 
 function imageUploaderMarkup() {
-    return `<label class="image-file-control"><span>Choose from gallery</span><input type="file" accept="image/*" data-image-source="gallery"></label><label class="image-file-control"><span>Use camera</span><input type="file" accept="image/*" capture="environment" data-image-source="camera"></label><div class="uploaded-image-preview" aria-live="polite"></div><span class="image-upload-status">No image selected</span>`;
+    return `<label class="image-file-control" title="Choose from gallery" aria-label="Choose from gallery">${ICONS.gallery}<input type="file" accept="image/*" data-image-source="gallery"></label><label class="image-file-control" title="Use camera" aria-label="Use camera">${ICONS.camera}<input type="file" accept="image/*" capture="environment" data-image-source="camera"></label><div class="uploaded-image-preview" aria-live="polite"></div><span class="image-upload-status">No image selected</span>`;
 }
 
 function bindImageUploadInputs(container) {
