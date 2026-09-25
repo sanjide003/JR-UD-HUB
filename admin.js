@@ -421,6 +421,7 @@ function loadProducts(catId = "all") {
                     <td data-label="Name">${p.name} ${p.featured ? ICONS.star : ''}</td>
                     <td data-label="Price">₹${p.price}</td>
                     <td data-label="Actions">
+                        <button class="btn btn-feature-toggle ${p.featured ? 'is-featured' : ''}" title="${p.featured ? 'Remove from featured' : 'Add to featured'}" aria-label="${p.featured ? 'Remove from featured' : 'Add to featured'}" data-id="${d.id}" data-featured="${p.featured ? 'true' : 'false'}">${ICONS.star}</button>
                         <button class="btn btn-edit" data-id="${d.id}" data-type="product">${ICONS.edit} Edit</button>
                         <button class="btn btn-delete" data-id="${d.id}" data-type="product">${ICONS.trash} Delete</button>
                     </td>
@@ -539,7 +540,7 @@ function loadHeroSlides() {
         snap.forEach(d => {
             const s = d.data();
             const preview = s.type === 'image' ? `<img class="hero-slide-preview" src="${optimizeImage(s.url, 160)}" alt="Hero slide preview">` : 'Video';
-            heroSlidesListBody.innerHTML += `<tr><td data-label="Preview">${preview}</td><td data-label="Type">${s.type}</td><td data-label="Order">${s.order}</td><td data-label="Actions"><button class="btn btn-delete" data-id="${d.id}" data-type="heroSlide">${ICONS.trash} Delete</button></td></tr>`;
+            heroSlidesListBody.innerHTML += `<tr><td data-label="Preview">${preview}</td><td data-label="Type">${s.type}</td><td data-label="Order">${s.order}</td><td data-label="Actions"><button class="btn btn-edit" data-id="${d.id}" data-type="heroSlide">${ICONS.edit} Edit</button><button class="btn btn-delete" data-id="${d.id}" data-type="heroSlide">${ICONS.trash} Delete</button></td></tr>`;
         });
     });
 }
@@ -674,13 +675,25 @@ function populateMoreLinksUploader(cid, links) { const c=document.getElementById
 
 // Deletion
 document.body.addEventListener('click', e => {
-    if(e.target.classList.contains('btn-delete')) {
-        deleteInfo = { id: e.target.dataset.id, type: e.target.dataset.type };
+    const deleteButton = e.target.closest('.btn-delete');
+    const editButton = e.target.closest('.btn-edit');
+    const featureButton = e.target.closest('.btn-feature-toggle');
+    if(deleteButton) {
+        deleteInfo = { id: deleteButton.dataset.id, type: deleteButton.dataset.type };
         document.getElementById('confirm-message').textContent = `Delete this ${deleteInfo.type}?`;
         confirmModal.style.display = 'flex';
     }
-    if(e.target.classList.contains('btn-edit')) openEditModal(e.target.dataset.id, e.target.dataset.type);
+    if(editButton) openEditModal(editButton.dataset.id, editButton.dataset.type);
+    if(featureButton) toggleFeaturedProduct(featureButton);
 });
+async function toggleFeaturedProduct(button) {
+    const featured = button.dataset.featured === 'true';
+    button.disabled = true;
+    try {
+        await updateDoc(doc(db, 'products', button.dataset.id), { featured: !featured });
+        showStatus(null, featured ? 'Removed from featured products' : 'Added to featured products', false);
+    } catch(error) { showStatus(null, error.message); } finally { button.disabled = false; }
+}
 confirmBtnCancel.onclick = confirmCloseButton.onclick = () => confirmModal.style.display = 'none';
 confirmBtnDelete.onclick = async () => {
     disableButton(confirmBtnDelete, "Deleting...");
@@ -695,12 +708,16 @@ async function openEditModal(id, type) {
     editModal.style.display = 'flex';
     modalForm.innerHTML = '<p style="text-align:center;padding:20px;">Loading...</p>';
     try {
-        const col = type === 'product' ? 'products' : 'categories';
+        const col = type === 'product' ? 'products' : type === 'heroSlide' ? 'heroSlides' : 'categories';
         const docSnap = await getDoc(doc(db, col, id));
         if(!docSnap.exists()) throw new Error("Item not found");
         const data = docSnap.data();
 
-        if(type === 'category') {
+        if(type === 'heroSlide') {
+            modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="heroSlide"><div class="form-grid"><div class="form-group"><label>Slide Type</label><select id="edit-hero-type"><option value="image" ${data.type === 'image' ? 'selected' : ''}>Image</option><option value="video" ${data.type === 'video' ? 'selected' : ''}>Video</option></select></div><div class="form-group"><label>Order</label><input type="number" id="edit-hero-order" value="${data.order || 1}" required></div><div class="form-group full-width"><label id="edit-hero-source-label">${data.type === 'image' ? 'Hero Image' : 'Video URL'}</label><div id="edit-hero-source"></div></div></div><button type="submit" class="btn btn-save" id="save-edit-btn">Save Changes</button>`;
+            renderHeroEditSource(data.type, data.url || '');
+            document.getElementById('edit-hero-type').addEventListener('change', event => renderHeroEditSource(event.target.value));
+        } else if(type === 'category') {
             modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="category"><div class="form-group"><label>Name</label><input type="text" id="edit-cat-name" value="${data.name}"></div><div class="form-group"><label>Category Image</label><p class="image-upload-hint">Recommended ratio: 1:1 (square). Images larger than 50 KB are compressed automatically.</p><div id="edit-cat-img" class="single-image-uploader" data-required="true"></div></div><button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
              setupSingleImageUploader('edit-cat-img');
              setSingleImageValue('edit-cat-img', data.imageUrl || '');
@@ -722,7 +739,12 @@ async function openEditModal(id, type) {
                 const eId = document.getElementById('edit-id').value;
                 const eType = document.getElementById('edit-type').value;
                 let updateData = {};
-                if(eType === 'category') {
+                if(eType === 'heroSlide') {
+                    const slideType = document.getElementById('edit-hero-type').value;
+                    const source = slideType === 'image' ? getSingleImageValue('edit-hero-source') : document.getElementById('edit-hero-video-url').value.trim();
+                    if (!source) throw new Error('Please select an image or enter a video URL.');
+                    updateData = { type: slideType, url: source, order: Number(document.getElementById('edit-hero-order').value) || 1 };
+                } else if(eType === 'category') {
                     const imageUrl = getSingleImageValue('edit-cat-img');
                     if (!imageUrl) throw new Error('Please select a category image.');
                     updateData = { name: document.getElementById('edit-cat-name').value, imageUrl };
@@ -745,5 +767,20 @@ async function openEditModal(id, type) {
             } catch(err) { showStatus(null, err.message); enableButton(btn, "Save Changes"); }
         });
     } catch(e) { console.error(e); editModal.style.display = 'none'; showStatus(null, e.message); }
+}
+function renderHeroEditSource(type, value = '') {
+    const source = document.getElementById('edit-hero-source');
+    const label = document.getElementById('edit-hero-source-label');
+    if (type === 'image') {
+        label.textContent = 'Hero Image';
+        source.className = 'single-image-uploader';
+        source.dataset.ready = '';
+        setupSingleImageUploader('edit-hero-source');
+        setSingleImageValue('edit-hero-source', value);
+    } else {
+        label.textContent = 'Video URL';
+        source.className = '';
+        source.innerHTML = `<input type="url" id="edit-hero-video-url" placeholder="https://…" value="${value}" required>`;
+    }
 }
 modalCloseButton.onclick = () => editModal.style.display = 'none';
