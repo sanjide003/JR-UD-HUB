@@ -362,26 +362,26 @@ body.light-mode .icon-moon { opacity: 0; }
     display: inline-flex; 
     align-items: center; 
     justify-content: center; 
-    gap: 8px;
-    padding: 12px 24px; 
+    gap: 6px;
+    min-height: 36px;
+    padding: 8px 12px;
     border-radius: var(--radius-sm); 
     border: none;
     cursor: pointer; 
     font-weight: 600; 
-    font-size: 0.95rem;
+    font-size: 0.85rem;
     transition: transform 0.1s, opacity 0.2s;
     color: #fff;
     user-select: none;
 }
 .btn:active { transform: scale(0.97); }
 
-.mt-large { margin-top: 20px; width: 100%; } 
+.mt-large { margin-top: 20px; }
 
 .btn-save { background-color: var(--btn-save-bg); }
-.btn-edit { background-color: var(--btn-edit-bg); padding: 8px 12px; font-size: 0.85rem; }
+.btn-edit { background-color: var(--btn-edit-bg); }
 .btn-delete, .btn-logout { background-color: var(--btn-delete-bg); }
-.btn-delete { padding: 8px 12px; font-size: 0.85rem; }
-.btn-secondary { background-color: var(--btn-secondary-bg); font-size: 0.85rem; padding: 8px 16px; }
+.btn-secondary { background-color: var(--btn-secondary-bg); }
 .btn-remove-featured { background-color: #f59e0b; padding: 6px 12px; font-size: 0.8rem; border-radius: var(--radius-sm); }
 .full-width-logout { width: 100%; margin-top: 0; } 
 
@@ -401,16 +401,20 @@ body.light-mode .icon-moon { opacity: 0; }
 }
 
 .btn svg { width: 18px; height: 18px; }
+.btn-feature-toggle { width: 36px; padding: 7px; background: #64748b; }
+.btn-feature-toggle.is-featured { background: #f59e0b; color: #1f2937; }
+.btn-feature-toggle svg { fill: none; }
+.btn-feature-toggle.is-featured svg { fill: currentColor; }
 
 /* Mobile buttons */
 @media (max-width: 768px) {
     .btn {
-        padding: 10px 18px;
-        font-size: 0.9rem;
+        min-height: 36px;
+        padding: 8px 10px;
+        font-size: 0.82rem;
     }
     .btn-edit, .btn-delete {
-        padding: 6px 10px;
-        font-size: 0.8rem;
+        padding: 7px 9px;
     }
 }
 
@@ -853,10 +857,7 @@ body.light-mode .logo-preview-box img { background: #fff; }
         margin-bottom: 10px;
     }
     
-    .btn {
-        width: 100%;
-        justify-content: center;
-    }
+    .btn { width: auto; justify-content: center; }
     
     /* Fix for inline elements on mobile */
     .inline-image-input-container {
@@ -903,8 +904,10 @@ body.light-mode .logo-preview-box img { background: #fff; }
     overflow: hidden;
     display: inline-flex;
     align-items: center;
-    min-height: 38px;
-    padding: 0 13px;
+    justify-content: center;
+    width: 42px;
+    height: 38px;
+    padding: 0;
     border: 1px solid var(--primary-gold);
     border-radius: var(--radius-sm);
     color: var(--primary-gold);
@@ -912,6 +915,7 @@ body.light-mode .logo-preview-box img { background: #fff; }
     font-weight: 600;
     cursor: pointer;
 }
+.image-file-control svg { width: 20px; height: 20px; }
 .image-file-control input {
     position: absolute;
     inset: 0;
@@ -927,6 +931,14 @@ body.light-mode .logo-preview-box img { background: #fff; }
     border: 1px solid var(--border-color);
     border-radius: 5px;
     object-fit: cover;
+}
+.hero-slide-preview {
+    width: 82px;
+    height: 52px;
+    display: block;
+    object-fit: cover;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
 }
 .image-upload-status {
     color: var(--text-secondary);

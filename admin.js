@@ -28,7 +28,9 @@ const ICONS = {
     trash: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>`,
     edit: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>`,
     x: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
-    star: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`
+    star: `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>`,
+    gallery: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><path d="m21 15-5-5L5 21"></path></svg>`,
+    camera: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.5 4 16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1.5-3z"></path><circle cx="12" cy="13" r="3"></circle></svg>`
 };
 
 // DOM Elements
@@ -216,7 +218,6 @@ async function loadAllSettings() {
             set("setting-logo-text", s.logoText);
             set("setting-logo-subtitle", s.logoSubtitle);
             set("setting-home-banner-url", s.homeBannerUrl);
-            set("setting-chatbot-number", s.chatbotNumber);
             set("setting-dealer-number", s.dealerChatNumber);
             set("setting-phone", s.phone);
             set("setting-email", s.email);
@@ -255,7 +256,6 @@ bindSave("general-settings-form", "save-general-settings-button", "Save General 
     logoText: document.getElementById("setting-logo-text").value,
     logoSubtitle: document.getElementById("setting-logo-subtitle").value,
     homeBannerUrl: getSingleImageValue('setting-home-banner-url'),
-    chatbotNumber: document.getElementById("setting-chatbot-number").value,
     dealerChatNumber: document.getElementById("setting-dealer-number").value
 }));
 bindSave("contact-settings-form", "save-contact-settings-button", "Save Details", () => ({
@@ -421,6 +421,7 @@ function loadProducts(catId = "all") {
                     <td data-label="Name">${p.name} ${p.featured ? ICONS.star : ''}</td>
                     <td data-label="Price">₹${p.price}</td>
                     <td data-label="Actions">
+                        <button class="btn btn-feature-toggle ${p.featured ? 'is-featured' : ''}" title="${p.featured ? 'Remove from featured' : 'Add to featured'}" aria-label="${p.featured ? 'Remove from featured' : 'Add to featured'}" data-id="${d.id}" data-featured="${p.featured ? 'true' : 'false'}">${ICONS.star}</button>
                         <button class="btn btn-edit" data-id="${d.id}" data-type="product">${ICONS.edit} Edit</button>
                         <button class="btn btn-delete" data-id="${d.id}" data-type="product">${ICONS.trash} Delete</button>
                     </td>
@@ -442,6 +443,11 @@ addProductForm.addEventListener("submit", async (e) => {
             categoryId: document.getElementById("product-category").value,
             name: document.getElementById("product-name").value,
             specification: document.getElementById("product-specification").value,
+            ingredients: document.getElementById("product-ingredients").value,
+            proteinPerServing: document.getElementById("product-protein").value,
+            dietTags: document.getElementById("product-diet-tags").value,
+            nutrition: document.getElementById("product-nutrition").value,
+            allergens: document.getElementById("product-allergens").value,
             mrp: Number(document.getElementById("product-mrp").value)||0,
             price: Number(document.getElementById("product-price").value)||0,
             description: document.getElementById("product-description").value,
@@ -533,8 +539,8 @@ function loadHeroSlides() {
         heroSlidesListBody.innerHTML = '';
         snap.forEach(d => {
             const s = d.data();
-            const preview = s.type === 'image' ? `<img src="${optimizeImage(s.url, 100)}">` : 'Video';
-            heroSlidesListBody.innerHTML += `<tr><td data-label="Preview">${preview}</td><td data-label="Type">${s.type}</td><td data-label="Order">${s.order}</td><td data-label="URL">${s.url}</td><td data-label="Actions"><button class="btn btn-delete" data-id="${d.id}" data-type="heroSlide">${ICONS.trash} Delete</button></td></tr>`;
+            const preview = s.type === 'image' ? `<img class="hero-slide-preview" src="${optimizeImage(s.url, 160)}" alt="Hero slide preview">` : 'Video';
+            heroSlidesListBody.innerHTML += `<tr><td data-label="Preview">${preview}</td><td data-label="Type">${s.type}</td><td data-label="Order">${s.order}</td><td data-label="Actions"><button class="btn btn-edit" data-id="${d.id}" data-type="heroSlide">${ICONS.edit} Edit</button><button class="btn btn-delete" data-id="${d.id}" data-type="heroSlide">${ICONS.trash} Delete</button></td></tr>`;
         });
     });
 }
@@ -579,7 +585,7 @@ async function compressImage(file) {
 }
 
 function imageUploaderMarkup() {
-    return `<label class="image-file-control"><span>Choose from gallery</span><input type="file" accept="image/*" data-image-source="gallery"></label><label class="image-file-control"><span>Use camera</span><input type="file" accept="image/*" capture="environment" data-image-source="camera"></label><div class="uploaded-image-preview" aria-live="polite"></div><span class="image-upload-status">No image selected</span>`;
+    return `<label class="image-file-control" title="Choose from gallery" aria-label="Choose from gallery">${ICONS.gallery}<input type="file" accept="image/*" data-image-source="gallery"></label><label class="image-file-control" title="Use camera" aria-label="Use camera">${ICONS.camera}<input type="file" accept="image/*" capture="environment" data-image-source="camera"></label><div class="uploaded-image-preview" aria-live="polite"></div><span class="image-upload-status">No image selected</span>`;
 }
 
 function bindImageUploadInputs(container) {
@@ -669,13 +675,25 @@ function populateMoreLinksUploader(cid, links) { const c=document.getElementById
 
 // Deletion
 document.body.addEventListener('click', e => {
-    if(e.target.classList.contains('btn-delete')) {
-        deleteInfo = { id: e.target.dataset.id, type: e.target.dataset.type };
+    const deleteButton = e.target.closest('.btn-delete');
+    const editButton = e.target.closest('.btn-edit');
+    const featureButton = e.target.closest('.btn-feature-toggle');
+    if(deleteButton) {
+        deleteInfo = { id: deleteButton.dataset.id, type: deleteButton.dataset.type };
         document.getElementById('confirm-message').textContent = `Delete this ${deleteInfo.type}?`;
         confirmModal.style.display = 'flex';
     }
-    if(e.target.classList.contains('btn-edit')) openEditModal(e.target.dataset.id, e.target.dataset.type);
+    if(editButton) openEditModal(editButton.dataset.id, editButton.dataset.type);
+    if(featureButton) toggleFeaturedProduct(featureButton);
 });
+async function toggleFeaturedProduct(button) {
+    const featured = button.dataset.featured === 'true';
+    button.disabled = true;
+    try {
+        await updateDoc(doc(db, 'products', button.dataset.id), { featured: !featured });
+        showStatus(null, featured ? 'Removed from featured products' : 'Added to featured products', false);
+    } catch(error) { showStatus(null, error.message); } finally { button.disabled = false; }
+}
 confirmBtnCancel.onclick = confirmCloseButton.onclick = () => confirmModal.style.display = 'none';
 confirmBtnDelete.onclick = async () => {
     disableButton(confirmBtnDelete, "Deleting...");
@@ -690,12 +708,16 @@ async function openEditModal(id, type) {
     editModal.style.display = 'flex';
     modalForm.innerHTML = '<p style="text-align:center;padding:20px;">Loading...</p>';
     try {
-        const col = type === 'product' ? 'products' : 'categories';
+        const col = type === 'product' ? 'products' : type === 'heroSlide' ? 'heroSlides' : 'categories';
         const docSnap = await getDoc(doc(db, col, id));
         if(!docSnap.exists()) throw new Error("Item not found");
         const data = docSnap.data();
 
-        if(type === 'category') {
+        if(type === 'heroSlide') {
+            modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="heroSlide"><div class="form-grid"><div class="form-group"><label>Slide Type</label><select id="edit-hero-type"><option value="image" ${data.type === 'image' ? 'selected' : ''}>Image</option><option value="video" ${data.type === 'video' ? 'selected' : ''}>Video</option></select></div><div class="form-group"><label>Order</label><input type="number" id="edit-hero-order" value="${data.order || 1}" required></div><div class="form-group full-width"><label id="edit-hero-source-label">${data.type === 'image' ? 'Hero Image' : 'Video URL'}</label><div id="edit-hero-source"></div></div></div><button type="submit" class="btn btn-save" id="save-edit-btn">Save Changes</button>`;
+            renderHeroEditSource(data.type, data.url || '');
+            document.getElementById('edit-hero-type').addEventListener('change', event => renderHeroEditSource(event.target.value));
+        } else if(type === 'category') {
             modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="category"><div class="form-group"><label>Name</label><input type="text" id="edit-cat-name" value="${data.name}"></div><div class="form-group"><label>Category Image</label><p class="image-upload-hint">Recommended ratio: 1:1 (square). Images larger than 50 KB are compressed automatically.</p><div id="edit-cat-img" class="single-image-uploader" data-required="true"></div></div><button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
              setupSingleImageUploader('edit-cat-img');
              setSingleImageValue('edit-cat-img', data.imageUrl || '');
@@ -703,7 +725,7 @@ async function openEditModal(id, type) {
              const catsSnap = await getDocs(query(collection(db, "categories")));
              let catOptions = '';
              catsSnap.forEach(c => catOptions += `<option value="${c.id}" ${c.id===data.categoryId?'selected':''}>${c.data().name}</option>`);
-             modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="product"><div class="form-grid"><div class="form-group"><label>Name</label><input type="text" id="edit-name" value="${data.name}"></div><div class="form-group"><label>Category</label><select id="edit-cat">${catOptions}</select></div><div class="form-group"><label>Price</label><input type="number" id="edit-price" value="${data.price}"></div><div class="form-group"><label>MRP</label><input type="number" id="edit-mrp" value="${data.mrp}"></div><div class="form-group checkbox-group"><input type="checkbox" id="edit-featured" ${data.featured?'checked':''}><label>Featured</label></div><div class="form-group full-width"><label>Specification</label><textarea id="edit-spec" rows="3">${data.specification||''}</textarea></div><div class="form-group full-width"><label>Description</label><textarea id="edit-desc" rows="3">${data.description||''}</textarea></div><div class="form-group full-width"><label>Images</label><p class="image-upload-hint">Recommended ratio: 1:1 (square). Images larger than 50 KB are compressed automatically.</p><div id="edit-image-list" class="image-url-list"></div><button type="button" id="btn-add-edit-image" class="btn btn-secondary" style="margin-top:5px;">${ICONS.edit.replace('Edit', '')} Add Image</button></div><div class="form-group full-width"><label>More Links</label><div id="edit-link-list" class="link-url-list"></div><button type="button" id="btn-add-edit-link" class="btn btn-secondary" style="margin-top:5px;">Add Link</button></div></div><button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
+             modalForm.innerHTML = `<input type="hidden" id="edit-id" value="${id}"><input type="hidden" id="edit-type" value="product"><div class="form-grid"><div class="form-group"><label>Name</label><input type="text" id="edit-name" value="${data.name}"></div><div class="form-group"><label>Category</label><select id="edit-cat">${catOptions}</select></div><div class="form-group"><label>Price</label><input type="number" id="edit-price" value="${data.price}"></div><div class="form-group"><label>MRP</label><input type="number" id="edit-mrp" value="${data.mrp}"></div><div class="form-group checkbox-group"><input type="checkbox" id="edit-featured" ${data.featured?'checked':''}><label>Featured</label></div><div class="form-group full-width"><label>Specification</label><textarea id="edit-spec" rows="3">${data.specification||''}</textarea></div><div class="form-group full-width"><label>Description</label><textarea id="edit-desc" rows="3">${data.description||''}</textarea></div><div class="form-group full-width"><label>Ingredients</label><textarea id="edit-ingredients" rows="3">${data.ingredients||''}</textarea></div><div class="form-group"><label>Protein per Serving</label><input type="text" id="edit-protein" value="${data.proteinPerServing||''}"></div><div class="form-group"><label>Diet Tags</label><input type="text" id="edit-diet-tags" value="${data.dietTags||''}"></div><div class="form-group full-width"><label>Nutrition Information</label><textarea id="edit-nutrition" rows="3">${data.nutrition||''}</textarea></div><div class="form-group full-width"><label>Allergen / Safety Information</label><textarea id="edit-allergens" rows="2">${data.allergens||''}</textarea></div><div class="form-group full-width"><label>Images</label><p class="image-upload-hint">Recommended ratio: 1:1 (square). Images larger than 50 KB are compressed automatically.</p><div id="edit-image-list" class="image-url-list"></div><button type="button" id="btn-add-edit-image" class="btn btn-secondary" style="margin-top:5px;">${ICONS.edit.replace('Edit', '')} Add Image</button></div><div class="form-group full-width"><label>More Links</label><div id="edit-link-list" class="link-url-list"></div><button type="button" id="btn-add-edit-link" class="btn btn-secondary" style="margin-top:5px;">Add Link</button></div></div><button type="submit" class="btn btn-save" style="margin-top:20px;width:100%" id="save-edit-btn">Save Changes</button>`;
              setupImageUploader('edit-image-list', 'btn-add-edit-image');
              populateImageUploader('edit-image-list', data.images);
              setupMoreLinksUploader('edit-link-list', 'btn-add-edit-link');
@@ -717,7 +739,12 @@ async function openEditModal(id, type) {
                 const eId = document.getElementById('edit-id').value;
                 const eType = document.getElementById('edit-type').value;
                 let updateData = {};
-                if(eType === 'category') {
+                if(eType === 'heroSlide') {
+                    const slideType = document.getElementById('edit-hero-type').value;
+                    const source = slideType === 'image' ? getSingleImageValue('edit-hero-source') : document.getElementById('edit-hero-video-url').value.trim();
+                    if (!source) throw new Error('Please select an image or enter a video URL.');
+                    updateData = { type: slideType, url: source, order: Number(document.getElementById('edit-hero-order').value) || 1 };
+                } else if(eType === 'category') {
                     const imageUrl = getSingleImageValue('edit-cat-img');
                     if (!imageUrl) throw new Error('Please select a category image.');
                     updateData = { name: document.getElementById('edit-cat-name').value, imageUrl };
@@ -728,7 +755,10 @@ async function openEditModal(id, type) {
                         name: document.getElementById('edit-name').value, categoryId: document.getElementById('edit-cat').value,
                         price: Number(document.getElementById('edit-price').value), mrp: Number(document.getElementById('edit-mrp').value),
                         featured: document.getElementById('edit-featured').checked, specification: document.getElementById('edit-spec').value,
-                        description: document.getElementById('edit-desc').value, images: imgs, moreLinks: getMoreLinksFromUploader('edit-link-list')
+                        description: document.getElementById('edit-desc').value, ingredients: document.getElementById('edit-ingredients').value,
+                        proteinPerServing: document.getElementById('edit-protein').value, dietTags: document.getElementById('edit-diet-tags').value,
+                        nutrition: document.getElementById('edit-nutrition').value, allergens: document.getElementById('edit-allergens').value,
+                        images: imgs, moreLinks: getMoreLinksFromUploader('edit-link-list')
                     };
                 }
                 await updateDoc(doc(db, col, eId), updateData);
@@ -737,5 +767,20 @@ async function openEditModal(id, type) {
             } catch(err) { showStatus(null, err.message); enableButton(btn, "Save Changes"); }
         });
     } catch(e) { console.error(e); editModal.style.display = 'none'; showStatus(null, e.message); }
+}
+function renderHeroEditSource(type, value = '') {
+    const source = document.getElementById('edit-hero-source');
+    const label = document.getElementById('edit-hero-source-label');
+    if (type === 'image') {
+        label.textContent = 'Hero Image';
+        source.className = 'single-image-uploader';
+        source.dataset.ready = '';
+        setupSingleImageUploader('edit-hero-source');
+        setSingleImageValue('edit-hero-source', value);
+    } else {
+        label.textContent = 'Video URL';
+        source.className = '';
+        source.innerHTML = `<input type="url" id="edit-hero-video-url" placeholder="https://…" value="${value}" required>`;
+    }
 }
 modalCloseButton.onclick = () => editModal.style.display = 'none';
