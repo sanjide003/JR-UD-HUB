@@ -1,7 +1,9 @@
 import { db, auth } from './firebase-config.js';
+import { loadSiteSettings } from './common.js';
 import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendPasswordResetEmail, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js';
 import { doc, getDoc, setDoc, updateDoc, collection, getDocs, addDoc, deleteDoc, query, where, serverTimestamp } from 'https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js';
 const $=id=>document.getElementById(id); const panelIds=['profile-panel','address-panel','orders-panel','security-panel'];
+loadSiteSettings();
 const showMessage=(text,error=false,authMessage=false)=>{const el=$(authMessage?'auth-message':'account-message');el.textContent=text;el.className=`message${error?' error':''}`;};
 const escapeHtml=(value='')=>{const el=document.createElement('div');el.textContent=value;return el.innerHTML;};
 async function removeAnonymous(){if(auth.currentUser?.isAnonymous) await signOut(auth);}
