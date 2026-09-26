@@ -118,7 +118,7 @@ async function buildHeader() {
                 <li><a href="index.html">Home</a></li>
                 <li><a href="explore.html">ChatBot</a></li>
                 <li><a href="categories.html">Catalog</a></li>
-                <li><button id="desktop-account-btn">Account</button></li>
+                <li><a href="account.html">Account</a></li>
             </ul>
         </nav>
         <div class="header-right-section">
@@ -236,7 +236,7 @@ function buildUserMenuHTML(settings) {
             <ul class="user-menu-list">
                 ${chatbotHTML}
                 ${dealerChatHTML}
-                <li><a href="cart.html" class="user-menu-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span>Your Orders</span></a></li>
+                <li><a href="account.html" class="user-menu-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2-2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span>My Account & Orders</span></a></li>
                 <li><button class="user-menu-action-btn" id="theme-switch-btn">
                     ${themeIcon}
                     <span id="theme-btn-text">${themeText}</span>

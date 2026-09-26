@@ -1,7 +1,7 @@
 // cart-page.js - Fix: Single Item Buy vs Full Cart Buy Separation
 
-import { db } from './firebase-config.js';
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+import { db, auth } from './firebase-config.js';
+import { doc, getDoc, getDocs, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 import { loadSiteSettings, optimizeImage } from './common.js'; 
 import { getCartItems, updateQuantity, removeFromCart, getCartTotal, getCartItemCount, getCartTotalMRP, clearCart, addToCart } from './cart.js'; 
 
@@ -149,15 +149,15 @@ function setupModalListeners() {
         confirmPaymentBtn.replaceWith(confirmPaymentBtn.cloneNode(true));
         const newConfirmBtn = document.getElementById('confirm-payment-btn');
         
-        newConfirmBtn.addEventListener('click', () => {
+        newConfirmBtn.addEventListener('click', async () => {
             let selectedMode = 'online';
             paymentRadios.forEach(r => { if(r.checked) selectedMode = r.value; });
             
             // Check Transaction Type
             if (pendingTransaction.type === 'single' && pendingTransaction.itemId) {
-                handleSingleOrder(pendingTransaction.itemId, selectedMode);
+                await handleSingleOrder(pendingTransaction.itemId, selectedMode);
             } else {
-                handleFullOrder(selectedMode);
+                await handleFullOrder(selectedMode);
             }
             
             paymentModal.style.display = 'none';
@@ -333,7 +333,18 @@ if (fullCheckoutButton) {
     });
 }
 
-function handleSingleOrder(itemId, paymentMode = 'online') {
+async function saveOrder(items, total, paymentMode) {
+    const user = auth.currentUser;
+    if (!user || user.isAnonymous) { showError('Please sign in and add a delivery address before placing an order.'); window.location.href = 'account.html'; return false; }
+    const addresses = await getDocs(collection(db, 'users', user.uid, 'addresses'));
+    if (addresses.empty) { showError('Please add a delivery address in My Account first.'); window.location.href = 'account.html'; return false; }
+    const addressDoc = addresses.docs.find(item => item.data().isDefault) || addresses.docs[0];
+    const profile = await getDoc(doc(db, 'users', user.uid));
+    await addDoc(collection(db, 'orders'), { userId: user.uid, customerSnapshot: { name: profile.data()?.displayName || user.displayName || '', email: user.email || '', phone: user.phoneNumber || '' }, deliveryAddressSnapshot: addressDoc.data(), items: items.map(({ id, name, price, quantity, size, image }) => ({ id: id || '', name, price: Number(price), quantity: Number(quantity), size: size || '', image: image || '' })), total: Number(total), paymentMethod: paymentMode, paymentStatus: 'pending', orderStatus: 'Pending', createdAt: serverTimestamp(), updatedAt: serverTimestamp() });
+    return true;
+}
+
+async function handleSingleOrder(itemId, paymentMode = 'online') {
     if (!whatsappNumber) return showError("WhatsApp number not set by admin.");
     const cart = getCartItems();
     const item = cart[itemId];
@@ -345,7 +356,7 @@ function handleSingleOrder(itemId, paymentMode = 'online') {
         const itemTotal = item.price * item.quantity;
         const itemDiscount = itemMRP - itemTotal;
         
-        // Pass single item in array
+        if (!await saveOrder([item], itemTotal, paymentMode)) { showLoader(false); return; }
         const message = generateWhatsAppMessage([item], itemTotal, itemMRP, itemDiscount, paymentMode);
         const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
         window.open(whatsappUrl, '_blank');
@@ -353,7 +364,7 @@ function handleSingleOrder(itemId, paymentMode = 'online') {
     }
 }
 
-function handleFullOrder(paymentMode = 'online') {
+async function handleFullOrder(paymentMode = 'online') {
     if (!whatsappNumber) return showError("WhatsApp number not set by admin.");
     
     const cart = getCartItems();
@@ -369,6 +380,7 @@ function handleFullOrder(paymentMode = 'online') {
     const totalMRP = getCartTotalMRP();
     const discount = totalMRP - total;
     
+    if (!await saveOrder(cartItems, total, paymentMode)) { showLoader(false); return; }
     const message = generateWhatsAppMessage(cartItems, total, totalMRP, discount, paymentMode);
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     

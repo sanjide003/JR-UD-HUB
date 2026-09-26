@@ -73,6 +73,8 @@ const confirmModal = document.getElementById("confirm-modal");
 const confirmBtnDelete = document.getElementById("confirm-btn-delete");
 const confirmCloseButton = document.getElementById("confirm-close-button");
 const confirmBtnCancel = document.getElementById("confirm-btn-cancel");
+const customersListBody = document.getElementById("customers-list-body");
+const ordersListBody = document.getElementById("orders-list-body");
 
 let currentProductsQuery = null;
 let currentFeaturedQuery = null;
@@ -155,16 +157,23 @@ loginForm.addEventListener("submit", async (e) => {
 logoutButtons.forEach(btn => btn.addEventListener("click", () => signOut(auth)));
 document.querySelector('.full-width-logout').addEventListener('click', () => signOut(auth));
 
-onAuthStateChanged(auth, (user) => {
-    if (user && !user.isAnonymous) {
+onAuthStateChanged(auth, async (user) => {
+    const admin = user && !user.isAnonymous && await isAdminUser(user);
+    if (admin) {
         loginSection.style.display = "none";
         adminPanel.style.display = "block";
         loadInitialData();
     } else {
         loginSection.style.display = "block";
         adminPanel.style.display = "none";
+        if (user && !user.isAnonymous) showStatus(null, "This account is not an admin. Add its UID to Firestore admins collection.", true);
     }
 });
+
+async function isAdminUser(user) {
+    try { return (await getDoc(doc(db, 'admins', user.uid))).exists(); }
+    catch (error) { return false; }
+}
 
 // Theme
 if(localStorage.getItem('admin-theme') === 'light') document.body.classList.add('light-mode');
@@ -205,7 +214,31 @@ function loadInitialData() {
     setupSingleImageUploader('top-deals-banner-input');
     setupHeroSlideSource();
     setupListControls();
+    loadCustomersAndOrders();
 }
+
+async function loadCustomersAndOrders() {
+    if (!customersListBody || !ordersListBody) return;
+    try {
+        const [usersSnap, ordersSnap] = await Promise.all([getDocs(collection(db, 'users')), getDocs(collection(db, 'orders'))]);
+        customersListBody.innerHTML = usersSnap.empty ? '<tr><td colspan="3">No customers yet.</td></tr>' : '';
+        usersSnap.forEach(item => {
+            const user = item.data(); const joined = user.createdAt?.toDate?.().toLocaleDateString() || '-';
+            customersListBody.innerHTML += `<tr><td>${escapeAdmin(user.displayName || '-')}</td><td>${escapeAdmin(user.email || user.phoneNumber || '-')}</td><td>${joined}</td></tr>`;
+        });
+        const orders = ordersSnap.docs.sort((a,b) => (b.data().createdAt?.seconds || 0) - (a.data().createdAt?.seconds || 0));
+        ordersListBody.innerHTML = orders.length ? '' : '<tr><td colspan="5">No orders yet.</td></tr>';
+        orders.forEach(item => {
+            const order = item.data(); const customer = order.customerSnapshot?.name || order.customerSnapshot?.email || '-';
+            ordersListBody.innerHTML += `<tr><td>#${item.id.slice(-6).toUpperCase()}</td><td>${escapeAdmin(customer)}</td><td>₹${Number(order.total || 0).toFixed(2)}</td><td>${escapeAdmin(order.orderStatus || 'Pending')}</td><td><select data-order-status="${item.id}"><option ${order.orderStatus==='Pending'?'selected':''}>Pending</option><option ${order.orderStatus==='Confirmed'?'selected':''}>Confirmed</option><option ${order.orderStatus==='Packed'?'selected':''}>Packed</option><option ${order.orderStatus==='Shipped'?'selected':''}>Shipped</option><option ${order.orderStatus==='Delivered'?'selected':''}>Delivered</option><option ${order.orderStatus==='Cancelled'?'selected':''}>Cancelled</option></select></td></tr>`;
+        });
+        ordersListBody.querySelectorAll('[data-order-status]').forEach(select => select.addEventListener('change', async () => {
+            try { await updateDoc(doc(db, 'orders', select.dataset.orderStatus), { orderStatus: select.value, updatedAt: serverTimestamp() }); showStatus(null, 'Order status updated.', false); }
+            catch (error) { showStatus(null, error.message, true); }
+        }));
+    } catch (error) { console.error('Customer/order load error', error); }
+}
+function escapeAdmin(value = '') { const element = document.createElement('div'); element.textContent = value; return element.innerHTML; }
 
 // Settings
 async function loadAllSettings() {
