@@ -54,6 +54,7 @@ function authenticateUser() {
     if (authPromise) return authPromise;
     authPromise = new Promise(async (resolve, reject) => {
         try {
+            await auth.authStateReady();
             if (auth.currentUser) {
                 resolve(auth.currentUser);
                 return;
