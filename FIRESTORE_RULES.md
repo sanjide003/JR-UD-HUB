@@ -6,7 +6,7 @@
 
 1. Open **Firebase Console → Firestore Database → Rules**.
 2. Replace the existing rules with the complete contents of `firestore.rules` from this repository and click **Publish**.
-3. Open **Firebase Console → Authentication → Sign-in method** and enable **Email/Password**, **Google**, and **Phone**. For Google, choose the support email and save.
+3. Open **Firebase Console → Authentication → Sign-in method** and enable **Email/Password** and **Google**. For Google, choose the support email and save.
 4. In **Authentication → Settings → Authorized domains**, add the exact GitHub Pages domain that hosts this website (for example `your-github-name.github.io`).
 5. Make the existing admin account an administrator:
    - Open **Authentication → Users**, open the existing admin user and copy its **User UID**.
