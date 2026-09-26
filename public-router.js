@@ -7,7 +7,8 @@ const PUBLIC_VIEWS = {
     'product.html': { script: 'product.js', init: 'initProductPage' },
     'cart.html': { script: 'cart-page.js', init: 'initCartPage' },
     'about.html': { script: 'about.js', init: 'initAboutPage' },
-    'contact.html': { script: 'contact.js', init: 'initContactPage' }
+    'contact.html': { script: 'contact.js', init: 'initContactPage' },
+    'account.html': { script: 'account.js', init: 'initAccountPage' }
 };
 
 const SHELL_IDS = new Set(['preloader', 'main-header', 'nav-overlay', 'main-footer', 'floating-action-buttons']);

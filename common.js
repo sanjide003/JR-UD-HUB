@@ -54,6 +54,7 @@ function authenticateUser() {
     if (authPromise) return authPromise;
     authPromise = new Promise(async (resolve, reject) => {
         try {
+            await auth.authStateReady();
             if (auth.currentUser) {
                 resolve(auth.currentUser);
                 return;
@@ -118,7 +119,7 @@ async function buildHeader() {
                 <li><a href="index.html">Home</a></li>
                 <li><a href="explore.html">ChatBot</a></li>
                 <li><a href="categories.html">Catalog</a></li>
-                <li><button id="desktop-account-btn">Account</button></li>
+                <li><a href="account.html">Account</a></li>
             </ul>
         </nav>
         <div class="header-right-section">
@@ -236,7 +237,7 @@ function buildUserMenuHTML(settings) {
             <ul class="user-menu-list">
                 ${chatbotHTML}
                 ${dealerChatHTML}
-                <li><a href="cart.html" class="user-menu-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span>Your Orders</span></a></li>
+                <li><a href="account.html" class="user-menu-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2-2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg><span>My Account & Orders</span></a></li>
                 <li><button class="user-menu-action-btn" id="theme-switch-btn">
                     ${themeIcon}
                     <span id="theme-btn-text">${themeText}</span>
@@ -255,14 +256,14 @@ function buildBottomNav(settings) {
     const homeActive = pageName === 'index' ? 'active' : '';
     const catalogActive = (pageName === 'categories' || pageName === 'product') ? 'active' : '';
     const exploreActive = pageName === 'explore' ? 'active' : '';
-    const accountActive = (pageName === 'cart' || pageName === 'contact' || pageName === 'about') ? 'active' : '';
+    const accountActive = (pageName === 'account' || pageName === 'cart' || pageName === 'contact' || pageName === 'about') ? 'active' : '';
 
     const navHTML = `
     <nav class="bottom-nav">
         <a href="index.html" class="bottom-nav-item ${homeActive}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg><span>Home</span></a>
         <a href="categories.html" class="bottom-nav-item catalog-anim ${catalogActive}"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg><span>Catalog</span></a>
         <a href="explore.html" class="bottom-nav-item ${exploreActive}"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 18v3"/><circle cx="9" cy="11" r="1"/><circle cx="15" cy="11" r="1"/></svg><span>ChatBot</span></a>
-        <button class="bottom-nav-item ${accountActive}" id="bottom-nav-account-btn"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Account</span></button>
+        <a href="account.html" class="bottom-nav-item ${accountActive}" aria-label="Account"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg><span>Account</span></a>
     </nav>`;
     document.body.insertAdjacentHTML('beforeend', navHTML);
 }
